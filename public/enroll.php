@@ -390,6 +390,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     }
 
                     $pdo->commit();
+
+                    // --- ADDED NOTIFICATION LOGIC START ---
+                    try {
+                        // Ensure admin_notifications table exists
+                        $pdo->exec("CREATE TABLE IF NOT EXISTS `admin_notifications` (
+                          `id` INT PRIMARY KEY AUTO_INCREMENT,
+                          `message` VARCHAR(255) NOT NULL,
+                          `link` VARCHAR(255) DEFAULT NULL, 
+                          `is_read` TINYINT(1) DEFAULT 0,
+                          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        )");
+                        
+                        $notifMsg = "New enrollment application from " . $student_first . " " . $student_last;
+                        $notifLink = "manage_applications.php?id=" . $appId;
+                        
+                        error_log("About to insert notification: Message='$notifMsg', Link='$notifLink'");
+                        
+                        $notifStmt = $pdo->prepare("INSERT INTO admin_notifications (message, link) VALUES (?, ?)");
+                        $result = $notifStmt->execute([$notifMsg, $notifLink]);
+                        
+                        error_log("Notification insert result: " . ($result ? 'SUCCESS' : 'FAILED'));
+                        error_log("Last insert ID: " . $pdo->lastInsertId());
+                        
+                        // Verify it was inserted
+                        $verify = $pdo->query("SELECT COUNT(*) FROM admin_notifications")->fetchColumn();
+                        error_log("Total notifications after insert: " . $verify);
+                    } catch (Exception $e) {
+                        error_log("Notification Error: " . $e->getMessage());
+                        error_log("Stack trace: " . $e->getTraceAsString());
+                    }
+                    // --- ADDED NOTIFICATION LOGIC END ---
+
                     set_flash('Application submitted successfully. Your application status is "submitted". A payment was created if fees are due.');
 
                     // rotate CSRF & redirect to payment section so student can pay/view
@@ -598,12 +630,10 @@ function h($v) {
             </div>
         </div>
     <?php else: ?>
-    <!-- Single form that contains course selection + student info -->
-      <form method="post" enctype="multipart/form-data" onsubmit="return confirmApplication();">
+    <form method="post" enctype="multipart/form-data" onsubmit="return confirmApplication();">
         <input type="hidden" name="csrf_token" value="<?= h($csrf_token) ?>">
         <input type="hidden" name="action" value="submit_application">
 
-        <!-- Card 1: Course Selection -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">Course Selection</h2>
             <div class="mb-4">
@@ -635,7 +665,6 @@ function h($v) {
 
         </div>
 
-        <!-- Card 2: Student Information -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">Student Information</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -696,7 +725,6 @@ function h($v) {
                 </div>
             </div>
 
-            <!-- Indigenous Peoples question -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Belonging to any Indigenous Peoples (IP) Community / Indigenous Cultural Community?</label>
                 <div class="flex items-center space-x-4">
@@ -709,7 +737,6 @@ function h($v) {
             </div>
         </div>
 
-        <!-- Card 3: Address -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">Student Address Information</h2>
             <div class="mb-4">
@@ -727,7 +754,6 @@ function h($v) {
             </div>
         </div>
 
-        <!-- Card 4: Parent/Guardian -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">Parent / Guardian Details</h2>
             <div class="mb-4">
@@ -749,7 +775,6 @@ function h($v) {
                     <input type="text" name="guardian_contact" value="<?= h($_POST['guardian_contact'] ?? '') ?>" class="mt-1 block w-full rounded border-gray-300 px-3 py-2 text-sm" placeholder="Contact Number for Parent/Guardian" />
                     </div>
 
-                    <!-- existing generic parent fields (kept for backward compatibility) -->
                     <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">Primary Parent / Guardian Name</label>
                     <input type="text" name="parent_name" value="<?= h($_POST['parent_name'] ?? '') ?>" class="mt-1 block w-full rounded border-gray-300 px-3 py-2 text-sm" placeholder="Name (Primary Contact)" />
@@ -770,10 +795,6 @@ function h($v) {
             </div>
         </div>
 
-        <!-- Card 5: Requirements (Removed) -->
-
-
-        <!-- Card 6: Payment -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">Payment</h2>
             <div class="mb-4">
@@ -801,9 +822,6 @@ function h($v) {
       </form>
     <?php endif; ?>
 
-    <!-- PAYMENTS SECTION (embedded) -->
-   
-    <!-- applications listing unchanged -->
     <section id="applications" class="bg-white shadow rounded-lg p-6 mt-7">
       <h3 class="text-lg font-medium text-gray-900 mb-3">Your Applications</h3>
 
@@ -893,7 +911,7 @@ function h($v) {
                         <div class="text-xs text-gray-500">Contact: <?= h($parent_info['guardian_contact']) ?></div>
                       <?php elseif (!empty($parent_info['contact'])): ?>
                         <div class="text-xs text-gray-500">Contact: <?= h($parent_info['contact']) ?></div>
-                      <?php endif; ?>
+                      <?php endif; ?>   
 
                       <div class="text-xs text-gray-500 mt-1">
                         Consent: <?= (!empty($parent_info['consent']) ? 'Yes' : 'No') ?> · Lives with student: <?= (!empty($parent_info['lives_with']) ? 'Yes' : 'No') ?>

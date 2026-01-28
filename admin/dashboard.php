@@ -174,7 +174,6 @@ function render_count($v) {
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin Dashboard</title>
 
-  <!-- Tailwind CDN for quick prototyping. Replace with compiled CSS in production. -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -207,6 +206,23 @@ function render_count($v) {
         </div>
 
         <div class="flex items-center space-x-4">
+          <div class="relative inline-block text-left mr-2">
+              <button id="notif-btn" class="relative p-2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                  </svg>
+                  <span id="notif-badge" class="hidden absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+              </button>
+
+              <div id="notif-menu" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border z-50 overflow-hidden">
+                  <div class="bg-gray-800 px-4 py-2 text-white font-bold text-xs uppercase tracking-wider">Alerts Center</div>
+                  <div id="notif-list" class="max-h-60 overflow-y-auto">
+                      <p class="p-4 text-xs text-gray-400 text-center">No new alerts</p>
+                  </div>
+                  <button id="mark-read-btn" class="w-full text-center py-2 text-[10px] font-bold text-blue-600 hover:bg-gray-50 border-t uppercase">Mark all as read</button>
+              </div>
+          </div>
+
           <?php if ($adminName): ?>
             <div class="text-right">
               <p class="text-sm text-gray-600">Signed in as</p>
@@ -371,5 +387,63 @@ function render_count($v) {
       © <?php echo date('Y'); ?> Your Institution — Admin Panel
     </div>
   </footer>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('notif-btn');
+      const menu = document.getElementById('notif-menu');
+      const list = document.getElementById('notif-list');
+      const badge = document.getElementById('notif-badge');
+      const markReadBtn = document.getElementById('mark-read-btn');
+
+      btn.onclick = () => menu.classList.toggle('hidden');
+      window.onclick = (e) => { 
+          if (!btn.contains(e.target) && !menu.contains(e.target)) menu.classList.add('hidden'); 
+      };
+
+      function updateNotifications() {
+          fetch('api/get_notifications.php')
+              .then(res => res.json())
+              .then(data => {
+                  console.log('Notifications data:', data);
+                  
+                  if (data.error) {
+                      console.error('Notification error:', data.error);
+                      list.innerHTML = '<p class="p-4 text-xs text-red-500 text-center">Error loading notifications</p>';
+                      return;
+                  }
+                  
+                  if (data.unread_count > 0) {
+                      badge.innerText = data.unread_count > 9 ? '9+' : data.unread_count;
+                      badge.classList.remove('hidden');
+                  } else {
+                      badge.classList.add('hidden');
+                  }
+
+                  if (data.notifications && data.notifications.length > 0) {
+                      list.innerHTML = data.notifications.map(n => `
+                          <a href="${n.link}" class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0">
+                              <div class="text-[10px] text-gray-400 mb-1">${n.time_ago}</div>
+                              <div class="text-xs text-gray-700 font-semibold">${n.message}</div>
+                          </a>
+                      `).join('');
+                  } else {
+                      list.innerHTML = '<p class="p-4 text-xs text-gray-400 text-center">No new alerts</p>';
+                  }
+              })
+              .catch(err => {
+                  console.error('Fetch error:', err);
+                  list.innerHTML = '<p class="p-4 text-xs text-red-500 text-center">Connection error</p>';
+              });
+      }
+
+      markReadBtn.onclick = () => {
+          fetch('api/mark_all_read.php').then(() => updateNotifications());
+      };
+
+      updateNotifications();
+      setInterval(updateNotifications, 30000); // Check every 30 seconds
+  });
+  </script>
 </body>
 </html>

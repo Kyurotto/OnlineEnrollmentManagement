@@ -174,6 +174,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['app
                 $del = $pdo->prepare("DELETE FROM enrollment_applications WHERE id = ?");
                 $del->execute([$appId]);
 
+                // Delete associated notification when application is deleted
+                try {
+                    $notifDel = $pdo->prepare("DELETE FROM admin_notifications WHERE link LIKE ?");
+                    $notifDel->execute(['manage_applications.php?id=' . $appId]);
+                    error_log("Notification deleted for application ID: " . $appId);
+                } catch (Throwable $notifErr) {
+                    error_log("Notification deletion error: " . $notifErr->getMessage());
+                }
+
                 // Optional: audit log
                 try {
                     $log = $pdo->prepare("INSERT INTO admin_audit_log (admin_id, action, target_table, target_id, details) VALUES (?, 'delete_application', 'enrollment_applications', ?, ?)");
