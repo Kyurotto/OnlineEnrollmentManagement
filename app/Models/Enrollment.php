@@ -9,12 +9,18 @@ class Enrollment extends Model
 {
     use HasFactory;
 
-    // Allow all columns to be filled
     protected $guarded = [];
 
-    // Link back to the User
+    // *** THIS IS THE MISSING PART ***
     public function user()
     {
-        return $this->belongsTo(User::class);
+        // This tells Laravel that "Enrollment" belongs to a "User"
+        return $this->belongsTo(User::class, 'user_id');
     }
+    public function course()
+    {
+    // The second argument specifies the custom foreign key
+    return $this->belongsTo(Course::class, 'course_id');
+}
+
 }

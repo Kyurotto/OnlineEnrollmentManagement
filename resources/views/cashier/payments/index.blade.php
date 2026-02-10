@@ -10,17 +10,22 @@
 </head>
 <body class="bg-gray-50 text-slate-800">
 
-    <nav class="bg-white border-b border-gray-200">
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
+
                 <div class="flex items-center gap-2">
                     <span class="bg-slate-900 text-white font-bold px-2 py-1 rounded text-sm">CP</span>
                     <h1 class="text-xl font-bold text-slate-900">Cashier Panel</h1>
                 </div>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
-                </form>
+
+                <div class="flex items-center gap-6">
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </nav>
@@ -61,6 +66,8 @@
                             <th class="px-6 py-3">ID</th>
                             <th class="px-6 py-3">User</th>
                             <th class="px-6 py-3">Email</th>
+                            <th class="px-6 py-3">Course</th>
+                            <th class="px-6 py-3">Year Level</th>
                             <th class="px-6 py-3">Amount</th>
                             <th class="px-6 py-3">Date</th>
                             <th class="px-6 py-3">Status</th>
@@ -76,7 +83,15 @@
                                 <div class="text-xs text-gray-500">{{ $payment->user->username ?? '' }}</div>
                             </td>
                             <td class="px-6 py-4">{{ $payment->user->email ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 font-bold text-slate-800">₱{{ number_format($payment->amount, 2) }}</td>
+                            <td class="px-6 py-4 font-bold text-slate-700">{{ $payment->application->course_code ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 text-xs">{{ $payment->application->year_level ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 font-bold text-slate-800">
+                                <form action="{{ route('cashier.payments.update', $payment->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="number" step="0.01" name="amount" value="{{ $payment->amount }}" class="w-24 text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1" onchange="this.form.submit()">
+                                </form>
+                            </td>
                             <td class="px-6 py-4">{{ $payment->created_at->format('Y-m-d H:i') }}</td>
                             <td class="px-6 py-4">
                                 @if($payment->status === 'Completed')
@@ -107,7 +122,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-4 text-center text-gray-400">No payments found.</td>
+                            <td colspan="9" class="px-6 py-4 text-center text-gray-400">No payments found.</td>
                         </tr>
                         @endforelse
                     </tbody>

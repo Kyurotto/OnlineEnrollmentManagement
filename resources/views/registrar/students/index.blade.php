@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users - Admin</title>
+    <title>Manage Students - Registrar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
@@ -15,23 +15,17 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-8">
                     <div class="flex items-center gap-3">
-                        <div class="bg-black text-white font-bold p-2 rounded-lg text-sm">AD</div>
+                        <div class="bg-purple-900 text-white font-bold p-2 rounded-lg text-sm">RD</div>
                         <div>
-                            <h1 class="text-lg font-bold leading-none text-slate-900">Admin Panel</h1>
-                            <span class="text-xs text-gray-500">Manage Users</span>
+                            <h1 class="text-lg font-bold leading-none text-slate-900">Registrar Panel</h1>
+                            <span class="text-xs text-gray-500">Manage Students</span>
                         </div>
                     </div>
                     <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
-                        <a href="{{ route('dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
+                        <a href="{{ route('registrar.dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
                     </div>
                 </div>
                 <div class="flex items-center gap-6">
-                    <div class="relative cursor-pointer group">
-                        <svg class="w-6 h-6 text-gray-500 group-hover:text-gray-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                        @if(isset($pendingCount) && $pendingCount > 0)
-                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse shadow-sm">{{ $pendingCount }}</span>
-                        @endif
-                    </div>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
@@ -50,7 +44,7 @@
 
         <div class="bg-white rounded border border-gray-200 shadow-sm">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-bold text-slate-800">User List</h3>
+                <h3 class="text-lg font-bold text-slate-800">Student List</h3>
             </div>
 
             <div class="overflow-x-auto">
@@ -62,15 +56,16 @@
                             <th class="px-6 py-4">EMAIL</th>
                             <th class="px-6 py-4">ROLE</th>
                             <th class="px-6 py-4">STATUS</th>
+                            <th class="px-6 py-4">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
                         @forelse($students as $student)
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 text-gray-500">#{{ $student->id }}</td>
-
+                            
                             <td class="px-6 py-4 font-bold text-slate-900 uppercase">
-                                {{ $student->last_name }}, {{ $student->first_name }}
+                                {{ $student->last_name }}, {{ $student->first_name }} 
                                 @if($student->middle_name) {{ substr($student->middle_name, 0, 1) }}. @endif
                             </td>
 
@@ -84,41 +79,41 @@
 
                             <td class="px-6 py-4">
                                 @php
-                                    // 1. Check Role
-                                    $role = strtolower($student->role ?? '');
-
-                                    // 2. If Staff -> ALWAYS show Active (Blue)
-                                    if (in_array($role, ['admin', 'registrar', 'cashier'])) {
-                                        $displayStatus = 'Active';
-                                        $badgeColor = 'bg-blue-100 text-blue-800 border-blue-200';
-                                    }
-                                    // 3. If Student -> Check Application (Green/Red/Yellow)
-                                    else {
-                                        // Ensure User model has: public function application() { return $this->hasOne(Enrollment::class, 'user_id')->latest(); }
-                                        $displayStatus = $student->application->status ?? 'Not Enrolled';
-
-                                        $badgeColor = match($displayStatus) {
-                                            'Approved', 'Enrolled' => 'bg-green-100 text-green-800 border-green-200',
-                                            'Pending' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                                            'Rejected' => 'bg-red-100 text-red-800 border-red-200',
-                                            default => 'bg-gray-100 text-gray-600 border-gray-200',
-                                        };
-                                    }
+                                    $status = $student->display_status ?? 'Not Enrolled';
+                                    $badgeColor = match($status) {
+                                        'Approved', 'Enrolled', 'Active' => 'bg-green-100 text-green-800 border-green-200',
+                                        'Pending' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                                        'Rejected' => 'bg-red-100 text-red-800 border-red-200',
+                                        default => 'bg-gray-100 text-gray-600 border-gray-200',
+                                    };
                                 @endphp
                                 <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $badgeColor }}">
-                                    {{ ucfirst($displayStatus) }}
+                                    {{ ucfirst($status) }}
                                 </span>
                             </td>
 
-
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('registrar.students.edit', $student->id) }}" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1 rounded text-xs font-bold transition">Edit</a>
+                                    
+                                    <form action="{{ route('registrar.students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 px-3 py-1 rounded text-xs font-bold transition">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         @empty
-                        <tr><td colspan="6" class="px-6 py-10 text-center text-gray-400">No users found.</td></tr>
+                        <tr><td colspan="6" class="px-6 py-10 text-center text-gray-400">No students found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="p-4 border-t border-gray-200">{{ $students->links() }}</div>
+            <div class="p-4 border-t border-gray-200">
+                @if(method_exists($students, 'links'))
+                    {{ $students->links() }}
+                @endif
+            </div>
         </div>
     </main>
 </body>

@@ -16,7 +16,7 @@ class Payment extends Model
 
     public function application()
     {
-        return $this->belongsTo(EnrollmentApplication::class);
+        return $this->belongsTo(Enrollment::class, 'application_id');
     }
 
     public function user()

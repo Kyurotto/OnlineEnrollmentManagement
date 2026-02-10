@@ -5,99 +5,99 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Enrollment; // Needed to delete related data
+use App\Models\Enrollment;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
-    // Display the list of students
     public function index()
     {
-        // 1. Fetch Students (Filtering out admins/registrars/cashiers)
         $students = User::where(function($query) {
-                        $query->where('role', 'student')
-                              ->orWhereNull('role');
+                        $query->where('role', 'student')->orWhereNull('role');
                     })
                     ->whereNotIn('role', ['admin', 'registrar', 'cashier'])
                     ->latest()
-                    ->get()
-                    ->map(function($user) {
-                        // Check enrollment status
-                        $application = Enrollment::where('user_id', $user->id)->latest()->first();
+                    ->paginate(10);
 
-                        $status = 'Not Enrolled';
-                        if ($application) {
-                            if ($application->status === 'Approved') $status = 'Enrolled';
-                            elseif ($application->status === 'Pending') $status = 'Pending';
-                            elseif ($application->status === 'Rejected') $status = 'Rejected';
-                        }
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
 
-                        return [
-                            'id' => $user->id,
-                            'username' => $user->username ?? $user->name,
-                            'full_name' => $user->first_name . ' ' . $user->last_name,
-                            // Fallback display name
-                            'display_name' => ($user->first_name) ? $user->first_name . ' ' . $user->last_name : $user->name,
-                            'email' => $user->email,
-                            'status' => $status,
-                            'role' => $user->role ?? 'student',
-                            'created_at' => $user->created_at->format('Y-m-d H:i:s')
-                        ];
-                    });
+        if (request()->routeIs('registrar.*')) {
+            return view('registrar.students.index', compact('students', 'pendingCount'));
+        }
 
-        return view('admin.students.index', compact('students'));
+        return view('admin.students.index', compact('students', 'pendingCount'));
     }
 
-    // SHOW EDIT FORM
     public function edit($id)
     {
         $student = User::findOrFail($id);
-        return view('admin.students.edit', compact('student'));
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
+
+        if (auth()->user()->role === 'registrar') {
+            return view('registrar.students.edit', compact('student', 'pendingCount'));
+        }
+
+        return view('admin.students.edit', compact('student', 'pendingCount'));
     }
 
-    // HANDLE UPDATE
+    // *** UPDATED UPDATE FUNCTION ***
     public function update(Request $request, $id)
     {
         $student = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
+        // 1. Validate (removed username validation since you removed the field)
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'first_name'  => ['required', 'string', 'max:255'],
             'middle_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            // Ensure email is unique but ignore the current student's own email
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($student->id)],
-            'password' => ['nullable', 'min:8'], // Password is optional
+            'last_name'   => ['required', 'string', 'max:255'],
+            'email'       => ['required', 'email', 'max:255', Rule::unique('users')->ignore($student->id)],
+            'status'      => ['nullable', 'string'],
         ]);
 
-        // Update fields
-        $student->first_name = $request->first_name;
-        $student->middle_name = $request->middle_name;
-        $student->last_name = $request->last_name;
+        if ($validator->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
 
-        // SYNC: Update the main 'name' column to match
+        // 2. Assign New Values
+        $student->first_name  = $request->first_name;
+        $student->middle_name = $request->middle_name;
+        $student->last_name   = $request->last_name;
+
+        // 3. Sync the 'name' column (Important for some default Laravel features)
+        // This ensures "John Doe" is saved to 'name' if you change 'first_name'
         $student->name = $request->first_name . ' ' . $request->last_name;
 
         $student->email = $request->email;
 
-        // Only update password if they typed a new one
+        if ($request->has('status') && $request->status !== null) {
+            $student->status = $request->status;
+        }
+
         if ($request->filled('password')) {
             $student->password = bcrypt($request->password);
         }
 
+        // 4. Save
         $student->save();
 
-        return redirect()->route('admin.students.index')->with('success', 'Student updated successfully.');
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Saved successfully',
+                'last_updated' => now()->format('h:i:s A')
+            ]);
+        }
+
+        $redirectRoute = auth()->user()->role === 'registrar' ? 'registrar.students.index' : 'admin.students.index';
+        return redirect()->route($redirectRoute)->with('success', 'Student updated successfully.');
     }
 
-    // HANDLE DELETE
     public function destroy($id)
     {
         $student = User::findOrFail($id);
-
-        // Clean up: Delete their enrollments first to avoid database errors
         Enrollment::where('user_id', $id)->delete();
-
-        // Delete the user
         $student->delete();
 
         return back()->with('success', 'Student deleted successfully.');

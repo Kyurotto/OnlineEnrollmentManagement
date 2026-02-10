@@ -14,19 +14,11 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -36,26 +28,37 @@ class RegisteredUserController extends Controller
         ]);
 
         // 1. AUTOMATIC NAME SPLITTER
-        // This takes "Gelmar Anora" and splits it into pieces
         $parts = explode(' ', $request->name);
-        $firstName = $parts[0]; // "Gelmar"
-        $lastName = (count($parts) > 1) ? end($parts) : ''; // "Anora" (Last part)
+        $parts = array_values(array_filter($parts));
+        $count = count($parts);
 
-        // Handle Middle Name (Optional logic: takes everything in between)
+        $firstName = '';
         $middleName = '';
-        if (count($parts) > 2) {
-            $middleName = implode(' ', array_slice($parts, 1, -1));
+        $lastName = '';
+
+        if ($count == 1) {
+            $firstName = $parts[0];
+        } elseif ($count > 1) {
+            $lastName = array_pop($parts);
+            $potentialMiddle = end($parts);
+            if (preg_match('/^[a-zA-Z]\.?$/', $potentialMiddle)) {
+                $middleName = array_pop($parts);
+                $firstName = implode(' ', $parts);
+            } else {
+                $firstName = array_shift($parts);
+                $middleName = implode(' ', $parts);
+            }
         }
 
-        // 2. CREATE USER WITH ALL FIELDS FILLED
-        $user = User::create([
+        // 2. CREATE USER SECURELY (forceCreate bypasses fillable protection)
+        $user = User::forceCreate([
             'name' => $request->name,
-            'username' => explode('@', $request->email)[0], // Auto-generate username
+            'username' => explode('@', $request->email)[0],
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'student',
+            'role' => 'student', // Safe here because we are hardcoding it
+            'status' => null, // Students default to NULL (Active status comes from Application)
 
-            // 3. FILL THE PROFILE DATA AUTOMATICALLY
             'first_name' => $firstName,
             'middle_name' => $middleName,
             'last_name' => $lastName,

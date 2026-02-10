@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\Enrollment;
 use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
@@ -15,7 +16,8 @@ class CourseController extends Controller
     public function index()
     {
         $courses = Course::all();
-        return view('admin.courses.index', compact('courses'));
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        return view('admin.courses.index', compact('courses', 'pendingCount'));
     }
 
     /**
@@ -48,7 +50,12 @@ class CourseController extends Controller
     public function edit($id)
     {
         $course = Course::findOrFail($id);
-        return view('admin.courses.edit', compact('course'));
+
+        // ADD THIS LINE:
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
+
+        // Pass both variables to the view
+        return view('admin.courses.edit', compact('course', 'pendingCount'));
     }
 
     /**

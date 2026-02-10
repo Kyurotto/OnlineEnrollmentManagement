@@ -3,124 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Payments</title>
+    <title>Admin - Manage Payments</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
 </head>
-<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+<body class="bg-gray-50 text-slate-800">
 
-    <nav class="bg-white border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex items-center gap-8">
-                <h1 class="text-xl font-bold text-slate-900">Admin Panel</h1>
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-8">
 
-                <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">
-                        Dashboard
-                    </a>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-black text-white font-bold p-2 rounded-lg text-sm">AD</div>
+                        <div>
+                            <h1 class="text-lg font-bold leading-none text-slate-900">Admin Panel</h1>
+                            <span class="text-xs text-gray-500">Manage Payments</span>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
+                        <a href="{{ route('dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">
+                            Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+
+                    <div class="relative cursor-pointer group">
+                        <div class="relative">
+                            <svg class="w-6 h-6 text-gray-500 group-hover:text-gray-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            @if(isset($pendingCount) && $pendingCount > 0)
+                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse shadow-sm">
+                                    {{ $pendingCount }}
+                                </span>
+                            @endif
+                        </div>
+
+                        @if(isset($pendingCount) && $pendingCount > 0)
+                        <div class="absolute right-0 top-10 w-64 bg-white border border-gray-200 shadow-xl rounded-lg hidden group-hover:block z-50">
+                            <div class="p-4">
+                                <p class="text-sm font-bold text-slate-800">{{ $pendingCount }} New Application(s)</p>
+                                <p class="text-xs text-gray-500 mt-1">Students are waiting for approval.</p>
+                                <a href="{{ route('admin.applications.index') }}" class="block mt-3 text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded transition">
+                                    View Applications →
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
+                    </form>
                 </div>
             </div>
-
-            <div class="flex items-center">
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">
-                        Logout
-                    </button>
-                </form>
-            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-slate-900">Manage Payments</h2>
-            <p class="text-sm text-gray-500">Review, filter and update payment records. You can now search by and edit the Payment ID (transaction_id).</p>
+            <p class="text-sm text-gray-500">Review, filter and update payment records.</p>
         </div>
 
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6 flex flex-col md:flex-row gap-4 items-center">
-
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-                    <option>All statuses</option>
-                    <option>Completed</option>
-                    <option>Pending</option>
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6">
+            <form action="{{ route('admin.payments.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
+                <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                    <option value="All statuses">All statuses</option>
+                    <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
                 </select>
-                <button class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2.5">Filter</button>
-            </div>
-
-            <div class="flex-grow flex items-center gap-2 w-full">
-                <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Search username, name, email, or Payment ID">
-                <button class="text-white bg-slate-800 hover:bg-slate-900 font-medium rounded-lg text-sm px-5 py-2.5">Search</button>
-                <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium px-2">Reset</a>
-            </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search username, email or ID" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <button type="submit" class="text-white bg-slate-800 hover:bg-slate-900 focus:ring-4 focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5">Search</button>
+                <a href="{{ route('admin.payments.index') }}" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5">Reset</a>
+            </form>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h3 class="font-bold text-lg text-slate-800">Payments <span class="text-gray-500 font-normal">({{ count($payments) }})</span></h3>
-                <p class="text-xs text-gray-400">Showing {{ count($payments) }} results.</p>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="font-bold text-slate-800">Payments List</h3>
             </div>
-
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3">ID</th>
+                            <th class="px-6 py-3">User</th>
+                            <th class="px-6 py-3">Email</th>
+                            <th class="px-6 py-3">Course</th>
+                            <th class="px-6 py-3">Year Level</th>
+                            <th class="px-6 py-3">Amount</th>
+                            <th class="px-6 py-3">Date</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($payments as $payment)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $payment['id'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-slate-800">{{ $payment['username'] }}</div>
-                                <div class="text-xs text-gray-500">{{ $payment['full_name'] }}</div>
+                    <tbody>
+                        @forelse($payments as $payment)
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4">{{ $payment->id }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-900">
+                                {{ $payment->user->name ?? 'Unknown' }}
+                                <div class="text-xs text-gray-500">{{ $payment->user->username ?? '' }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $payment['email'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-700">{{ $payment['amount'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ $payment['date'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($payment['status'] === 'Completed')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-md bg-green-100 text-green-800">Completed</span>
+                            <td class="px-6 py-4">{{ $payment->user->email ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 font-bold text-slate-700">{{ optional($payment->application)->course_code ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 text-xs">{{ optional($payment->application)->year_level ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 font-bold text-slate-800">{{ number_format($payment->amount, 2) }}</td>
+                            <td class="px-6 py-4">{{ $payment->created_at->format('Y-m-d H:i') }}</td>
+                            <td class="px-6 py-4">
+                                @if($payment->status === 'Completed')
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Completed</span>
+                                @elseif($payment->status === 'Pending')
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Pending</span>
                                 @else
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-md bg-yellow-100 text-yellow-800">Pending</span>
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">{{ $payment->status }}</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-3">
-                                    <select class="text-xs border-gray-300 rounded shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                        <option {{ $payment['status'] == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                        <option {{ $payment['status'] == 'Pending' ? 'selected' : '' }}>Pending</option>
+                            <td class="px-6 py-4 flex items-center gap-2">
+                                <form action="{{ route('admin.payments.update', $payment->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="status" onchange="this.form.submit()" class="text-xs border-gray-300 rounded focus:ring-blue-500">
+                                        <option value="Pending" {{ $payment->status == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="Completed" {{ $payment->status == 'Completed' ? 'selected' : '' }}>Completed</option>
+                                        <option value="Rejected" {{ $payment->status == 'Rejected' ? 'selected' : '' }}>Rejected</option>
                                     </select>
-
-                                    <button class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Delete</button>
-                                    <a href="#" class="text-blue-600 hover:text-blue-800 text-xs">Details</a>
-                                </div>
+                                </form>
+                                <form action="{{ route('admin.payments.destroy', $payment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to void this payment record? This action cannot be undone.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded transition">Void</button>
+                                </form>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr><td colspan="9" class="px-6 py-4 text-center text-gray-400">No payments found.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-lg">
-                <p class="text-xs text-gray-500">Tip: Integrate your payment gateway to automatically create and update payment records.</p>
-            </div>
-        </div>
-
-        <div class="mt-12 text-center text-sm text-gray-500">
-            © 2026 Your Institution — Admin Panel
+            <div class="p-4">{{ $payments->links() }}</div>
         </div>
     </main>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Student - Admin Panel</title>
+    <title>Edit Student - Registrar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
@@ -14,31 +14,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-8">
-
                     <div class="flex items-center gap-3">
-                        <div class="bg-black text-white font-bold p-2 rounded-lg text-sm">AD</div>
+                        <div class="bg-purple-900 text-white font-bold p-2 rounded-lg text-sm">RD</div>
                         <div>
-                            <h1 class="text-lg font-bold leading-none text-slate-900">Admin Panel</h1>
+                            <h1 class="text-lg font-bold leading-none text-slate-900">Registrar Panel</h1>
                             <span class="text-xs text-gray-500">Manage Students</span>
                         </div>
                     </div>
-
                     <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
-                        <a href="{{ route('dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">
-                            Dashboard
-                        </a>
+                        <a href="{{ route('dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
                     </div>
                 </div>
-
                 <div class="flex items-center gap-6">
-                    <div class="relative cursor-pointer group">
-                        <div class="relative">
-                            <svg class="w-6 h-6 text-gray-500 group-hover:text-gray-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            @if(isset($pendingCount) && $pendingCount > 0)
-                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse shadow-sm">{{ $pendingCount }}</span>
-                            @endif
-                        </div>
-                    </div>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
@@ -52,10 +39,10 @@
         <div class="max-w-3xl w-full bg-white p-10 rounded-lg shadow-lg border border-gray-200">
             <div class="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
                 <h2 class="text-2xl font-bold text-slate-900">Edit Student Record</h2>
-                <a href="{{ route('admin.students.index') }}" class="text-sm text-gray-500 hover:text-slate-900 transition flex items-center gap-1"><span>←</span> Back to List</a>
+                <a href="{{ route('registrar.students.index') }}" class="text-sm text-gray-500 hover:text-slate-900 transition flex items-center gap-1"><span>←</span> Back to List</a>
             </div>
 
-            <form action="{{ route('admin.students.update', $student->id) }}" method="POST">
+            <form action="{{ route('registrar.students.update', $student->id) }}" method="POST">
                 @csrf @method('PATCH')
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div>
@@ -75,8 +62,18 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
                     <input type="email" name="email" value="{{ old('email', $student->email) }}" class="w-full border border-gray-300 rounded p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none">
                 </div>
+
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Status</label>
+                    <select name="status" class="w-full border border-gray-300 rounded p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none">
+                        <option value="Not Enrolled" {{ $student->status == 'Not Enrolled' ? 'selected' : '' }}>Not Enrolled</option>
+                        <option value="Enrolled" {{ $student->status == 'Enrolled' ? 'selected' : '' }}>Enrolled</option>
+                        <option value="Active" {{ $student->status == 'Active' ? 'selected' : '' }}>Active</option>
+                    </select>
+                </div>
+
                 <div class="flex justify-end gap-4">
-                    <a href="{{ route('admin.students.index') }}" class="px-6 py-2.5 border border-gray-300 rounded text-gray-700 font-medium hover:bg-gray-50 transition text-sm">Cancel</a>
+                    <a href="{{ route('registrar.students.index') }}" class="px-6 py-2.5 border border-gray-300 rounded text-gray-700 font-medium hover:bg-gray-50 transition text-sm">Cancel</a>
                     <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded shadow-sm transition text-sm">Update Student</button>
                 </div>
             </form>

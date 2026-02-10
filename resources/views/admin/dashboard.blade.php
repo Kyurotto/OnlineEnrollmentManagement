@@ -39,12 +39,14 @@
                         <div class="absolute right-0 top-10 w-64 bg-white border border-gray-200 shadow-xl rounded-lg hidden group-hover:block z-50">
                             <div class="p-4">
                                 <p class="text-sm font-bold text-slate-800">{{ $pendingCount }} New Application(s)</p>
-                                <a href="{{ route('admin.applications.index') }}" class="block mt-2 text-xs text-blue-600 hover:underline">View Applications →</a>
+                                <p class="text-xs text-gray-500 mt-1">Students are waiting for review.</p>
+                                <a href="{{ route('admin.applications.index') }}" class="block mt-3 text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded transition">
+                                    View Applications →
+                                </a>
                             </div>
                         </div>
                         @endif
                     </div>
-
                     <div class="text-right hidden sm:block">
                         <div class="text-xs text-gray-400">Signed in as</div>
                         <div class="text-sm font-bold text-slate-800">Administrator</div>

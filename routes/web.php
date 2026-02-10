@@ -12,6 +12,11 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ApplicationController;
 
+// Import the specific Registrar Controllers
+use App\Http\Controllers\Registrar\DashboardController as RegistrarDashboard;
+use App\Http\Controllers\Registrar\StudentController as RegistrarStudent;
+use App\Http\Controllers\Registrar\ApplicationController as RegistrarApplicationController;
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -50,22 +55,18 @@ Route::get('/dashboard', function () {
 */
 Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
 
-    // Dashboard
-    Route::get('/dashboard', function () {
-        return view('registrar.dashboard');
-    })->name('dashboard');
+    // 1. Dashboard (Uses Registrar\DashboardController)
+    Route::get('/dashboard', [RegistrarDashboard::class, 'index'])->name('dashboard');
 
-    // Manage Students (Re-using Admin Controller)
-    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    Route::get('/students/{id}/edit', [StudentController::class, 'edit'])->name('students.edit');
-    Route::patch('/students/{id}', [StudentController::class, 'update'])->name('students.update');
-    Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
+    // 2. Manage Students (Uses Registrar\StudentController)
+    Route::resource('students', RegistrarStudent::class);
 
-    // Manage Applications (Re-using Admin Controller)
-    Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
-    Route::post('/applications/{id}/approve', [ApplicationController::class, 'approve'])->name('applications.approve');
-    Route::post('/applications/{id}/reject', [ApplicationController::class, 'reject'])->name('applications.reject');
-    Route::delete('/applications/{id}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+    // 3. Manage Applications
+    Route::get('/applications', [RegistrarApplicationController::class, 'index'])->name('applications.index');
+    Route::get('/applications/{id}', [RegistrarApplicationController::class, 'show'])->name('applications.show');
+    Route::patch('/applications/{id}', [RegistrarApplicationController::class, 'update'])->name('applications.update');
+    Route::delete('/applications/{id}', [RegistrarApplicationController::class, 'destroy'])->name('applications.destroy');
+
 });
 
 /*
@@ -78,20 +79,26 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // --- MAKE SURE COURSES ARE HERE ---
+    // Courses
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
-    Route::get('/courses/{id}/edit', [CourseController::class, 'edit'])->name('courses.edit'); // <--- This creates /admin/courses/{id}/edit
+    Route::get('/courses/{id}/edit', [CourseController::class, 'edit'])->name('courses.edit');
     Route::put('/courses/{id}', [CourseController::class, 'update'])->name('courses.update');
     Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
     // Payments
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+    Route::patch('/payments/{id}', [PaymentController::class, 'update'])->name('payments.update');
 
     // Applications
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
+    Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
+    Route::patch('/applications/{id}', [ApplicationController::class, 'update'])->name('applications.update');
+    Route::delete('/applications/{id}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+    // Keeping these for backward compatibility if your views still use them:
     Route::post('/applications/{id}/approve', [ApplicationController::class, 'approve'])->name('applications.approve');
     Route::post('/applications/{id}/reject', [ApplicationController::class, 'reject'])->name('applications.reject');
-    Route::delete('/applications/{id}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
 
     // Students
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
@@ -124,6 +131,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/student/payments', function () {
         return view('student.payment', ['payments' => []]);
     })->name('payment.index');
+    Route::post('/student/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payment.store');
 
     Route::get('/student/profile', function () {
         return view('student.profile', ['payments' => []]);
@@ -141,11 +149,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Explicit Logout Route
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return redirect('/');
+    // Redirect to LOGIN PAGE, not root
+    return redirect()->route('login');
 })->name('logout');
 
 require __DIR__.'/auth.php';

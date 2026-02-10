@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Models\User;
 use App\Models\Enrollment;
+use App\Models\Payment;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,6 +47,16 @@ class AppServiceProvider extends ServiceProvider
                 $pendingCount = 0;
             }
             $view->with('pendingCount', $pendingCount);
+        });
+
+        // 4. CASHIER NOTIFICATIONS
+        View::composer(['cashier.*'], function ($view) {
+            try {
+                $pendingPaymentsCount = Payment::where('status', 'Pending')->count();
+            } catch (\Exception $e) {
+                $pendingPaymentsCount = 0;
+            }
+            $view->with('pendingPaymentsCount', $pendingPaymentsCount);
         });
     }
 }
