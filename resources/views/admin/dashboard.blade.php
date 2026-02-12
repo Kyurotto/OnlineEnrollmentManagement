@@ -124,11 +124,15 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                         <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Active Courses</div>
-                        <div class="text-2xl font-bold text-slate-800">{{ $stats['active_courses'] }}</div>
+                        <div class="text-2xl font-bold  text-slate-800">{{ $stats['active_courses'] }}</div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Students</div>
+                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Total Students</div>
                         <div class="text-2xl font-bold text-slate-800">{{ $stats['students'] }}</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Enrolled</div>
+                        <div class="text-2xl font-bold text-green-600">{{ $stats['enrolled'] ?? 0 }}</div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                         <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Total Payments</div>

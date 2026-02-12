@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Enrollment; // Import your Enrollment model
+use App\Models\Enrollment; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
@@ -13,12 +13,13 @@ class ApplicationController extends Controller
 {
     public function index()
     {
-        // 1. Fetch applications with Student (user)
+        // 1. Fetch applications
         $applications = Enrollment::with(['user'])
             ->latest()
             ->paginate(10);
 
-        // Manual Eager Load for 'course' based on course_code
+        // 2. Manual Eager Load for 'course' based on course_code
+        // (This preserves your logic of linking via course_code string)
         $courseCodes = $applications->pluck('course_code')->unique();
         $courses = Course::whereIn('course_code', $courseCodes)->get()->keyBy('course_code');
 
@@ -30,7 +31,8 @@ class ApplicationController extends Controller
 
         $pendingCount = Enrollment::where('status', 'Pending')->count();
 
-        return view('admin.students.applications.index', compact('applications', 'pendingCount'));
+        // FIX: Pointing to the correct view path based on your structure
+        return view('admin.applications.index', compact('applications', 'pendingCount'));
     }
 
     public function show($id)
@@ -43,7 +45,8 @@ class ApplicationController extends Controller
             $application->setRelation('course', $course);
         }
 
-        return view('admin.students.applications.show', compact('application'));
+        // FIX: Correct view path
+        return view('admin.applications.show', compact('application'));
     }
 
     /**
@@ -52,18 +55,19 @@ class ApplicationController extends Controller
     public function approve($id)
     {
         $enrollment = Enrollment::with('user')->findOrFail($id);
+        
+        // *** FIX: Set status to 'Enrolled' so the Dashboard counts it ***
         $enrollment->update([
-            'status' => 'Approved',
+            'status' => 'Enrolled', 
             'is_processed' => true
         ]);
 
+        // Sync User Status
         if ($enrollment->user) {
             $enrollment->user->update(['status' => 'Enrolled']);
         }
 
-        // In a real app, you could send an email notification here.
-
-        return back()->with('success', 'Application approved! Student is now Enrolled.');
+        return back()->with('success', 'Application approved! Student is now officially Enrolled.');
     }
 
     /**
@@ -80,56 +84,35 @@ class ApplicationController extends Controller
             'status' => 'required|in:Approved,Rejected',
         ]);
 
-        // 3. Update Application Status
+        // 3. Determine Status to Save
+        // If Admin clicks "Approve", we save "Enrolled" to DB so the dashboard counts it.
+        $statusToSave = $request->status;
+        if ($statusToSave === 'Approved') {
+            $statusToSave = 'Enrolled';
+        }
+
+        // 4. Update Application Status
         $application->update([
-            'status' => $request->status,
+            'status' => $statusToSave,
             'is_processed' => true
         ]);
 
-        // 4. Force Update Student Status
-        // Now that "use App\Models\User;" is at the top, this will work:
+        // 5. Force Update Student User Table Status
         $student = User::find($application->user_id);
 
         if ($student) {
-            if ($request->status === 'Approved') {
+            if ($statusToSave === 'Enrolled') {
                 $student->status = 'Enrolled';
-            } elseif ($request->status === 'Rejected') {
-                $student->status = 'Not Enrolled'; // Or 'Rejected'
+            } elseif ($statusToSave === 'Rejected') {
+                $student->status = 'Not Enrolled';
             }
-            $student->save(); // Force save
+            $student->save(); 
         }
 
-        return back()->with('success', "Application successfully marked as {$request->status}.");
+        return back()->with('success', "Application successfully marked as {$statusToSave}.");
     }
 
     /**
      * Reject an application.
      */
-    public function reject($id)
-    {
-        $enrollment = Enrollment::with('user')->findOrFail($id);
-        $enrollment->update([
-            'status' => 'Rejected',
-            'is_processed' => true
-        ]);
-
-        if ($enrollment->user) {
-            $enrollment->user->update(['status' => 'Rejected']);
-        }
-
-        // In a real app, you could send a rejection email here.
-
-        return back()->with('success', 'Application #' . $id . ' has been rejected.');
-    }
-
-    /**
-     * Delete an application.
-     */
-    public function destroy($id)
-    {
-        $application = Enrollment::findOrFail($id);
-        $application->delete();
-
-        return back()->with('success', 'Application deleted successfully.');
-    }
 }

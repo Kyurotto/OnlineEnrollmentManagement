@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $stats = [
             'students'       => User::where('role', 'student')->count(),
             'applications'   => Enrollment::where('status', 'Pending')->count(), // Pending Apps
-            'enrolled'       => Enrollment::where('status', 'Enrolled')->count(), // Officially Enrolled
+            'enrolled'       => Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count(), // Officially Enrolled
             'active_courses' => Course::count(),
         ];
 

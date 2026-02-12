@@ -33,7 +33,7 @@ class StudentController extends Controller
         $student = User::findOrFail($id);
         $pendingCount = Enrollment::where('status', 'Pending')->count();
 
-        if (auth()->user()->role === 'registrar') {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'registrar') {
             return view('registrar.students.edit', compact('student', 'pendingCount'));
         }
 
@@ -90,7 +90,7 @@ class StudentController extends Controller
             ]);
         }
 
-        $redirectRoute = auth()->user()->role === 'registrar' ? 'registrar.students.index' : 'admin.students.index';
+        $redirectRoute = \Illuminate\Support\Facades\Auth::user()->role === 'registrar' ? 'registrar.students.index' : 'admin.students.index';
         return redirect()->route($redirectRoute)->with('success', 'Student updated successfully.');
     }
 

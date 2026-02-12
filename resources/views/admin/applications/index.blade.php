@@ -206,15 +206,9 @@
                     class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-medium transition">Close</button>
                 <form id="approveForm" method="POST">
                     @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="Approved">
-                    <button type="submit"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-bold transition shadow-sm">Approve</button>
                 </form>
                 <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">
                     @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="Rejected">
-                    <button type="submit"
-                        class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded text-sm font-bold transition shadow-sm">Reject</button>
                 </form>
             </div>
         </div>

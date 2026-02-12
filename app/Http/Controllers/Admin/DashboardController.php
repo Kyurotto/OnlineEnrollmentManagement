@@ -19,12 +19,13 @@ class DashboardController extends Controller
             'students'       => User::where('role', 'student')->count(),
             'total_payments' => Payment::count(),
             'applications'   => Enrollment::where('status', 'Pending')->count(),
+            'enrolled'       => Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count(),
         ];
 
         // 2. Get Notification Count for the Bell
         $pendingCount = Enrollment::where('status', 'Pending')->count();
 
-        // 3. Return View with BOTH variables
+        // 3. Return View
         return view('admin.dashboard', compact('stats', 'pendingCount'));
     }
 }
