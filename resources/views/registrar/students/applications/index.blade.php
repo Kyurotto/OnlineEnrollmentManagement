@@ -11,6 +11,16 @@
     body {
         font-family: 'Inter', sans-serif;
     }
+
+    /* Scrollbar for notification dropdown */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+    }
     </style>
 </head>
 
@@ -32,6 +42,7 @@
                             class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
                     </div>
                 </div>
+
                 <div class="flex items-center gap-6">
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -76,7 +87,8 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 text-gray-500">#{{ $application->id }}</td>
                             <td class="px-6 py-4 font-bold text-slate-900 uppercase whitespace-nowrap">
-                                {{ $application->first_name }} {{ $application->last_name }}
+                                {{ $application->last_name }}, {{ $application->first_name }}
+                                {{ $application->middle_name }}
                             </td>
                             <td class="px-6 py-4 text-gray-600 whitespace-nowrap">
                                 {{ $application->email }}
@@ -93,9 +105,9 @@
                             <td class="px-6 py-4">
                                 @php
                                 $badgeColor = match(ucfirst($application->status)) {
-                                'Approved' => 'bg-white border border-green-200 text-green-700',
+                                'Approved' => 'bg-green-100 text-green-700',
                                 'Rejected' => 'bg-red-100 text-red-700',
-                                default => 'bg-yellow-100 text-yellow-700',
+                                'Pending' => 'bg-yellow-100 text-yellow-700',
                                 };
                                 @endphp
                                 <span class="px-3 py-1 rounded-full text-xs font-bold {{ $badgeColor }}">
@@ -104,10 +116,8 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <button type="button" {{-- 1. Store data safely in data-attributes --}}
-                                        data-application="{{ json_encode($application) }}"
+                                    <button type="button" data-application="{{ json_encode($application) }}"
                                         data-user="{{ json_encode($application->user) }}"
-                                        {{-- 2. Read the data in the onclick --}}
                                         onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
                                         class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition">
                                         View
@@ -144,13 +154,11 @@
         class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 overflow-y-auto h-full w-full flex items-center justify-center backdrop-blur-sm">
         <div
             class="relative mx-auto p-0 border w-full max-w-2xl shadow-2xl rounded-lg bg-white transform transition-all">
-
             <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
                 <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Application Details</h3>
                 <button onclick="closeModal()"
                     class="text-gray-400 hover:text-red-500 transition focus:outline-none text-2xl">&times;</button>
             </div>
-
             <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
                 <div class="space-y-4">
                     <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 pb-2">
@@ -174,10 +182,8 @@
                 <div class="bg-blue-50 border border-blue-100 rounded-lg p-5">
                     <h4 class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-3">Program Details</h4>
                     <div class="space-y-2 text-sm">
-                        <div>
-                            <span class="font-bold text-blue-900">Program:</span>
-                            <span class="text-blue-800 uppercase ml-1" id="modalCourse"></span>
-                        </div>
+                        <div><span class="font-bold text-blue-900">Program:</span><span
+                                class="text-blue-800 uppercase ml-1" id="modalCourse"></span></div>
                         <div class="flex items-center gap-3">
                             <div><span class="font-bold text-blue-900">Year Level:</span><span class="text-blue-800"
                                     id="modalYear"></span></div>
@@ -204,20 +210,15 @@
                     </div>
                 </div>
             </div>
-
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg flex justify-end gap-3">
                 <button onclick="closeModal()"
                     class="px-4 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Close</button>
-                <form id="approveForm" method="POST">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="Approved">
-                    <button type="submit"
+                <form id="approveForm" method="POST">@csrf @method('PATCH')<input type="hidden" name="status"
+                        value="Approved"><button type="submit"
                         class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-bold shadow-sm transition">Approve</button>
                 </form>
-                <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="Rejected">
-                    <button type="submit"
+                <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">@csrf
+                    @method('PATCH')<input type="hidden" name="status" value="Rejected"><button type="submit"
                         class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded text-sm font-bold shadow-sm transition">Reject</button>
                 </form>
             </div>
@@ -227,48 +228,35 @@
     <script>
     function openModal(app, user, course) {
         document.getElementById('modalTitle').innerText = 'Application #' + app.id;
-
-        // FIXED: Using 'app' (enrollment record) for personal details instead of 'user'
-        // The Enrollment table contains the specific data for this application
-
         const middle = app.middle_name ? ' ' + app.middle_name : '';
         const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
-
         document.getElementById('modalName').innerText = fullName;
-        document.getElementById('modalEmail').innerText = app.email || 'N/A'; // Use app email
+        document.getElementById('modalEmail').innerText = app.email || 'N/A';
         document.getElementById('modalDob').innerText = app.birth_date || 'N/A';
         document.getElementById('modalAge').innerText = app.age || 'N/A';
         document.getElementById('modalGender').innerText = app.gender || 'N/A';
         document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
 
-        // Course Info
         let courseCode = app.course_code || 'N/A';
         let courseDesc = '';
-
-        // Optional: Map descriptions manually if Course object is null
         if (courseCode === 'BSIS') courseDesc = 'Bachelor of Science in Information Systems';
         if (courseCode === 'ACT') courseDesc = 'Associate in Computer Technology';
         if (courseCode === 'BSA') courseDesc = 'Bachelor of Science in Accountancy';
         if (courseCode === 'BAB') courseDesc = 'Bachelor of Arts in Broadcasting';
         if (courseCode === 'BSSW') courseDesc = 'Bachelor of Science in Social Work';
         if (courseCode === 'AB English') courseDesc = 'Bachelor of Arts in English Language';
-
-        document.getElementById('modalCourse').innerText = courseCode + (courseDesc ? ' - ' + courseDesc : '');
+        document.getElementById('modalCourse').innerText = courseCode +  (courseDesc ? ' - ' + courseDesc : '');
 
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         document.getElementById('modalStatus').innerText = app.status;
-
-        // Guardian Info (From Enrollment Record)
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
         document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
         document.getElementById('modalGuardian').innerText = app.guardian_name || 'N/A';
         document.getElementById('modalContact').innerText = app.guardian_contact || 'N/A';
 
-        // Update Form Actions
         const baseUrl = "{{ url('registrar/applications') }}";
         document.getElementById('approveForm').action = `${baseUrl}/${app.id}`;
         document.getElementById('rejectForm').action = `${baseUrl}/${app.id}`;
-
         document.getElementById('applicationModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -277,12 +265,9 @@
         document.getElementById('applicationModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
-
     window.onclick = function(event) {
         const modal = document.getElementById('applicationModal');
-        if (event.target == modal) {
-            closeModal();
-        }
+        if (event.target == modal) closeModal();
     }
     </script>
 </body>

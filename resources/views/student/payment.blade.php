@@ -34,25 +34,7 @@
         </div>
     </header>
     <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 h-fit">
-                <h2 class="text-xl font-bold text-slate-800 mb-6">Record a Payment</h2>
-                @if(session('success'))<div
-                    class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-                    {{ session('success') }}</div>@endif
-                <form action="{{ route('payment.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Amount</label><input
-                            type="number" step="0.01" name="amount" placeholder="e.g. 1500.00"
-                            class="w-full border-gray-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 p-3 border text-lg">
-                    </div>
-                    <div class="flex gap-3"><button type="submit"
-                            class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2.5 px-6 rounded-md shadow transition">Record
-                            Payment</button><button type="reset"
-                            class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2.5 px-6 rounded-md transition">Clear</button>
-                    </div>
-                </form>
-            </div>
+        
             <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-lg font-bold text-slate-800">Your Payment Records <span

@@ -22,10 +22,15 @@ class DashboardController extends Controller
             'enrolled'       => Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count(),
         ];
 
-        // 2. Get Notification Count for the Bell
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        // 1. Get the Count
+        $pendingCount = \App\Models\Enrollment::where('status', 'Pending')->count();
 
-        // 3. Return View
-        return view('admin.dashboard', compact('stats', 'pendingCount'));
+        // 2. Get the Actual Records (Latest 5 for the dropdown list)
+        $notifications = \App\Models\Enrollment::where('status', 'Pending')
+                        ->latest()
+                        ->take(5)
+                        ->get();
+
+        return view('admin.dashboard', compact('stats', 'pendingCount', 'notifications'));
     }
 }
