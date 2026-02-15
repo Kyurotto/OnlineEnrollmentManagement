@@ -5,17 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Enrollment;
-use App\Models\Payment;
-use App\Models\Course; // 1. IMPORT COURSE MODEL
+use App\Models\Payment; // Import Payment Model
+use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
 
 class EnrollmentController extends Controller
 {
     public function create()
     {
-        // Check if the user already has an enrollment record
-        if (Enrollment::where('user_id', Auth::id())->exists()) {
-            return redirect()->route('student.dashboard')->with('error', 'You are done filling up the enrollment form.');
+        $user = Auth::user();
+        
+        // Prevent duplicate applications if currently active
+        if (in_array($user->status, ['Pending', 'Enrolled', 'Approved'])) {
+            return redirect()->route('student.dashboard')->with('error', 'You have an active enrollment application.');
         }
 
         return view('student.enrollment');
@@ -23,81 +25,74 @@ class EnrollmentController extends Controller
 
     public function store(Request $request)
     {
-        // Prevent duplicate submission
-        if (Enrollment::where('user_id', Auth::id())->exists()) {
-            return redirect()->route('student.dashboard')->with('error', 'You are done filling up the enrollment form.');
+        $user = Auth::user();
+
+        if (in_array($user->status, ['Pending', 'Enrolled', 'Approved'])) {
+            return redirect()->route('student.dashboard');
         }
 
-        // 1. VALIDATION
         $request->validate([
             'course_code' => 'required',
             'year_level'  => 'required',
             'semester'    => 'required',
             'academic_year' => 'required',
-            'first_name'  => 'required|string',
-            'last_name'   => 'required|string',
-            'birth_date'  => 'required|date',
-            'age'         => 'required|integer',
+            'first_name'  => 'required',
+            'last_name'   => 'required',
+            'birth_date'  => 'required',
+            'age'         => 'required',
             'gender'      => 'required',
-            'email'       => 'required|email',
+            'email'       => 'required',
         ]);
 
-        // 2. FIND THE COURSE ID (Fix for Error 1364)
-        // We look up the course by its code (e.g., 'BSIS') to get its database ID (e.g., 1)
         $course = Course::where('course_code', $request->course_code)->first();
+        if (!$course) { return back()->withErrors(['course_code' => 'Invalid Course Code.']); }
 
-        // Optional: Handle invalid course code
-        if (!$course) {
-            return back()->withErrors(['course_code' => 'Invalid Course Code selected.']);
-        }
+        $fullAddress = $request->house_no . ' ' . $request->street . ', ' . $request->barangay . ', ' . $request->city . ', ' . $request->province . ' ' . $request->zip;
 
-        // 3. Combine Address Fields
-        $fullAddress = $request->house_no . ' ' . $request->street . ', ' .
-                       $request->barangay . ', ' . $request->city . ', ' .
-                       $request->province . ' ' . $request->zip;
+        // 1. Save Enrollment Application
+        $enrollment = Enrollment::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'status'      => 'Pending',
+                'course_id'   => $course->id, 
+                'course_code' => $request->course_code, 
+                'year_level'  => $request->year_level . ' | ' . $request->semester . ' | ' . $request->academic_year,
+                'first_name'  => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'last_name'   => $request->last_name,
+                'birth_date'  => $request->birth_date,
+                'age'         => $request->age,
+                'gender'      => $request->gender,
+                'religion'    => $request->religion,
+                'birthplace'  => $request->birthplace,
+                'email'       => $request->email,
+                'contact'     => $request->contact,
+                'address_full'=> $fullAddress,
+                'father_name'        => $request->father_name,
+                'mother_maiden_name' => $request->mother_maiden_name,
+                'guardian_name'      => $request->guardian_name,
+                'guardian_contact'   => $request->guardian_contact,
+            ]
+        );
 
-        // 4. Create the Record
-        $enrollment = Enrollment::create([
-            'user_id'     => Auth::id(),
-            'status'      => 'Pending',
+        // 2. AUTO-LIST DOWNPAYMENT (The Connection to Cashier)
+        // This code inserts the row into the 'payments' table.
+        Payment::firstOrCreate(
+            [
+                'user_id' => $user->id, 
+                'application_id' => $enrollment->id
+            ],
+            [
+                'amount'       => 1000.00,  // Standard Downpayment
+                'status'       => 'Pending', // Shows in Cashier's "Pending" list
+                'payment_date' => now(),
+            ]
+        );
 
-            // FIX: Save the ID found above
-            'course_id'   => $course->id, 
-            
-            // Keep this if your DB also has course_code, otherwise remove it
-            'course_code' => $request->course_code, 
-            
-            'year_level'  => $request->year_level . ' | ' . $request->semester . ' | ' . $request->academic_year,
+        // 3. Update User Status
+        $user->status = 'Pending';
+        $user->save();
 
-            // Student Info
-            'first_name'  => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name'   => $request->last_name,
-            'birth_date'  => $request->birth_date,
-            'age'         => $request->age,
-            'gender'      => $request->gender,
-            'religion'    => $request->religion,
-            'birthplace'  => $request->birthplace,
-            'email'       => $request->email,
-            'contact'     => $request->contact,
-            'address_full'=> $fullAddress,
-
-            // Parent/Guardian Info
-            'father_name'        => $request->father_name,
-            'mother_maiden_name' => $request->mother_maiden_name,
-            'guardian_name'      => $request->guardian_name,
-            'guardian_contact'   => $request->guardian_contact,
-        ]);
-
-        // 5. Create Payment Record
-        Payment::create([
-            'user_id'        => Auth::id(),
-            'application_id' => $enrollment->id,
-            'amount'         => 1000.00,
-            'status'         => 'Pending',
-            'payment_date'   => now(),
-        ]);
-
-        return redirect()->route('student.dashboard')->with('success', 'Application submitted! Waiting for Admin approval.');
+        return redirect()->route('student.dashboard')->with('success', 'Application submitted! Please pay the downpayment.');
     }
 }

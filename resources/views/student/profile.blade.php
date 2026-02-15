@@ -107,7 +107,7 @@
                         @foreach($payments as $payment)
                         <div class="flex justify-between items-center mb-2">
                             <div>
-                                <div class="text-sm font-bold text-slate-800">{{ number_format($payment['amount'], 2) }} USD</div>
+                                <div class="text-sm font-bold text-slate-800">{{ number_format($payment['amount'], 2) }} PHP</div>
                                 <div class="text-xs text-gray-400">{{ $payment['date'] }}</div>
                             </div>
                             <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">
@@ -118,7 +118,7 @@
                     @else
                         <div class="flex justify-between items-center">
                             <div>
-                                <div class="text-sm font-bold text-slate-800">1,000.00 USD</div>
+                                <div class="text-sm font-bold text-slate-800">1,000.00 PHP</div>
                                 <div class="text-xs text-gray-400">2026-01-28 13:30:10</div>
                             </div>
                             <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">

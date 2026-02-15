@@ -22,11 +22,10 @@ class CashierPaymentController extends Controller
             $query->where('payments.status', $request->status);
         }
 
-        // 3. FILTER BY PROGRAM (UPDATED LOGIC)
+        // 3. FILTER BY PROGRAM
         if ($request->has('filter_course') && $request->filter_course != 'ALL') {
             $filter = $request->filter_course;
 
-            // Check if filtering by specific Year (e.g., BSIS-1)
             if (str_contains($filter, '-')) {
                 [$courseCode, $yearDigit] = explode('-', $filter);
                 $suffix = match($yearDigit) { '1' => 'st', '2' => 'nd', '3' => 'rd', default => 'th' };
@@ -34,9 +33,7 @@ class CashierPaymentController extends Controller
                 
                 $query->where('enrollments.course_code', $courseCode)
                       ->where('enrollments.year_level', 'like', $yearString . '%');
-            } 
-            // Filtering by General Program (e.g., ACT, DIT, BTVTED)
-            else {
+            } else {
                 $query->where('enrollments.course_code', $filter);
             }
         }
@@ -54,12 +51,11 @@ class CashierPaymentController extends Controller
             });
         }
 
-        // 5. SORTING (Optional: Keeps list organized)
+        // 5. SORTING
         $query->latest('payments.created_at');
 
         $payments = $query->paginate(10);
 
-        // Notification Count
         $pendingPaymentsCount = Payment::where('status', 'Pending')->count();
 
         return view('cashier.payments.index', compact('payments', 'pendingPaymentsCount'));
@@ -69,14 +65,19 @@ class CashierPaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
 
+        // 1. UPDATE AMOUNT (Allows 100, 200, 300, 400, 500, etc.)
         if ($request->has('amount')) {
+            $request->validate([
+                'amount' => 'numeric|min:0' // Accepts any positive number
+            ]);
             $payment->amount = $request->amount;
         }
         
+        // 2. UPDATE STATUS
         if ($request->has('status')) {
             $payment->status = $request->status;
             
-            // Notify Registrar: Change Enrollment to 'Enrolled'
+            // Notify Registrar: Change Enrollment to 'Enrolled' when Paid/Completed
             if ($request->status === 'Completed' && $payment->application_id) {
                 $enrollment = Enrollment::find($payment->application_id);
                 if ($enrollment) {
@@ -89,7 +90,7 @@ class CashierPaymentController extends Controller
         }
 
         $payment->save();
-        return back()->with('success', 'Payment updated successfully.');
+        return back()->with('success', 'Payment record updated successfully.');
     }
 
     public function destroy($id)

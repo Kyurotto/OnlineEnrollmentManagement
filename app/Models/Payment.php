@@ -2,25 +2,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    // Fixes "Mass Assignment" error. Allows all columns to be filled.
-    protected $guarded = [];
+    use HasFactory;
 
-    protected $casts = [
-        'amount' => 'decimal:2',
-        'payment_date' => 'datetime',
+    // 1. ALLOW MASS ASSIGNMENT (Critical for saving)
+    protected $fillable = [
+        'user_id',
+        'application_id',
+        'amount',
+        'status',
+        'payment_date',
     ];
 
-    public function application()
-    {
-        return $this->belongsTo(Enrollment::class, 'application_id');
-    }
-
+    // 2. DEFINE RELATIONSHIPS (Critical for Cashier View)
+    
+    // Links payment to the Student
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Links payment to the Enrollment Application (to see Course/Year)
+    public function application()
+    {
+        return $this->belongsTo(Enrollment::class, 'application_id');
     }
 }

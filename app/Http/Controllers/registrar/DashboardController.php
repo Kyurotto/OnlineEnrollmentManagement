@@ -8,12 +8,11 @@ use App\Models\User;
 use App\Models\Enrollment;
 use App\Models\Course;
 
-// FIX: Class name must be DashboardController, NOT ApplicationController
 class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Gather Overview Statistics
+        // 1. Overview Stats
         $stats = [
             'students'       => User::where('role', 'student')->count(),
             'applications'   => Enrollment::where('status', 'Pending')->count(),
@@ -21,17 +20,18 @@ class DashboardController extends Controller
             'active_courses' => Course::count(),
         ];
 
-        // 2. Notification Count (for the Red Badge)
-        $newEnrolleesCount = Enrollment::where('status', 'Enrolled')->count();
+        // 2. NOTIFICATION LOGIC (UPDATED)
+        // Count Pending (New Applications) for the red badge
+        $newEnrolleesCount = Enrollment::where('status', 'Pending')->count();
 
-        // 3. Notification List (Fetch the actual records for the dropdown)
-        $notifications = Enrollment::where('status', 'Enrolled')
+        // Fetch Notifications: Include BOTH 'Pending' (New) and 'Enrolled' (Paid)
+        // We order by 'updated_at' so the most recent action (application or payment) appears top.
+        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
                             ->with('user')
-                            ->orderBy('updated_at', 'desc')
+                            ->orderBy('updated_at', 'desc') // Show latest changes first
                             ->take(5)
                             ->get();
 
-        // 4. Return View
         return view('registrar.dashboard', compact('stats', 'newEnrolleesCount', 'notifications'));
     }
 }

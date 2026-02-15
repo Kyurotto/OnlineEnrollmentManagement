@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
@@ -12,7 +13,11 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ApplicationController;
 
-// Import the specific Registrar Controllers
+
+// For Student
+use App\Http\Student\PaymentController as StudentPaymentController;
+use App\Http\Student\DashboardController as StudentDashboard;
+// For Registrar
 use App\Http\Controllers\Registrar\DashboardController as RegistrarDashboard;
 use App\Http\Controllers\Registrar\StudentController as RegistrarStudent;
 use App\Http\Controllers\Registrar\ApplicationController as RegistrarApplicationController;
@@ -123,19 +128,20 @@ Route::middleware(['auth', 'can:cashier'])->group(function () {
 | STUDENT ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/student/dashboard', function () { return view('student.dashboard'); })->name('student.dashboard');
-    Route::get('/student/enrollment/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
-    Route::post('/student/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
+Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
+    
+    // Enrollment Application
+    Route::get('/enrollment/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
+    Route::post('/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
 
-    Route::get('/student/payments', function () {
-        return view('student.payment', ['payments' => []]);
-    })->name('payment.index');
-    Route::post('/student/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payment.store');
+    // Payment History (The new controller we created)
+    Route::get('/payments', [StudentPaymentController::class, 'index'])->name('payment.index');
 
-    Route::get('/student/profile', function () {
-        return view('student.profile', ['payments' => []]);
-    })->name('student.profile');
+    // Profile
+    Route::get('/profile', function () {
+        return view('student.profile');
+    })->name('profile');
 });
 
 /*

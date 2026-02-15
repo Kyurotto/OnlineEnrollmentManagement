@@ -11,6 +11,15 @@
     body {
         font-family: 'Inter', sans-serif;
     }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+    }
     </style>
 </head>
 
@@ -32,7 +41,73 @@
                             class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
                     </div>
                 </div>
+
                 <div class="flex items-center gap-6">
+
+                    <div class="relative cursor-pointer group mr-2">
+                        <div class="relative">
+                            <svg class="w-7 h-7 text-gray-500 group-hover:text-slate-700 transition" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                            @if(isset($pendingCount) && $pendingCount > 0)
+                            <span
+                                class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
+                                {{ $pendingCount }}
+                            </span>
+                            @endif
+                        </div>
+
+                        <div
+                            class="absolute right-0 top-10 w-80 bg-white border border-gray-200 shadow-2xl rounded-xl hidden group-hover:block z-50 overflow-hidden">
+                            <div
+                                class="px-4 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">NOTIFICATIONS</h3>
+                            </div>
+
+                            <div class="max-h-64 overflow-y-auto custom-scrollbar bg-gray-50 p-2 space-y-2">
+                                @if(isset($notifications) && count($notifications) > 0)
+                                @foreach($notifications as $notif)
+                                <div data-application="{{ json_encode($notif) }}"
+                                    data-user="{{ json_encode($notif->user) }}"
+                                    onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
+                                    class="block bg-white p-3 rounded-lg border border-gray-100 hover:border-slate-200 hover:shadow-sm transition group cursor-pointer">
+                                    @if($notif->status === 'Enrolled')
+                                    <p
+                                        class="text-sm font-bold text-green-700 group-hover:text-green-800 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Student Paid
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        <span class="font-bold text-slate-700 uppercase">{{ $notif->first_name }}
+                                            {{ $notif->last_name }}</span>
+                                        is now already <span class="font-bold text-green-700">PAID</span>.
+                                    </p>
+                                    @else
+                                    <p class="text-sm font-bold text-slate-800 group-hover:text-slate-600">New
+                                        Application</p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        <span class="font-medium text-slate-700 uppercase">{{ $notif->first_name }}
+                                            {{ $notif->last_name }}</span>
+                                        applied for <span
+                                            class="uppercase font-bold text-slate-700">{{ $notif->course_code }}</span>.
+                                    </p>
+                                    @endif
+                                    <p class="text-[10px] text-gray-400 mt-2 text-right">
+                                        {{ $notif->updated_at->diffForHumans() }}</p>
+                                </div>
+                                @endforeach
+                                @else
+                                <div class="text-center py-6 text-gray-400 text-sm">No notifications</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button
@@ -53,7 +128,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-slate-800">Applications List</h3>
-                @if(isset($pendingCount))
+                @if(isset($pendingCount) && $pendingCount > 0)
                 <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold">{{ $pendingCount }}
                     Pending</span>
                 @endif
@@ -90,22 +165,26 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                 $badgeColor = match(ucfirst($application->status)) {
-                                'Approved' => 'bg-green-100 text-green-800',
-                                'Rejected' => 'bg-red-100 text-red-800',
-                                'Pending' => 'bg-yellow-100 text-yellow-800',
+                                'Approved' => 'bg-green-100 text-green-700 border border-green-200',
+                                'Enrolled' => 'bg-blue-100 text-blue-700 border border-blue-200',
+                                'Rejected' => 'bg-red-100 text-red-700 border border-red-200',
+                                'Pending' => 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+                                default => 'bg-gray-100 text-gray-700',
                                 };
+                                $displayText = ucfirst($application->status);
+                                if ($displayText === 'Enrolled') {
+                                $displayText = 'Paid';
+                                }
                                 @endphp
                                 <span
                                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $badgeColor }}">
-                                    {{ ucfirst($application->status) }}
+                                    {{ $displayText }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center gap-2">
-                                    <button type="button" {{-- 1. Store data safely in data-attributes --}}
-                                        data-application="{{ json_encode($application) }}"
+                                    <button type="button" data-application="{{ json_encode($application) }}"
                                         data-user="{{ json_encode($application->user) }}"
-                                        {{-- 2. Read the data in the onclick --}}
                                         onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
                                         class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition">
                                         View
@@ -204,12 +283,6 @@
             <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button onclick="closeModal()"
                     class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-medium transition">Close</button>
-                <form id="approveForm" method="POST">
-                    @csrf @method('PATCH')
-                </form>
-                <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">
-                    @csrf @method('PATCH')
-                </form>
             </div>
         </div>
     </div>
@@ -219,23 +292,18 @@
         try {
             document.getElementById('modalTitle').innerText = 'Application #' + app.id;
 
-            // FIXED: Using 'app' (enrollment) data instead of 'user' to avoid N/A
             const middle = app.middle_name ? ' ' + app.middle_name : '';
             const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
             document.getElementById('modalName').innerText = fullName;
 
-            // Enrollment fields
             document.getElementById('modalEmail').innerText = app.email || 'N/A';
             document.getElementById('modalDob').innerText = app.birth_date || 'N/A';
             document.getElementById('modalAge').innerText = app.age || 'N/A';
             document.getElementById('modalGender').innerText = app.gender || 'N/A';
             document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
 
-            // Course Info (Map Descriptions Manually)
             let courseCode = app.course_code || 'N/A';
             let courseDesc = '';
-
-            // Map known codes to descriptions
             if (courseCode === 'BSIS') courseDesc = 'Bachelor of Science in Information Systems';
             if (courseCode === 'ACT') courseDesc = 'Associate in Computer Technology';
             if (courseCode === 'BSA') courseDesc = 'Bachelor of Science in Accountancy';
@@ -244,20 +312,19 @@
             if (courseCode === 'AB English') courseDesc = 'Bachelor of Arts in English Language';
 
             document.getElementById('modalCourse').innerText = courseCode + (courseDesc ? ' - ' + courseDesc : '');
-
             document.getElementById('modalYear').innerText = app.year_level || 'N/A';
-            document.getElementById('modalStatus').innerText = app.status;
 
-            // Guardian Info
+            // Logic for Modal Status
+            let statusText = app.status;
+            if (statusText === 'Enrolled') {
+                statusText = 'Paid';
+            }
+            document.getElementById('modalStatus').innerText = statusText;
+
             document.getElementById('modalFather').innerText = app.father_name || 'N/A';
             document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
             document.getElementById('modalGuardian').innerText = app.guardian_name || 'N/A';
             document.getElementById('modalContact').innerText = app.guardian_contact || 'N/A';
-
-            // Update URLs
-            const baseUrl = "{{ url('admin/applications') }}";
-            document.getElementById('approveForm').action = `${baseUrl}/${app.id}`;
-            document.getElementById('rejectForm').action = `${baseUrl}/${app.id}`;
 
             document.getElementById('applicationModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';

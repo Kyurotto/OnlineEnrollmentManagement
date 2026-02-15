@@ -38,10 +38,10 @@
             <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-lg font-bold text-slate-800">Your Payment Records <span
-                            class="text-gray-400 font-normal">({{ count($payments) }})</span></h2>
+                            class="text-gray-400 font-normal">({{ count($payments ?? []) }})</span></h2>
                 </div>
                 <div class="space-y-4">
-                    @foreach($payments as $payment)
+                    @foreach($payments ?? [] as $payment)
                     <div class="border border-gray-100 rounded-lg p-4 bg-gray-50 flex justify-between items-start">
                         <div>
                             <p class="font-bold text-slate-800">{{ number_format($payment['amount'], 2) }} PHP <span
@@ -59,7 +59,6 @@
                     @endforeach
                 </div>
             </div>
-        </div>
     </main>
 </body>
 

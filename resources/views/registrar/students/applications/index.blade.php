@@ -105,13 +105,19 @@
                             <td class="px-6 py-4">
                                 @php
                                 $badgeColor = match(ucfirst($application->status)) {
-                                'Approved' => 'bg-green-100 text-green-700',
-                                'Rejected' => 'bg-red-100 text-red-700',
-                                'Pending' => 'bg-yellow-100 text-yellow-700',
+                                'Approved' => 'bg-green-100 text-green-700 border border-green-200',
+                                'Enrolled' => 'bg-blue-100 text-blue-700 border border-blue-200',
+                                'Rejected' => 'bg-red-100 text-red-700 border border-red-200',
+                                'Pending' => 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+                                default => 'bg-gray-100 text-gray-700',
                                 };
+                                $displayText = ucfirst($application->status);
+                                if ($displayText === 'Enrolled') {
+                                $displayText = 'Paid';
+                                }
                                 @endphp
                                 <span class="px-3 py-1 rounded-full text-xs font-bold {{ $badgeColor }}">
-                                    {{ ucfirst($application->status) }}
+                                    {{ $displayText }}
                                 </span>
                             </td>
                             <td class="px-6 py-4">
@@ -245,7 +251,7 @@
         if (courseCode === 'BAB') courseDesc = 'Bachelor of Arts in Broadcasting';
         if (courseCode === 'BSSW') courseDesc = 'Bachelor of Science in Social Work';
         if (courseCode === 'AB English') courseDesc = 'Bachelor of Arts in English Language';
-        document.getElementById('modalCourse').innerText = courseCode +  (courseDesc ? ' - ' + courseDesc : '');
+        document.getElementById('modalCourse').innerText = courseCode + (courseDesc ? ' - ' + courseDesc : '');
 
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         document.getElementById('modalStatus').innerText = app.status;
