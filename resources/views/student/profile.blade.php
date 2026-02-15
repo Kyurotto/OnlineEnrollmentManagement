@@ -58,6 +58,13 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">Last Name</label>
+            <input type="text" name="last_name"
+                   value="{{ old('last_name', Auth::user()->last_name) }}"
+                   class="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
+        </div>
+
+        <div>
             <label class="block text-xs font-semibold text-gray-500 mb-1">First Name</label>
             <input type="text" name="first_name"
                    value="{{ old('first_name', Auth::user()->first_name) }}"
@@ -70,20 +77,14 @@
                    value="{{ old('middle_name', Auth::user()->middle_name) }}"
                    class="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
         </div>
-
-        <div>
-            <label class="block text-xs font-semibold text-gray-500 mb-1">Last Name</label>
-            <input type="text" name="last_name"
-                   value="{{ old('last_name', Auth::user()->last_name) }}"
-                   class="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
-        </div>
     </div>
 
     <div class="mb-6">
         <label class="block text-xs font-semibold text-gray-500 mb-1">Email</label>
         <input type="email" name="email"
             value="{{ old('email', Auth::user()->email) }}"
-            class="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
+            readonly
+            class="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none bg-gray-100 text-gray-500 cursor-not-allowed text-sm">
     </div>
 
     <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 px-6 rounded shadow-sm transition text-sm">

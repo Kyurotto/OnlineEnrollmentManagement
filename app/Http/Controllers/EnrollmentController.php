@@ -11,8 +11,23 @@ use Illuminate\Support\Facades\Auth;
 
 class EnrollmentController extends Controller
 {
+    public function create()
+    {
+        // Check if the user already has an enrollment record
+        if (Enrollment::where('user_id', Auth::id())->exists()) {
+            return redirect()->route('student.dashboard')->with('error', 'You are done filling up the enrollment form.');
+        }
+
+        return view('student.enrollment');
+    }
+
     public function store(Request $request)
     {
+        // Prevent duplicate submission
+        if (Enrollment::where('user_id', Auth::id())->exists()) {
+            return redirect()->route('student.dashboard')->with('error', 'You are done filling up the enrollment form.');
+        }
+
         // 1. VALIDATION
         $request->validate([
             'course_code' => 'required',

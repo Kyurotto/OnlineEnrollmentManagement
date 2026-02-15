@@ -44,6 +44,11 @@
             {{ session('success') }}</div>
         @endif
 
+        @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+            {{ session('error') }}</div>
+        @endif
+
         <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
             <h2 class="text-2xl font-bold mb-2">Welcome to your student dashboard!</h2>
             <p class="text-gray-600">Use the actions below to manage enrollment, choose courses and pay fees.</p>

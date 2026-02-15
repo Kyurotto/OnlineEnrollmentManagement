@@ -125,7 +125,7 @@ Route::middleware(['auth', 'can:cashier'])->group(function () {
 */
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/student/dashboard', function () { return view('student.dashboard'); })->name('student.dashboard');
-    Route::get('/student/enrollment/create', function () { return view('student.enrollment'); })->name('enrollment.create');
+    Route::get('/student/enrollment/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
     Route::post('/student/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
 
     Route::get('/student/payments', function () {

@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
     body { font-family: 'Inter', sans-serif; }
-    /* Autosave Status Animation */
     @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
     .saved-toast { animation: fadeOut 2s ease-out 1s forwards; }
     </style>
@@ -29,9 +28,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="{{ route('student.dashboard') }}"
-                    class="text-sm text-gray-600 hover:text-gray-900 transition">← Back to Dashboard</a>
-
+                <a href="{{ route('student.dashboard') }}" class="text-sm text-gray-600 hover:text-gray-900 transition">← Back to Dashboard</a>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2 px-4 rounded shadow">Logout</button>
@@ -102,17 +99,17 @@
                 <h2 class="text-lg font-bold text-slate-800 mb-6">Student Information</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <input type="text" name="last_name" placeholder="Last Name"
+                        value="{{ old('last_name', Auth::user()->last_name ?? '') }}"
+                        class="autosave border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none " required>
+
                     <input type="text" name="first_name" placeholder="First Name"
                         value="{{ old('first_name', Auth::user()->first_name ?? '') }}"
-                        class="autosave border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none" required>
+                        class="autosave border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none " required>
 
                     <input type="text" name="middle_name" placeholder="Middle Name"
                         value="{{ old('middle_name', Auth::user()->middle_name ?? '') }}"
-                        class="autosave border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none">
-
-                    <input type="text" name="last_name" placeholder="Last Name"
-                        value="{{ old('last_name', Auth::user()->last_name ?? '') }}"
-                        class="autosave border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none" required>
+                        class="autosave border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none ">
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -143,7 +140,8 @@
                     <input type="email" name="email"
                         value="{{ old('email', Auth::user()->email ?? '') }}"
                         placeholder="Email Address"
-                        class="border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none" required>
+                        readonly
+                        class="border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none text-gray-500 cursor-not-allowed bg-transparent" required>
 
                     <input type="text" name="contact" placeholder="Contact Number"
                         class="autosave border-b border-gray-300 py-2 w-full focus:border-teal-500 outline-none" required>
@@ -222,12 +220,11 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const STORAGE_KEY = 'enrollment_draft_final'; // New key to force fresh start
+        const STORAGE_KEY = 'enrollment_draft_final';
         const inputs = document.querySelectorAll('.autosave');
         const statusLabel = document.getElementById('autosave-status');
         const form = document.getElementById('enrollment-form');
 
-        // 1. Load saved data on page load
         const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 
         inputs.forEach(input => {
@@ -237,32 +234,24 @@
                         input.checked = true;
                     }
                 } else {
-                    // FORCE OVERWRITE: If draft exists, use it.
-                    // This ensures your edits (e.g. "John Laurence") appear instead of the DB default ("John").
                     input.value = savedData[input.name];
                 }
             }
-
-            // 2. Add Listener for typing
             input.addEventListener('input', function() {
                 saveToLocalStorage(this);
             });
         });
 
-        // Function to save to browser storage
         function saveToLocalStorage(input) {
             const currentData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
             currentData[input.name] = input.value;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
-
-            // Show "Draft Saved" indicator
             statusLabel.classList.remove('hidden');
             statusLabel.classList.remove('saved-toast');
             void statusLabel.offsetWidth;
             statusLabel.classList.add('saved-toast');
         }
 
-        // 3. Clear storage on successful submit
         form.addEventListener('submit', function() {
             localStorage.removeItem(STORAGE_KEY);
         });

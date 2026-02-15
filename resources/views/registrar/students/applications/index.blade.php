@@ -93,7 +93,7 @@
                             <td class="px-6 py-4">
                                 @php
                                 $badgeColor = match(ucfirst($application->status)) {
-                                'Approved' => 'bg-green-100 text-green-700',
+                                'Approved' => 'bg-white border border-green-200 text-green-700',
                                 'Rejected' => 'bg-red-100 text-red-700',
                                 default => 'bg-yellow-100 text-yellow-700',
                                 };
