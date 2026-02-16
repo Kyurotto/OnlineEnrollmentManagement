@@ -12,12 +12,12 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ApplicationController;
-
-
-// For Student
+use App\Http\Controllers\Registrar\ProgramController;
+use App\Http\Controllers\Registrar\SemesterController;
+use App\Http\Controllers\Registrar\AcademicYearController;
+use App\Http\Controllers\Registrar\SectionController;
 use App\Http\Student\PaymentController as StudentPaymentController;
 use App\Http\Student\DashboardController as StudentDashboard;
-// For Registrar
 use App\Http\Controllers\Registrar\DashboardController as RegistrarDashboard;
 use App\Http\Controllers\Registrar\StudentController as RegistrarStudent;
 use App\Http\Controllers\Registrar\ApplicationController as RegistrarApplicationController;
@@ -72,6 +72,16 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::patch('/applications/{id}', [RegistrarApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{id}', [RegistrarApplicationController::class, 'destroy'])->name('applications.destroy');
 
+    Route::get('/programs', function() { return back()->with('status', 'Manage Programs feature coming soon.'); })->name('programs.index');
+    Route::get('/academic-years', function() { return back()->with('status', 'Manage Academic Years feature coming soon.'); })->name('academic_years.index');
+    Route::get('/semesters', function() { return back()->with('status', 'Manage Semesters feature coming soon.'); })->name('semesters.index');
+    Route::get('/sections', function() { return back()->with('status', 'Manage Sections feature coming soon.'); })->name('sections.index');
+
+    Route::resource('programs', ProgramController::class);
+    Route::get('/academic-years', function() { return back()->with('status', 'Coming soon.'); })->name('academic_years.index');
+    Route::resource('semesters', SemesterController::class);
+    Route::resource('academic-years', AcademicYearController::class);
+    Route::resource('sections', SectionController::class);
 });
 
 /*

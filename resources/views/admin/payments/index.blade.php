@@ -172,10 +172,6 @@
                                         <option value="Rejected" {{ $payment->status == 'Rejected' ? 'selected' : '' }}>Rejected</option>
                                     </select>
                                 </form>
-                                <form action="{{ route('admin.payments.destroy', $payment->id) }}" method="POST" onsubmit="return confirm('Delete this payment?');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded transition">Delete</button>
-                                </form>
                             </td>
                         </tr>
                         @empty
