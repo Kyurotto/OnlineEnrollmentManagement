@@ -68,6 +68,11 @@ class ApplicationController extends Controller
         $application->status = $request->status;
         $application->save();
 
+        // Sync User Status
+        if ($request->status === 'Approved') {
+            $application->user->update(['status' => 'Enrolled']);
+        }
+
         // Redirect back to the list with a success message
         return redirect()->route('registrar.applications.index')
             ->with('success', 'Application status updated to ' . $request->status . '.');

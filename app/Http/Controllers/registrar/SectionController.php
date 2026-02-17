@@ -5,23 +5,23 @@ namespace App\Http\Controllers\Registrar;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Section;
-use App\Models\Course;       // To get list of programs (BSIS, etc.)
-use App\Models\AcademicYear; // To get list of years
+use App\Models\Course;       
+use App\Models\AcademicYear; 
 
 class SectionController extends Controller
 {
     public function index()
     {
-        // Fetch sections with their associated course info, ordered by latest
+        // 1. Fetch Sections with Course info
         $sections = Section::with('course')
                            ->orderBy('id', 'desc')
                            ->paginate(10);
         
-        // Fetch data for the dropdown menus in the Modal
+        // 2. Fetch Dropdown Data
         $courses = Course::all(); 
-        $academicYears = AcademicYear::where('is_active', true)->get(); // Only show active years usually
-
-        // If no active years, fallback to all years so the dropdown isn't empty
+        
+        // Fetch active years, fallback to all if none active
+        $academicYears = AcademicYear::where('is_active', true)->get();
         if($academicYears->isEmpty()) {
             $academicYears = AcademicYear::all();
         }
@@ -34,13 +34,13 @@ class SectionController extends Controller
         $request->validate([
             'academic_year' => 'required|string',
             'course_id' => 'required|exists:courses,id',
-            'section_name' => 'required|string',
+            'section_name' => 'required|string|max:10', // Limit length to encourage "1A"
         ]);
 
         Section::create([
             'academic_year' => $request->academic_year,
             'course_id' => $request->course_id,
-            'section_name' => $request->section_name,
+            'section_name' => strtoupper($request->section_name), // Force Uppercase
         ]);
 
         return back()->with('success', 'Section created successfully.');
@@ -53,13 +53,13 @@ class SectionController extends Controller
         $request->validate([
             'academic_year' => 'required|string',
             'course_id' => 'required|exists:courses,id',
-            'section_name' => 'required|string',
+            'section_name' => 'required|string|max:10',
         ]);
 
         $section->update([
             'academic_year' => $request->academic_year,
             'course_id' => $request->course_id,
-            'section_name' => $request->section_name,
+            'section_name' => strtoupper($request->section_name),
         ]);
 
         return back()->with('success', 'Section updated successfully.');

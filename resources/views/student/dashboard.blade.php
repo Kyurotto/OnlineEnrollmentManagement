@@ -43,10 +43,18 @@
         @endif
 
         @php 
-            // Fetch the latest enrollment status directly from the database to ensure accuracy
-            $latestEnrollment = \App\Models\Enrollment::where('user_id', Auth::id())->latest()->first();
-            $currentStatus = $latestEnrollment ? $latestEnrollment->status : ($status ?? 'Not Enrolled');
-            $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved']);
+            // Use enrollment for CURRENT academic year only
+            $currentStatus = $currentYearEnrollment ? $currentYearEnrollment->status : 'Not Enrolled';
+            
+            // Check if student can enroll in the CURRENT ACTIVE semester
+            $currentAcademicYear = $activeYear;
+            if ($currentAcademicYear && $currentYearEnrollment) {
+                // If enrollment is for current academic year, student cannot enroll again
+                $isEnrollmentForCurrentYear = strpos($currentYearEnrollment->year_level, $currentAcademicYear->year_name) !== false;
+                $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved']) || !$isEnrollmentForCurrentYear;
+            } else {
+                $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved']);
+            }
         @endphp
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
@@ -78,10 +86,41 @@
                     </span>
                 @endif
             </div>
-        </div>  
+        </div>
+
+        @if($activeSemester && $activeYear && $canEnroll)
+        <div class="bg-blue-50 border-l-4 border-blue-600 rounded-r-lg p-6 shadow-sm">
+            <div class="flex items-start gap-4">
+                <div class="text-blue-600 flex-shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div class="flex-grow">
+                    <h3 class="text-blue-900 font-bold text-lg mb-1">Enrollment is Now Open!</h3>
+                    <p class="text-blue-800 text-sm mb-3">
+                        A new semester is active. You can now submit a new enrollment application.
+                    </p>
+                    <p class="text-xs text-blue-700 font-medium mb-3">
+                        <strong>Active Semester:</strong> {{ $activeSemester->name }} | <strong>Academic Year:</strong> {{ $activeYear->year_name }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        @elseif(!$activeSemester || !$activeYear)
+        <div class="bg-gray-100 border-l-4 border-gray-400 rounded-r-lg p-6">
+            <div class="flex items-start gap-4">
+                <div class="text-gray-600 flex-shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-gray-800 font-bold text-lg mb-1">Enrollment Currently Closed</h3>
+                    <p class="text-gray-600 text-sm">Please wait for the next enrollment period announcement from the registrar.</p>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @if($canEnroll)
+            @if($canEnroll && !$isEnrolledInActiveYear)
             <a href="{{ route('student.enrollment.create') }}" class="group block h-full">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col justify-between hover:shadow-md transition cursor-pointer relative overflow-hidden">
                     <div class="flex justify-between items-start">
@@ -178,12 +217,18 @@
                 </div>
             </div>
 
-            @if($canEnroll)
+            @if($canEnroll && !$isEnrolledInActiveYear)
             <a href="{{ route('student.enrollment.create') }}" class="inline-block bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-6 rounded-lg shadow transition">Start Application</a>
             @else
             <button disabled class="inline-block bg-gray-300 text-gray-500 font-bold py-3 px-6 rounded-lg shadow cursor-not-allowed">Application Submitted</button>
             @endif
         </div>
     </main>
+
+    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            © Enrollment Management System — Student Portal
+        </div>
+    </footer>
 </body>
 </html>

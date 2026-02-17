@@ -23,6 +23,14 @@ class ApplicationController extends Controller
                             ->take(5)
                             ->get();
 
+        // Attach payment info for notifications
+        foreach($notifications as $notif) {
+            if($notif->status === 'Enrolled') {
+                $payment = \App\Models\Payment::where('application_id', $notif->id)->first();
+                $notif->paid_amount = $payment ? $payment->amount : 0;
+            }
+        }
+
         return view('admin.applications.index', compact('applications', 'pendingCount', 'notifications'));
     }
 

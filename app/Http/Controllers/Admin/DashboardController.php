@@ -26,10 +26,18 @@ class DashboardController extends Controller
         $pendingCount = \App\Models\Enrollment::where('status', 'Pending')->count();
 
         // 2. Get the Actual Records (Latest 5 for the dropdown list)
-        $notifications = \App\Models\Enrollment::where('status', 'Pending')
-                        ->latest()
+        $notifications = \App\Models\Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+                        ->orderBy('updated_at', 'desc')
                         ->take(5)
                         ->get();
+
+        // Attach payment info for notifications
+        foreach($notifications as $notif) {
+            if($notif->status === 'Enrolled') {
+                $payment = \App\Models\Payment::where('application_id', $notif->id)->first();
+                $notif->paid_amount = $payment ? $payment->amount : 0;
+            }
+        }
 
         return view('admin.dashboard', compact('stats', 'pendingCount', 'notifications'));
     }

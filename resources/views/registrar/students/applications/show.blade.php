@@ -116,16 +116,25 @@
                                 
                                 <div class="ml-4 flex items-center gap-2">
                                     <span class="font-bold">Status:</span>
-                                    @php
-                                        $statusClass = match(ucfirst($application->status)) {
-                                            'Approved' => 'bg-white border-green-200 text-green-700',
-                                            'Rejected' => 'bg-white border-red-200 text-red-700',
-                                            default => 'bg-white border-gray-200 text-gray-700',
-                                        };
-                                    @endphp
-                                    <span class="px-2 py-0.5 border rounded text-xs font-bold shadow-sm {{ $statusClass }}">
-                                        {{ ucfirst($application->status) }}
-                                    </span>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                @php
+                                $badgeColor = match(ucfirst($application->status)) {
+                                'Approved' => 'bg-green-100 text-green-700 border border-green-200',
+                                'Enrolled' => 'bg-blue-100 text-blue-700 border border-blue-200',
+                                'Rejected' => 'bg-red-100 text-red-700 border border-red-200',
+                                'Pending' => 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+                                default => 'bg-gray-100 text-gray-700',
+                                };
+                                $displayText = ucfirst($application->status);
+                                if ($displayText === 'Enrolled') {
+                                $displayText = 'Paid';
+                                }
+                                @endphp
+                                <span
+                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $badgeColor }}">
+                                    {{ $displayText }}
+                                </span>
+                            </td>
                                 </div>
                             </div>
                         </div>

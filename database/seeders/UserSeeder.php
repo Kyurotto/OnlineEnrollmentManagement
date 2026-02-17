@@ -51,5 +51,21 @@ class UserSeeder extends Seeder
                 'status' => 'Active',
             ]);
         }
+
+        // 4. Test Student
+        if (!User::where('email', 'student@example.com')->exists()) {
+            User::forceCreate([
+                'name' => 'student',
+                'username' => 'student',
+                'email' => 'student@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'student',
+                'first_name' => 'John',
+                'last_name' => 'Doe',
+                'middle_name' => 'Test',
+                'status' => 'Active',
+                'email_verified_at' => now(),
+            ]);
+        }
     }
 }

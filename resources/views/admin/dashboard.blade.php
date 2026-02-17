@@ -61,6 +61,16 @@
                                 @forelse($notifications as $notif)
                                 <a href="{{ route('admin.applications.index') }}"
                                     class="block bg-white p-3 rounded-lg border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition group">
+                                    @if($notif->status === 'Enrolled')
+                                    <p class="text-sm font-bold text-green-700 group-hover:text-green-800 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Student Paid ₱{{ number_format($notif->paid_amount ?? 0, 2) }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        <span class="font-bold text-slate-700 uppercase">{{ $notif->first_name }} {{ $notif->last_name }}</span>
+                                        is now already <span class="font-bold text-green-700">PAID</span>.
+                                    </p>
+                                    @else
                                     <p class="text-sm font-bold text-slate-800 group-hover:text-indigo-600">
                                         New Application Received
                                     </p>
@@ -69,8 +79,9 @@
                                             {{ $notif->last_name }}</span>
                                         applied for <span class="uppercase">{{ $notif->course_code }}</span>.
                                     </p>
+                                    @endif
                                     <p class="text-[10px] text-gray-400 mt-2 text-right">
-                                        {{ $notif->created_at->diffForHumans() }}</p>
+                                        {{ $notif->updated_at->diffForHumans() }}</p>
                                 </a>
                                 @empty
                                 <div class="text-center py-6 text-gray-400 text-sm">No new notifications</div>

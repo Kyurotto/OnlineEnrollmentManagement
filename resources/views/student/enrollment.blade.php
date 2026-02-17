@@ -81,15 +81,22 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
                         <select name="semester" class="autosave w-full border-gray-300 rounded-md shadow-sm border py-2 px-3">
                             <option value="">Select Semester</option>
-                            <option value="1st Semester">1st Semester</option>
-                            <option value="2nd Semester">2nd Semester</option>
+                            @foreach($semesters as $semester)
+                                <option value="{{ $semester->name }}" @if($activeSemester && $semester->id === $activeSemester->id) selected @endif>
+                                    {{ $semester->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Active Year</label>
                         <select name="academic_year" class="autosave w-full border-gray-300 rounded-md shadow-sm border py-2 px-3">
-                            <option value="2025-2026">2025-2026</option>
-                            <option value="2026-2027">2026-2027</option>
+                            <option value="">Select Year</option>
+                            @foreach($academicYears as $year)
+                                <option value="{{ $year->year_name }}" @if($activeYear && $year->id === $activeYear->id) selected @endif>
+                                    {{ $year->year_name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -211,9 +218,23 @@
             </div>
 
             <div class="flex justify-end">
-                <button type="submit" id="submit-btn" class="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                @if ($errors->any())
+                <div class="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm" role="alert">
+                    <p class="font-bold">Application could not be submitted:</p>
+                    <ul class="mt-1 list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="flex justify-end pt-4 border-t border-gray-100">
+                <button type="submit" id="submit-btn" 
+                    class="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-lg shadow-md transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                     Submit Enrollment
                 </button>
+            </div>
             </div>
         </form>
     </main>

@@ -110,7 +110,12 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Academic Year</label>
-                        <input type="text" name="academic_year" id="academic_year" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="2025 - 2026" required>
+                        <select name="academic_year" id="academic_year" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            <option value="" disabled selected>Select Year</option>
+                            @foreach($academicYears as $year)
+                                <option value="{{ $year->year_name }}">{{ $year->year_name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Semester Name</label>
@@ -168,7 +173,7 @@
             
             document.getElementById('academic_year').value = data.academic_year;
             document.getElementById('name').value = data.name;
-            // Format date for input type="date" (YYYY-MM-DD)
+            // Format date for input type="date"
             document.getElementById('start_date').value = data.start_date.split('T')[0].split(' ')[0];
             document.getElementById('end_date').value = data.end_date.split('T')[0].split(' ')[0];
             document.getElementById('is_active').checked = data.is_active == 1;

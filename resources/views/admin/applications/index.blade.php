@@ -81,7 +81,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                        Student Paid
+                                        Student Paid ₱{{ number_format($notif->paid_amount ?? 0, 2) }}
                                     </p>
                                     <p class="text-xs text-gray-500 mt-1">
                                         <span class="font-bold text-slate-700 uppercase">{{ $notif->first_name }}
@@ -280,7 +280,19 @@
                 </div>
             </div>
 
-            <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <div class="mt-6 flex justify-between items-center pt-4 border-t border-gray-100">
+                <div id="actionButtons" class="flex gap-2 hidden">
+                    <form id="approveForm" method="POST">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="Approved">
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-bold text-xs uppercase transition">Approve</button>
+                    </form>
+                    <form id="rejectForm" method="POST">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="Rejected">
+                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-bold text-xs uppercase transition">Reject</button>
+                    </form>
+                </div>
                 <button onclick="closeModal()"
                     class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-medium transition">Close</button>
             </div>
@@ -320,6 +332,18 @@
                 statusText = 'Paid';
             }
             document.getElementById('modalStatus').innerText = statusText;
+
+            // Update Action Forms
+            const updateUrl = "{{ route('admin.applications.update', ':id') }}".replace(':id', app.id);
+            document.getElementById('approveForm').action = updateUrl;
+            document.getElementById('rejectForm').action = updateUrl;
+
+            // Show/Hide Action Buttons based on status
+            if (app.status === 'Pending') {
+                document.getElementById('actionButtons').classList.remove('hidden');
+            } else {
+                document.getElementById('actionButtons').classList.add('hidden');
+            }
 
             document.getElementById('modalFather').innerText = app.father_name || 'N/A';
             document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';

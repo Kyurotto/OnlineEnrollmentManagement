@@ -15,16 +15,17 @@
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3">
                     <div class="bg-purple-900 text-white font-bold p-2 rounded-lg text-sm">RD</div>
-                        <div>
-                            <h1 class="text-lg font-bold leading-none text-slate-900">Registrar Panel</h1>
-                            <span class="text-xs text-gray-500">Manage Sections</span>
-                        </div>
-                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16 ml-10">
-                        <a href="{{ route('registrar.dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
+                    <div>
+                        <h1 class="text-lg font-bold leading-none text-slate-900">Registrar Panel</h1>
+                        <span class="text-xs text-gray-500">Manage Sections</span>
                     </div>
+                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16 ml-10">
+                    <a href="{{ route('registrar.dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
+                </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
@@ -48,7 +49,7 @@
                         <tr class="border-b border-gray-100 text-xs text-gray-400 uppercase tracking-wider">
                             <th class="py-3 px-4 font-medium">ID</th>
                             <th class="py-3 px-4 font-medium">Academic Year</th>
-                            <th class="py-3 px-4 font-medium">Program-Section</th>
+                            <th class="py-3 px-4 font-medium">Section</th>
                             <th class="py-3 px-4 font-medium text-right">Actions</th>
                         </tr>
                     </thead>
@@ -57,7 +58,11 @@
                         <tr class="border-b border-gray-50 hover:bg-gray-50 transition group">
                             <td class="py-4 px-4 text-gray-500">{{ $section->id }}</td>
                             <td class="py-4 px-4 font-medium text-slate-700">{{ $section->academic_year }}</td>
-                            <td class="py-4 px-4 text-slate-700 font-bold">{{ $section->section_name }}</td>
+                            
+                            <td class="py-4 px-4 text-slate-700 font-bold">
+                                {{ $section->section_name }}
+                            </td>
+
                             <td class="py-4 px-4 text-right">
                                 <button 
                                     data-section="{{ json_encode($section) }}"
@@ -66,7 +71,7 @@
                                     Edit
                                 </button>
                                 
-                                <form action="{{ route('registrar.sections.destroy', $section->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this Section?');" class="inline">
+                                <form action="{{ route('registrar.sections.destroy', $section->id) }}" method="POST" onsubmit="return confirm('Delete this Section?');" class="inline">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-medium transition">Delete</button>
                                 </form>
@@ -110,14 +115,17 @@
                     <select name="course_id" id="course_id" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
                         <option value="" disabled selected>Select Program</option>
                         @foreach($courses as $course)
-                            <option value="{{ $course->id }}">{{ $course->course_code }}</option>
+                            <option value="{{ $course->id }}">
+                                {{ preg_replace('/[0-9]+/', '', $course->course_code) }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Section Name</label>
-                    <input type="text" name="section_name" id="section_name" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none uppercase" placeholder="e.g. BSIS-1A" required>
+                    <input type="text" name="section_name" id="section_name" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none uppercase" placeholder="e.g. BSIS 1A" required>
+                    <p class="text-[10px] text-gray-400 mt-1">Enter the full section name (e.g., BSIS 1A).</p>
                 </div>
 
                 <div class="flex justify-end gap-2">

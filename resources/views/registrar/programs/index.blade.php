@@ -7,11 +7,7 @@
     <title>Manage Programs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-    body {
-        font-family: 'Inter', sans-serif;
-    }
-    </style>
+    <style> body { font-family: 'Inter', sans-serif; } </style>
 </head>
 
 <body class="bg-gray-50 text-slate-800">
@@ -41,6 +37,12 @@
         </div>
         @endif
 
+        @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+            {{ session('error') }}
+        </div>
+        @endif
+
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="mb-6">
                 <h2 class="text-xl font-bold text-slate-800 mb-4">Programs List</h2>
@@ -54,17 +56,19 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-gray-100 text-xs text-gray-400 uppercase tracking-wider">
-                            <th class="py-3 font-medium">ID</th>
-                            <th class="py-3 font-medium">Program Name</th>
-                            <th class="py-3 font-medium text-right">Actions</th>
+                            <th class="py-3 px-4 font-medium">ID</th>
+                            <th class="py-3 px-4 font-medium">Program Name</th>
+                            <th class="py-3 px-4 font-medium">Description</th>
+                            <th class="py-3 px-4 font-medium text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm">
                         @forelse($programs as $program)
                         <tr class="border-b border-gray-50 hover:bg-gray-50 transition group">
-                            <td class="py-4 text-gray-500">{{ $program->id }}</td>
-                            <td class="py-4 font-bold text-slate-700">{{ $program->course_code }}</td>
-                            <td class="py-4 text-right flex justify-end gap-3">
+                            <td class="py-4 px-4 text-gray-500">{{ $program->id }}</td>
+                            <td class="py-4 px-4 font-bold text-slate-700">{{ $program->course_name }}</td>
+                            <td class="py-4 px-4 text-slate-600">{{ $program->description }}</td>
+                            <td class="py-4 px-4 text-right flex justify-end gap-3">
                                 <button data-program="{{ json_encode($program) }}"
                                     onclick="editModal(JSON.parse(this.dataset.program))"
                                     class="text-blue-600 hover:text-blue-800 text-xs font-medium transition">
@@ -82,7 +86,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="3" class="py-6 text-center text-gray-400 text-sm">No programs found.</td>
+                            <td colspan="4" class="py-6 text-center text-gray-400 text-sm">No programs found.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -103,18 +107,19 @@
             <form id="programForm" action="{{ route('registrar.programs.store') }}" method="POST">
                 @csrf
                 <div id="methodField"></div>
+
                 <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Program Code / Name</label>
-                    <input type="text" name="course_code" id="course_code"
-                        class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none uppercase"
-                        placeholder="e.g. BSIS" required>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Program Name</label>
+                    <input type="text" name="course_name" id="course_name"
+                           class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                           placeholder="e.g. Bachelor of Science in Information Systems" required>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Description (Optional)</label>
                     <input type="text" name="description" id="description"
                         class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="e.g. Bachelor of Science in Information Systems">
+                        placeholder="Brief description of the program">
                 </div>
 
                 <div class="flex justify-end gap-2">
@@ -130,25 +135,22 @@
 
     <script>
     function openModal() {
-        // Reset for "Add" mode
         document.getElementById('programModal').classList.remove('hidden');
         document.getElementById('modalTitle').innerText = 'Add New Program';
         document.getElementById('programForm').action = "{{ route('registrar.programs.store') }}";
         document.getElementById('methodField').innerHTML = ''; // Clear PUT method
-        document.getElementById('course_code').value = '';
+        
+        document.getElementById('course_name').value = '';
         document.getElementById('description').value = '';
     }
 
     function editModal(program) {
-        // Setup for "Edit" mode
         document.getElementById('programModal').classList.remove('hidden');
         document.getElementById('modalTitle').innerText = 'Edit Program';
-        // Dynamically set action URL: /registrar/programs/{id}
         document.getElementById('programForm').action = "/registrar/programs/" + program.id;
-        // Inject PUT method for Laravel update
         document.getElementById('methodField').innerHTML = '<input type="hidden" name="_method" value="PUT">';
 
-        document.getElementById('course_code').value = program.course_code;
+        document.getElementById('course_name').value = program.course_name;
         document.getElementById('description').value = program.description || '';
     }
 
@@ -156,12 +158,10 @@
         document.getElementById('programModal').classList.add('hidden');
     }
 
-    // Close on background click
     window.onclick = function(event) {
         const modal = document.getElementById('programModal');
         if (event.target == modal) closeModal();
     }
     </script>
 </body>
-
 </html>

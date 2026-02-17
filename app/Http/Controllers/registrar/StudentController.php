@@ -20,6 +20,7 @@ class StudentController extends Controller
                             $query->where('role', 'student')->orWhereNull('role');
                         })
                         ->whereNotIn('role', ['admin', 'registrar', 'cashier'])
+                        ->where('status', '!=', 'Pending')
                         ->latest()
                         ->paginate(10);
 

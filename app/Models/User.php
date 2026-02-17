@@ -7,6 +7,16 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Sanctum\HasApiTokens; // Added based on your use trait
 
+/**
+ * @property string $status
+ * @property string $role
+ * @property string $username
+ * @property string $first_name
+ * @property string $middle_name
+ * @property string $last_name
+ * @property string $name
+ * @property string $email
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -19,7 +29,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        // 'role',
+        'role',
         'status'
     ];
 
@@ -46,5 +56,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'status' => 'string',
+        'role' => 'string',
     ];
 }

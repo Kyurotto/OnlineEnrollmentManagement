@@ -4,26 +4,32 @@ namespace App\Http\Controllers\Registrar;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Course; // Assuming 'Course' is your model for Programs
+use App\Models\Course; 
+use App\Models\Section;
 
 class ProgramController extends Controller
 {
     public function index()
     {
-        // Fetch programs with pagination (10 per page as shown in your screenshot)
-        $programs = Course::orderBy('id', 'asc')->paginate(10);
+        // Fetch programs, ordered by latest
+        $programs = Course::orderBy('id', 'desc')->paginate(10);
         return view('registrar.programs.index', compact('programs'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'course_code' => 'required|unique:courses,course_code',
+            'course_name' => 'required|string|unique:courses,course_name',
             'description' => 'nullable|string',
         ]);
 
+        // Auto-generate a simple code if your DB requires it, otherwise just save name
+        // Here we use the first few letters of the name as a fallback code if needed
+        $generatedCode = strtoupper(substr($request->course_name, 0, 4)) . rand(10,99);
+
         Course::create([
-            'course_code' => strtoupper($request->course_code),
+            'course_name' => $request->course_name,
+            'course_code' => $generatedCode, // Auto-filled behind the scenes
             'description' => $request->description ?? '',
         ]);
 
@@ -34,12 +40,13 @@ class ProgramController extends Controller
     {
         $program = Course::findOrFail($id);
         
-        $request->validate([
-            'course_code' => 'required|unique:courses,course_code,'.$id,
+         $request->validate([
+            'course_name' => 'required|string|unique:courses,course_name,' . $id,
+            'description' => 'nullable|string',
         ]);
 
         $program->update([
-            'course_code' => strtoupper($request->course_code),
+            'course_name' => $request->course_name,
             'description' => $request->description,
         ]);
 
@@ -48,7 +55,16 @@ class ProgramController extends Controller
 
     public function destroy($id)
     {
-        Course::findOrFail($id)->delete();
-        return back()->with('success', 'Program deleted successfully.');
+        try {
+            $course = Course::findOrFail($id);
+            
+            // Delete related sections first to prevent constraint errors
+            Section::where('course_id', $id)->delete();
+
+            $course->delete();
+            return back()->with('success', 'Program deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Cannot delete program. It contains active enrollments or records.');
+        }
     }
 }
