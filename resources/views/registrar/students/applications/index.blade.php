@@ -8,46 +8,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-    body {
-        font-family: 'Inter', sans-serif;
-    }
-
-    /* Scrollbar for notification dropdown */
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background-color: #cbd5e1;
-        border-radius: 4px;
-    }
+    body { font-family: 'Inter', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #3F3F46; border-radius: 4px; }
     </style>
 </head>
 
-<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+<body class="bg-[#121212] text-[#A1A1AA] flex flex-col min-h-screen">
 
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20">
+    <nav class="bg-[#1C1C1E] border-b border-[#27272A] sticky top-0 z-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-8">
                     <div class="flex items-center gap-3">
-                        <div class="bg-purple-900 text-white font-bold p-2 rounded-lg text-sm">RD</div>
+                        <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">RD</div>
                         <div>
-                            <h1 class="text-lg font-bold leading-none text-slate-900">Registrar Panel</h1>
-                            <span class="text-xs text-gray-500">Manage Applications</span>
+                            <h1 class="text-lg font-bold leading-none text-[#FFFFFF]">Registrar Panel</h1>
+                            <span class="text-xs text-[#A1A1AA]">Manage Applications</span>
                         </div>
                     </div>
-                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
+                    <div class="flex space-x-6 text-sm font-medium text-[#A1A1AA] h-16">
                         <a href="{{ route('registrar.dashboard') }}"
-                            class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
+                            class="flex items-center hover:text-[#10B981] transition h-full">Dashboard</a>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-6">
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button
-                            class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
+                        <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
                     </form>
                 </div>
             </div>
@@ -56,23 +45,23 @@
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
+        <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6">
             {{ session('success') }}
         </div>
         @endif
 
-        <div class="bg-white rounded border border-gray-200 shadow-sm">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-slate-800">Applications List</h3>
-                <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold">{{ $pendingCount }}
-                    Pending</span>
+        <div class="bg-[#1C1C1E] rounded-xl border border-[#27272A] shadow-md overflow-hidden">
+            <div class="px-6 py-4 border-b border-[#27272A] flex justify-between items-center bg-[#1C1C1E]">
+                <h3 class="text-lg font-bold text-[#FFFFFF]">Applications List</h3>
+                <span class="bg-[#121212] text-[#10B981] border border-[#10B981]/20 px-3 py-1 rounded-full text-xs font-bold">
+                    {{ $pendingCount }} Pending
+                </span>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr
-                            class="border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50">
+                        <tr class="border-b border-[#27272A] text-xs font-bold text-[#A1A1AA] uppercase tracking-wider bg-[#121212]">
                             <th class="px-6 py-4">ID</th>
                             <th class="px-6 py-4">Student Name</th>
                             <th class="px-6 py-4">Email</th>
@@ -82,41 +71,39 @@
                             <th class="px-6 py-4">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
+                    <tbody class="text-sm text-[#A1A1AA] divide-y divide-[#27272A]">
                         @forelse($applications as $application)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 text-gray-500">#{{ $application->id }}</td>
-                            <td class="px-6 py-4 font-bold text-slate-900 uppercase whitespace-nowrap">
+                        <tr class="hover:bg-[#27272A]/30 transition">
+                            <td class="px-6 py-4 text-[#52525B]">#{{ $application->id }}</td>
+                            <td class="px-6 py-4 font-bold text-[#FFFFFF] uppercase whitespace-nowrap">
                                 {{ $application->last_name }}, {{ $application->first_name }}
                                 {{ $application->middle_name }}
                             </td>
-                            <td class="px-6 py-4 text-gray-600 whitespace-nowrap">
+                            <td class="px-6 py-4 text-[#A1A1AA] whitespace-nowrap lowercase">
                                 {{ $application->email }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="font-bold text-slate-900">{{ $application->course_code }}</span>
-                                <span class="text-gray-400 text-xs ml-1 font-normal">
+                                <span class="font-bold text-[#10B981]">{{ $application->course_code }}</span>
+                                <span class="text-[#52525B] text-xs ml-1 font-normal">
                                     ({{ $application->year_level }})
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">
+                            <td class="px-6 py-4 text-[#A1A1AA] whitespace-nowrap">
                                 {{ $application->created_at->format('M d, Y') }}
                             </td>
                             <td class="px-6 py-4">
                                 @php
                                 $badgeColor = match(ucfirst($application->status)) {
-                                'Approved' => 'bg-green-100 text-green-700 border border-green-200',
-                                'Enrolled' => 'bg-blue-100 text-blue-700 border border-blue-200',
-                                'Rejected' => 'bg-red-100 text-red-700 border border-red-200',
-                                'Pending' => 'bg-yellow-100 text-yellow-700 border border-yellow-200',
-                                default => 'bg-gray-100 text-gray-700',
+                                    'Approved' => 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20',
+                                    'Enrolled' => 'bg-sky-500/10 text-sky-400 border border-sky-500/20',
+                                    'Rejected' => 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
+                                    'Pending' => 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
+                                    default => 'bg-[#27272A] text-[#A1A1AA]',
                                 };
                                 $displayText = ucfirst($application->status);
-                                if ($displayText === 'Enrolled') {
-                                $displayText = 'Paid';
-                                }
+                                if ($displayText === 'Enrolled') { $displayText = 'Paid'; }
                                 @endphp
-                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $badgeColor }}">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $badgeColor }}">
                                     {{ $displayText }}
                                 </span>
                             </td>
@@ -125,7 +112,7 @@
                                     <button type="button" data-application="{{ json_encode($application) }}"
                                         data-user="{{ json_encode($application->user) }}"
                                         onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition">
+                                        class="bg-[#10B981] hover:bg-[#059669] text-white px-3 py-1 rounded text-xs font-bold transition shadow-sm">
                                         View
                                     </button>
 
@@ -133,7 +120,7 @@
                                         method="POST" onsubmit="return confirm('Delete this application?');">
                                         @csrf @method('DELETE')
                                         <button type="submit"
-                                            class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-sm">
+                                            class="bg-[#27272A] hover:bg-[#3F3F46] text-[#FFFFFF] px-3 py-1 rounded text-xs font-bold transition border border-[#3F3F46]">
                                             Delete
                                         </button>
                                     </form>
@@ -142,90 +129,91 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-10 text-center text-gray-400">No applications found.</td>
+                            <td colspan="7" class="px-6 py-10 text-center text-[#52525B]">No applications found.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="p-4 border-t border-gray-200">
+            <div class="p-4 border-t border-[#27272A] bg-[#121212]/30">
                 @if(method_exists($applications, 'links'))
-                {{ $applications->links() }}
+                <div class="custom-pagination">
+                    {{ $applications->links() }}
+                </div>
                 @endif
             </div>
         </div>
     </main>
 
     <div id="applicationModal"
-        class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 overflow-y-auto h-full w-full flex items-center justify-center backdrop-blur-sm">
-        <div
-            class="relative mx-auto p-0 border w-full max-w-2xl shadow-2xl rounded-lg bg-white transform transition-all">
-            <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-                <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Application Details</h3>
+        class="fixed inset-0 bg-black/70 hidden z-50 overflow-y-auto h-full w-full flex items-center justify-center backdrop-blur-sm">
+        <div class="relative mx-auto p-0 border border-[#27272A] w-full max-w-2xl shadow-2xl rounded-xl bg-[#1C1C1E] transform transition-all">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-[#27272A] bg-[#121212] rounded-t-xl">
+                <h3 class="text-xl font-bold text-[#FFFFFF]" id="modalTitle">Application Details</h3>
                 <button onclick="closeModal()"
-                    class="text-gray-400 hover:text-red-500 transition focus:outline-none text-2xl">&times;</button>
+                    class="text-[#A1A1AA] hover:text-[#10B981] transition focus:outline-none text-2xl">&times;</button>
             </div>
-            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 pb-2">
+                    <h4 class="text-xs font-bold text-[#A1A1AA] uppercase tracking-wider border-b border-[#27272A] pb-2">
                         Student Information</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="block text-gray-500 text-xs">Full Name</span><span
-                                class="font-bold text-slate-900 uppercase" id="modalName"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Email</span><span
-                                class="font-medium text-slate-900" id="modalEmail"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Date of Birth</span><span
-                                class="font-medium text-slate-900" id="modalDob"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Age</span><span
-                                class="font-medium text-slate-900" id="modalAge"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Gender</span><span
-                                class="font-medium text-slate-900 capitalize" id="modalGender"></span></div>
-                        <div class="col-span-2"><span class="block text-gray-500 text-xs">Address</span><span
-                                class="font-medium text-slate-900" id="modalAddress"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Full Name</span><span
+                                class="font-bold text-[#FFFFFF] uppercase" id="modalName"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Email</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalEmail"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Date of Birth</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalDob"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Age</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalAge"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Gender</span><span
+                                class="font-medium text-[#FFFFFF] capitalize" id="modalGender"></span></div>
+                        <div class="col-span-2"><span class="block text-[#52525B] text-xs">Address</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalAddress"></span></div>
                     </div>
                 </div>
 
-                <div class="bg-blue-50 border border-blue-100 rounded-lg p-5">
-                    <h4 class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-3">Program Details</h4>
+                <div class="bg-[#121212] border border-[#27272A] rounded-lg p-5">
+                    <h4 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Program Details</h4>
                     <div class="space-y-2 text-sm">
-                        <div><span class="font-bold text-blue-900">Program:</span><span
-                                class="text-blue-800 uppercase ml-1" id="modalCourse"></span></div>
+                        <div><span class="font-bold text-[#A1A1AA]">Program:</span><span
+                                class="text-[#10B981] uppercase ml-1" id="modalCourse"></span></div>
                         <div class="flex items-center gap-3">
-                            <div><span class="font-bold text-blue-900">Year Level:</span><span class="text-blue-800"
+                            <div><span class="font-bold text-[#A1A1AA]">Year Level:</span><span class="text-[#FFFFFF] ml-1"
                                     id="modalYear"></span></div>
-                            <span class="text-blue-300">|</span>
-                            <div><span class="font-bold text-blue-900">Status:</span><span id="modalStatus"
-                                    class="ml-1 px-2 py-0.5 rounded text-xs font-bold bg-white border border-blue-200 text-blue-800"></span>
+                            <span class="text-[#27272A]">|</span>
+                            <div><span class="font-bold text-[#A1A1AA]">Status:</span><span id="modalStatus"
+                                    class="ml-1 px-2 py-0.5 rounded text-xs font-bold bg-[#1C1C1E] border border-[#10B981]/30 text-[#10B981]"></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 pb-2">
+                    <h4 class="text-xs font-bold text-[#A1A1AA] uppercase tracking-wider border-b border-[#27272A] pb-2">
                         Guardian Information</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="block text-gray-500 text-xs">Father's Name</span><span
-                                class="font-medium text-slate-900" id="modalFather"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Mother's Name</span><span
-                                class="font-medium text-slate-900" id="modalMother"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Guardian</span><span
-                                class="font-medium text-slate-900" id="modalGuardian"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Contact #</span><span
-                                class="font-medium text-slate-900" id="modalContact"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Father's Name</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalFather"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Mother's Name</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalMother"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Guardian</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalGuardian"></span></div>
+                        <div><span class="block text-[#52525B] text-xs">Contact #</span><span
+                                class="font-medium text-[#FFFFFF]" id="modalContact"></span></div>
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg flex justify-end gap-3">
+            <div class="px-6 py-4 bg-[#121212] border-t border-[#27272A] rounded-b-xl flex justify-end gap-3">
                 <button onclick="closeModal()"
-                    class="px-4 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Close</button>
+                    class="px-4 py-2 bg-[#27272A] border border-[#3F3F46] rounded text-sm font-medium text-[#FFFFFF] hover:bg-[#3F3F46] transition">Close</button>
                 <form id="approveForm" method="POST">@csrf @method('PATCH')<input type="hidden" name="status"
                         value="Approved"><button type="submit"
-                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-bold shadow-sm transition">Approve</button>
+                        class="px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded text-sm font-bold shadow-sm transition">Approve</button>
                 </form>
                 <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">@csrf
                     @method('PATCH')<input type="hidden" name="status" value="Rejected"><button type="submit"
-                        class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded text-sm font-bold shadow-sm transition">Reject</button>
+                        class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded text-sm font-bold shadow-sm transition">Reject</button>
                 </form>
             </div>
         </div>
@@ -277,5 +265,4 @@
     }
     </script>
 </body>
-
 </html>

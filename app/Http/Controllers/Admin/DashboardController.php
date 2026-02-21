@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Enrollment;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -16,29 +17,64 @@ class DashboardController extends Controller
         // 1. Gather Overview Statistics
         $stats = [
             'active_courses' => Course::count(),
-            'students'       => User::where('role', 'student')->count(),
+            
+            // FIXED: Only count users as 'students' if their application is 'Enrolled' or 'Approved'.
+            // This perfectly syncs the number (7) with your Manage Students table.
+            'students'       => User::where('role', 'student')
+                                    ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
+                                    ->count(),
+                                    
             'total_payments' => Payment::count(),
             'applications'   => Enrollment::where('status', 'Pending')->count(),
             'enrolled'       => Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count(),
         ];
 
-        // 1. Get the Count
-        $pendingCount = \App\Models\Enrollment::where('status', 'Pending')->count();
+        // 2. Get the Count for the Notification Badge (Only Pending)
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
 
-        // 2. Get the Actual Records (Latest 5 for the dropdown list)
-        $notifications = \App\Models\Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+        // 3. Get the Actual Records (Latest 5 for the dropdown list)
+        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+                        ->with('user')
+                        ->whereHas('user')
                         ->orderBy('updated_at', 'desc')
                         ->take(5)
                         ->get();
 
-        // Attach payment info for notifications
         foreach($notifications as $notif) {
             if($notif->status === 'Enrolled') {
-                $payment = \App\Models\Payment::where('application_id', $notif->id)->first();
+                $payment = Payment::where('application_id', $notif->id)->first();
                 $notif->paid_amount = $payment ? $payment->amount : 0;
             }
         }
 
-        return view('admin.dashboard', compact('stats', 'pendingCount', 'notifications'));
+        // 4. WEEKLY CALENDAR SUBMISSIONS (Monday - Friday)
+        $startOfWeek = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $endOfWeek = Carbon::now()->endOfWeek(Carbon::FRIDAY);
+
+        $weeklyApplications = Enrollment::with(['user', 'course'])
+            ->whereHas('user')
+            ->whereBetween('created_at', [$startOfWeek->startOfDay(), $endOfWeek->endOfDay()])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Group applications by date (Y-m-d)
+        $appsByDate = $weeklyApplications->groupBy(function($date) {
+            return Carbon::parse($date->created_at)->format('Y-m-d');
+        });
+
+        // Generate the 5 days of the week for the view
+        $weekDates = [];
+        for ($i = 0; $i < 5; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
+            $weekDates[] = [
+                'date_string' => $date->format('Y-m-d'),
+                'day_name'    => $date->format('l'),
+                'day_num'     => $date->format('d'),
+                'is_today'    => $date->isToday(),
+            ];
+        }
+        $weekRange = $startOfWeek->format('M d') . ' — ' . $endOfWeek->format('M d');
+
+        return view('admin.dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange'));
     }
 }

@@ -42,7 +42,7 @@ use App\Http\Controllers\Student\PaymentController as StudentPayment;
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
 
 /*
