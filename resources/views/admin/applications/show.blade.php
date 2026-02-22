@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application #{{ $application->id }} - Registrar</title>
+    <title>Application #{{ $application->id }} - Details</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -21,9 +21,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-4">
-                    <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">RD</div>
+                    <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">APP</div>
                     <div>
-                        <h1 class="text-lg font-bold leading-none text-[#FFFFFF]">Registrar Panel</h1>
+                        <h1 class="text-lg font-bold leading-none text-[#FFFFFF]">Application Viewer</h1>
                         <span class="text-xs text-[#A1A1AA]">Manage Applications</span>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
 
             <div class="px-6 py-4 border-b border-[#27272A] flex justify-between items-center bg-[#1C1C1E] shrink-0">
                 <h2 class="text-xl font-bold text-[#FFFFFF]">Application #{{ $application->id }}</h2>
-                <a href="{{ route('registrar.applications.index') }}" class="text-[#A1A1AA] hover:text-[#FFFFFF] transition">
+                <a href="{{ url()->previous() }}" class="text-[#A1A1AA] hover:text-[#FFFFFF] transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </a>
             </div>
@@ -85,38 +85,40 @@
                             
                             @foreach ($docs as $path => $label)
                                 <div>
-                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                        @if (!empty($application->$path))
+                                    @if (!empty($application->$path))
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                             <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(16, 185, 129, 0.2); border: 2px solid #10B981; border-radius: 50%; flex-shrink: 0;">
                                                 <span style="color: #10B981; font-weight: 900; font-size: 14px; line-height: 1;">✓</span>
                                             </div>
                                             <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #FFFFFF;">{{ $label }}</span>
-                                        @else
-                                            <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(244, 63, 94, 0.2); border: 2px solid #f43f5e; border-radius: 50%; flex-shrink: 0;">
-                                                <span style="color: #f43f5e; font-weight: 900; font-size: 14px; line-height: 1;">✗</span>
-                                            </div>
-                                            <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #f43f5e;">{{ $label }}</span>
-                                        @endif
-                                    </div>
+                                        </div>
 
-                                    @if (!empty($application->$path))
                                         @php
                                             $fileUrl = asset('storage/' . $application->$path);
                                             $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $application->$path);
                                         @endphp
-                                        <a href="{{ $fileUrl }}" target="_blank" style="display: block; position: relative;">
+                                        
+                                        <a href="{{ $fileUrl }}" target="_blank" style="display: block;">
                                             @if($isImage)
-                                                <img src="{{ $fileUrl }}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #27272A; background-color: #121212;">
+                                                <img src="{{ $fileUrl }}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #27272A; background-color: #121212;">
                                             @else
-                                                <div style="width: 100%; height: 120px; border-radius: 8px; border: 1px solid #27272A; background-color: #1C1C1E; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #10B981;">
-                                                    <span style="font-size: 30px;">📄</span>
+                                                <div style="width: 100%; height: 100px; border-radius: 8px; border: 1px solid #27272A; background-color: #1C1C1E; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #10B981; transition: 0.2s;">
+                                                    <span style="font-size: 24px;">📄</span>
                                                     <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px;">PDF</span>
                                                 </div>
                                             @endif
                                         </a>
+
                                     @else
-                                        <div style="width: 100%; height: 120px; border-radius: 8px; background-color: #121212; border: 1px dashed rgba(244, 63, 94, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.7;">
-                                            <span style="font-size: 24px; color: rgba(244, 63, 94, 0.6);">⚠️</span>
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(244, 63, 94, 0.2); border: 2px solid #f43f5e; border-radius: 50%; flex-shrink: 0;">
+                                                <span style="color: #f43f5e; font-weight: 900; font-size: 14px; line-height: 1;">✗</span>
+                                            </div>
+                                            <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #f43f5e;">{{ $label }}</span>
+                                        </div>
+
+                                        <div style="width: 100%; height: 100px; border-radius: 8px; background-color: #121212; border: 1px dashed rgba(244, 63, 94, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.7;">
+                                            <span style="font-size: 20px; color: rgba(244, 63, 94, 0.6);">⚠️</span>
                                             <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: rgba(244, 63, 94, 0.6); margin-top: 4px;">Missing</span>
                                         </div>
                                     @endif
@@ -129,7 +131,8 @@
             </div>
 
             <div class="bg-[#121212] px-6 py-5 border-t border-[#27272A] flex justify-end gap-3 shrink-0">
-                <a href="{{ route('registrar.applications.index') }}" class="px-6 py-2 bg-[#27272A] hover:bg-[#3F3F46] text-[#FFFFFF] rounded-lg text-sm font-semibold transition">Close</a>
+                <a href="{{ url()->previous() }}" class="px-6 py-2 bg-[#27272A] hover:bg-[#3F3F46] text-[#FFFFFF] rounded-lg text-sm font-semibold transition">Close</a>
+                
                 @if ($application->status === 'Pending')
                     <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
                         @csrf @method('PATCH')

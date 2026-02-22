@@ -1,7 +1,6 @@
 <x-guest-layout>
     <style>
-        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
-
+        /* Removed the Google Fonts import here to speed up mobile loading */
         @media (min-width: 768px) {
             .right-panel-active .sign-in-container {
                 transform: translateX(100%);
@@ -40,7 +39,7 @@
         }
     </style>
 
-    <div class="fixed inset-0 w-screen h-screen bg-[#121212] flex justify-center items-center flex-col z-[9999] font-['Montserrat',sans-serif] overflow-y-auto py-10">
+    <div class="fixed inset-0 w-screen h-screen bg-[#121212] flex justify-center items-center flex-col z-[9999] font-sans overflow-y-auto py-10">
 
         <div id="container" class="bg-[#1C1C1E] md:rounded-[20px] shadow-[0_14px_28px_rgba(0,0,0,0.5),0_10px_10px_rgba(0,0,0,0.5)] relative overflow-hidden w-full md:w-[768px] max-w-full min-h-screen md:min-h-[480px] flex flex-col md:block">
 
@@ -56,15 +55,15 @@
 
                     <input id="name" type="text" name="name" :value="old('name')" required autofocus placeholder="Name"
                         class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
-                    <x-input-error :messages="$errors->get('name')" class="mt-2 text-red-500" />
+                    <x-input-error :messages="$errors->get('name')" class="mt-2 text-rose-500" />
 
                     <input id="email_reg" type="email" name="email" :value="old('email')" required placeholder="Email"
                         class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-500" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2 text-rose-500" />
 
                     <input id="password_reg" type="password" name="password" required placeholder="Password"
                         class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-500" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-rose-500" />
 
                     <input id="password_confirmation" type="password" name="password_confirmation" required placeholder="Confirm Password"
                         class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
@@ -82,11 +81,11 @@
 
                     <input id="email" type="text" name="email" :value="old('email')" required autofocus placeholder="Email or Username"
                         class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-500" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2 text-rose-500" />
 
                     <input id="password" type="password" name="password" required placeholder="Password"
                         class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-500" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-rose-500" />
 
                     @if (Route::has('password.request'))
                         <a href="{{ route('password.request') }}" class="text-[#A1A1AA] text-sm no-underline my-4 hover:text-[#10B981] transition-colors font-semibold">
@@ -153,7 +152,6 @@
             mobileSignUpForm.classList.remove('hidden');
             mobileSignUpForm.classList.add('block');
 
-            // Updated JS toggle colors for mobile to match Emerald
             mobileSignUpBtn.classList.add('bg-[#10B981]');
             mobileSignInBtn.classList.remove('bg-[#10B981]');
         });
@@ -165,7 +163,6 @@
             mobileSignInForm.classList.remove('hidden');
             mobileSignInForm.classList.add('block');
 
-            // Updated JS toggle colors for mobile to match Emerald
             mobileSignInBtn.classList.add('bg-[#10B981]');
             mobileSignUpBtn.classList.remove('bg-[#10B981]');
         });

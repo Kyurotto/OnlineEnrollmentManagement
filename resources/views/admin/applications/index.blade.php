@@ -30,7 +30,9 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-8">
                     <div class="flex items-center gap-3">
-                        <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">AD</div>
+                        <div
+                            class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">
+                            AD</div>
                         <div>
                             <h1 class="text-lg font-bold leading-none text-[#FFFFFF]">Admin Panel</h1>
                             <span class="text-xs text-[#52525B]">Manage Applications</span>
@@ -45,8 +47,10 @@
                 <div class="flex items-center gap-6">
 
                     <div class="relative cursor-pointer group mr-2">
-                        <div class="absolute right-0 top-10 w-80 bg-[#1C1C1E] border border-[#27272A] shadow-2xl rounded-xl hidden group-hover:block z-50 overflow-hidden">
-                            <div class="px-4 py-3 bg-[#121212] border-b border-[#27272A] flex justify-between items-center">
+                        <div
+                            class="absolute right-0 top-10 w-80 bg-[#1C1C1E] border border-[#27272A] shadow-2xl rounded-xl hidden group-hover:block z-50 overflow-hidden">
+                            <div
+                                class="px-4 py-3 bg-[#121212] border-b border-[#27272A] flex justify-between items-center">
                                 <h3 class="text-sm font-bold text-[#FFFFFF] uppercase tracking-wide">NOTIFICATIONS</h3>
                             </div>
 
@@ -58,24 +62,35 @@
                                             onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
                                             class="block bg-[#1C1C1E] p-3 rounded-lg border border-[#27272A] hover:border-[#10B981] hover:shadow-sm transition group cursor-pointer">
                                             @if ($notif->status === 'Enrolled')
-                                                <p class="text-sm font-bold text-[#10B981] group-hover:text-[#059669] flex items-center gap-1">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                <p
+                                                    class="text-sm font-bold text-[#10B981] group-hover:text-[#059669] flex items-center gap-1">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                     </svg>
                                                     Student Paid ₱{{ number_format($notif->paid_amount ?? 0, 2) }}
                                                 </p>
                                                 <p class="text-xs text-[#A1A1AA] mt-1">
-                                                    <span class="font-bold text-[#FFFFFF] uppercase">{{ $notif->first_name }} {{ $notif->last_name }}</span>
+                                                    <span
+                                                        class="font-bold text-[#FFFFFF] uppercase">{{ $notif->first_name }}
+                                                        {{ $notif->last_name }}</span>
                                                     is now already <span class="font-bold text-[#10B981]">PAID</span>.
                                                 </p>
                                             @else
-                                                <p class="text-sm font-bold text-[#FFFFFF] group-hover:text-[#10B981]">New Application</p>
+                                                <p class="text-sm font-bold text-[#FFFFFF] group-hover:text-[#10B981]">
+                                                    New Application</p>
                                                 <p class="text-xs text-[#A1A1AA] mt-1">
-                                                    <span class="font-medium text-[#FFFFFF] uppercase">{{ $notif->first_name }} {{ $notif->last_name }}</span>
-                                                    applied for <span class="uppercase font-bold text-[#10B981]">{{ $notif->course_code }}</span>.
+                                                    <span
+                                                        class="font-medium text-[#FFFFFF] uppercase">{{ $notif->first_name }}
+                                                        {{ $notif->last_name }}</span>
+                                                    applied for <span
+                                                        class="uppercase font-bold text-[#10B981]">{{ $notif->course_code }}</span>.
                                                 </p>
                                             @endif
-                                            <p class="text-[10px] text-[#52525B] mt-2 text-right">{{ $notif->updated_at->diffForHumans() }}</p>
+                                            <p class="text-[10px] text-[#52525B] mt-2 text-right">
+                                                {{ $notif->updated_at->diffForHumans() }}</p>
                                         </div>
                                     @endforeach
                                 @else
@@ -86,7 +101,8 @@
                     </div>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button class="bg-red-500 hover:bg-[#3F3F46] text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
+                        <button
+                            class="bg-red-500 hover:bg-[#3F3F46] text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
                     </form>
                 </div>
             </div>
@@ -95,7 +111,8 @@
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         @if (session('success'))
-            <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6 shadow-sm">
+            <div
+                class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6 shadow-sm">
                 {{ session('success') }}
             </div>
         @endif
@@ -104,7 +121,9 @@
             <div class="px-6 py-4 border-b border-[#27272A] flex justify-between items-center bg-[#1C1C1E]">
                 <h3 class="text-lg font-bold text-[#FFFFFF]">Applications List</h3>
                 @if (isset($pendingCount) && $pendingCount > 0)
-                    <span class="bg-[#121212] text-[#10B981] border border-[#10B981]/20 px-3 py-1 rounded-full text-xs font-bold">{{ $pendingCount }} Pending</span>
+                    <span
+                        class="bg-[#121212] text-[#10B981] border border-[#10B981]/20 px-3 py-1 rounded-full text-xs font-bold">{{ $pendingCount }}
+                        Pending</span>
                 @endif
             </div>
 
@@ -115,7 +134,7 @@
                             <th class="px-6 py-4">ID</th>
                             <th class="px-6 py-4">Student Name</th>
                             <th class="px-6 py-4">Email</th>
-                            <th class="px-6 py-4">Course Applied</th>
+                            <th class="px-6 py-4">Program</th>
                             <th class="px-6 py-4">Date</th>
                             <th class="px-6 py-4">Status</th>
                             <th class="px-6 py-4">Actions</th>
@@ -124,11 +143,13 @@
                     <tbody class="divide-y divide-[#27272A]">
                         @forelse($applications as $application)
                             <tr class="bg-[#1C1C1E] hover:bg-[#27272A]/30 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#52525B]">#{{ $application->id }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#52525B]">#{{ $application->id }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap font-bold text-[#FFFFFF] uppercase">
                                     {{ $application->first_name }} {{ $application->last_name }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#A1A1AA] lowercase">{{ $application->email }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#A1A1AA] lowercase">
+                                    {{ $application->email }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-[#A1A1AA]">
                                     <span class="font-bold text-[#10B981]">{{ $application->course_code }}</span>
                                     <span class="text-[#52525B] text-xs ml-1">({{ $application->year_level }})</span>
@@ -146,7 +167,9 @@
                                             default => 'bg-[#27272A] text-[#A1A1AA]',
                                         };
                                         $displayText = ucfirst($application->status);
-                                        if ($displayText === 'Enrolled') { $displayText = 'Paid'; }
+                                        if ($displayText === 'Enrolled') {
+                                            $displayText = 'Paid';
+                                        }
                                     @endphp
                                     <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $badgeColor }}">
                                         {{ $displayText }}
@@ -161,19 +184,14 @@
                                             View
                                         </button>
 
-                                        <form action="{{ route('admin.applications.destroy', $application->id) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Are you sure you want to delete this application?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit"
-                                                class="bg-[#27272A] hover:bg-[#3F3F46] text-[#FFFFFF] px-3 py-1 rounded text-xs font-bold transition border border-[#3F3F46]">Delete</button>
-                                        </form>
+
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-10 text-center text-[#52525B]">No applications found.</td>
+                                <td colspan="7" class="px-6 py-10 text-center text-[#52525B]">No applications found.
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -188,64 +206,98 @@
     </main>
 
     <div id="applicationModal"
-        class="fixed inset-0 bg-black/70 hidden overflow-y-auto h-full w-full z-50 backdrop-blur-sm p-4">
-        <div class="relative top-10 mx-auto p-8 border border-[#27272A] w-full max-w-2xl shadow-2xl rounded-xl bg-[#1C1C1E] transform transition-all">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-[#FFFFFF]" id="modalTitle">Application Details</h3>
+        class="fixed inset-0 bg-black/80 hidden z-50 overflow-y-auto h-full w-full flex items-center justify-center p-4">
+        <div
+            class="bg-[#1C1C1E] w-full max-w-4xl rounded-xl shadow-2xl border border-[#27272A] overflow-hidden flex flex-col max-h-[90vh]">
+
+            <div class="px-6 py-4 border-b border-[#27272A] flex justify-between items-center bg-[#1C1C1E] shrink-0">
+                <h2 class="text-xl font-bold text-[#FFFFFF]" id="modalTitle">Application Details</h2>
                 <button onclick="closeModal()"
-                    class="text-[#A1A1AA] hover:text-[#FFFFFF] text-2xl font-bold transition focus:outline-none">&times;</button>
+                    class="text-[#A1A1AA] hover:text-[#FFFFFF] transition focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
             </div>
 
-            <div class="space-y-6 max-h-[65vh] overflow-y-auto custom-scrollbar pr-2">
-                <div class="bg-[#121212] p-5 rounded-lg border border-[#27272A]">
-                    <h4 class="text-xs font-bold text-[#10B981] mb-4 uppercase tracking-widest border-b border-[#27272A] pb-2">Student Information</h4>
-                    <div class="grid grid-cols-2 gap-6 text-sm">
-                        <div><span class="block text-[#52525B] text-xs mb-1">Full Name</span> <span id="modalName" class="text-[#FFFFFF] font-bold uppercase"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Email</span> <span id="modalEmail" class="text-[#FFFFFF] font-medium"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Date of Birth</span> <span id="modalDob" class="text-[#FFFFFF] font-medium"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Age</span> <span id="modalAge" class="text-[#FFFFFF] font-medium"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Gender</span><span id="modalGender" class="text-[#FFFFFF] font-medium capitalize"></span></div>
-                        <div class="col-span-2"><span class="block text-[#52525B] text-xs mb-1">Address</span> <span id="modalAddress" class="text-[#FFFFFF] font-medium"></span></div>
-                    </div>
-                </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar bg-[#1C1C1E]">
+                <div class="space-y-8">
 
-                <div class="bg-[#10B981]/5 p-5 rounded-lg border border-[#10B981]/20">
-                    <h4 class="text-xs font-bold text-[#10B981] mb-4 uppercase tracking-widest border-b border-[#10B981]/20 pb-2">Program Details</h4>
-                    <div class="grid grid-cols-2 gap-6 text-sm">
-                        <div class="col-span-2">
-                            <span class="block text-[#52525B] text-xs mb-1">Program</span>
-                            <span id="modalCourse" class="text-[#10B981] uppercase font-bold"></span>
+                    <div>
+                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Student Information
+                        </h3>
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-[#27272A] pt-4">
+                            <div><span class="block text-[#52525B] text-xs mb-1">Full Name:</span><span
+                                    class="font-bold text-[#FFFFFF] uppercase" id="modalName"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Email:</span><span
+                                    class="font-medium text-[#FFFFFF]" id="modalEmail"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Date of Birth:</span><span
+                                    class="font-medium text-[#FFFFFF]" id="modalDob"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Age:</span><span
+                                    class="font-medium text-[#FFFFFF]" id="modalAge"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Gender:</span><span
+                                    class="font-medium text-[#FFFFFF] capitalize" id="modalGender"></span></div>
+                            <div class="col-span-1 md:col-span-2"><span
+                                    class="block text-[#52525B] text-xs mb-1">Address:</span><span
+                                    class="font-medium text-[#FFFFFF]" id="modalAddress"></span></div>
                         </div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Year Level</span> <span id="modalYear" class="text-[#FFFFFF] font-medium"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Status</span> <span id="modalStatus" class="font-bold px-3 py-1 rounded-full text-xs bg-[#121212] border border-[#10B981]/30 text-[#10B981] inline-block mt-1"></span></div>
                     </div>
-                </div>
 
-                <div class="bg-[#121212] p-5 rounded-lg border border-[#27272A]">
-                    <h4 class="text-xs font-bold text-[#10B981] mb-4 uppercase tracking-widest border-b border-[#27272A] pb-2">Guardian Information</h4>
-                    <div class="grid grid-cols-2 gap-6 text-sm">
-                        <div><span class="block text-[#52525B] text-xs mb-1">Father's Name</span> <span id="modalFather" class="text-[#FFFFFF] font-medium"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Mother's Name</span> <span id="modalMother" class="text-[#FFFFFF] font-medium"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Guardian</span> <span id="modalGuardian" class="text-[#FFFFFF] font-medium"></span></div>
-                        <div><span class="block text-[#52525B] text-xs mb-1">Contact #</span> <span id="modalContact" class="text-[#FFFFFF] font-medium"></span></div>
+                    <div class="bg-[#121212] border border-[#27272A] rounded-lg p-5">
+                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4">Program Details</h3>
+                        <div class="space-y-4 text-sm">
+                            <p><span class="font-bold text-[#A1A1AA] mr-2">Program:</span><span
+                                    class="text-[#10B981] font-bold uppercase" id="modalCourse"></span></p>
+                            <div class="flex gap-4">
+                                <span><span class="font-bold text-[#A1A1AA]">Year:</span> <span
+                                        id="modalYear"></span></span>
+                                <span><span class="font-bold text-[#A1A1AA]">Status:</span> <span
+                                        class="text-[#10B981] font-bold uppercase" id="modalStatus"></span></span>
+                            </div>
+                        </div>
                     </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Guardian Information
+                        </h3>
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-[#27272A] pt-4">
+                            <div><span class="block text-[#52525B] text-xs mb-1">Father's Name:</span><span
+                                    class="font-bold text-[#FFFFFF] uppercase" id="modalFather"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Mother's Name:</span><span
+                                    class="font-bold text-[#FFFFFF] uppercase" id="modalMother"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Guardian:</span><span
+                                    class="font-bold text-[#FFFFFF] uppercase" id="modalGuardian"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Contact #:</span><span
+                                    class="font-medium text-[#FFFFFF]" id="modalContact"></span></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3
+                            class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3 text-center md:text-left">
+                            Submitted Documents</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-[#27272A] pt-4"
+                            id="modalDocuments">
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <div class="mt-8 flex justify-between items-center pt-5 border-t border-[#27272A]">
+            <div class="bg-[#121212] px-6 py-5 border-t border-[#27272A] flex justify-between items-center shrink-0">
                 <div id="actionButtons" class="flex gap-3 hidden">
                     <form id="approveForm" method="POST">
                         @csrf @method('PATCH')
-                        <input type="hidden" name="status" value="Approved">
-                        <button type="submit" class="px-6 py-2 bg-[#10B981] text-white rounded-lg hover:bg-[#059669] font-bold text-xs uppercase transition shadow-md shadow-[#10B981]/10">Approve</button>
                     </form>
                     <form id="rejectForm" method="POST">
                         @csrf @method('PATCH')
-                        <input type="hidden" name="status" value="Rejected">
-                        <button type="submit" class="px-6 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-bold text-xs uppercase transition shadow-md shadow-rose-600/10">Reject</button>
                     </form>
                 </div>
-                <button onclick="closeModal()" class="px-6 py-2 bg-[#27272A] text-[#A1A1AA] rounded-lg hover:bg-[#3F3F46] hover:text-white font-bold text-xs uppercase transition border border-[#3F3F46]">Close</button>
+                <button onclick="closeModal()"
+                    class="px-6 py-2 bg-[#27272A] hover:bg-[#3F3F46] text-[#FFFFFF] rounded-lg text-sm font-semibold transition ml-auto">Close</button>
             </div>
         </div>
     </div>
@@ -297,6 +349,89 @@
                 document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
                 document.getElementById('modalGuardian').innerText = app.guardian_name || 'N/A';
                 document.getElementById('modalContact').innerText = app.guardian_contact || 'N/A';
+
+                // ==========================================
+                // DOCUMENT INJECTION LOGIC (WITH SIGNS)
+                // ==========================================
+                const docsContainer = document.getElementById('modalDocuments');
+                docsContainer.innerHTML = '';
+
+                const documents = [{
+                        key: 'form_138_path',
+                        label: 'Form 138'
+                    },
+                    {
+                        key: 'good_moral_path',
+                        label: 'Good Moral'
+                    },
+                    {
+                        key: 'psa_path',
+                        label: 'PSA Birth Cert'
+                    },
+                    {
+                        key: 'id_picture_path',
+                        label: 'ID Picture'
+                    }
+                ];
+
+                const storageBase = @json(asset('storage')) + '/';
+
+                documents.forEach(doc => {
+                    const hasFile = app[doc.key] ? true : false;
+                    let headerHtml = '';
+                    let boxHtml = '';
+
+                    if (hasFile) {
+                        const fileUrl = storageBase + app[doc.key];
+                        const isImage = app[doc.key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
+
+                        // EMERALD CHECK SIGN
+                        headerHtml = `
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(16, 185, 129, 0.2); border: 2px solid #10B981; border-radius: 50%; flex-shrink: 0;">
+                                    <span style="color: #10B981; font-weight: 900; font-size: 14px; line-height: 1;">✓</span>
+                                </div>
+                                <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #FFFFFF;">${doc.label}</span>
+                            </div>
+                        `;
+
+                        if (isImage) {
+                            boxHtml = `
+                                <a href="${fileUrl}" target="_blank" style="display: block;">
+                                    <img src="${fileUrl}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #27272A; background-color: #121212;">
+                                </a>
+                            `;
+                        } else {
+                            boxHtml = `
+                                <a href="${fileUrl}" target="_blank" style="display: block; text-decoration: none;">
+                                    <div style="width: 100%; height: 120px; border-radius: 8px; border: 1px solid #27272A; background-color: #1C1C1E; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #10B981; transition: 0.2s;">
+                                        <span style="font-size: 30px;">📄</span>
+                                        <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px;">PDF</span>
+                                    </div>
+                                </a>
+                            `;
+                        }
+                    } else {
+                        // ROSE X SIGN
+                        headerHtml = `
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(244, 63, 94, 0.2); border: 2px solid #f43f5e; border-radius: 50%; flex-shrink: 0;">
+                                    <span style="color: #f43f5e; font-weight: 900; font-size: 14px; line-height: 1;">✗</span>
+                                </div>
+                                <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #f43f5e;">${doc.label}</span>
+                            </div>
+                        `;
+
+                        boxHtml = `
+                            <div style="width: 100%; height: 120px; border-radius: 8px; background-color: #121212; border: 1px dashed rgba(244, 63, 94, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.7;">
+                                <span style="font-size: 24px; color: rgba(244, 63, 94, 0.6);">⚠️</span>
+                                <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: rgba(244, 63, 94, 0.6); margin-top: 4px;">Missing</span>
+                            </div>
+                        `;
+                    }
+
+                    docsContainer.innerHTML += `<div>${headerHtml}${boxHtml}</div>`;
+                });
 
                 document.getElementById('applicationModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden';

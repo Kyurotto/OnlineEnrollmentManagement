@@ -8,4 +8,5 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    // The server block exposing it to the network has been completely removed
 });

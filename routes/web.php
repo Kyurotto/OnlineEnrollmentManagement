@@ -33,7 +33,7 @@ use App\Http\Controllers\Cashier\CashierPaymentController; // Ensure this matche
 
 // Student
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
-use App\Http\Controllers\Student\PaymentController as StudentPayment; 
+use App\Http\Controllers\Student\PaymentController as StudentPayment;
 // Note: If your student payment file is in App\Http\Student, move it to App\Http\Controllers\Student
 
 /*
@@ -161,6 +161,10 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     // Enrollment
     Route::get('/enrollment/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
     Route::post('/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
+
+    // NEW: Document Uploads
+    Route::get('/documents', [App\Http\Controllers\Student\DocumentController::class, 'create'])->name('documents.create');
+    Route::post('/documents', [App\Http\Controllers\Student\DocumentController::class, 'store'])->name('documents.store');
 
     // Payment History
     Route::get('/payments', [StudentPayment::class, 'index'])->name('payment.index');

@@ -145,76 +145,75 @@
         </div>
     </main>
 
-    <div id="applicationModal"
-        class="fixed inset-0 bg-black/70 hidden z-50 overflow-y-auto h-full w-full flex items-center justify-center backdrop-blur-sm">
-        <div class="relative mx-auto p-0 border border-[#27272A] w-full max-w-2xl shadow-2xl rounded-xl bg-[#1C1C1E] transform transition-all">
-            <div class="flex justify-between items-center px-6 py-4 border-b border-[#27272A] bg-[#121212] rounded-t-xl">
-                <h3 class="text-xl font-bold text-[#FFFFFF]" id="modalTitle">Application Details</h3>
-                <button onclick="closeModal()"
-                    class="text-[#A1A1AA] hover:text-[#10B981] transition focus:outline-none text-2xl">&times;</button>
-            </div>
-            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-[#A1A1AA] uppercase tracking-wider border-b border-[#27272A] pb-2">
-                        Student Information</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="block text-[#52525B] text-xs">Full Name</span><span
-                                class="font-bold text-[#FFFFFF] uppercase" id="modalName"></span></div>
-                        <div><span class="block text-[#52525B] text-xs">Email</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalEmail"></span></div>
-                        <div><span class="block text-[#52525B] text-xs">Date of Birth</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalDob"></span></div>
-                        <div><span class="block text-[#52525B] text-xs">Age</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalAge"></span></div>
-                        <div><span class="block text-[#52525B] text-xs">Gender</span><span
-                                class="font-medium text-[#FFFFFF] capitalize" id="modalGender"></span></div>
-                        <div class="col-span-2"><span class="block text-[#52525B] text-xs">Address</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalAddress"></span></div>
-                    </div>
-                </div>
+    <div id="applicationModal" class="fixed inset-0 bg-black/80 hidden z-50 overflow-y-auto h-full w-full flex items-center justify-center p-4">
+        <div class="bg-[#1C1C1E] w-full max-w-4xl rounded-xl shadow-2xl border border-[#27272A] overflow-hidden flex flex-col max-h-[90vh]">
 
-                <div class="bg-[#121212] border border-[#27272A] rounded-lg p-5">
-                    <h4 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Program Details</h4>
-                    <div class="space-y-2 text-sm">
-                        <div><span class="font-bold text-[#A1A1AA]">Program:</span><span
-                                class="text-[#10B981] uppercase ml-1" id="modalCourse"></span></div>
-                        <div class="flex items-center gap-3">
-                            <div><span class="font-bold text-[#A1A1AA]">Year Level:</span><span class="text-[#FFFFFF] ml-1"
-                                    id="modalYear"></span></div>
-                            <span class="text-[#27272A]">|</span>
-                            <div><span class="font-bold text-[#A1A1AA]">Status:</span><span id="modalStatus"
-                                    class="ml-1 px-2 py-0.5 rounded text-xs font-bold bg-[#1C1C1E] border border-[#10B981]/30 text-[#10B981]"></span>
+            <div class="px-6 py-4 border-b border-[#27272A] flex justify-between items-center bg-[#1C1C1E] shrink-0">
+                <h2 class="text-xl font-bold text-[#FFFFFF]" id="modalTitle">Application Details</h2>
+                <button onclick="closeModal()" class="text-[#A1A1AA] hover:text-[#FFFFFF] transition focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar bg-[#1C1C1E]">
+                <div class="space-y-8">
+
+                    <div>
+                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Student Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-[#27272A] pt-4">
+                            <div><span class="block text-[#52525B] text-xs mb-1">Full Name:</span><span class="font-bold text-[#FFFFFF] uppercase" id="modalName"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Email:</span><span class="font-medium text-[#FFFFFF]" id="modalEmail"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Date of Birth:</span><span class="font-medium text-[#FFFFFF]" id="modalDob"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Age:</span><span class="font-medium text-[#FFFFFF]" id="modalAge"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Gender:</span><span class="font-medium text-[#FFFFFF] capitalize" id="modalGender"></span></div>
+                            <div class="col-span-1 md:col-span-2"><span class="block text-[#52525B] text-xs mb-1">Address:</span><span class="font-medium text-[#FFFFFF]" id="modalAddress"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#121212] border border-[#27272A] rounded-lg p-5">
+                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4">Program Details</h3>
+                        <div class="space-y-4 text-sm">
+                            <p><span class="font-bold text-[#A1A1AA] mr-2">Program:</span><span class="text-[#10B981] font-bold uppercase" id="modalCourse"></span></p>
+                            <div class="flex gap-4">
+                                <span><span class="font-bold text-[#A1A1AA]">Year:</span> <span id="modalYear"></span></span>
+                                <span><span class="font-bold text-[#A1A1AA]">Status:</span> <span class="text-[#10B981] font-bold uppercase" id="modalStatus"></span></span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-[#A1A1AA] uppercase tracking-wider border-b border-[#27272A] pb-2">
-                        Guardian Information</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="block text-[#52525B] text-xs">Father's Name</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalFather"></span></div>
-                        <div><span class="block text-[#52525B] text-xs">Mother's Name</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalMother"></span></div>
-                        <div><span class="block text-[#52525B] text-xs">Guardian</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalGuardian"></span></div>
-                        <div><span class="block text-[#52525B] text-xs">Contact #</span><span
-                                class="font-medium text-[#FFFFFF]" id="modalContact"></span></div>
+                    <div>
+                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Guardian Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-[#27272A] pt-4">
+                            <div><span class="block text-[#52525B] text-xs mb-1">Father's Name:</span><span class="font-bold text-[#FFFFFF] uppercase" id="modalFather"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Mother's Name:</span><span class="font-bold text-[#FFFFFF] uppercase" id="modalMother"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Guardian:</span><span class="font-bold text-[#FFFFFF] uppercase" id="modalGuardian"></span></div>
+                            <div><span class="block text-[#52525B] text-xs mb-1">Contact #:</span><span class="font-medium text-[#FFFFFF]" id="modalContact"></span></div>
+                        </div>
                     </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3 text-center md:text-left">Submitted Documents</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-[#27272A] pt-4" id="modalDocuments">
+                            </div>
+                    </div>
+
                 </div>
             </div>
-            <div class="px-6 py-4 bg-[#121212] border-t border-[#27272A] rounded-b-xl flex justify-end gap-3">
-                <button onclick="closeModal()"
-                    class="px-4 py-2 bg-[#27272A] border border-[#3F3F46] rounded text-sm font-medium text-[#FFFFFF] hover:bg-[#3F3F46] transition">Close</button>
-                <form id="approveForm" method="POST">@csrf @method('PATCH')<input type="hidden" name="status"
-                        value="Approved"><button type="submit"
-                        class="px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded text-sm font-bold shadow-sm transition">Approve</button>
-                </form>
-                <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">@csrf
-                    @method('PATCH')<input type="hidden" name="status" value="Rejected"><button type="submit"
-                        class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded text-sm font-bold shadow-sm transition">Reject</button>
-                </form>
+
+            <div class="bg-[#121212] px-6 py-5 border-t border-[#27272A] flex justify-between items-center shrink-0">
+                <div id="actionButtons" class="flex gap-3 hidden">
+                    <form id="approveForm" method="POST">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="Approved">
+                        <button type="submit" class="bg-[#10B981] hover:bg-[#059669] text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md shadow-[#10B981]/20 transition">Approve</button>
+                    </form>
+                    <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="Rejected">
+                        <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md shadow-rose-600/20 transition">Reject</button>
+                    </form>
+                </div>
+                <button onclick="closeModal()" class="px-6 py-2 bg-[#27272A] hover:bg-[#3F3F46] text-[#FFFFFF] rounded-lg text-sm font-semibold transition ml-auto">Close</button>
             </div>
         </div>
     </div>
@@ -242,15 +241,93 @@
         document.getElementById('modalCourse').innerText = courseCode + (courseDesc ? ' - ' + courseDesc : '');
 
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
-        document.getElementById('modalStatus').innerText = app.status;
+        
+        let statusText = app.status;
+        if (statusText === 'Enrolled') { statusText = 'Paid'; }
+        document.getElementById('modalStatus').innerText = statusText;
+
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
         document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
         document.getElementById('modalGuardian').innerText = app.guardian_name || 'N/A';
         document.getElementById('modalContact').innerText = app.guardian_contact || 'N/A';
 
+        const docsContainer = document.getElementById('modalDocuments');
+        docsContainer.innerHTML = '';
+        
+        const documents = [
+            { key: 'form_138_path', label: 'Form 138' },
+            { key: 'good_moral_path', label: 'Good Moral' },
+            { key: 'psa_path', label: 'PSA Birth Cert' },
+            { key: 'id_picture_path', label: 'ID Picture' }
+        ];
+        
+        const storageBase = @json(asset('storage')) + '/';
+
+        documents.forEach(doc => {
+            const hasFile = app[doc.key] ? true : false;
+            let headerHtml = '';
+            let boxHtml = '';
+
+            if (hasFile) {
+                const fileUrl = storageBase + app[doc.key];
+                const isImage = app[doc.key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
+
+                headerHtml = `
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(16, 185, 129, 0.2); border: 2px solid #10B981; border-radius: 50%; flex-shrink: 0;">
+                            <span style="color: #10B981; font-weight: 900; font-size: 14px; line-height: 1;">✓</span>
+                        </div>
+                        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #FFFFFF;">${doc.label}</span>
+                    </div>
+                `;
+
+                if (isImage) {
+                    boxHtml = `
+                        <a href="${fileUrl}" target="_blank" style="display: block;">
+                            <img src="${fileUrl}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #27272A; background-color: #121212;">
+                        </a>
+                    `;
+                } else {
+                    boxHtml = `
+                        <a href="${fileUrl}" target="_blank" style="display: block; text-decoration: none;">
+                            <div style="width: 100%; height: 120px; border-radius: 8px; border: 1px solid #27272A; background-color: #1C1C1E; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #10B981; transition: 0.2s;">
+                                <span style="font-size: 30px;">📄</span>
+                                <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px;">PDF</span>
+                            </div>
+                        </a>
+                    `;
+                }
+            } else {
+                headerHtml = `
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(244, 63, 94, 0.2); border: 2px solid #f43f5e; border-radius: 50%; flex-shrink: 0;">
+                            <span style="color: #f43f5e; font-weight: 900; font-size: 14px; line-height: 1;">✗</span>
+                        </div>
+                        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #f43f5e;">${doc.label}</span>
+                    </div>
+                `;
+
+                boxHtml = `
+                    <div style="width: 100%; height: 120px; border-radius: 8px; background-color: #121212; border: 1px dashed rgba(244, 63, 94, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.7;">
+                        <span style="font-size: 24px; color: rgba(244, 63, 94, 0.6);">⚠️</span>
+                        <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: rgba(244, 63, 94, 0.6); margin-top: 4px;">Missing</span>
+                    </div>
+                `;
+            }
+
+            docsContainer.innerHTML += `<div>${headerHtml}${boxHtml}</div>`;
+        });
+
         const baseUrl = "{{ url('registrar/applications') }}";
         document.getElementById('approveForm').action = `${baseUrl}/${app.id}`;
         document.getElementById('rejectForm').action = `${baseUrl}/${app.id}`;
+
+        if (app.status === 'Pending') {
+            document.getElementById('actionButtons').classList.remove('hidden');
+        } else {
+            document.getElementById('actionButtons').classList.add('hidden');
+        }
+
         document.getElementById('applicationModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -259,6 +336,7 @@
         document.getElementById('applicationModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
+    
     window.onclick = function(event) {
         const modal = document.getElementById('applicationModal');
         if (event.target == modal) closeModal();

@@ -31,14 +31,14 @@
                 <a href="{{ route('student.dashboard') }}" class="text-sm text-[#A1A1AA] hover:text-[#10B981] transition">← Back to Dashboard</a>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button class="bg-[#27272A] hover:bg-[#3F3F46] text-[#FFFFFF] text-sm font-medium py-2 px-4 rounded shadow transition-colors">Logout</button>
+                    <button class="bg-red-500 hover:bg-[#3F3F46] text-[#FFFFFF] text-sm font-medium py-2 px-4 rounded shadow transition-colors">Logout</button>
                 </form>
             </div>
         </div>
     </div>
 
     <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form id="enrollment-form" action="{{ route('student.enrollment.store') }}" method="POST" class="space-y-6">
+        <form id="enrollment-form" action="{{ route('student.enrollment.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <div class="bg-[#1C1C1E] p-8 rounded-xl shadow-md border border-[#27272A]">
@@ -152,7 +152,11 @@
                         readonly
                         class="border-b border-[#27272A] py-2 w-full focus:border-[#10B981] outline-none text-[#52525B] cursor-not-allowed bg-transparent" required>
 
-                    <input type="text" name="contact" placeholder="Contact Number"
+                    <input type="text" name="contact" placeholder="Contact Number (e.g. 09123456789)"
+                        maxlength="11"
+                        pattern="[0-9]{11}"
+                        title="Please enter exactly 11 digits"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                         class="autosave bg-transparent border-b border-[#3F3F46] py-2 w-full focus:border-[#10B981] outline-none text-[#FFFFFF] placeholder-[#52525B]" required>
                 </div>
 
@@ -214,9 +218,82 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-[#A1A1AA] mb-1">Guardian Contact Number</label>
-                            <input type="text" name="guardian_contact" placeholder="Contact Number for Parent/Guardian"
+                            
+                            <input type="text" name="guardian_contact" placeholder="Contact Number (e.g. 09123456789)"
+                                maxlength="11"
+                                pattern="[0-9]{11}"
+                                title="Please enter exactly 11 digits"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="autosave bg-transparent border-b border-[#3F3F46] py-2 w-full focus:border-[#10B981] outline-none text-[#FFFFFF] placeholder-[#52525B]">
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#1C1C1E] p-8 rounded-xl shadow-md border border-[#27272A]">
+                <h2 class="text-lg font-bold text-[#FFFFFF] mb-2">Document Requirements</h2>
+                <p class="text-sm text-[#A1A1AA] mb-6">Please take a clear photo or upload a PDF of the following documents.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="bg-[#121212] p-5 rounded-xl border border-[#27272A]">
+                        <div class="mb-3">
+                            <h3 class="text-sm font-bold text-[#FFFFFF]">Form 137 (Report Card)</h3>
+                            <p class="text-xs text-[#52525B]">Original copy with principal's signature.</p>
+                        </div>
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-[#3F3F46] border-dashed rounded-lg cursor-pointer bg-[#1C1C1E] hover:bg-[#27272A]/50 transition-colors group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                                <svg class="w-8 h-8 mb-3 text-[#10B981] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
+                                <p class="mb-2 text-sm text-[#A1A1AA] leading-tight"><span class="font-semibold text-[#10B981]">Tap to upload</span> or take a photo</p>
+                                <p class="text-xs text-[#52525B] truncate max-w-[200px]" id="file-name-137">PNG, JPG or PDF</p>
+                            </div>
+                            <input type="file" name="form_137" class="hidden" accept="image/*,application/pdf" onchange="updateFileName(this, 'file-name-137')" />
+                        </label>
+                    </div>
+
+                    <div class="bg-[#121212] p-5 rounded-xl border border-[#27272A]">
+                        <div class="mb-3">
+                            <h3 class="text-sm font-bold text-[#FFFFFF]">Certificate of Good Moral</h3>
+                            <p class="text-xs text-[#52525B]">Issued by your previous school.</p>
+                        </div>
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-[#3F3F46] border-dashed rounded-lg cursor-pointer bg-[#1C1C1E] hover:bg-[#27272A]/50 transition-colors group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                                <svg class="w-8 h-8 mb-3 text-[#10B981] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
+                                <p class="mb-2 text-sm text-[#A1A1AA] leading-tight"><span class="font-semibold text-[#10B981]">Tap to upload</span> or take a photo</p>
+                                <p class="text-xs text-[#52525B] truncate max-w-[200px]" id="file-name-moral">PNG, JPG or PDF</p>
+                            </div>
+                            <input type="file" name="good_moral" class="hidden" accept="image/*,application/pdf" onchange="updateFileName(this, 'file-name-moral')" />
+                        </label>
+                    </div>
+
+                    <div class="bg-[#121212] p-5 rounded-xl border border-[#27272A]">
+                        <div class="mb-3">
+                            <h3 class="text-sm font-bold text-[#FFFFFF]">PSA Birth Certificate</h3>
+                            <p class="text-xs text-[#52525B]">Clear copy of the original PSA document.</p>
+                        </div>
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-[#3F3F46] border-dashed rounded-lg cursor-pointer bg-[#1C1C1E] hover:bg-[#27272A]/50 transition-colors group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                                <svg class="w-8 h-8 mb-3 text-[#10B981] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
+                                <p class="mb-2 text-sm text-[#A1A1AA] leading-tight"><span class="font-semibold text-[#10B981]">Tap to upload</span> or take a photo</p>
+                                <p class="text-xs text-[#52525B] truncate max-w-[200px]" id="file-name-psa">PNG, JPG or PDF</p>
+                            </div>
+                            <input type="file" name="psa" class="hidden" accept="image/*,application/pdf" onchange="updateFileName(this, 'file-name-psa')" />
+                        </label>
+                    </div>
+
+                    <div class="bg-[#10B981]/5 p-5 rounded-xl border border-[#10B981]/20">
+                        <div class="mb-3">
+                            <h3 class="text-sm font-bold text-[#10B981]">2x2 ID Picture</h3>
+                            <p class="text-xs text-[#A1A1AA]">White background, formal attire.</p>
+                        </div>
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-[#10B981]/40 border-dashed rounded-lg cursor-pointer bg-[#1C1C1E] hover:bg-[#10B981]/10 transition-colors group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                                <svg class="w-8 h-8 mb-3 text-[#10B981] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
+                                <p class="mb-2 text-sm text-[#A1A1AA] leading-tight"><span class="font-semibold text-[#10B981]">Take a Selfie</span> or upload photo</p>
+                                <p class="text-xs text-[#52525B] truncate max-w-[200px]" id="file-name-pic">PNG or JPG only</p>
+                            </div>
+                            <input type="file" name="id_picture" class="hidden" accept="image/*" capture="user" onchange="updateFileName(this, 'file-name-pic')" />
+                        </label>
                     </div>
                 </div>
             </div>
@@ -245,6 +322,23 @@
     </main>
 
     <script>
+    function updateFileName(input, textId) {
+        const textElement = document.getElementById(textId);
+        if (input.files && input.files.length > 0) {
+            textElement.classList.remove('text-[#52525B]');
+            textElement.classList.add('text-[#FFFFFF]', 'font-bold');
+            textElement.innerText = input.files[0].name;
+        } else {
+            textElement.classList.add('text-[#52525B]');
+            textElement.classList.remove('text-[#FFFFFF]', 'font-bold');
+            if(textId === 'file-name-pic') {
+                textElement.innerText = "PNG or JPG only";
+            } else {
+                textElement.innerText = "PNG, JPG or PDF";
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const STORAGE_KEY = 'enrollment_draft_final';
         const inputs = document.querySelectorAll('.autosave');
