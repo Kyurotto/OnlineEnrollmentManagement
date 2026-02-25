@@ -81,6 +81,8 @@
                         <label class="block text-sm font-medium text-[#A1A1AA] mb-1">Semester</label>
                         <select name="semester" class="autosave w-full bg-[#121212] text-[#FFFFFF] border-[#3F3F46] rounded-md shadow-sm border py-2 px-3 focus:ring-[#10B981] focus:border-[#10B981] outline-none">
                             <option value="">Select Semester</option>
+                            <option value="1st Semester">1st Semester</option>
+                            <option value="2nd Semester">2nd Semester</option>
                             @foreach($semesters as $semester)
                                 <option value="{{ $semester->name }}" @if($activeSemester && $semester->id === $activeSemester->id) selected @endif>
                                     {{ $semester->name }}
