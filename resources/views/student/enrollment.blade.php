@@ -130,11 +130,11 @@
 
                     <div class="flex items-center space-x-4">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="gender" value="male" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2"> 
+                            <input type="radio" name="gender" value="male" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2">
                             <span class="text-[#A1A1AA]">Male</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="gender" value="female" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2"> 
+                            <input type="radio" name="gender" value="female" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2">
                             <span class="text-[#A1A1AA]">Female</span>
                         </label>
                     </div>
@@ -166,11 +166,11 @@
                     <label class="block text-sm font-medium text-[#A1A1AA] mb-2">Belonging to any Indigenous Peoples (IP) Community?</label>
                     <div class="flex space-x-4">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="ip_community" value="yes" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2"> 
+                            <input type="radio" name="ip_community" value="yes" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2">
                             <span class="text-[#A1A1AA]">Yes</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="ip_community" value="no" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2"> 
+                            <input type="radio" name="ip_community" value="no" class="autosave text-[#10B981] focus:ring-[#10B981] bg-[#121212] border-[#3F3F46] mr-2">
                             <span class="text-[#A1A1AA]">No</span>
                         </label>
                     </div>
@@ -220,7 +220,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-[#A1A1AA] mb-1">Guardian Contact Number</label>
-                            
+
                             <input type="text" name="guardian_contact" placeholder="Contact Number (e.g. 09123456789)"
                                 maxlength="11"
                                 pattern="[0-9]{11}"
@@ -235,9 +235,9 @@
             <div class="bg-[#1C1C1E] p-8 rounded-xl shadow-md border border-[#27272A]">
                 <h2 class="text-lg font-bold text-[#FFFFFF] mb-2">Document Requirements</h2>
                 <p class="text-sm text-[#A1A1AA] mb-6">Please take a clear photo or upload a PDF of the following documents.</p>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
+
                     <div class="bg-[#121212] p-5 rounded-xl border border-[#27272A]">
                         <div class="mb-3">
                             <h3 class="text-sm font-bold text-[#FFFFFF]">Form 137 (Report Card)</h3>
@@ -314,12 +314,12 @@
             </div>
 
             <div class="flex justify-end pt-4 border-t border-[#27272A]">
-                <button type="submit" id="submit-btn" 
+                <button type="submit" id="submit-btn"
                     class="bg-[#10B981] hover:bg-[#059669] text-[#FFFFFF] font-bold py-3 px-8 rounded-lg shadow-md transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#121212] focus:ring-[#10B981]">
                     Submit Enrollment
                 </button>
             </div>
-            
+
         </form>
     </main>
 
