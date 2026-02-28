@@ -58,12 +58,12 @@ class DashboardController extends Controller
                             ->take(5)
                             ->get();
 
-        // 5. WEEKLY CALENDAR SUBMISSIONS (Monday - Friday)
-        $startOfWeek = Carbon::now()->startOfWeek(Carbon::MONDAY);
-        $endOfWeek = Carbon::now()->endOfWeek(Carbon::FRIDAY);
+        // 5. ROLLING 5 DAYS (Always includes Today as the last card)
+        $endDate = Carbon::now()->endOfDay();
+        $startDate = Carbon::now()->subDays(4)->startOfDay();
 
         $weeklyApplications = Enrollment::with('user')
-            ->whereBetween('created_at', [$startOfWeek->startOfDay(), $endOfWeek->endOfDay()])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -72,10 +72,10 @@ class DashboardController extends Controller
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
 
-        // Generate the 5 days of the week for the view
+        // Generate the 5 days for the view
         $weekDates = [];
         for ($i = 0; $i < 5; $i++) {
-            $date = $startOfWeek->copy()->addDays($i);
+            $date = $startDate->copy()->addDays($i);
             $weekDates[] = [
                 'date_string' => $date->format('Y-m-d'),
                 'day_name'    => $date->format('l'),
@@ -83,7 +83,9 @@ class DashboardController extends Controller
                 'is_today'    => $date->isToday(),
             ];
         }
-        $weekRange = $startOfWeek->format('M d') . ' — ' . $endOfWeek->format('M d');
+        
+        // Displays the current Month and Year (e.g. "February 2026")
+        $weekRange = Carbon::now()->format('F Y');
 
         return view('registrar.dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications', 

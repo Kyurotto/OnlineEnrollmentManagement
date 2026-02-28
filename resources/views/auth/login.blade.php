@@ -71,6 +71,9 @@
                     <button type="submit" class="mt-4 rounded-full border border-[#10B981] bg-[#10B981] hover:bg-[#059669] hover:border-[#059669] text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none shadow-md shadow-[#10B981]/20">
                         Sign Up
                     </button>
+                    <button type="button" id="signIn" class="mt-2  text-white text-xs py-3 px-11">
+                            Sign In
+                        </button>
                 </form>
             </div>
 
@@ -93,9 +96,12 @@
                         </a>
                     @endif
 
-                    <button type="submit" class="mt-2 rounded-full border border-[#10B981] bg-[#10B981] hover:bg-[#059669] hover:border-[#059669] text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none shadow-md shadow-[#10B981]/20">
+                    <button type="submit" class="mt-2 mb-2 rounded-full border border-[#10B981] bg-[#10B981] hover:bg-[#059669] hover:border-[#059669] text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none shadow-md shadow-[#10B981]/20">
                         Sign In
                     </button>
+                    <button type="button" id="signUp" class="mt-2  text-white text-xs py-3 px-11">
+                            Sign Up
+                        </button>
                 </form>
             </div>
 
@@ -105,17 +111,11 @@
                     <div class="overlay-left absolute flex items-center justify-center flex-col px-10 text-center top-0 h-full w-1/2 -translate-x-[20%] transition-transform duration-[600ms] ease-in-out">
                         <h1 class="font-bold text-3xl m-0 text-white">Welcome Back!</h1>
                         <p class="text-sm font-medium leading-5 tracking-wide my-5 text-white/90">To keep connected with us please login with your personal info</p>
-                        <button type="button" id="signIn" class="mt-2 rounded-full border border-white bg-transparent text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none hover:bg-white/20">
-                            Sign In
-                        </button>
                     </div>
 
                     <div class="overlay-right absolute flex items-center justify-center flex-col px-10 text-center top-0 h-full w-1/2 right-0 translate-x-0 transition-transform duration-[600ms] ease-in-out">
                         <h1 class="font-bold text-3xl m-0 text-white">Hello, Friend!</h1>
                         <p class="text-sm font-medium leading-5 tracking-wide my-5 text-white/90">Register with your personal details to use all of site features</p>
-                        <button type="button" id="signUp" class="mt-2 rounded-full border border-white bg-transparent text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none hover:bg-white/20">
-                            Sign Up
-                        </button>
                     </div>
                 </div>
             </div>

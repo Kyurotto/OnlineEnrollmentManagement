@@ -18,8 +18,6 @@ class DashboardController extends Controller
         $stats = [
             'active_courses' => Course::count(),
             
-            // FIXED: Only count users as 'students' if their application is 'Enrolled' or 'Approved'.
-            // This perfectly syncs the number (7) with your Manage Students table.
             'students'       => User::where('role', 'student')
                                     ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
                                     ->count(),
@@ -47,13 +45,13 @@ class DashboardController extends Controller
             }
         }
 
-        // 4. WEEKLY CALENDAR SUBMISSIONS (Monday - Friday)
-        $startOfWeek = Carbon::now()->startOfWeek(Carbon::MONDAY);
-        $endOfWeek = Carbon::now()->endOfWeek(Carbon::FRIDAY);
+        // 4. ROLLING 5 DAYS (Always includes Today as the last card)
+        $endDate = Carbon::now()->endOfDay();
+        $startDate = Carbon::now()->subDays(4)->startOfDay(); // 5 days total including today
 
         $weeklyApplications = Enrollment::with(['user', 'course'])
             ->whereHas('user')
-            ->whereBetween('created_at', [$startOfWeek->startOfDay(), $endOfWeek->endOfDay()])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -62,10 +60,10 @@ class DashboardController extends Controller
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
 
-        // Generate the 5 days of the week for the view
+        // Generate the 5 days for the view
         $weekDates = [];
         for ($i = 0; $i < 5; $i++) {
-            $date = $startOfWeek->copy()->addDays($i);
+            $date = $startDate->copy()->addDays($i);
             $weekDates[] = [
                 'date_string' => $date->format('Y-m-d'),
                 'day_name'    => $date->format('l'),
@@ -73,7 +71,9 @@ class DashboardController extends Controller
                 'is_today'    => $date->isToday(),
             ];
         }
-        $weekRange = $startOfWeek->format('M d') . ' — ' . $endOfWeek->format('M d');
+        
+        // Displays the current Month and Year (e.g. "February 2026")
+        $weekRange = Carbon::now()->format('F Y');
 
         return view('admin.dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange'));
     }
