@@ -14,21 +14,53 @@ class StudentController extends Controller
      * Display a listing of students (Registrar View).
      */
     public function index()
-    {
-        // Fetch Students (Exclude Admin/Staff)
-        $students = User::where(function($query) {
-                            $query->where('role', 'student')->orWhereNull('role');
-                        })
-                        ->whereNotIn('role', ['admin', 'registrar', 'cashier'])
-                        ->latest()
-                        ->paginate(10);
+{
+    // 1. Fetch official students (Approved/Enrolled only)
+    $students = User::where('role', 'student')
+                    ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10); 
 
-        // Notification Count
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+    // 2. Attach Program, Section (Year only), and Account details
+    foreach ($students as $student) {
+        $enrollment = Enrollment::with('course')
+                                ->where('user_id', $student->id)
+                                ->orderBy('created_at', 'desc')
+                                ->first();
+                                
+        // Program sync logic
+        if ($enrollment && $enrollment->course && !empty($enrollment->course->name)) {
+            $student->program = $enrollment->course->name;
+        } elseif ($enrollment && !empty($enrollment->course_code)) {
+            $student->program = $enrollment->course_code;
+        } else {
+            $student->program = 'N/A';
+        }
 
-        // Return the REGISTRAR view
+        // Section: Extracts only the Year Level (e.g., "1st Year")
+        if ($enrollment && !empty($enrollment->year_level)) {
+            $parts = explode('|', $enrollment->year_level);
+            $student->year_display = trim($parts[0]);
+        } else {
+            $student->year_display = 'N/A';
+        }
+        
+        // MATCHING YOUR LATEST SCREENSHOT:
+        // EMAIL column gets the full email
+        $student->display_email = $student->email;
+        
+        // USER ACCOUNT column gets the short username
+        $student->display_account = $student->username ?: 'N/A';
+    }
+
+    $pendingCount = Enrollment::where('status', 'Pending')->count();
+
+    if (request()->routeIs('registrar.*')) {
         return view('registrar.students.index', compact('students', 'pendingCount'));
     }
+
+    return view('admin.students.index', compact('students', 'pendingCount'));
+}
 
     /**
      * Show the form for editing the specified student.

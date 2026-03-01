@@ -1,29 +1,48 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+
+// --- CONTROLLER IMPORTS ---
+
+// General
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\Cashier\CashierPaymentController;
-use App\Http\Controllers\Admin\CourseController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\StudentController;
-use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\ApplicationController;
 
-// Import the specific Registrar Controllers
+// Admin
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\StudentController as AdminStudent;
+use App\Http\Controllers\Admin\PaymentController as AdminPayment;
+use App\Http\Controllers\Admin\ApplicationController as AdminApplication;
+
+// Registrar
 use App\Http\Controllers\Registrar\DashboardController as RegistrarDashboard;
 use App\Http\Controllers\Registrar\StudentController as RegistrarStudent;
-use App\Http\Controllers\Registrar\ApplicationController as RegistrarApplicationController;
+use App\Http\Controllers\Registrar\ApplicationController as RegistrarApplication;
+use App\Http\Controllers\Registrar\ProgramController;
+use App\Http\Controllers\Registrar\SemesterController;
+use App\Http\Controllers\Registrar\AcademicYearController;
+use App\Http\Controllers\Registrar\SectionController;
+
+// Cashier
+use App\Http\Controllers\Cashier\DashboardController as CashierDashboard;
+use App\Http\Controllers\Cashier\CashierPaymentController; // Ensure this matches your file class name
+
+
+// Student
+use App\Http\Controllers\Student\DashboardController as StudentDashboard;
+use App\Http\Controllers\Student\PaymentController as StudentPayment;
+// Note: If your student payment file is in App\Http\Student, move it to App\Http\Controllers\Student
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
 
 /*
@@ -38,7 +57,7 @@ Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     }
     elseif ($user->role === 'cashier') {
-        return redirect()->route('cashier.payments.index');
+        return redirect()->route('cashier.dashboard');
     }
     elseif ($user->role === 'registrar') {
         return redirect()->route('registrar.dashboard');
@@ -55,18 +74,26 @@ Route::get('/dashboard', function () {
 */
 Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
 
-    // 1. Dashboard (Uses Registrar\DashboardController)
+    // Dashboard
     Route::get('/dashboard', [RegistrarDashboard::class, 'index'])->name('dashboard');
 
-    // 2. Manage Students (Uses Registrar\StudentController)
+    // Students & Applications
     Route::resource('students', RegistrarStudent::class);
+    
+    // Custom Application Routes
+    Route::get('/applications', [RegistrarApplication::class, 'index'])->name('applications.index');
+    Route::get('/applications/{id}', [RegistrarApplication::class, 'show'])->name('applications.show');
+    Route::patch('/applications/{id}', [RegistrarApplication::class, 'update'])->name('applications.update');
+    Route::delete('/applications/{id}', [RegistrarApplication::class, 'destroy'])->name('applications.destroy');
 
-    // 3. Manage Applications
-    Route::get('/applications', [RegistrarApplicationController::class, 'index'])->name('applications.index');
-    Route::get('/applications/{id}', [RegistrarApplicationController::class, 'show'])->name('applications.show');
-    Route::patch('/applications/{id}', [RegistrarApplicationController::class, 'update'])->name('applications.update');
-    Route::delete('/applications/{id}', [RegistrarApplicationController::class, 'destroy'])->name('applications.destroy');
+    // Academic Management (Programs, Semesters, etc.)
+    Route::resource('programs', ProgramController::class);
+    Route::resource('academic-years', AcademicYearController::class);
+    Route::resource('semesters', SemesterController::class);
+    Route::resource('sections', SectionController::class);
 
+    // Custom Semester Activation
+    Route::patch('/semesters/{id}/activate', [SemesterController::class, 'activate'])->name('semesters.activate');
 });
 
 /*
@@ -76,35 +103,26 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
 */
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
-    // Courses
-    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
-    Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
-    Route::get('/courses/{id}/edit', [CourseController::class, 'edit'])->name('courses.edit');
-    Route::put('/courses/{id}', [CourseController::class, 'update'])->name('courses.update');
-    Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->name('courses.destroy');
-
-    // Payments
-    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-    Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
-    Route::patch('/payments/{id}', [PaymentController::class, 'update'])->name('payments.update');
-
-    // Applications
-    Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
-    Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
-    Route::patch('/applications/{id}', [ApplicationController::class, 'update'])->name('applications.update');
-    Route::delete('/applications/{id}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
-    // Keeping these for backward compatibility if your views still use them:
-    Route::post('/applications/{id}/approve', [ApplicationController::class, 'approve'])->name('applications.approve');
-    Route::post('/applications/{id}/reject', [ApplicationController::class, 'reject'])->name('applications.reject');
+    // Resources
+    Route::resource('courses', CourseController::class);
+    
+    // Payments (Admin View)
+    Route::get('/payments', [AdminPayment::class, 'index'])->name('payments.index');
+    Route::post('/payments', [AdminPayment::class, 'store'])->name('payments.store');
+    Route::patch('/payments/{id}', [AdminPayment::class, 'update'])->name('payments.update');
+    Route::patch('/payments/{id}/status', [AdminPayment::class, 'updateStatus'])->name('payments.updateStatus');
+    Route::delete('/payments/{id}', [AdminPayment::class, 'destroy'])->name('payments.destroy');
 
     // Students
-    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    Route::get('/students/{id}/edit', [StudentController::class, 'edit'])->name('students.edit');
-    Route::patch('/students/{id}', [StudentController::class, 'update'])->name('students.update');
-    Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::resource('students', AdminStudent::class);
+
+    // Applications
+    Route::get('/applications', [AdminApplication::class, 'index'])->name('applications.index');
+    Route::get('/applications/{id}', [AdminApplication::class, 'show'])->name('applications.show');
+    Route::patch('/applications/{id}', [AdminApplication::class, 'update'])->name('applications.update');
+    Route::delete('/applications/{id}', [AdminApplication::class, 'destroy'])->name('applications.destroy');
 });
 
 /*
@@ -112,10 +130,22 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
 | CASHIER ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'can:cashier'])->group(function () {
-    Route::get('/cashier/payments', [CashierPaymentController::class, 'index'])->name('cashier.payments.index');
-    Route::patch('/cashier/payments/{id}', [CashierPaymentController::class, 'updateStatus'])->name('cashier.payments.update');
-    Route::delete('/cashier/payments/{id}', [CashierPaymentController::class, 'destroy'])->name('cashier.payments.destroy');
+Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')->group(function () {
+    
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Cashier\DashboardController::class, 'index'])->name('dashboard');
+
+    // Payments Management
+    Route::get('/payments', [CashierPaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments', [CashierPaymentController::class, 'store'])->name('payments.store');
+    
+    // Update Details (Edit Amount/Ref)
+    Route::patch('/payments/{id}', [CashierPaymentController::class, 'update'])->name('payments.update');
+    
+    // Update Status (Approve/Reject)
+    Route::patch('/payments/{id}/status', [CashierPaymentController::class, 'updateStatus'])->name('payments.updateStatus');
+    
+    Route::delete('/payments/{id}', [CashierPaymentController::class, 'destroy'])->name('payments.destroy');
 });
 
 /*
@@ -123,19 +153,26 @@ Route::middleware(['auth', 'can:cashier'])->group(function () {
 | STUDENT ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/student/dashboard', function () { return view('student.dashboard'); })->name('student.dashboard');
-    Route::get('/student/enrollment/create', function () { return view('student.enrollment'); })->name('enrollment.create');
-    Route::post('/student/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
+Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
+    
+    // Dashboard
+    Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
+    
+    // Enrollment
+    Route::get('/enrollment/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
+    Route::post('/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
 
-    Route::get('/student/payments', function () {
-        return view('student.payment', ['payments' => []]);
-    })->name('payment.index');
-    Route::post('/student/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payment.store');
+    // NEW: Document Uploads
+    Route::get('/documents', [App\Http\Controllers\Student\DocumentController::class, 'create'])->name('documents.create');
+    Route::post('/documents', [App\Http\Controllers\Student\DocumentController::class, 'store'])->name('documents.store');
 
-    Route::get('/student/profile', function () {
-        return view('student.profile', ['payments' => []]);
-    })->name('student.profile');
+    // Payment History
+    Route::get('/payments', [StudentPayment::class, 'index'])->name('payment.index');
+
+    // Profile (Read Only View)
+    Route::get('/profile', function () {
+        return view('student.profile');
+    })->name('profile');
 });
 
 /*
@@ -149,12 +186,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Explicit Logout Route
+// Logout
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    // Redirect to LOGIN PAGE, not root
     return redirect()->route('login');
 })->name('logout');
 

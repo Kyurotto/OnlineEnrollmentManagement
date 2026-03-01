@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Course;
 
 class EnrollmentApplication extends Model
 {
@@ -26,5 +27,11 @@ class EnrollmentApplication extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class, 'application_id');
+    }
+
+    public function getCourseAttribute()
+    {
+        $courseId = $this->course_ids[0] ?? null;
+        return $courseId ? Course::find($courseId) : null;
     }
 }

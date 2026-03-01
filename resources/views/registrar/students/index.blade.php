@@ -1,34 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Students - Registrar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Inter', sans-serif; } </style>
-</head>
-<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20">
+        /* Custom Dark Pagination matching Carbon & Emerald theme */
+        .custom-pagination p {
+            color: #A1A1AA !important;
+            font-size: 0.875rem;
+        }
+
+        .custom-pagination [role="navigation"] span.relative,
+        .custom-pagination [role="navigation"] a.relative {
+            background-color: #1C1C1E !important;
+            border-color: #27272A !important;
+            color: #A1A1AA !important;
+        }
+
+        .custom-pagination [role="navigation"] span[aria-current="page"]>span {
+            background-color: #121212 !important;
+            border-color: #10B981 !important;
+            color: #10B981 !important;
+        }
+
+        .custom-pagination [role="navigation"] a.relative:hover {
+            background-color: #27272A !important;
+            color: #FFFFFF !important;
+        }
+
+        .custom-pagination [role="navigation"] svg {
+            color: #A1A1AA !important;
+        }
+    </style>
+</head>
+
+<body class="bg-[#121212] text-[#A1A1AA] flex flex-col min-h-screen">
+
+    <nav class="bg-[#1C1C1E] border-b border-[#27272A] sticky top-0 z-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-8">
                     <div class="flex items-center gap-3">
-                        <div class="bg-purple-900 text-white font-bold p-2 rounded-lg text-sm">RD</div>
+                        <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">RD</div>
                         <div>
-                            <h1 class="text-lg font-bold leading-none text-slate-900">Registrar Panel</h1>
-                            <span class="text-xs text-gray-500">Manage Students</span>
+                            <h1 class="text-lg font-bold leading-none text-white">Registrar Panel</h1>
+                            <span class="text-xs text-[#A1A1AA]">Manage Students</span>
                         </div>
                     </div>
-                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
-                        <a href="{{ route('registrar.dashboard') }}" class="flex items-center hover:text-slate-900 transition h-full">Dashboard</a>
+                    <div class="flex space-x-6 text-sm font-medium text-[#A1A1AA] h-16">
+                        <a href="{{ route('registrar.dashboard') }}"
+                            class="flex items-center hover:text-[#10B981] transition h-full">Dashboard</a>
                     </div>
                 </div>
+
                 <div class="flex items-center gap-6">
+                    <div class="relative">
+                        <svg class="w-6 h-6 text-[#A1A1AA] hover:text-[#10B981] transition cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
+                        </svg>
+                        @if (isset($pendingCount) && $pendingCount > 0)
+                            <span
+                                class="absolute -top-1 -right-1 bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full border-2 border-[#1C1C1E]">
+                                {{ $pendingCount }}
+                            </span>
+                        @endif
+                    </div>
+
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
+                        <button
+                            <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
                     </form>
                 </div>
             </div>
@@ -36,85 +87,85 @@
     </nav>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
-            {{ session('success') }}
-        </div>
+
+        @if (session('success'))
+            <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6 shadow-sm">
+                {{ session('success') }}
+            </div>
         @endif
 
-        <div class="bg-white rounded border border-gray-200 shadow-sm">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-bold text-slate-800">Student List</h3>
+        <div class="bg-[#1C1C1E] rounded-xl shadow-md border border-[#27272A] overflow-hidden mt-6">
+            <div class="px-6 py-4 border-b border-[#27272A] bg-[#1C1C1E]">
+                <h3 class="text-lg font-bold text-white">Student List</h3>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            <th class="px-6 py-4">ID</th>
-                            <th class="px-6 py-4">NAME</th>
-                            <th class="px-6 py-4">EMAIL</th>
-                            <th class="px-6 py-4">ROLE</th>
-                            <th class="px-6 py-4">STATUS</th>
-                            <th class="px-6 py-4">ACTIONS</th>
+                <table class="w-full text-sm text-left text-[#A1A1AA]">
+                    <thead class="text-xs text-[#A1A1AA] uppercase bg-[#121212] border-b border-[#27272A]">
+                        <tr>
+                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Last Name</th>
+                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">First Name</th>
+                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Email</th>
+                            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Program</th>
+                            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Section</th>
+                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-right">Action</th>
                         </tr>
                     </thead>
-                    <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
+                    <tbody>
                         @forelse($students as $student)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 text-gray-500">#{{ $student->id }}</td>
-                            
-                            <td class="px-6 py-4 font-bold text-slate-900 uppercase">
-                                {{ $student->last_name }}, {{ $student->first_name }} 
-                                @if($student->middle_name) {{ substr($student->middle_name, 0, 1) }}. @endif
-                            </td>
+                            <tr class="bg-[#1C1C1E] border-b border-[#27272A] hover:bg-[#27272A]/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-white uppercase">
+                                    {{ $student->last_name ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 font-bold text-white uppercase">
+                                    {{ $student->first_name ?? 'N/A' }}</td>
 
-                            <td class="px-6 py-4 text-gray-500">{{ $student->email }}</td>
+                                <td class="px-6 py-4 text-[#A1A1AA] lowercase">{{ $student->email }}</td>
 
-                            <td class="px-6 py-4">
-                                <span class="text-xs font-bold uppercase tracking-wide text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">
-                                    {{ $student->role ?? 'STUDENT' }}
-                                </span>
-                            </td>
+                                <td class="px-6 py-4 font-bold text-[#10B981] text-center uppercase">
+                                    {{ $student->program }}</td>
+                                <td class="px-6 py-4 font-medium text-[#A1A1AA] text-center whitespace-nowrap">
+                                    {{ $student->year_display }}</td>
 
-                            <td class="px-6 py-4">
-                                @php
-                                    $status = $student->display_status ?? 'Not Enrolled';
-                                    $badgeColor = match($status) {
-                                        'Approved', 'Enrolled', 'Active' => 'bg-green-100 text-green-800 border-green-200',
-                                        'Pending' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                                        'Rejected' => 'bg-red-100 text-red-800 border-red-200',
-                                        default => 'bg-gray-100 text-gray-600 border-gray-200',
-                                    };
-                                @endphp
-                                <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $badgeColor }}">
-                                    {{ ucfirst($status) }}
-                                </span>
-                            </td>
 
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('registrar.students.edit', $student->id) }}" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1 rounded text-xs font-bold transition">Edit</a>
-                                    
-                                    <form action="{{ route('registrar.students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 px-3 py-1 rounded text-xs font-bold transition">Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-3 py-1 rounded-full border border-[#10B981]/20">
+                                        {{ $student->status ?? 'Enrolled' }}
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <a href="{{ route('registrar.students.edit', $student->id) }}"
+                                        class="text-[#10B981] hover:text-[#059669] font-bold text-xs uppercase tracking-wider transition-colors">
+                                        Edit
+                                    </a>
+                                </td>
+                            </tr>
                         @empty
-                        <tr><td colspan="6" class="px-6 py-10 text-center text-gray-400">No students found.</td></tr>
+                            <tr>
+                                <td colspan="8" class="px-6 py-12 text-center text-[#52525B] italic">No approved
+                                    students found.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="p-4 border-t border-gray-200">
-                @if(method_exists($students, 'links'))
+
+            @if ($students->hasPages())
+                <div class="px-6 py-4 border-t border-[#27272A] bg-[#121212] custom-pagination">
                     {{ $students->links() }}
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
     </main>
+
+    <footer class="bg-[#1C1C1E] border-t border-[#27272A] py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-[#A1A1AA]">
+            © 2026 Your Institution — Registrar Panel
+        </div>
+    </footer>
+
 </body>
+
 </html>

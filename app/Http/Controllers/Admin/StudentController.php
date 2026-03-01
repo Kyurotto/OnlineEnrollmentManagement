@@ -11,41 +11,70 @@ use Illuminate\Validation\Rule;
 class StudentController extends Controller
 {
     public function index()
-    {
-        $students = User::where(function($query) {
-                        $query->where('role', 'student')->orWhereNull('role');
-                    })
-                    ->whereNotIn('role', ['admin', 'registrar', 'cashier'])
-                    ->latest()
-                    ->paginate(10);
+{
+    // 1. Fetch official students (Approved/Enrolled only)
+    $students = User::where('role', 'student')
+                    ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10); 
 
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
-
-        if (request()->routeIs('registrar.*')) {
-            return view('registrar.students.index', compact('students', 'pendingCount'));
+    // 2. Attach Program, Section (Year only), and Account details
+    foreach ($students as $student) {
+        $enrollment = Enrollment::with('course')
+                                ->where('user_id', $student->id)
+                                ->orderBy('created_at', 'desc')
+                                ->first();
+                                
+        // Program sync logic
+        if ($enrollment && $enrollment->course && !empty($enrollment->course->name)) {
+            $student->program = $enrollment->course->name;
+        } elseif ($enrollment && !empty($enrollment->course_code)) {
+            $student->program = $enrollment->course_code;
+        } else {
+            $student->program = 'N/A';
         }
 
-        return view('admin.students.index', compact('students', 'pendingCount'));
+        // Section: Extracts only the Year Level (e.g., "1st Year")
+        if ($enrollment && !empty($enrollment->year_level)) {
+            $parts = explode('|', $enrollment->year_level);
+            $student->year_display = trim($parts[0]);
+        } else {
+            $student->year_display = 'N/A';
+        }
+        
+        // MATCHING YOUR LATEST SCREENSHOT:
+        // EMAIL column gets the full email
+        $student->display_email = $student->email;
+        
+        // USER ACCOUNT column gets the short username
+        $student->display_account = $student->username ?: 'N/A';
     }
+
+    $pendingCount = Enrollment::where('status', 'Pending')->count();
+
+    if (request()->routeIs('registrar.*')) {
+        return view('registrar.students.index', compact('students', 'pendingCount'));
+    }
+
+    return view('admin.students.index', compact('students', 'pendingCount'));
+}
 
     public function edit($id)
     {
         $student = User::findOrFail($id);
         $pendingCount = Enrollment::where('status', 'Pending')->count();
 
-        if (auth()->user()->role === 'registrar') {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'registrar') {
             return view('registrar.students.edit', compact('student', 'pendingCount'));
         }
 
         return view('admin.students.edit', compact('student', 'pendingCount'));
     }
 
-    // *** UPDATED UPDATE FUNCTION ***
     public function update(Request $request, $id)
     {
         $student = User::findOrFail($id);
 
-        // 1. Validate (removed username validation since you removed the field)
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'first_name'  => ['required', 'string', 'max:255'],
             'middle_name' => ['nullable', 'string', 'max:255'],
@@ -61,15 +90,10 @@ class StudentController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // 2. Assign New Values
         $student->first_name  = $request->first_name;
         $student->middle_name = $request->middle_name;
         $student->last_name   = $request->last_name;
-
-        // 3. Sync the 'name' column (Important for some default Laravel features)
-        // This ensures "John Doe" is saved to 'name' if you change 'first_name'
         $student->name = $request->first_name . ' ' . $request->last_name;
-
         $student->email = $request->email;
 
         if ($request->has('status') && $request->status !== null) {
@@ -80,7 +104,6 @@ class StudentController extends Controller
             $student->password = bcrypt($request->password);
         }
 
-        // 4. Save
         $student->save();
 
         if ($request->wantsJson()) {
@@ -90,7 +113,7 @@ class StudentController extends Controller
             ]);
         }
 
-        $redirectRoute = auth()->user()->role === 'registrar' ? 'registrar.students.index' : 'admin.students.index';
+        $redirectRoute = \Illuminate\Support\Facades\Auth::user()->role === 'registrar' ? 'registrar.students.index' : 'admin.students.index';
         return redirect()->route($redirectRoute)->with('success', 'Student updated successfully.');
     }
 

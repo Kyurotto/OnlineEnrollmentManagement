@@ -5,50 +5,140 @@ namespace App\Http\Controllers\Cashier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use App\Models\User;
+use App\Models\Enrollment;
+use App\Notifications\StudentPaymentConfirmed; // Import the Notification
+use Illuminate\Support\Facades\Notification;   // Import Notification Facade
 
 class CashierPaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Payment::with(['user', 'application'])->latest();
+        $query = Payment::select('payments.*')
+            ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
+            ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
+            ->with(['user', 'application']); 
 
-        // Filter by Status
         if ($request->has('status') && $request->status != 'All statuses') {
-            $query->where('status', $request->status);
+            $query->where('payments.status', $request->status);
         }
 
-        // Search Logic
+        if ($request->has('filter_course') && $request->filter_course != 'ALL') {
+            $filter = $request->filter_course;
+            if (str_contains($filter, '-')) {
+                $parts = explode('-', $filter);
+                if(count($parts) >= 2) {
+                    $courseCode = $parts[0];
+                    $yearDigit = $parts[1];
+                    $suffix = match($yearDigit) { '1' => 'st', '2' => 'nd', '3' => 'rd', default => 'th' };
+                    $yearString = $yearDigit . $suffix . ' Year'; 
+                    $query->where('enrollments.course_code', $courseCode)
+                          ->where('enrollments.year_level', 'like', $yearString . '%');
+                }
+            } else {
+                $query->where('enrollments.course_code', $filter);
+            }
+        }
+
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('payments.id', 'like', "%{$search}%")
+                  ->orWhere('payments.transaction_id', 'like', "%{$search}%") 
+                  ->orWhereHas('user', function($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
             });
         }
 
-        $payments = $query->paginate(10);
-
-        // --- NEW: Calculate Pending Count for Notification Bell ---
+        // Order by ID Descending to show newest first
+        $payments = $query->orderBy('payments.id', 'desc')->paginate(10);
+        
         $pendingPaymentsCount = Payment::where('status', 'Pending')->count();
+        $students = User::where('role', 'student')->orderBy('name')->get();
 
-        // Pass 'pendingPaymentsCount' to the view
-        return view('cashier.payments.index', compact('payments', 'pendingPaymentsCount'));
+        return view('cashier.payments.index', compact('payments', 'pendingPaymentsCount', 'students'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:1',
+            'reference_no' => 'nullable|string',
+            'payment_type' => 'required|string',
+        ]);
+
+        $latestEnrollment = Enrollment::where('user_id', $request->user_id)->latest()->first();
+
+        $payment = Payment::create([
+            'user_id' => $request->user_id,
+            'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
+            'amount' => $request->amount,
+            'transaction_id' => $request->reference_no ?? 'CASH-' . time(),
+            'status' => 'Paid', 
+            'payment_method' => $request->payment_type,
+        ]);
+
+        if ($payment->application_id) {
+            Enrollment::where('id', $payment->application_id)->update(['status' => 'Enrolled']);
+        }
+
+        // --- NOTIFICATION LOGIC START ---
+        // Since store() creates it as 'Paid', we notify immediately
+        $recipients = User::whereIn('role', ['registrar', 'admin'])->get();
+        if($recipients->count() > 0){
+            Notification::send($recipients, new StudentPaymentConfirmed($payment));
+        }
+        // --- NOTIFICATION LOGIC END ---
+
+        return back()->with('success', 'Payment of ₱' . number_format($request->amount, 2) . ' processed successfully.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $payment = Payment::findOrFail($id);
+
+        $request->validate([
+            'amount' => 'required|numeric|min:0', 
+            'payment_type' => 'required|string',
+            'reference_no' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $payment->update([
+            'user_id' => $request->user_id,
+            'amount' => $request->amount,
+            'payment_method' => $request->payment_type,
+            'transaction_id' => $request->reference_no,
+        ]);
+
+        return back()->with('success', 'Payment details updated successfully.');
     }
 
     public function updateStatus(Request $request, $id)
     {
         $payment = Payment::findOrFail($id);
+        $request->validate(['status' => 'required|in:Paid,Rejected']);
+        
+        $payment->update(['status' => $request->status]);
 
-        if ($request->has('amount')) {
-            $payment->amount = $request->amount;
-        }
-        if ($request->has('status')) {
-            $payment->status = $request->status;
-        }
+        // --- NOTIFICATION LOGIC START ---
+        // Only notify if the status was changed to 'Paid'
+        if ($request->status === 'Paid') {
+            if ($payment->application_id) {
+                Enrollment::where('id', $payment->application_id)->update(['status' => 'Enrolled']);
+            }
 
-        $payment->save();
-        return back()->with('success', 'Payment updated successfully.');
+            $recipients = User::whereIn('role', ['registrar', 'admin'])->get();
+            if($recipients->count() > 0){
+                Notification::send($recipients, new StudentPaymentConfirmed($payment));
+            }
+        }
+        // --- NOTIFICATION LOGIC END ---
+
+        return back()->with('success', 'Payment status updated to ' . $request->status);
     }
 
     public function destroy($id)
