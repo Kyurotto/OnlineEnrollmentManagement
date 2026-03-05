@@ -1,6 +1,5 @@
 <x-guest-layout>
     <style>
-        /* Removed the Google Fonts import here to speed up mobile loading */
         @media (min-width: 768px) {
             .right-panel-active .sign-in-container {
                 transform: translateX(100%);
@@ -39,59 +38,59 @@
         }
     </style>
 
-    <div class="fixed inset-0 w-screen h-screen bg-[#121212] flex justify-center items-center flex-col z-[9999] font-sans overflow-y-auto py-10">
+    <div class="fixed inset-0 w-screen h-screen bg-gray-50 flex justify-center items-center flex-col z-[9999] font-sans overflow-y-auto py-10">
 
-        <div id="container" class="bg-[#1C1C1E] md:rounded-[20px] shadow-[0_14px_28px_rgba(0,0,0,0.5),0_10px_10px_rgba(0,0,0,0.5)] relative overflow-hidden w-full md:w-[768px] max-w-full min-h-screen md:min-h-[480px] flex flex-col md:block">
+        <div id="container" class="bg-white md:rounded-[20px] shadow-2xl relative overflow-hidden w-full md:w-[768px] max-w-full min-h-screen md:min-h-[480px] flex flex-col md:block border border-gray-200">
 
-            <div class="md:hidden flex w-full bg-[#1C1C1E] text-white">
-                <button id="mobileSignInBtn" class="w-1/2 py-4 font-bold bg-[#10B981]">Log In</button>
-                <button id="mobileSignUpBtn" class="w-1/2 py-4 font-bold">Sign Up</button>
+            <div class="md:hidden flex w-full bg-white text-gray-900 border-b border-gray-200">
+                <button id="mobileSignInBtn" class="w-1/2 py-4 font-bold bg-[#10B981] text-white">Log In</button>
+                <button id="mobileSignUpBtn" class="w-1/2 py-4 font-bold text-gray-600">Sign Up</button>
             </div>
 
-            <div id="mobile-sign-up" class="hidden md:block sign-up-container md:absolute top-0 h-full left-0 w-full md:w-1/2 md:opacity-0 md:z-[1] transition-all duration-[600ms] ease-in-out py-10 md:py-0">
-                <form method="POST" action="{{ route('register') }}" class="bg-[#1C1C1E] flex items-center justify-center flex-col px-8 md:px-12 h-full text-center">
+            <div id="mobile-sign-up" class="hidden md:block sign-up-container md:absolute top-0 h-full left-0 w-full md:w-1/2 md:opacity-0 md:z-[1] transition-all duration-[600ms] ease-in-out py-10 md:py-0 bg-white">
+                <form method="POST" action="{{ route('register') }}" class="flex items-center justify-center flex-col px-8 md:px-12 h-full text-center">
                     @csrf
-                    <h1 class="font-bold text-3xl m-0 text-white">Create Account</h1>
+                    <h1 class="font-bold text-3xl m-0 text-gray-900 mb-4">Create Account</h1>
 
                     <input id="name" type="text" name="name" :value="old('name')" required autofocus placeholder="Name"
-                        class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
+                        class="bg-gray-50 text-gray-900 border border-gray-300 py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-gray-400 shadow-sm" />
                     <x-input-error :messages="$errors->get('name')" class="mt-2 text-rose-500" />
 
                     <input id="email_reg" type="email" name="email" :value="old('email')" required placeholder="Email"
-                        class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
+                        class="bg-gray-50 text-gray-900 border border-gray-300 py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-gray-400 shadow-sm" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2 text-rose-500" />
 
                     <input id="password_reg" type="password" name="password" required placeholder="Password"
-                        class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
+                        class="bg-gray-50 text-gray-900 border border-gray-300 py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-gray-400 shadow-sm" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-rose-500" />
 
                     <input id="password_confirmation" type="password" name="password_confirmation" required placeholder="Confirm Password"
-                        class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
+                        class="bg-gray-50 text-gray-900 border border-gray-300 py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-gray-400 shadow-sm" />
 
-                    <button type="submit" class="mt-4 rounded-full border border-[#10B981] bg-[#10B981] hover:bg-[#059669] hover:border-[#059669] text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none shadow-md shadow-[#10B981]/20">
+                    <button type="submit" class="mt-6 rounded-full border border-[#10B981] bg-[#10B981] hover:bg-[#059669] hover:border-[#059669] text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none shadow-md shadow-[#10B981]/20">
                         Sign Up
                     </button>
-                    <button type="button" id="signIn" class="mt-2  text-white text-xs py-3 px-11">
-                            Sign In
+                    <button type="button" id="signIn" class="mt-2 text-gray-500 hover:text-gray-900 font-semibold text-xs py-3 px-11 transition-colors">
+                            Sign In Instead
                         </button>
                 </form>
             </div>
 
-            <div id="mobile-sign-in" class="block md:block sign-in-container md:absolute top-0 h-full left-0 w-full md:w-1/2 md:z-[2] transition-all duration-[600ms] ease-in-out py-10 md:py-0 flex-grow">
-                <form method="POST" action="{{ route('login') }}" class="bg-[#1C1C1E] flex items-center justify-center flex-col px-8 md:px-12 h-full text-center">
+            <div id="mobile-sign-in" class="block md:block sign-in-container md:absolute top-0 h-full left-0 w-full md:w-1/2 md:z-[2] transition-all duration-[600ms] ease-in-out py-10 md:py-0 flex-grow bg-white">
+                <form method="POST" action="{{ route('login') }}" class="flex items-center justify-center flex-col px-8 md:px-12 h-full text-center">
                     @csrf
-                    <h1 class="font-bold text-3xl m-0 text-white">Sign in</h1>
+                    <h1 class="font-bold text-3xl m-0 text-gray-900 mb-4">Sign in</h1>
 
                     <input id="email" type="text" name="email" :value="old('email')" required autofocus placeholder="Email or Username"
-                        class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
+                        class="bg-gray-50 text-gray-900 border border-gray-300 py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-gray-400 shadow-sm" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2 text-rose-500" />
 
                     <input id="password" type="password" name="password" required placeholder="Password"
-                        class="bg-[#121212] text-white border border-[#27272A] py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-[#52525B]" />
+                        class="bg-gray-50 text-gray-900 border border-gray-300 py-3 px-4 my-2 w-full rounded-md outline-none focus:ring-2 focus:ring-[#10B981] placeholder-gray-400 shadow-sm" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-rose-500" />
 
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="text-[#A1A1AA] text-sm no-underline my-4 hover:text-[#10B981] transition-colors font-semibold">
+                        <a href="{{ route('password.request') }}" class="text-gray-500 text-sm no-underline my-4 hover:text-[#10B981] transition-colors font-semibold">
                             Forgot your password?
                         </a>
                     @endif
@@ -99,8 +98,8 @@
                     <button type="submit" class="mt-2 mb-2 rounded-full border border-[#10B981] bg-[#10B981] hover:bg-[#059669] hover:border-[#059669] text-white text-xs font-bold py-3 px-11 tracking-wider uppercase transition-colors duration-[200ms] ease-in active:scale-95 focus:outline-none shadow-md shadow-[#10B981]/20">
                         Sign In
                     </button>
-                    <button type="button" id="signUp" class="mt-2  text-white text-xs py-3 px-11">
-                            Sign Up
+                    <button type="button" id="signUp" class="mt-2 text-gray-500 hover:text-gray-900 font-semibold text-xs py-3 px-11 transition-colors">
+                            Create Account
                         </button>
                 </form>
             </div>
@@ -152,8 +151,10 @@
             mobileSignUpForm.classList.remove('hidden');
             mobileSignUpForm.classList.add('block');
 
-            mobileSignUpBtn.classList.add('bg-[#10B981]');
-            mobileSignInBtn.classList.remove('bg-[#10B981]');
+            mobileSignUpBtn.classList.add('bg-[#10B981]', 'text-white');
+            mobileSignUpBtn.classList.remove('text-gray-600');
+            mobileSignInBtn.classList.remove('bg-[#10B981]', 'text-white');
+            mobileSignInBtn.classList.add('text-gray-600');
         });
 
         mobileSignInBtn.addEventListener('click', () => {
@@ -163,8 +164,10 @@
             mobileSignInForm.classList.remove('hidden');
             mobileSignInForm.classList.add('block');
 
-            mobileSignInBtn.classList.add('bg-[#10B981]');
-            mobileSignUpBtn.classList.remove('bg-[#10B981]');
+            mobileSignInBtn.classList.add('bg-[#10B981]', 'text-white');
+            mobileSignInBtn.classList.remove('text-gray-600');
+            mobileSignUpBtn.classList.remove('bg-[#10B981]', 'text-white');
+            mobileSignUpBtn.classList.add('text-gray-600');
         });
 
         @if ($errors->has('name') || $errors->has('password_confirmation'))

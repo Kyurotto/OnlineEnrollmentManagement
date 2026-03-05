@@ -12,51 +12,51 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Custom Dark Pagination matching Carbon & Emerald theme */
+        /* Custom Light Pagination matching Emerald theme */
         .custom-pagination p {
-            color: #A1A1AA !important;
+            color: #6B7280 !important;
             font-size: 0.875rem;
         }
 
         .custom-pagination [role="navigation"] span.relative,
         .custom-pagination [role="navigation"] a.relative {
-            background-color: #1C1C1E !important;
-            border-color: #27272A !important;
-            color: #A1A1AA !important;
+            background-color: #FFFFFF !important;
+            border-color: #E5E7EB !important;
+            color: #6B7280 !important;
         }
 
         .custom-pagination [role="navigation"] span[aria-current="page"]>span {
-            background-color: #121212 !important;
+            background-color: #F9FAFB !important;
             border-color: #10B981 !important;
             color: #10B981 !important;
         }
 
         .custom-pagination [role="navigation"] a.relative:hover {
-            background-color: #27272A !important;
-            color: #FFFFFF !important;
+            background-color: #F3F4F6 !important;
+            color: #111827 !important;
         }
 
         .custom-pagination [role="navigation"] svg {
-            color: #A1A1AA !important;
+            color: #6B7280 !important;
         }
     </style>
 </head>
 
-<body class="bg-[#121212] text-[#A1A1AA] flex flex-col min-h-screen">
+<body class="bg-gray-50 text-gray-600 flex flex-col min-h-screen">
 
-    <nav class="bg-[#1C1C1E] border-b border-[#27272A] sticky top-0 z-20">
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-3">
                     <div class="flex items-center gap-3">
                         <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">AD</div>
                         <div>
-                            <h1 class="text-lg font-bold leading-none text-[#FFFFFF]">Admin Panel</h1>
-                            <span class="text-xs text-[#52525B]">Manage Students</span>
+                            <h1 class="text-lg font-bold leading-none text-gray-900">Admin Panel</h1>
+                            <span class="text-xs text-gray-500">Manage Students</span>
                         </div>
                     </div>
 
-                    <div class="flex space-x-6 text-sm font-medium text-[#A1A1AA] h-16 ml-8">
+                    <div class="flex space-x-6 text-sm font-medium text-gray-600 h-16 ml-8">
                         <a href="{{ route('dashboard') }}"
                             class="flex items-center hover:text-[#10B981] transition h-full">
                             Dashboard
@@ -65,15 +65,15 @@
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <div class="text-right hidden sm:block text-[#A1A1AA]">
+                    <div class="text-right hidden sm:block text-gray-500">
                         <div class="text-xs">Signed in as</div>
-                        <div class="text-sm font-bold text-[#FFFFFF]">Administrator</div>
+                        <div class="text-sm font-bold text-gray-900">Administrator</div>
                     </div>
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button
-                            class="bg-red-500 hover:bg-[#3F3F46] text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
+                            class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
                     </form>
                 </div>
             </div>
@@ -88,14 +88,14 @@
             </div>
         @endif
 
-        <div class="bg-[#1C1C1E] rounded-xl shadow-md border border-[#27272A] overflow-hidden mt-6">
-            <div class="px-6 py-4 border-b border-[#27272A] bg-[#1C1C1E]">
-                <h3 class="text-lg font-bold text-[#FFFFFF]">Student List</h3>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
+            <div class="px-6 py-4 border-b border-gray-200 bg-white">
+                <h3 class="text-lg font-bold text-gray-900">Student List</h3>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-[#A1A1AA]">
-                    <thead class="text-xs text-[#52525B] uppercase bg-[#121212] border-b border-[#27272A]">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th scope="col" class="px-6 py-4 font-bold tracking-wider">Last Name</th>
                             <th scope="col" class="px-6 py-4 font-bold tracking-wider">First Name</th>
@@ -106,35 +106,35 @@
                             <th scope="col" class="px-6 py-4 font-bold tracking-wider">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#27272A]">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse($students as $student)
-                            <tr class="bg-[#1C1C1E] hover:bg-[#27272A]/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-white uppercase">
+                            <tr class="bg-white hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-gray-900 uppercase">
                                     {{ $student->last_name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 font-bold text-white uppercase">
+                                <td class="px-6 py-4 font-bold text-gray-900 uppercase">
                                     {{ $student->first_name ?? 'N/A' }}</td>
 
-                                <td class="px-6 py-4 text-[#A1A1AA] lowercase">{{ $student->email }}</td>
+                                <td class="px-6 py-4 text-gray-500 lowercase">{{ $student->email }}</td>
 
                                 <td class="px-6 py-4 font-bold text-[#10B981] text-center uppercase">
                                     {{ $student->program }}</td>
-                                <td class="px-6 py-4 font-medium text-[#A1A1AA] text-center whitespace-nowrap">
+                                <td class="px-6 py-4 font-medium text-gray-600 text-center whitespace-nowrap">
                                     {{ $student->year_display }}</td>
 
-                                <td class="px-6 py-4 text-[#FFFFFF] font-medium lowercase">
+                                <td class="px-6 py-4 text-gray-700 font-medium lowercase">
                                     {{ $student->username }}
                                 </td>
 
                                 <td class="px-6 py-4">
                                     <span
-                                        class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-3 py-1 rounded-full border border-[#10B981]/20">
+                                        class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-3 py-1 rounded-full border border-[#10B981]/20 shadow-sm">
                                         {{ $student->status ?? 'Enrolled' }}
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-[#52525B] italic">No approved
+                                <td colspan="7" class="px-6 py-12 text-center text-gray-500 italic">No approved
                                     students found.</td>
                             </tr>
                         @endforelse
@@ -143,15 +143,15 @@
             </div>
 
             @if ($students->hasPages())
-                <div class="px-6 py-4 border-t border-[#27272A] bg-[#121212] custom-pagination">
+                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 custom-pagination">
                     {{ $students->links() }}
                 </div>
             @endif
         </div>
     </main>
 
-    <footer class="bg-[#1C1C1E] border-t border-[#27272A] py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-[#52525B]">
+    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
             © 2026 Your Institution — Admin Panel
         </div>
     </footer>

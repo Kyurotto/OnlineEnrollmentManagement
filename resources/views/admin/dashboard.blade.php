@@ -16,23 +16,23 @@
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #3F3F46;
+            background-color: #cbd5e1;
             border-radius: 4px;
         }
     </style>
 </head>
 
-<body class="bg-[#121212] text-[#A1A1AA] flex flex-col min-h-screen">
+<body class="bg-gray-50 text-gray-600 flex flex-col min-h-screen">
 
-    <nav class="bg-[#1C1C1E] border-b border-[#27272A] sticky top-0 z-20">
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-3">
                     <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">
                         AD</div>
                     <div>
-                        <h1 class="text-lg font-bold leading-none text-[#FFFFFF]">Admin Dashboard</h1>
-                        <span class="text-xs text-[#52525B]">Manage courses, students and payments</span>
+                        <h1 class="text-lg font-bold leading-none text-gray-900">Admin Dashboard</h1>
+                        <span class="text-xs text-gray-500">Manage courses, students and payments</span>
                     </div>
                 </div>
 
@@ -41,10 +41,10 @@
                     <div class="relative cursor-pointer group mr-4">
 
                         <div
-                            class="absolute right-0 top-10 w-80 bg-[#1C1C1E] border border-[#27272A] shadow-2xl rounded-xl hidden group-hover:block z-50 overflow-hidden">
+                            class="absolute right-0 top-10 w-80 bg-white border border-gray-200 shadow-2xl rounded-xl hidden group-hover:block z-50 overflow-hidden">
                             <div
-                                class="px-4 py-3 bg-[#121212] border-b border-[#27272A] flex justify-between items-center">
-                                <h3 class="text-sm font-bold text-[#FFFFFF] uppercase tracking-wide">NOTIFICATIONS</h3>
+                                class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">NOTIFICATIONS</h3>
                                 @if ($pendingCount > 0)
                                     <span
                                         class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-2 py-0.5 rounded-full border border-[#10B981]/20">
@@ -53,10 +53,10 @@
                                 @endif
                             </div>
 
-                            <div class="max-h-64 overflow-y-auto custom-scrollbar bg-[#121212] p-2 space-y-2">
+                            <div class="max-h-64 overflow-y-auto custom-scrollbar bg-white p-2 space-y-2">
                                 @forelse($notifications as $notif)
                                     <a href="{{ route('admin.applications.index') }}"
-                                        class="block bg-[#1C1C1E] p-3 rounded-lg border border-[#27272A] hover:border-[#10B981] hover:shadow-sm transition group">
+                                        class="block bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-[#10B981] hover:shadow-sm transition group">
                                         @if ($notif->status === 'Enrolled')
                                             <p
                                                 class="text-sm font-bold text-[#10B981] group-hover:text-[#059669] flex items-center gap-1">
@@ -68,33 +68,33 @@
                                                 </svg>
                                                 Student Paid ₱{{ number_format($notif->paid_amount ?? 0, 2) }}
                                             </p>
-                                            <p class="text-xs text-[#A1A1AA] mt-1">
+                                            <p class="text-xs text-gray-500 mt-1">
                                                 <span
-                                                    class="font-bold text-[#FFFFFF] uppercase">{{ $notif->user->first_name ?? '' }}
+                                                    class="font-bold text-gray-900 uppercase">{{ $notif->user->first_name ?? '' }}
                                                     {{ $notif->user->last_name ?? '' }}</span>
                                                 is now already <span class="font-bold text-[#10B981]">PAID</span>.
                                             </p>
                                         @else
-                                            <p class="text-sm font-bold text-[#FFFFFF] group-hover:text-[#10B981]">
+                                            <p class="text-sm font-bold text-gray-900 group-hover:text-[#10B981]">
                                                 New Application Received
                                             </p>
-                                            <p class="text-xs text-[#A1A1AA] mt-1">
+                                            <p class="text-xs text-gray-500 mt-1">
                                                 <span
-                                                    class="font-medium text-[#FFFFFF]">{{ $notif->user->first_name ?? '' }}
+                                                    class="font-medium text-gray-900">{{ $notif->user->first_name ?? '' }}
                                                     {{ $notif->user->last_name ?? '' }}</span>
                                                 applied for <span
                                                     class="uppercase font-bold text-[#10B981]">{{ $notif->course_code ?? 'Course' }}</span>.
                                             </p>
                                         @endif
-                                        <p class="text-[10px] text-[#52525B] mt-2 text-right">
+                                        <p class="text-[10px] text-gray-400 mt-2 text-right">
                                             {{ $notif->updated_at->diffForHumans() }}</p>
                                     </a>
                                 @empty
-                                    <div class="text-center py-6 text-[#52525B] text-sm">No new notifications</div>
+                                    <div class="text-center py-6 text-gray-500 text-sm">No new notifications</div>
                                 @endforelse
                             </div>
 
-                            <div class="bg-[#1C1C1E] p-2 border-t border-[#27272A] text-center">
+                            <div class="bg-gray-50 p-2 border-t border-gray-200 text-center">
                                 <a href="{{ route('admin.applications.index') }}"
                                     class="text-xs font-bold text-[#10B981] hover:text-[#059669]">View All
                                     Applications →</a>
@@ -102,14 +102,14 @@
                         </div>
                     </div>
                     <div class="text-right hidden sm:block">
-                        <div class="text-xs text-[#52525B]">Signed in as</div>
-                        <div class="text-sm font-bold text-[#FFFFFF]">Administrator</div>
+                        <div class="text-xs text-gray-500">Signed in as</div>
+                        <div class="text-sm font-bold text-gray-900">Administrator</div>
                     </div>
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button
-                            class="bg-red-500 hover:bg-[#3F3F46] text-[#FFFFFF] text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
+                            class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
                     </form>
                 </div>
             </div>
@@ -118,9 +118,9 @@
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
 
-        <div class="bg-[#1C1C1E] p-8 rounded-xl shadow-md border border-[#27272A]">
-            <h2 class="text-2xl font-bold text-[#FFFFFF] mb-2">Welcome, Administrator</h2>
-            <p class="text-[#A1A1AA] mb-2">Use the controls below to manage the system.</p>
+        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome, Administrator</h2>
+            <p class="text-gray-500 mb-2">Use the controls below to manage the system.</p>
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-3">
                     <div class="bg-[#10B981]/10 p-2 rounded-lg text-[#10B981]">
@@ -130,10 +130,10 @@
                             </path>
                         </svg>
                     </div>
-                    <h3 class="font-bold text-lg text-[#FFFFFF]">Application Summary This Month</h3>
+                    <h3 class="font-bold text-lg text-gray-900">Application Summary This Month</h3>
                 </div>
                 <div
-                    class="px-4 py-1.5 bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] text-sm font-semibold rounded-full">
+                    class="px-4 py-1.5 bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] text-sm font-semibold rounded-full shadow-sm">
                     {{ $weekRange }}
                 </div>
             </div>
@@ -141,14 +141,14 @@
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 @foreach ($weekDates as $day)
                     <div
-                        class="border {{ $day['is_today'] ? 'border-[#10B981] bg-[#10B981]/5' : 'border-[#27272A] bg-[#121212]/50' }} rounded-xl flex flex-col h-[400px]">
+                        class="border {{ $day['is_today'] ? 'border-[#10B981] bg-[#10B981]/5 shadow-sm' : 'border-gray-200 bg-gray-50' }} rounded-xl flex flex-col h-[400px]">
 
                         <div
-                            class="text-center py-4 border-b {{ $day['is_today'] ? 'border-[#10B981]/30 bg-[#10B981]/10 rounded-t-xl' : 'border-[#27272A]' }}">
-                            <p class="text-[10px] font-bold text-[#52525B] uppercase tracking-widest">
+                            class="text-center py-4 border-b {{ $day['is_today'] ? 'border-[#10B981]/30 bg-[#10B981]/10 rounded-t-xl' : 'border-gray-200' }}">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                                 {{ $day['day_name'] }}</p>
                             <p
-                                class="text-2xl font-bold {{ $day['is_today'] ? 'text-[#10B981]' : 'text-[#FFFFFF]' }} mt-1">
+                                class="text-2xl font-bold {{ $day['is_today'] ? 'text-[#10B981]' : 'text-gray-900' }} mt-1">
                                 {{ $day['day_num'] }}</p>
                         </div>
 
@@ -157,29 +157,29 @@
 
                             @if ($dayApps->isEmpty())
                                 <div
-                                    class="h-full flex items-center justify-center text-[#3F3F46] italic text-[11px] uppercase tracking-wider font-bold">
+                                    class="h-full flex items-center justify-center text-gray-400 italic text-[11px] uppercase tracking-wider font-bold">
                                     NO APPLICATIONS
                                 </div>
                             @else
                                 @foreach ($dayApps as $app)
                                     @php
-                                        $borderColor = 'border-[#27272A]';
-                                        $dotColor = 'bg-[#3F3F46]';
-                                        $textColor = 'text-[#A1A1AA]';
+                                        $borderColor = 'border-gray-200';
+                                        $dotColor = 'bg-gray-400';
+                                        $textColor = 'text-gray-600';
                                         if ($app->status === 'Pending') {
-                                            $borderColor = 'border-amber-500/30';
+                                            $borderColor = 'border-amber-300 bg-amber-50';
                                             $dotColor = 'bg-amber-400';
-                                            $textColor = 'text-amber-400';
+                                            $textColor = 'text-amber-600';
                                         } elseif (in_array($app->status, ['Enrolled', 'Approved'])) {
-                                            $borderColor = 'border-[#10B981]/30';
+                                            $borderColor = 'border-[#10B981]/30 bg-[#10B981]/5';
                                             $dotColor = 'bg-[#10B981]';
                                             $textColor = 'text-[#10B981]';
                                         }
                                     @endphp
 
                                     <div
-                                        class="bg-[#1C1C1E] p-3 rounded-lg border {{ $borderColor }} shadow-sm hover:shadow-md transition cursor-default">
-                                        <p class="text-sm font-bold text-[#FFFFFF] truncate"
+                                        class="bg-white p-3 rounded-lg border {{ $borderColor }} shadow-sm hover:shadow-md transition cursor-default">
+                                        <p class="text-sm font-bold text-gray-900 truncate"
                                             title="{{ $app->user->name ?? 'Unknown Student' }}">
                                             {{ $app->user->name ?? 'Unknown Student' }}
                                         </p>
@@ -200,11 +200,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <a href="{{ route('admin.courses.index') }}" class="block">
                 <div
-                    class="bg-[#1C1C1E] p-6 rounded-xl shadow-md border border-[#27272A] hover:border-[#10B981] transition-all cursor-pointer flex justify-between items-start group h-full">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-[#10B981] hover:shadow-md transition-all cursor-pointer flex justify-between items-start group h-full">
                     <div>
-                        <h3 class="font-bold text-lg text-[#FFFFFF] group-hover:text-[#10B981] transition">Manage
+                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Courses</h3>
-                        <p class="text-sm text-[#A1A1AA] mt-2">Create, edit or remove course offerings.</p>
+                        <p class="text-sm text-gray-500 mt-2">Create, edit or remove course offerings.</p>
                     </div>
                     <div class="text-[#10B981]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,11 +217,11 @@
 
             <a href="{{ route('admin.students.index') }}" class="block">
                 <div
-                    class="bg-[#1C1C1E] p-6 rounded-xl shadow-md border border-[#27272A] hover:border-[#10B981] transition-all cursor-pointer flex justify-between items-start group h-full">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-[#10B981] hover:shadow-md transition-all cursor-pointer flex justify-between items-start group h-full">
                     <div>
-                        <h3 class="font-bold text-lg text-[#FFFFFF] group-hover:text-[#10B981] transition">Manage
+                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Students</h3>
-                        <p class="text-sm text-[#A1A1AA] mt-2">View and update student records.</p>
+                        <p class="text-sm text-gray-500 mt-2">View and update student records.</p>
                     </div>
                     <div class="text-[#10B981]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,11 +235,11 @@
 
             <a href="{{ route('admin.payments.index') }}" class="block">
                 <div
-                    class="bg-[#1C1C1E] p-6 rounded-xl shadow-md border border-[#27272A] hover:border-[#10B981] transition-all cursor-pointer flex justify-between items-start group h-full">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-[#10B981] hover:shadow-md transition-all cursor-pointer flex justify-between items-start group h-full">
                     <div>
-                        <h3 class="font-bold text-lg text-[#FFFFFF] group-hover:text-[#10B981] transition">Manage
+                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Payments</h3>
-                        <p class="text-sm text-[#A1A1AA] mt-2">View transactions and resolve issues.</p>
+                        <p class="text-sm text-gray-500 mt-2">View transactions and resolve issues.</p>
                     </div>
                     <div class="text-[#10B981]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,11 +253,11 @@
 
             <a href="{{ route('admin.applications.index') }}" class="block">
                 <div
-                    class="bg-[#1C1C1E] p-6 rounded-xl shadow-md border border-[#27272A] hover:border-[#10B981] transition-all cursor-pointer flex justify-between items-start group h-full">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-[#10B981] hover:shadow-md transition-all cursor-pointer flex justify-between items-start group h-full">
                     <div>
-                        <h3 class="font-bold text-lg text-[#FFFFFF] group-hover:text-[#10B981] transition">Manage
+                        <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Applications</h3>
-                        <p class="text-sm text-[#A1A1AA] mt-2">Review, accept, or decline applications.</p>
+                        <p class="text-sm text-gray-500 mt-2">Review, accept, or decline applications.</p>
                     </div>
                     <div class="text-[#10B981]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,28 +270,28 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-3 bg-[#1C1C1E] p-8 rounded-xl shadow-md border border-[#27272A]">
-                <h3 class="font-bold text-lg text-[#FFFFFF] mb-6">Overview</h3>
+            <div class="lg:col-span-3 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                <h3 class="font-bold text-lg text-gray-900 mb-6">Overview</h3>
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                    <div class="bg-[#121212] p-4 rounded-lg border border-[#27272A]">
-                        <div class="text-xs text-[#A1A1AA] mb-1 uppercase tracking-wide font-bold">Active Courses</div>
-                        <div class="text-2xl font-bold text-[#FFFFFF]">{{ $stats['active_courses'] }}</div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Active Courses</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $stats['active_courses'] }}</div>
                     </div>
-                    <div class="bg-[#121212] p-4 rounded-lg border border-[#27272A]">
-                        <div class="text-xs text-[#A1A1AA] mb-1 uppercase tracking-wide font-bold">Total Students</div>
-                        <div class="text-2xl font-bold text-[#FFFFFF]">{{ $stats['students'] }}</div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Total Students</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $stats['students'] }}</div>
                     </div>
-                    <div class="bg-[#121212] p-4 rounded-lg border border-[#27272A]">
-                        <div class="text-xs text-[#A1A1AA] mb-1 uppercase tracking-wide font-bold">Enrolled</div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Enrolled</div>
                         <div class="text-2xl font-bold text-[#10B981]">{{ $stats['enrolled'] ?? 0 }}</div>
                     </div>
-                    <div class="bg-[#121212] p-4 rounded-lg border border-[#27272A]">
-                        <div class="text-xs text-[#A1A1AA] mb-1 uppercase tracking-wide font-bold">Payments</div>
-                        <div class="text-2xl font-bold text-[#FFFFFF]">{{ $stats['total_payments'] }}</div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Payments</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $stats['total_payments'] }}</div>
                     </div>
-                    <div class="bg-[#121212] p-4 rounded-lg border border-[#27272A]">
-                        <div class="text-xs text-[#A1A1AA] mb-1 uppercase tracking-wide font-bold">Applications</div>
-                        <div class="text-2xl font-bold text-[#FFFFFF]">{{ $stats['applications'] }}</div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Applications</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $stats['applications'] }}</div>
                     </div>
                 </div>
             </div>
@@ -299,8 +299,8 @@
 
     </main>
 
-    <footer class="bg-[#1C1C1E] border-t border-[#27272A] py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-[#52525B]">
+    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
             © 2026 Your Institution — Admin Panel
         </div>
     </footer>
