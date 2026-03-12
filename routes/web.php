@@ -8,33 +8,42 @@ use Illuminate\Http\Request;
 
 // General
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\EnrollmentController;
 
-// Admin
-use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
-use App\Http\Controllers\Admin\CourseController;
-use App\Http\Controllers\Admin\StudentController as AdminStudent;
-use App\Http\Controllers\Admin\PaymentController as AdminPayment;
-use App\Http\Controllers\Admin\ApplicationController as AdminApplication;
+// Admin Full-Page Livewire Components
+use App\Livewire\DashboardManager;
+use App\Livewire\CourseManager;
+use App\Livewire\PaymentManager;
+use App\Livewire\StudentManager;
+use App\Livewire\ApplicationManager;
 
-// Registrar
-use App\Http\Controllers\Registrar\DashboardController as RegistrarDashboard;
-use App\Http\Controllers\Registrar\StudentController as RegistrarStudent;
-use App\Http\Controllers\Registrar\ApplicationController as RegistrarApplication;
-use App\Http\Controllers\Registrar\ProgramController;
-use App\Http\Controllers\Registrar\SemesterController;
-use App\Http\Controllers\Registrar\AcademicYearController;
-use App\Http\Controllers\Registrar\SectionController;
+// Registrar Full-Page Livewire Components
+use App\Livewire\RegistrarDashboardManager;
+use App\Livewire\RegistrarStudentManager;
+use App\Livewire\RegistrarApplicationManager;
+use App\Livewire\RegistrarProgramManager;
+use App\Livewire\RegistrarSemesterManager;
+use App\Livewire\RegistrarAcademicYearManager;
+use App\Livewire\RegistrarSectionManager;
 
-// Cashier
+// Cashier Livewire Components
+use App\Livewire\CashierDashboardManager;
+use App\Livewire\CashierPaymentManager;
+
+// Old Cashier MVC Controllers
 use App\Http\Controllers\Cashier\DashboardController as CashierDashboard;
-use App\Http\Controllers\Cashier\CashierPaymentController; // Ensure this matches your file class name
+use App\Http\Controllers\Cashier\CashierPaymentController;
 
+// Student Full-Page Livewire Components
+use App\Livewire\StudentDashboardManager;
+use App\Livewire\StudentEnrollmentManager;
+use App\Livewire\StudentPaymentManager;
+use App\Livewire\StudentProfileManager;
 
-// Student
+// Old Student MVC Controllers
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Student\PaymentController as StudentPayment;
-// Note: If your student payment file is in App\Http\Student, move it to App\Http\Controllers\Student
+use App\Http\Controllers\Student\ProfileController as StudentProfile;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,28 +81,35 @@ Route::get('/dashboard', function () {
 | REGISTRAR ROUTES
 |--------------------------------------------------------------------------
 */
+// Old MVC Routes
 Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Registrar\DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('students', \App\Http\Controllers\Registrar\StudentController::class)->except(['create', 'store', 'destroy']);
+    Route::get('/applications', [\App\Http\Controllers\Registrar\ApplicationController::class, 'index'])->name('applications.index');
+    Route::get('students/{student}/applications', [\App\Http\Controllers\Registrar\ApplicationController::class, 'index'])->name('students.applications.index');
+    Route::get('applications/{application}', [\App\Http\Controllers\Registrar\ApplicationController::class, 'show'])->name('applications.show');
+    Route::put('applications/{application}', [\App\Http\Controllers\Registrar\ApplicationController::class, 'update'])->name('applications.update');
+    Route::delete('applications/{application}', [\App\Http\Controllers\Registrar\ApplicationController::class, 'destroy'])->name('applications.destroy');
 
-    // Dashboard
-    Route::get('/dashboard', [RegistrarDashboard::class, 'index'])->name('dashboard');
+    Route::resource('programs', \App\Http\Controllers\Registrar\ProgramController::class)->except(['show']);
+    Route::resource('academic_years', \App\Http\Controllers\Registrar\AcademicYearController::class)->except(['show']);
+    Route::put('academic_years/{academic_year}/set-active', [\App\Http\Controllers\Registrar\AcademicYearController::class, 'setActive'])->name('academic_years.set_active');
 
-    // Students & Applications
-    Route::resource('students', RegistrarStudent::class);
-    
-    // Custom Application Routes
-    Route::get('/applications', [RegistrarApplication::class, 'index'])->name('applications.index');
-    Route::get('/applications/{id}', [RegistrarApplication::class, 'show'])->name('applications.show');
-    Route::patch('/applications/{id}', [RegistrarApplication::class, 'update'])->name('applications.update');
-    Route::delete('/applications/{id}', [RegistrarApplication::class, 'destroy'])->name('applications.destroy');
+    Route::resource('semesters', \App\Http\Controllers\Registrar\SemesterController::class)->except(['show']);
+    Route::put('semesters/{semester}/set-active', [\App\Http\Controllers\Registrar\SemesterController::class, 'setActive'])->name('semesters.set_active');
 
-    // Academic Management (Programs, Semesters, etc.)
-    Route::resource('programs', ProgramController::class);
-    Route::resource('academic-years', AcademicYearController::class);
-    Route::resource('semesters', SemesterController::class);
-    Route::resource('sections', SectionController::class);
+    Route::resource('sections', \App\Http\Controllers\Registrar\SectionController::class)->except(['show']);
+});
 
-    // Custom Semester Activation
-    Route::patch('/semesters/{id}/activate', [SemesterController::class, 'activate'])->name('semesters.activate');
+// Livewire Registrar Routes
+Route::middleware(['auth', 'can:registrar'])->prefix('livewire-registrar')->name('livewire.registrar.')->group(function () {
+    Route::get('/dashboard', RegistrarDashboardManager::class)->name('dashboard');
+    Route::get('/students', RegistrarStudentManager::class)->name('students.index');
+    Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
+    Route::get('/programs', RegistrarProgramManager::class)->name('programs.index');
+    Route::get('/academic-years', RegistrarAcademicYearManager::class)->name('academic-years.index');
+    Route::get('/semesters', RegistrarSemesterManager::class)->name('semesters.index');
+    Route::get('/sections', RegistrarSectionManager::class)->name('sections.index');
 });
 
 /*
@@ -102,27 +118,33 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/api/pending-counts', [\App\Http\Controllers\Admin\DashboardController::class, 'getPendingCounts'])->name('api.pending-counts');
+    Route::post('/api/notifications/mark-read', [\App\Http\Controllers\Admin\DashboardController::class, 'markNotificationRead'])->name('api.notifications.mark-read');
 
-    Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+    // Applications Management
+    Route::get('/applications', [\App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');
+    Route::put('/applications/{id}/approve', [\App\Http\Controllers\Admin\ApplicationController::class, 'approve'])->name('applications.approve');
+    Route::put('/applications/{id}/reject', [\App\Http\Controllers\Admin\ApplicationController::class, 'reject'])->name('applications.reject');
 
-    // Resources
-    Route::resource('courses', CourseController::class);
-    
-    // Payments (Admin View)
-    Route::get('/payments', [AdminPayment::class, 'index'])->name('payments.index');
-    Route::post('/payments', [AdminPayment::class, 'store'])->name('payments.store');
-    Route::patch('/payments/{id}', [AdminPayment::class, 'update'])->name('payments.update');
-    Route::patch('/payments/{id}/status', [AdminPayment::class, 'updateStatus'])->name('payments.updateStatus');
-    Route::delete('/payments/{id}', [AdminPayment::class, 'destroy'])->name('payments.destroy');
+    // Payments Management
+    Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/export', [\App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');
 
-    // Students
-    Route::resource('students', AdminStudent::class);
+    // Courses Management
+    Route::resource('courses', \App\Http\Controllers\Admin\CourseController::class)->except(['show']);
 
-    // Applications
-    Route::get('/applications', [AdminApplication::class, 'index'])->name('applications.index');
-    Route::get('/applications/{id}', [AdminApplication::class, 'show'])->name('applications.show');
-    Route::patch('/applications/{id}', [AdminApplication::class, 'update'])->name('applications.update');
-    Route::delete('/applications/{id}', [AdminApplication::class, 'destroy'])->name('applications.destroy');
+    // Students Management
+    Route::get('/students', [\App\Http\Controllers\Admin\StudentController::class, 'index'])->name('students.index');
+});
+
+// Livewire Admin Routes
+Route::middleware(['auth', 'can:admin'])->prefix('livewire-admin')->name('livewire.admin.')->group(function () {
+    Route::get('/dashboard', DashboardManager::class)->name('dashboard');
+    Route::get('/courses', CourseManager::class)->name('courses.index');
+    Route::get('/payments', PaymentManager::class)->name('payments.index');
+    Route::get('/students', StudentManager::class)->name('students.index');
+    Route::get('/applications', ApplicationManager::class)->name('applications.index');
 });
 
 /*
@@ -131,21 +153,18 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')->group(function () {
-    
-    // Dashboard
-    Route::get('/dashboard', [App\Http\Controllers\Cashier\DashboardController::class, 'index'])->name('dashboard');
-
-    // Payments Management
+    Route::get('/dashboard', [CashierDashboard::class, 'index'])->name('dashboard');
     Route::get('/payments', [CashierPaymentController::class, 'index'])->name('payments.index');
     Route::post('/payments', [CashierPaymentController::class, 'store'])->name('payments.store');
-    
-    // Update Details (Edit Amount/Ref)
     Route::patch('/payments/{id}', [CashierPaymentController::class, 'update'])->name('payments.update');
-    
-    // Update Status (Approve/Reject)
     Route::patch('/payments/{id}/status', [CashierPaymentController::class, 'updateStatus'])->name('payments.updateStatus');
-    
     Route::delete('/payments/{id}', [CashierPaymentController::class, 'destroy'])->name('payments.destroy');
+});
+
+// Livewire Cashier Routes
+Route::middleware(['auth', 'can:cashier'])->prefix('livewire-cashier')->name('livewire.cashier.')->group(function () {
+    Route::get('/dashboard', CashierDashboardManager::class)->name('dashboard');
+    Route::get('/payments', CashierPaymentManager::class)->name('payments.index');
 });
 
 /*
@@ -154,25 +173,26 @@ Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')-
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
-    
-    // Dashboard
     Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
     
     // Enrollment
     Route::get('/enrollment/create', [EnrollmentController::class, 'create'])->name('enrollment.create');
     Route::post('/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
 
-    // NEW: Document Uploads
-    Route::get('/documents', [App\Http\Controllers\Student\DocumentController::class, 'create'])->name('documents.create');
-    Route::post('/documents', [App\Http\Controllers\Student\DocumentController::class, 'store'])->name('documents.store');
-
-    // Payment History
+    // Payments
     Route::get('/payments', [StudentPayment::class, 'index'])->name('payment.index');
+    Route::get('/payments/{payment}/invoice', [StudentPayment::class, 'invoice'])->name('payment.invoice');
 
-    // Profile (Read Only View)
-    Route::get('/profile', function () {
-        return view('student.profile');
-    })->name('profile');
+    // Profile
+    Route::get('/profile', [StudentProfile::class, 'edit'])->name('profile');
+});
+
+// Livewire Student Routes
+Route::middleware(['auth', 'verified'])->prefix('livewire-student')->name('livewire.student.')->group(function () {
+    Route::get('/dashboard', StudentDashboardManager::class)->name('dashboard');
+    Route::get('/enrollment/create', StudentEnrollmentManager::class)->name('enrollment.create');
+    Route::get('/payments', StudentPaymentManager::class)->name('payment');
+    Route::get('/profile', StudentProfileManager::class)->name('profile');
 });
 
 /*

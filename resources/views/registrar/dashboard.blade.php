@@ -7,18 +7,10 @@
     <title>Registrar Dashboard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body {
-            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 4px;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .modal-backdrop { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 4px; }
     </style>
 </head>
 
@@ -39,7 +31,7 @@
                 <div class="flex items-center gap-6">
                     <div class="relative cursor-pointer group mr-4">
                         <div class="relative">
-                            <svg class="w-7 h-7 text-gray-500 group-hover:text-[#10B981] transition" fill="none"
+                            <svg class="w-7 h-7 text-gray-400 group-hover:text-[#10B981] transition shadow-sm" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -60,12 +52,12 @@
                                 <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">NOTIFICATIONS</h3>
                             </div>
 
-                            <div class="max-h-64 overflow-y-auto custom-scrollbar bg-white p-2 space-y-2">
+                            <div class="max-h-64 overflow-y-auto custom-scrollbar bg-gray-50 p-2 space-y-2">
                                 @forelse($notifications as $notif)
                                     <div data-application="{{ json_encode($notif) }}"
                                         data-user="{{ json_encode($notif->user) }}"
-                                        onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user))"
-                                        class="block bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-[#10B981] hover:shadow-sm transition group cursor-pointer">
+                                    onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user))"
+                                        class="block bg-white p-3 rounded-lg border border-gray-200 hover:border-[#10B981] hover:shadow-sm transition group cursor-pointer">
                                         @if ($notif->status === 'Enrolled')
                                             @php
                                                 $paidAmount = \App\Models\Payment::where(
@@ -106,11 +98,11 @@
                                             {{ $notif->updated_at->diffForHumans() }}</p>
                                     </div>
                                 @empty
-                                    <div class="text-center py-6 text-gray-500 text-sm">No notifications</div>
+                                    <div class="text-center py-6 text-gray-400 text-sm">No notifications</div>
                                 @endforelse
                             </div>
 
-                            <div class="bg-gray-50 p-2 border-t border-gray-200 text-center">
+                            <div class="bg-white p-2 border-t border-gray-200 text-center">
                                 <a href="{{ route('registrar.applications.index') }}"
                                     class="text-xs font-bold text-[#10B981] hover:text-[#059669]">View All
                                     Applications →</a>
@@ -134,14 +126,14 @@
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
         @if (session('status'))
-            <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative shadow-sm">
+            <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative">
                 {{ session('status') }}
             </div>
         @endif
 
         <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome, Registrar</h2>
-            <p class="text-gray-500 mb-2">Manage academic records and configuration.</p>
+            <p class="text-gray-600 mb-2">Manage academic records and configuration.</p>
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-3">
                     <div class="bg-[#10B981]/10 p-2 rounded-lg text-[#10B981]">
@@ -154,7 +146,7 @@
                     <h3 class="font-bold text-lg text-gray-900">Application Summary This Month</h3>
                 </div>
                 <div
-                    class="px-4 py-1.5 bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] text-sm font-semibold rounded-full shadow-sm">
+                    class="px-4 py-1.5 bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] text-sm font-semibold rounded-full">
                     {{ $weekRange }}
                 </div>
             </div>
@@ -162,18 +154,18 @@
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 @foreach ($weekDates as $day)
                     <div
-                        class="border {{ $day['is_today'] ? 'border-[#10B981] bg-[#10B981]/5 shadow-sm' : 'border-gray-200 bg-gray-50' }} rounded-xl flex flex-col h-[400px]">
+                        class="border {{ $day['is_today'] ? 'border-[#10B981] bg-[#10B981]/5' : 'border-gray-200 bg-gray-50' }} rounded-xl flex flex-col h-[400px]">
 
                         <div
-                            class="text-center py-4 border-b {{ $day['is_today'] ? 'border-[#10B981]/30 bg-[#10B981]/10 rounded-t-xl' : 'border-gray-200' }}">
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                            class="text-center py-4 border-b {{ $day['is_today'] ? 'border-[#10B981]/30 bg-[#10B981]/20 rounded-t-xl' : 'border-gray-200' }}">
+                            <p class="text-[10px] font-bold text-[#52525B] uppercase tracking-widest">
                                 {{ $day['day_name'] }}</p>
                             <p
                                 class="text-2xl font-bold {{ $day['is_today'] ? 'text-[#10B981]' : 'text-gray-900' }} mt-1">
                                 {{ $day['day_num'] }}</p>
                         </div>
 
-                        <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scrollbar bg-white rounded-b-xl">
+                        <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scrollbar">
                             @php $dayApps = $appsByDate->get($day['date_string'], collect()); @endphp
 
                             @if ($dayApps->isEmpty())
@@ -186,13 +178,13 @@
                                     @php
                                         $borderColor = 'border-gray-200';
                                         $dotColor = 'bg-gray-400';
-                                        $textColor = 'text-gray-500';
+                                        $textColor = 'text-gray-400';
                                         if ($app->status === 'Pending') {
-                                            $borderColor = 'border-amber-300 bg-amber-50';
+                                            $borderColor = 'border-amber-500/50';
                                             $dotColor = 'bg-amber-400';
-                                            $textColor = 'text-amber-600';
+                                            $textColor = 'text-amber-400';
                                         } elseif (in_array($app->status, ['Enrolled', 'Approved'])) {
-                                            $borderColor = 'border-[#10B981]/30 bg-[#10B981]/5';
+                                            $borderColor = 'border-[#10B981]/50';
                                             $dotColor = 'bg-[#10B981]';
                                             $textColor = 'text-[#10B981]';
                                         }
@@ -223,11 +215,11 @@
 
             <a href="{{ route('registrar.students.index') }}" class="block">
                 <div
-                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
                     <div>
                         <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Students</h3>
-                        <p class="text-sm text-gray-500 mt-2">View and update student records.</p>
+                        <p class="text-sm text-gray-600 mt-2">View and update student records.</p>
                     </div>
                     <div class="text-[#10B981] p-2 bg-[#10B981]/10 rounded-lg group-hover:bg-[#10B981]/20 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,11 +233,11 @@
 
             <a href="{{ route('registrar.applications.index') }}" class="block">
                 <div
-                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
                     <div>
                         <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Applications</h3>
-                        <p class="text-sm text-gray-500 mt-2">Review, accept, or decline.</p>
+                        <p class="text-sm text-gray-600 mt-2">Review, accept, or decline.</p>
                     </div>
                     <div class="text-[#10B981] p-2 bg-[#10B981]/10 rounded-lg group-hover:bg-[#10B981]/20 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,11 +251,11 @@
 
             <a href="{{ route('registrar.programs.index') }}" class="block">
                 <div
-                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
                     <div>
                         <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Programs</h3>
-                        <p class="text-sm text-gray-500 mt-2">Add or edit academic programs.</p>
+                        <p class="text-sm text-gray-600 mt-2">Add or edit academic programs.</p>
                     </div>
                     <div class="text-[#10B981] p-2 bg-[#10B981]/10 rounded-lg group-hover:bg-[#10B981]/20 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,13 +267,13 @@
                 </div>
             </a>
 
-            <a href="{{ route('registrar.academic-years.index') }}" class="block">
+            <a href="{{ route('registrar.academic_years.index') }}" class="block">
                 <div
-                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
                     <div>
                         <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Academic
                             Years</h3>
-                        <p class="text-sm text-gray-500 mt-2">Open/Close school years.</p>
+                        <p class="text-sm text-gray-600 mt-2">Open/Close school years.</p>
                     </div>
                     <div class="text-[#10B981] p-2 bg-[#10B981]/10 rounded-lg group-hover:bg-[#10B981]/20 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,11 +287,11 @@
 
             <a href="{{ route('registrar.semesters.index') }}" class="block">
                 <div
-                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
                     <div>
                         <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Semesters</h3>
-                        <p class="text-sm text-gray-500 mt-2">Set active semester.</p>
+                        <p class="text-sm text-gray-600 mt-2">Set active semester.</p>
                     </div>
                     <div class="text-[#10B981] p-2 bg-[#10B981]/10 rounded-lg group-hover:bg-[#10B981]/20 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,11 +304,11 @@
 
             <a href="{{ route('registrar.sections.index') }}" class="block">
                 <div
-                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer flex justify-between items-start group h-full hover:border-[#10B981]">
                     <div>
                         <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#10B981] transition">Manage
                             Sections</h3>
-                        <p class="text-sm text-gray-500 mt-2">Organize student blocks.</p>
+                        <p class="text-sm text-gray-600 mt-2">Organize student blocks.</p>
                     </div>
                     <div class="text-[#10B981] p-2 bg-[#10B981]/10 rounded-lg group-hover:bg-[#10B981]/20 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,19 +326,19 @@
             <div class="lg:col-span-3 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
                 <h3 class="font-bold text-lg text-gray-900 mb-6">System Overview</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Students</div>
                         <div class="text-2xl font-bold text-gray-900">{{ $stats['students'] }}</div>
                     </div>
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Applications</div>
                         <div class="text-2xl font-bold text-gray-900">{{ $stats['applications'] }}</div>
                     </div>
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Enrolled</div>
                         <div class="text-2xl font-bold text-[#10B981]">{{ $stats['enrolled'] }}</div>
                     </div>
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <div class="text-xs text-gray-500 mb-1 uppercase tracking-wide font-bold">Programs</div>
                         <div class="text-2xl font-bold text-gray-900">{{ $stats['programs'] }}</div>
                     </div>
@@ -357,45 +349,45 @@
     </main>
 
     <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-400">
             © 2026 Your Institution — Registrar Panel
         </div>
     </footer>
 
     <div id="applicationModal"
-        class="fixed inset-0 bg-black/40 hidden z-50 overflow-y-auto h-full w-full flex items-center justify-center backdrop-blur-sm">
+        class="fixed inset-0 z-50 hidden opacity-0 pointer-events-none transition-opacity duration-200 p-4 modal-backdrop flex items-center justify-center">
         <div
-            class="relative mx-auto p-0 border border-gray-200 w-full max-w-2xl shadow-2xl rounded-lg bg-white transform transition-all">
+            class="bg-white w-full max-w-2xl rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-200" id="modalContent">
             <div
-                class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-white rounded-t-lg">
                 <h3 class="text-xl font-bold text-gray-900" id="modalTitle">Application Details</h3>
                 <button onclick="closeModal()"
-                    class="text-gray-400 hover:text-gray-600 transition focus:outline-none text-2xl">&times;</button>
+                    class="text-gray-400 hover:text-[#10B981] transition focus:outline-none text-2xl">&times;</button>
             </div>
-            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
                 <div class="space-y-4">
                     <h4
-                        class="text-xs font-bold text-[#10B981] uppercase tracking-wider border-b border-gray-200 pb-2">
+                        class="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2">
                         Student Information</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div><span class="block text-gray-500 text-xs">Full Name</span><span
+                        <div><span class="block text-gray-400 text-xs">Full Name</span><span
                                 class="font-bold text-gray-900 uppercase" id="modalName"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Email</span><span
+                        <div><span class="block text-gray-400 text-xs">Email</span><span
                                 class="font-medium text-gray-900" id="modalEmail"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Course</span><span
+                        <div><span class="block text-gray-400 text-xs">Course</span><span
                                 class="font-bold text-[#10B981]" id="modalCourse"></span></div>
-                        <div><span class="block text-gray-500 text-xs">Year</span><span
+                        <div><span class="block text-gray-400 text-xs">Year</span><span
                                 class="font-medium text-gray-900" id="modalYear"></span></div>
-                        <div class="col-span-2"><span class="block text-gray-500 text-xs">Status</span><span
+                        <div class="col-span-2"><span class="block text-gray-400 text-xs">Status</span><span
                                 id="modalStatus" class="font-bold text-gray-900"></span></div>
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg flex justify-end gap-3">
+            <div class="px-6 py-4 bg-white border-t border-gray-200 rounded-b-lg flex justify-end gap-3">
                 <button onclick="closeModal()"
-                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">Close</button>
+                    class="px-4 py-2 bg-gray-100 border border-gray-200 rounded text-sm font-medium text-gray-600 hover:bg-gray-200 transition">Close</button>
                 <a href="{{ route('registrar.applications.index') }}"
-                    class="px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg text-sm font-bold shadow-sm transition">Go
+                    class="px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded text-sm font-bold shadow-sm transition">Go
                     to Applications</a>
             </div>
         </div>
@@ -413,10 +405,20 @@
             document.getElementById('modalYear').innerText = app.year_level || 'N/A';
             document.getElementById('modalStatus').innerText = app.status;
             document.getElementById('applicationModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('applicationModal').classList.remove('opacity-0', 'pointer-events-none');
+                document.getElementById('modalContent').classList.remove('scale-95');
+            }, 10);
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            document.getElementById('applicationModal').classList.add('hidden');
+            document.getElementById('applicationModal').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('modalContent').classList.add('scale-95');
+            setTimeout(() => {
+                document.getElementById('applicationModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 200);
         }
         window.onclick = function(event) {
             const modal = document.getElementById('applicationModal');

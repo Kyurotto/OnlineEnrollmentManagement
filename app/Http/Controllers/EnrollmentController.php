@@ -55,10 +55,6 @@ class EnrollmentController extends Controller
             'last_name'   => 'required',
             'birth_date'  => 'required',
             'email'       => 'required',
-            'form_138'    => 'nullable|mimes:jpeg,png,jpg,pdf|max:5120',
-            'good_moral'  => 'nullable|mimes:jpeg,png,jpg,pdf|max:5120',
-            'psa'         => 'nullable|mimes:jpeg,png,jpg,pdf|max:5120',
-            'id_picture'  => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
         // 2. FALLBACK VALUES: Use Active Year/Semester if form didn't send them
@@ -99,21 +95,6 @@ class EnrollmentController extends Controller
                 'guardian_contact'   => $request->guardian_contact,
             ]
         );
-
-        // Handle File Uploads
-        if ($request->hasFile('form_138')) {
-            $enrollment->form_138_path = $request->file('form_138')->store('documents/form138', 'public');
-        }
-        if ($request->hasFile('good_moral')) {
-            $enrollment->good_moral_path = $request->file('good_moral')->store('documents/good_moral', 'public');
-        }
-        if ($request->hasFile('psa')) {
-            $enrollment->psa_path = $request->file('psa')->store('documents/psa', 'public');
-        }
-        if ($request->hasFile('id_picture')) {
-            $enrollment->id_picture_path = $request->file('id_picture')->store('documents/id_pictures', 'public');
-        }
-        $enrollment->save();
 
         // 5. CREATE PAYMENT RECORD
         Payment::updateOrCreate(

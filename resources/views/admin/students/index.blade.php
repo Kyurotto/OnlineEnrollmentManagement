@@ -12,9 +12,9 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Custom Light Pagination matching Emerald theme */
+        /* Custom Light Pagination matching Carbon & Emerald theme */
         .custom-pagination p {
-            color: #6B7280 !important;
+            color: #4B5563 !important;
             font-size: 0.875rem;
         }
 
@@ -22,7 +22,7 @@
         .custom-pagination [role="navigation"] a.relative {
             background-color: #FFFFFF !important;
             border-color: #E5E7EB !important;
-            color: #6B7280 !important;
+            color: #4B5563 !important;
         }
 
         .custom-pagination [role="navigation"] span[aria-current="page"]>span {
@@ -37,7 +37,7 @@
         }
 
         .custom-pagination [role="navigation"] svg {
-            color: #6B7280 !important;
+            color: #9CA3AF !important;
         }
     </style>
 </head>
@@ -56,7 +56,7 @@
                         </div>
                     </div>
 
-                    <div class="flex space-x-6 text-sm font-medium text-gray-600 h-16 ml-8">
+                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16 ml-8">
                         <a href="{{ route('dashboard') }}"
                             class="flex items-center hover:text-[#10B981] transition h-full">
                             Dashboard
@@ -95,7 +95,7 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-600">
-                    <thead class="text-xs text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th scope="col" class="px-6 py-4 font-bold tracking-wider">Last Name</th>
                             <th scope="col" class="px-6 py-4 font-bold tracking-wider">First Name</th>
@@ -114,27 +114,27 @@
                                 <td class="px-6 py-4 font-bold text-gray-900 uppercase">
                                     {{ $student->first_name ?? 'N/A' }}</td>
 
-                                <td class="px-6 py-4 text-gray-500 lowercase">{{ $student->email }}</td>
+                                <td class="px-6 py-4 text-gray-600 lowercase">{{ $student->email }}</td>
 
                                 <td class="px-6 py-4 font-bold text-[#10B981] text-center uppercase">
                                     {{ $student->program }}</td>
                                 <td class="px-6 py-4 font-medium text-gray-600 text-center whitespace-nowrap">
                                     {{ $student->year_display }}</td>
 
-                                <td class="px-6 py-4 text-gray-700 font-medium lowercase">
+                                <td class="px-6 py-4 text-gray-900 font-medium lowercase">
                                     {{ $student->username }}
                                 </td>
 
                                 <td class="px-6 py-4">
                                     <span
-                                        class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-3 py-1 rounded-full border border-[#10B981]/20 shadow-sm">
+                                        class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-3 py-1 rounded-full border border-[#10B981]/20">
                                         {{ $student->status ?? 'Enrolled' }}
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-gray-500 italic">No approved
+                                <td colspan="7" class="px-6 py-12 text-center text-gray-400 italic">No approved
                                     students found.</td>
                             </tr>
                         @endforelse
@@ -151,7 +151,7 @@
     </main>
 
     <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-400">
             © 2026 Your Institution — Admin Panel
         </div>
     </footer>

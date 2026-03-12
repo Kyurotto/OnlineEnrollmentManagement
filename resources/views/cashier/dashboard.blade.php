@@ -89,8 +89,8 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-[#10B981]/30 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
                 <h3 class="font-bold text-gray-900 flex items-center gap-2">
                     <span class="w-2 h-2 bg-[#10B981] rounded-full animate-pulse"></span>
                     Payments Received Today
@@ -103,7 +103,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="text-xs text-gray-600 border-b border-gray-200 bg-white">
+                        <tr class="text-xs text-gray-500 border-b border-gray-100 bg-white">
                             <th class="px-6 py-3 font-bold uppercase tracking-wider">Receipt #</th>
                             <th class="px-6 py-3 font-bold uppercase tracking-wider">Student Name</th>
                             <th class="px-6 py-3 font-bold uppercase tracking-wider">Time</th>
@@ -141,7 +141,7 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
                 <h3 class="font-bold text-gray-600">Yesterday's Payments</h3>
                 <span class="text-xs font-medium text-gray-500">
                     {{ \Carbon\Carbon::yesterday()->format('F d, Y') }}

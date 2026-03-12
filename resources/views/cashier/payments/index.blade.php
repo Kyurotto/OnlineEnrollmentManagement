@@ -9,8 +9,9 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .table-container { min-height: 300px; }
+        .modal-backdrop { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-600">
@@ -70,7 +71,7 @@
                 </button>
             </div>
 
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div class="bg-white px-6 py-4 border-b border-gray-100">
                 <form action="{{ route('cashier.payments.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-grow">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -116,7 +117,7 @@
             <div class="overflow-visible table-container">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-xs text-gray-600 uppercase tracking-wider">
+                        <tr class="bg-white border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wider">
                             <th class="py-3 px-6 font-bold">Receipt #</th>
                             <th class="py-3 px-6 font-bold">Student Name</th>
                             <th class="py-3 px-6 font-bold">Program/Year</th>
@@ -159,13 +160,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50"> {{ $payments->withQueryString()->links() }} </div>
+            <div class="px-6 py-4 border-t border-gray-100 bg-white"> {{ $payments->withQueryString()->links() }} </div>
         </div>
     </main>
 
-    <div id="paymentModal" class="fixed inset-0 bg-black/40 hidden z-50 flex items-center justify-center backdrop-blur-sm transition-opacity opacity-0 pointer-events-none p-4">
+    <div id="paymentModal" class="fixed inset-0 z-50 hidden opacity-0 pointer-events-none transition-opacity duration-200 p-4 modal-backdrop flex items-center justify-center">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md transform scale-95 transition-transform duration-200 border border-gray-200" id="modalContent">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-xl">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white rounded-t-xl">
                 <h3 class="text-lg font-bold text-gray-900" id="modalTitle">Process New Payment</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
