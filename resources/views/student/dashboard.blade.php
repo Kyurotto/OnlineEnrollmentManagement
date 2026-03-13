@@ -152,7 +152,7 @@
             </div>
             @endif
             
-            <a href="{{ route('student.payment.index') }}" class="group block h-full">
+            <a href="{{ route('student.payment') }}" class="group block h-full">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-full flex flex-col justify-between hover:border-[#10B981] hover:shadow-md transition-all cursor-pointer">
                     <div class="flex justify-between items-start">
                         <div>

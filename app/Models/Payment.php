@@ -16,6 +16,8 @@ class Payment extends Model
         'amount',
         'status',
         'payment_date',
+        'transaction_id',
+        'payment_method',
     ];
 
     // 2. DEFINE RELATIONSHIPS (Critical for Cashier View)

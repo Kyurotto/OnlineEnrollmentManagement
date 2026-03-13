@@ -20,7 +20,7 @@
 <body class="bg-gray-50 text-gray-600 flex flex-col min-h-screen">
     
     <!-- Extracted Livewire Navbar -->
-    <livewire:navbar />
+    <livewire:admin.admin-navbar />
 
     <!-- Page Content -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">

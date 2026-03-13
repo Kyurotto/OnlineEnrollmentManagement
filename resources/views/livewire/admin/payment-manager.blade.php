@@ -1,24 +1,27 @@
 <div>
     @if(session('success'))
-        <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded-lg relative mb-6 flex items-center gap-2 shadow-sm font-medium">
+        <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded-lg relative mb-6 flex items-center gap-2 shadow-sm">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            <span>{{ session('success') }}</span>
+            <span class="font-medium">{{ session('success') }}</span>
         </div>
     @endif
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" wire:click="closeDropdowns">
-        <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+        <div wire:loading class="absolute inset-0 bg-white/50 z-10 flex items-center justify-center backdrop-blur-sm">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10B981]"></div>
+        </div>
+
+        <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white">
             <div>
                 <h2 class="text-xl font-bold text-gray-900">Payments History</h2>
                 <p class="text-sm text-gray-500 mt-1">Manage and verify student transactions.</p>
             </div>
-            <button wire:click="openCreateModal" class="bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold py-2.5 px-5 rounded-lg shadow-md shadow-[#10B981]/10 uppercase tracking-wide transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Process New Payment
+            <button wire:click="prepareCreate" class="bg-[#10B981] hover:bg-[#059669] text-white text-sm font-bold px-5 py-2 rounded-lg transition-all shadow-md shadow-[#10B981]/10 uppercase tracking-wide">
+                + New Payment
             </button>
         </div>
 
-        <div class="bg-white px-6 py-4 border-b border-gray-100">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-grow">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -59,10 +62,10 @@
             </div>
         </div>
 
-        <div class="overflow-visible table-container">
-            <table class="w-full text-left border-collapse">
+        <div class="table-container">
+            <table class="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                    <tr class="bg-white border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wider">
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs text-gray-600 uppercase tracking-wider">
                         <th class="py-3 px-6 font-bold">Receipt #</th>
                         <th class="py-3 px-6 font-bold">Student Name</th>
                         <th class="py-3 px-6 font-bold">Program/Year</th>
@@ -85,19 +88,17 @@
                             @elseif($payment->status === 'Rejected') <span class="bg-rose-50 text-rose-600 text-[10px] font-bold px-2.5 py-1 rounded-full border border-rose-200 uppercase tracking-wide shadow-sm">Rejected</span>
                             @else <span class="bg-amber-50 text-amber-600 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-200 uppercase tracking-wide shadow-sm">Pending</span> @endif
                         </td>
-                        <td class="py-4 px-6 text-right relative">
-                            <div class="relative inline-block text-left">
-                                <button wire:click.stop="toggleDropdown({{ $payment->id }})" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-3 py-1.5 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 focus:outline-none transition-all">Actions<svg class="-mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
-
-                                <div class="{{ $activeDropdown === $payment->id ? '' : 'hidden' }} origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white border border-gray-200 ring-1 ring-black ring-opacity-5 z-50">
-                                    <div class="py-1" role="menu">
-                                        <button wire:click="editPayment({{ $payment->id }})" class="w-full text-left block px-4 py-2 text-xs text-[#10B981] font-semibold hover:bg-gray-50" role="menuitem"><span class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>Edit Details</span></button>
-                                        @if($payment->status !== 'Paid')
-                                        <button wire:click="markAsPaid({{ $payment->id }})" class="w-full text-left block px-4 py-2 text-xs text-gray-700 font-semibold hover:bg-gray-50"><span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Mark as Paid</span></button>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                        <td class="py-4 px-6 text-right">
+                             <div class="flex justify-end gap-2">
+                                <button wire:click="editPayment({{ $payment->id }})" class="p-2 text-[#10B981] hover:bg-[#10B981]/10 rounded-lg transition-colors" title="Edit Details">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+                                @if($payment->status !== 'Paid')
+                                <button wire:click="updateStatus({{ $payment->id }}, 'Paid')" class="p-2 text-gray-400 hover:text-[#10B981] hover:bg-[#10B981]/10 rounded-lg transition-colors" title="Mark as Paid">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </button>
+                                @endif
+                             </div>
                         </td>
                     </tr>
                     @empty
@@ -106,34 +107,38 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-6 py-4 border-t border-gray-100 bg-white"> {{ $payments->links() }} </div>
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50"> {{ $payments->links() }} </div>
     </div>
 
-    <div class="fixed inset-0 z-50 p-4 modal-backdrop flex items-center justify-center transition-opacity duration-200 {{ $showModal ? '' : 'hidden opacity-0 pointer-events-none' }}">
+    @if($showModal)
+    <div class="fixed inset-0 bg-gray-500/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0" wire:click="closeModal"></div>
-
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative z-10 border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white rounded-t-xl">
+         
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md border border-gray-200 relative z-10 overflow-hidden transform transition-all scale-100">
+            
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                 <h3 class="text-lg font-bold text-gray-900">{{ $isEditMode ? 'Edit Payment Details' : 'Process New Payment' }}</h3>
-                <button wire:click="closeModal" class="text-gray-400 hover:text-gray-600 transition focus:outline-none">
+                <button type="button" wire:click="closeModal" class="text-gray-400 hover:text-gray-600 transition focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <form wire:submit.prevent="savePayment" class="p-6 space-y-5">
+            <form wire:submit.prevent="{{ $isEditMode ? 'update' : 'store' }}" class="p-6 space-y-5">
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Select Student</label>
-                    <select wire:model="payment_user_id" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all appearance-none cursor-pointer shadow-sm" required>
-                        <option value="" disabled selected>Search or select a student...</option>
+                    <select wire:model="user_id" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all shadow-sm" required>
+                        <option value="" disabled>Select a student...</option>
                         @foreach($students as $student)
                             <option value="{{ $student->id }}">{{ $student->name }} ({{ $student->email }})</option>
                         @endforeach
                     </select>
+                    @error('user_id') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Amount (₱)</label>
-                    <input type="number" wire:model="payment_amount" step="0.01" class="w-full bg-white border border-gray-300 text-[#10B981] rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none font-bold transition-all placeholder-gray-400 shadow-sm" placeholder="0.00" required>
+                    <input type="number" wire:model="amount" step="0.01" class="w-full bg-white border border-gray-300 text-[#10B981] rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none font-bold transition-all placeholder-gray-400 shadow-sm" required>
+                    @error('amount') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
@@ -144,18 +149,25 @@
                         <option value="PayMaya">PayMaya</option>
                         <option value="Bank Transfer">Bank Transfer</option>
                     </select>
+                    @error('payment_type') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Reference No. (Optional)</label>
-                    <input type="text" wire:model="payment_reference_no" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all placeholder-gray-400 shadow-sm" placeholder="OR Number">
+                    <input type="text" wire:model="reference_no" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all placeholder-gray-400 shadow-sm" placeholder="OR Number">
+                    @error('reference_no') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="pt-4 flex justify-end gap-3">
-                    <button type="button" wire:click="closeModal" class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-900 border border-transparent transition">Cancel</button>
-                    <button type="submit" class="px-6 py-2.5 text-sm bg-[#10B981] hover:bg-[#059669] text-white font-bold rounded-lg shadow-md shadow-[#10B981]/10 transition-all uppercase tracking-wide">Save Payment</button>
+                    <button type="button" wire:click="closeModal" class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-900 transition border border-transparent">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-sm bg-[#10B981] hover:bg-[#059669] text-white font-bold rounded-lg shadow-md shadow-[#10B981]/10 transition-all uppercase tracking-wide">
+                        <span wire:loading.remove wire:target="{{ $isEditMode ? 'update' : 'store' }}">Save Payment</span>
+                        <span wire:loading wire:target="{{ $isEditMode ? 'update' : 'store' }}">Saving...</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
+    @endif
+</div>
 </div>
