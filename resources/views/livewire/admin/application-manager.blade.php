@@ -24,16 +24,32 @@
         @endif
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-white">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-white flex-col sm:flex-row gap-4">
                 <h3 class="text-lg font-bold text-gray-900">Applications List</h3>
-                @if ($applications->total() > 0)
-                    <span class="bg-gray-50 text-[#10B981] border border-[#10B981]/20 px-3 py-1 rounded-full text-xs font-bold">
-                        {{ $applications->total() }} Total
-                    </span>
-                @endif
+                
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="relative flex-grow sm:flex-grow-0 sm:w-64">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </div>
+                        <input type="text" wire:model.live.debounce.300ms="search" class="pl-10 w-full bg-white border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#10B981] outline-none transition-all placeholder-gray-400 shadow-sm" placeholder="Search by name or email...">
+                    </div>
+                    
+                    <select wire:model.live="statusFilter" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-[#10B981] block w-40 p-2 shadow-sm cursor-pointer outline-none">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Enrolled">Paid / Enrolled</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto relative">
+                <div wire:loading class="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10B981]"></div>
+                </div>
+
                 <table class="w-full text-sm text-left text-gray-600">
                     <thead class="text-xs text-gray-500 uppercase bg-gray-50">
                         <tr>
@@ -196,14 +212,7 @@
                     </div>
 
                     <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex justify-between items-center shrink-0">
-                        @if ($selectedApp->status === 'Pending')
-                            <div class="gap-3 flex">
-                                <button wire:click="approveApplication({{ $selectedApp->id }})" class="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Approve</button>
-                                <button wire:click="rejectApplication({{ $selectedApp->id }})" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Reject</button>
-                            </div>
-                        @else
-                            <div></div>
-                        @endif
+                        <div></div>
                         <button wire:click="closeModal" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold transition ml-auto">Close</button>
                     </div>
                 @endif
