@@ -1,20 +1,15 @@
 <div>
     <div class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-lg font-bold text-gray-900">Enrollment Application</h1>
-                <div class="flex items-center gap-2">
-                    <p class="text-xs text-gray-500">Submit an application, upload documents and record payments.</p>
+            <div class="flex items-center gap-3">
+                <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">SD</div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-900 leading-none mb-1">Enrollment Application</h1>
+                    <p class="text-xs text-gray-500 leading-none">Submit an application, upload documents and record payments.</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{{ route('student.dashboard') }}" wire:navigate class="text-sm text-gray-500 hover:text-[#10B981] transition font-medium">← Back to Dashboard</a>
-                @if(request()->routeIs('student.dashboard'))
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-4 rounded shadow transition-colors">Logout</button>
-                </form>
-                @endif
             </div>
         </div>
     </div>
@@ -212,14 +207,14 @@
                             <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                                 <svg class="w-8 h-8 mb-3 text-[#10B981] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
                                 <p class="mb-2 text-sm text-gray-600 leading-tight">
-                                    @if($form_138)
-                                        <span class="font-bold text-gray-900">{{ $form_138->getClientOriginalName() }}</span>
+                                @if($form_137)
+                                    <span class="font-bold text-gray-900">{{ $form_137->getClientOriginalName() }}</span>
                                     @else
                                         <span class="font-semibold text-[#10B981]">Tap to upload</span> or take a photo
                                     @endif
                                 </p>
                             </div>
-                            <input type="file" wire:model="form_138" class="hidden" accept="image/*,application/pdf" />
+                        <input type="file" wire:model="form_137" class="hidden" accept="image/*,application/pdf" />
                         </label>
                     </div>
 
@@ -301,7 +296,6 @@
             <div class="flex justify-end pt-4 border-t border-gray-200">
                 <button type="submit"
                     class="bg-[#10B981] hover:bg-[#059669] text-white font-bold py-3 px-8 rounded-lg shadow-md transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-[#10B981]">
-                    <span wire:loading.remove wire:target="submitApplication">Submit Enrollment</span>
                     <span wire:loading.remove wire:target="submitEnrollment">Submit Enrollment</span>
                     <span wire:loading wire:target="submitEnrollment">Submitting...</span>
                 </button>

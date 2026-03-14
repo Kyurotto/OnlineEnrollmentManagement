@@ -1,24 +1,25 @@
 <div>
 <div>
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">SD</div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-900">Profile</h1>
-                    <p class="text-xs text-gray-500">Manage your account and view recent activity.</p>
+                    <h1 class="text-xl font-bold text-gray-900 leading-none mb-1">Profile</h1>
+                    <p class="text-xs text-gray-500 leading-none">Manage your account and view recent activity.</p>
                 </div>
+            </div>
 
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('student.dashboard') }}" wire:navigate
-                        class="text-sm text-gray-500 hover:text-[#10B981] transition font-medium">← Back to Dashboard</a>
-                    @if(request()->routeIs('student.dashboard'))
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button
-                            class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
-                    </form>
-                    @endif
-                </div>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('student.dashboard') }}" wire:navigate
+                    class="text-sm text-gray-500 hover:text-[#10B981] transition font-medium">← Back to Dashboard</a>
+                @if(request()->routeIs('student.dashboard'))
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button
+                        class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
+                </form>
+                @endif
             </div>
         </div>
     </nav>
@@ -153,4 +154,5 @@
             </form>
         </div>
     </main>
+</div>
 </div>

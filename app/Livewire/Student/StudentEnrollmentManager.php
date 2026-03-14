@@ -82,6 +82,7 @@ class StudentEnrollmentManager extends Component
             'activeSemester' => Semester::where('is_active', true)->first(),
             'academicYears' => AcademicYear::all(),
             'activeYear' => AcademicYear::where('is_active', true)->first(),
-        ]);
+
+        ])->layout('components.layouts.student');
     }
 }

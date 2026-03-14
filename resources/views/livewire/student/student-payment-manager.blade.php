@@ -1,11 +1,13 @@
 <div>
 <div>
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-20">
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold text-gray-900">Pay School Fees</h1>
-                <p class="text-xs text-gray-500">Record a payment. An administrator will verify and update the status.
-                </p>
+            <div class="flex items-center gap-3">
+                <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">SD</div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 leading-none mb-1">Pay School Fees</h1>
+                    <p class="text-xs text-gray-500 leading-none">Record a payment. An administrator will verify and update the status.</p>
+                </div>
             </div>
             <div class="flex items-center gap-4">
                 <a href="{{ route('student.dashboard') }}" wire:navigate
@@ -48,4 +50,5 @@
                 </div>
             </div>
     </main>
+</div>
 </div>
