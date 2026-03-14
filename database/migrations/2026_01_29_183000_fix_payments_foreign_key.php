@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
-            // 1. Drop the old foreign key constraint that points to 'enrollment_applications'
-            $table->dropForeign('payments_application_id_foreign');
+            // 1. (Skipped) We removed the old constraint from the initial migration
+            // so migrate:fresh works smoothly.
+            // $table->dropForeign('payments_application_id_foreign');
 
             // 2. Add the new foreign key constraint pointing to 'enrollments'
             $table->foreign('application_id')
@@ -30,10 +31,6 @@ return new class extends Migration
     {
         Schema::table('payments', function (Blueprint $table) {
             $table->dropForeign(['application_id']);
-            $table->foreign('application_id')
-                  ->references('id')
-                  ->on('enrollment_applications')
-                  ->nullOnDelete();
         });
     }
 };

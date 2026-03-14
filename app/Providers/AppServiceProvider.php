@@ -24,19 +24,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // 1. Admin Gate
         Gate::define('admin', function (User $user) {
-            return $user->role === 'admin';
-        });
+        $employee = \DB::table('employees')->where('user_id', $user->id)->first();
+        return ($user->role === 'admin') || ($employee && $employee->role === 'admin');
+    });
 
-        // 2. Cashier Gate
-        Gate::define('cashier', function (User $user) {
-            return $user->role === 'cashier';
-        });
+    // 2. Cashier Gate
+    Gate::define('cashier', function (User $user) {
+        $employee = \DB::table('employees')->where('user_id', $user->id)->first();
+        return ($user->role === 'cashier') || ($employee && $employee->role === 'cashier');
+    });
 
-        // 3. REGISTRAR GATE (New)
-        Gate::define('registrar', function (User $user) {
-            return $user->role === 'registrar';
+    // 3. REGISTRAR GATE
+    Gate::define('registrar', function (User $user) {
+        // This checks if the user exists in the employees table with the 'registrar' role
+        $employee = \DB::table('employees')->where('user_id', $user->id)->first();
+        return ($user->role === 'registrar') || ($employee && $employee->role === 'registrar');
         });
 
         // Notification Logic (Shared between Admin and Registrar)

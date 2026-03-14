@@ -59,4 +59,9 @@ class User extends Authenticatable
         'status' => 'string',
         'role' => 'string',
     ];
+
+    public function employee()
+{
+    return $this->hasOne(\Illuminate\Support\Facades\DB::table('employees'), 'user_id');
+}
 }
