@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('application_id')->nullable()->constrained('enrollment_applications')->nullOnDelete();
+        $table->foreignId('application_id')->nullable(); // Foreign key is added in a later migration
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
         $table->decimal('amount', 10, 2);
         $table->enum('payment_status', ['pending', 'completed', 'failed'])->default('pending');

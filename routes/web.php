@@ -30,6 +30,9 @@ use App\Livewire\Student\StudentEnrollmentManager;
 use App\Livewire\Student\StudentPaymentManager;
 use App\Livewire\Student\StudentProfileManager;
 
+// Admin Staff Manager
+use App\Livewire\StaffManager;
+
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -48,16 +51,26 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        if (Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif (Auth::user()->role === 'registrar') {
-            return redirect()->route('registrar.dashboard');
-        } elseif (Auth::user()->role === 'cashier') {
-            return redirect()->route('cashier.dashboard');
-        }
-        return redirect()->route('student.dashboard');
-    })->name('dashboard');
+    $user = Auth::user();
+
+    // Look for the user in the employees table
+    $employee = \DB::table('employees')->where('user_id', $user->id)->first();
+
+    // Determine the role from either table
+    $role = $employee ? $employee->role : $user->role;
+
+    if ($role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    } elseif ($role === 'registrar') {
+        return redirect()->route('registrar.dashboard');
+    } elseif ($role === 'cashier') {
+        return redirect()->route('cashier.dashboard');
+    }
+
+    return redirect()->route('student.dashboard');
+})->name('dashboard');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -85,6 +98,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/payments', PaymentManager::class)->name('payments.index');
     Route::get('/students', StudentManager::class)->name('students.index');
     Route::get('/applications', ApplicationManager::class)->name('applications.index');
+
 
     // API/Export routes
     Route::get('/payments/export', [\App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');
