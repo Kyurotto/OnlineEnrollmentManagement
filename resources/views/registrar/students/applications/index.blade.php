@@ -1,128 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enrollment Applications - Registrar</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-    body { font-family: 'Inter', sans-serif; }
-    .modal-backdrop { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 4px; }
-    </style>
-</head>
-
-<body class="bg-gray-50 text-gray-600 flex flex-col min-h-screen">
-
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center gap-8">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">RD</div>
-                        <div>
-                            <h1 class="text-lg font-bold leading-none text-gray-900">Registrar Panel</h1>
-                            <span class="text-xs text-gray-500">Manage Applications</span>
-                        </div>
-                    </div>
-                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
-                        <a href="{{ route('registrar.dashboard') }}"
-                            class="flex items-center hover:text-[#10B981] transition h-full">Dashboard</a>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-6">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+<x-layouts.registrar title="Enrollment Applications">
+    <div class="space-y-6 animate-in fade-in duration-500">
         @if(session('success'))
-        <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6">
-            {{ session('success') }}
-        </div>
+            <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                <span class="text-xs font-black uppercase tracking-widest">{{ session('success') }}</span>
+            </div>
         @endif
 
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
-                <h3 class="text-lg font-bold text-gray-900">Applications List</h3>
-                <span class="bg-gray-50 text-[#10B981] border border-[#10B981]/10 px-3 py-1 rounded-full text-xs font-bold">
-                    {{ $pendingCount }} Pending
-                </span>
+        <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
+            <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Applications</h2>
+                    <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1"></p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/5">
+                        {{ $pendingCount }} Pending Approval
+                    </span>
+                </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse font-bold">
                     <thead>
-                        <tr class="border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50">
-                            <th class="px-6 py-4">ID</th>
-                            <th class="px-6 py-4">Student Name</th>
-                            <th class="px-6 py-4">Email</th>
-                            <th class="px-6 py-4">Course Applied</th>
-                            <th class="px-6 py-4">Date</th>
-                            <th class="px-6 py-4">Status</th>
-                            <th class="px-6 py-4">Actions</th>
+                        <tr class="text-[10px] text-white/20 uppercase tracking-[0.2em] bg-white/[0.02]">
+                            <th class="py-6 px-8">ID</th>
+                            <th class="py-6 px-8">Applicant Name</th>
+                            <th class="py-6 px-8">Email</th>
+                            <th class="py-6 px-8">Program</th>
+                            <th class="py-6 px-8">Submission Date</th>
+                            <th class="py-6 px-8">Status</th>
+                            <th class="py-6 px-8 text-right">Operations</th>
                         </tr>
                     </thead>
-                    <tbody class="text-sm text-gray-600 divide-y divide-gray-100">
+                    <tbody class="text-xs divide-y divide-white/5">
                         @forelse($applications as $application)
-                        <tr class="hover:bg-gray-50/50 transition">
-                            <td class="px-6 py-4 text-gray-400">#{{ $application->id }}</td>
-                            <td class="px-6 py-4 font-bold text-gray-900 uppercase whitespace-nowrap">
-                                {{ $application->last_name }}, {{ $application->first_name }}
-                                {{ $application->middle_name }}
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
+                            <td class="py-6 px-8">
+                                <div class="flex flex-col">
+                                    <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider block font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                    <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
+                                </div>
                             </td>
-                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap lowercase">
-                                {{ $application->email }}
+                            <td class="py-6 px-8 text-white/40 lowercase tracking-tight">{{ $application->email }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                <span class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
+                                <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_level }})</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="font-bold text-[#10B981]">{{ $application->course_code }}</span>
-                                <span class="text-gray-400 text-xs ml-1 font-normal">
-                                    ({{ $application->year_level }})
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">
-                                {{ $application->created_at->format('M d, Y') }}
-                            </td>
-                            <td class="px-6 py-4">
+                            <td class="py-6 px-8 text-white/30 font-medium italic tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
+                            <td class="py-6 px-8">
                                 @php
                                 $badgeColor = match(ucfirst($application->status)) {
-                                    'Approved' => 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20',
-                                    'Enrolled' => 'bg-sky-50 text-sky-600 border-sky-100',
-                                    'Rejected' => 'bg-rose-50 text-rose-600 border-rose-100',
-                                    'Pending' => 'bg-amber-50 text-amber-600 border-amber-100',
-                                    default => 'bg-gray-100 text-gray-600',
+                                    'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                    'Enrolled' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                    'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                    'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                    default => 'bg-white/5 text-white/40 border-white/10',
                                 };
                                 $displayText = ucfirst($application->status);
                                 if ($displayText === 'Enrolled') { $displayText = 'Paid'; }
                                 @endphp
-                                <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $badgeColor }}">
+                                <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
                                     {{ $displayText }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-2">
+                            <td class="py-6 px-8 text-right">
+                                <div class="flex justify-end items-center gap-3">
                                     <button type="button" data-application="{{ json_encode($application) }}"
                                         data-user="{{ json_encode($application->user) }}"
                                         onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
-                                        class="bg-[#10B981] hover:bg-[#059669] text-white px-3 py-1 rounded text-xs font-bold transition shadow-sm">
-                                        View
+                                        class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
+                                        View Details
                                     </button>
 
                                     <form action="{{ route('registrar.applications.destroy', $application->id) }}"
-                                        method="POST" onsubmit="return confirm('Delete this application?');">
+                                        method="POST" onsubmit="return confirm('Delete this application record?');">
                                         @csrf @method('DELETE')
                                         <button type="submit"
-                                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-bold transition border border-gray-200">
-                                            Delete
+                                            class="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </form>
                                 </div>
@@ -130,98 +87,171 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-10 text-center text-gray-400">No applications found.</td>
+                            <td colspan="7" class="py-20 text-center">
+                                <div class="flex flex-col items-center opacity-20">
+                                    <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <span class="text-[10px] font-black uppercase tracking-[0.3em] italic">No Applications Found</span>
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="p-4 border-t border-gray-100 bg-gray-50">
+            <div class="p-8 border-t border-white/5 bg-white/[0.01]">
                 @if(method_exists($applications, 'links'))
-                <div class="custom-pagination">
                     {{ $applications->links() }}
-                </div>
                 @endif
             </div>
         </div>
-    </main>
+    </div>
 
-    <div id="applicationModal" class="fixed inset-0 z-50 hidden opacity-0 pointer-events-none transition-opacity duration-200 p-4 modal-backdrop flex items-center justify-center">
-        <div class="bg-white w-full max-w-4xl rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-200" id="modalContent">
+    {{-- Universal Application Analysis Modal --}}
+    <div id="applicationModal" class="fixed inset-0 z-[100] hidden opacity-0 pointer-events-none transition-all duration-300 items-center justify-center p-4">
+        <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" onclick="closeModal()"></div>
 
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
-                <h2 class="text-xl font-bold text-gray-900" id="modalTitle">Application Details</h2>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-900 transition focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform scale-95 transition-all duration-300" id="modalContent">
+
+            <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
+                <div>
+                    <h2 class="text-2xl font-black text-white italic uppercase tracking-tight" id="modalTitle">Application Details</h2>
+                    <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process</p>
+                </div>
+                <button onclick="closeModal()" class="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <div class="p-6 overflow-y-auto custom-scrollbar bg-white">
-                <div class="space-y-8">
-
-                    <div>
-                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Student Information</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-gray-100 pt-4">
-                            <div><span class="block text-gray-400 text-xs mb-1">Full Name:</span><span class="font-bold text-gray-900 uppercase" id="modalName"></span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Email:</span><span class="font-medium text-gray-700" id="modalEmail"></span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Date of Birth:</span><span class="font-medium text-gray-700" id="modalDob"></span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Age:</span><span class="font-medium text-gray-700" id="modalAge"></span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Gender:</span><span class="font-medium text-gray-700 capitalize" id="modalGender"></span></div>
-                            <div class="col-span-1 md:col-span-2"><span class="block text-gray-400 text-xs mb-1">Address:</span><span class="font-medium text-gray-700" id="modalAddress"></span></div>
+            <div class="p-8 md:p-12 overflow-y-auto custom-scrollbar flex-grow space-y-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    {{-- Student Information --}}
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Student Profile</h3>
                         </div>
-                    </div>
-
-                    <div class="bg-gray-50 border border-gray-100 rounded-lg p-5">
-                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4">Program Details</h3>
-                        <div class="space-y-4 text-sm">
-                            <p><span class="font-bold text-gray-500 mr-2">Program:</span><span class="text-[#10B981] font-bold uppercase" id="modalCourse"></span></p>
-                            <div class="flex gap-4">
-                                <span><span class="font-bold text-gray-500">Year:</span> <span class="text-gray-700 font-medium" id="modalYear"></span></span>
-                                <span><span class="font-bold text-gray-500">Status:</span> <span class="text-[#10B981] font-bold uppercase" id="modalStatus"></span></span>
+                        <div class="grid grid-cols-1 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
+                                <span class="text-lg font-black text-white uppercase italic tracking-tight" id="modalName"></span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Application ID</span>
+                                    <span class="text-xs font-bold text-white/60 lowercase" id="modalEmail"></span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Submitted On</span>
+                                    <span class="text-xs font-bold text-white/60" id="modalDob"></span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Age</span>
+                                    <span class="text-xs font-bold text-white/60" id="modalAge"></span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Gender</span>
+                                    <span class="text-xs font-bold text-white/60 capitalize" id="modalGender"></span>
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-white/5">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Address</span>
+                                    <span class="text-xs font-bold text-white/60 italic" id="modalAddress"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div>
-                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Guardian Information</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-gray-100 pt-4">
-                            <div><span class="block text-gray-400 text-xs mb-1">Father's Name:</span><span class="font-bold text-gray-900 uppercase" id="modalFather"></span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Mother's Name:</span><span class="font-bold text-gray-900 uppercase" id="modalMother"></span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Guardian:</span><span class="font-bold text-gray-900 uppercase" id="modalGuardian"></span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Contact #:</span><span class="font-medium text-gray-700" id="modalContact"></span></div>
+                    {{-- Program & Lifecycle --}}
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Program Details</h3>
+                        </div>
+                        <div class="bg-cyan-500/5 border border-cyan-500/10 rounded-[32px] p-8 space-y-8 h-full flex flex-col justify-center">
+                            <div class="flex flex-col gap-2">
+                                <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest italic">Program</span>
+                                <span class="text-2xl font-black text-white uppercase italic tracking-tighter" id="modalCourse"></span>
+                            </div>
+                            <div class="flex items-center gap-10 pt-6 border-t border-cyan-500/10">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Year Level</span>
+                                    <span class="text-sm font-black text-white uppercase" id="modalYear"></span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
+                                    <span class="text-sm font-black text-cyan-400 uppercase tracking-[0.1em]" id="modalStatus"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div>
-                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3 text-center md:text-left">Submitted Documents</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-gray-100 pt-4" id="modalDocuments">
-                            </div>
+                {{-- Guardian Records --}}
+                <div class="space-y-6 pt-6">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Guardian Information</h3>
                     </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Father's Name</span>
+                            <span class="text-xs font-bold text-white uppercase" id="modalFather"></span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Mother's Name</span>
+                            <span class="text-xs font-bold text-white uppercase" id="modalMother"></span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Guardian Name</span>
+                            <span class="text-xs font-bold text-white uppercase" id="modalGuardian"></span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Emergency Contact</span>
+                            <span class="text-xs font-bold text-white uppercase" id="modalContact"></span>
+                        </div>
+                    </div>
+                </div>
 
+                {{-- Document Assets --}}
+                <div class="space-y-6 pt-6">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Required Documents</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="modalDocuments">
+                        {{-- Injected via JS --}}
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex justify-between items-center shrink-0">
-                <div id="actionButtons" class="flex gap-3 hidden">
+            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+                <div id="actionButtons" class="items-center gap-4 hidden">
                     <form id="approveForm" method="POST">
                         @csrf @method('PATCH')
                         <input type="hidden" name="status" value="Approved">
-                        <button type="submit" class="bg-[#10B981] hover:bg-[#059669] text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md shadow-[#10B981]/20 transition">Approve</button>
+                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
+                            Approve
+                        </button>
                     </form>
-                    <form id="rejectForm" method="POST" onsubmit="return confirm('Reject application?');">
+                    <form id="rejectForm" method="POST" onsubmit="return confirm('Are you sure you want to reject this application?');">
                         @csrf @method('PATCH')
                         <input type="hidden" name="status" value="Rejected">
-                        <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md shadow-rose-600/20 transition">Reject</button>
+                        <button type="submit" class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95">
+                            Reject Application
+                        </button>
                     </form>
                 </div>
-                <button onclick="closeModal()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm font-semibold transition ml-auto">Close</button>
+                <button onclick="closeModal()" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
+                    Close Details
+                </button>
             </div>
         </div>
     </div>
 
     <script>
     function openModal(app, user, course) {
-        document.getElementById('modalTitle').innerText = 'Application #' + app.id;
+        document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
         const middle = app.middle_name ? ' ' + app.middle_name : '';
         const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
         document.getElementById('modalName').innerText = fullName;
@@ -232,19 +262,12 @@
         document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
 
         let courseCode = app.course_code || 'N/A';
-        let courseDesc = '';
-        if (courseCode === 'BSIS') courseDesc = 'Bachelor of Science in Information Systems';
-        if (courseCode === 'ACT') courseDesc = 'Associate in Computer Technology';
-        if (courseCode === 'BSA') courseDesc = 'Bachelor of Science in Accountancy';
-        if (courseCode === 'BAB') courseDesc = 'Bachelor of Arts in Broadcasting';
-        if (courseCode === 'BSSW') courseDesc = 'Bachelor of Science in Social Work';
-        if (courseCode === 'AB English') courseDesc = 'Bachelor of Arts in English Language';
-        document.getElementById('modalCourse').innerText = courseCode + (courseDesc ? ' - ' + courseDesc : '');
+        document.getElementById('modalCourse').innerText = courseCode;
 
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
-        
+
         let statusText = app.status;
-        if (statusText === 'Enrolled') { statusText = 'Paid'; }
+        if (statusText === 'Enrolled') { statusText = 'Paid / Finalized'; }
         document.getElementById('modalStatus').innerText = statusText;
 
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
@@ -254,14 +277,14 @@
 
         const docsContainer = document.getElementById('modalDocuments');
         docsContainer.innerHTML = '';
-        
+
         const documents = [
             { key: 'form_138_path', label: 'Form 138' },
             { key: 'good_moral_path', label: 'Good Moral' },
-            { key: 'psa_path', label: 'PSA Birth Cert' },
-            { key: 'id_picture_path', label: 'ID Picture' }
+            { key: 'psa_path', label: 'PSA Birth' },
+            { key: 'id_picture_path', label: 'ID Image' }
         ];
-        
+
         const storageBase = @json(asset('storage')) + '/';
 
         documents.forEach(doc => {
@@ -274,44 +297,44 @@
                 const isImage = app[doc.key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
 
                 headerHtml = `
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10B981; border-radius: 50%; flex-shrink: 0;">
-                            <span style="color: #10B981; font-weight: 900; font-size: 14px; line-height: 1;">✓</span>
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="flex items-center justify-center w-5 h-5 bg-emerald-500/20 border-2 border-emerald-500 rounded-full shrink-0">
+                            <span class="text-emerald-500 font-black text-xs">✓</span>
                         </div>
-                        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #111827;">${doc.label}</span>
+                        <span class="text-[9px] font-black uppercase text-white tracking-widest">${doc.label}</span>
                     </div>
                 `;
 
                 if (isImage) {
                     boxHtml = `
-                        <a href="${fileUrl}" target="_blank" style="display: block;">
-                            <img src="${fileUrl}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #E5E7EB; background-color: #F9FAFB;">
+                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                            <img src="${fileUrl}" class="w-full h-32 object-cover transition-transform duration-500 group-hover/asset:scale-110">
+                            <div class="absolute inset-0 bg-cyan-500/20 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                            </div>
                         </a>
                     `;
                 } else {
                     boxHtml = `
-                        <a href="${fileUrl}" target="_blank" style="display: block; text-decoration: none;">
-                            <div style="width: 100%; height: 120px; border-radius: 8px; border: 1px solid #E5E7EB; background-color: #F9FAFB; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #10B981; transition: 0.2s;">
-                                <span style="font-size: 30px;">📄</span>
-                                <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px;">PDF</span>
-                            </div>
+                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] h-32 flex flex-col items-center justify-center">
+                            <svg class="w-10 h-10 text-cyan-400 opacity-40 group-hover/asset:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            <span class="text-[8px] font-black text-cyan-400 mt-2 tracking-[0.3em]">VIEW PDF</span>
                         </a>
                     `;
                 }
             } else {
                 headerHtml = `
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(244, 63, 94, 0.2); border: 2px solid #f43f5e; border-radius: 50%; flex-shrink: 0;">
-                            <span style="color: #f43f5e; font-weight: 900; font-size: 14px; line-height: 1;">✗</span>
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="flex items-center justify-center w-5 h-5 bg-rose-500/20 border-2 border-rose-500 rounded-full shrink-0">
+                            <span class="text-rose-500 font-black text-xs">!</span>
                         </div>
-                        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #f43f5e;">${doc.label}</span>
+                        <span class="text-[9px] font-black uppercase text-rose-500 tracking-widest">${doc.label}</span>
                     </div>
                 `;
 
                 boxHtml = `
-                    <div style="width: 100%; height: 120px; border-radius: 8px; background-color: #FFF1F2; border: 1px dashed rgba(225, 29, 72, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.7;">
-                        <span style="font-size: 24px; color: rgba(225, 29, 72, 0.6);">⚠️</span>
-                        <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: rgba(225, 29, 72, 0.6); margin-top: 4px;">Missing</span>
+                    <div class="w-full h-32 rounded-2xl border-2 border-dashed border-rose-500/10 bg-rose-500/5 flex flex-col items-center justify-center opacity-40">
+                        <span class="text-[8px] font-black text-rose-500 tracking-[0.3em]">MISSING FILE</span>
                     </div>
                 `;
             }
@@ -323,33 +346,41 @@
         document.getElementById('approveForm').action = `${baseUrl}/${app.id}`;
         document.getElementById('rejectForm').action = `${baseUrl}/${app.id}`;
 
+        const actionButtons = document.getElementById('actionButtons');
         if (app.status === 'Pending') {
-            document.getElementById('actionButtons').classList.remove('hidden');
+            actionButtons.classList.add('flex');
+            actionButtons.classList.remove('hidden');
         } else {
-            document.getElementById('actionButtons').classList.add('hidden');
+            actionButtons.classList.remove('flex');
+            actionButtons.classList.add('hidden');
         }
 
-        document.getElementById('applicationModal').classList.remove('hidden');
+        const modal = document.getElementById('applicationModal');
+        const content = document.getElementById('modalContent');
+        modal.classList.add('flex');
+        modal.classList.remove('hidden');
         setTimeout(() => {
-            document.getElementById('applicationModal').classList.remove('opacity-0', 'pointer-events-none');
-            document.getElementById('modalContent').classList.remove('scale-95');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
         }, 10);
         document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
-        document.getElementById('applicationModal').classList.add('opacity-0', 'pointer-events-none');
-        document.getElementById('modalContent').classList.add('scale-95');
+        const modal = document.getElementById('applicationModal');
+        const content = document.getElementById('modalContent');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        content.classList.add('scale-95');
         setTimeout(() => {
-            document.getElementById('applicationModal').classList.add('hidden');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
-        }, 200);
+        }, 300);
     }
-    
+
     window.onclick = function(event) {
         const modal = document.getElementById('applicationModal');
         if (event.target == modal) closeModal();
     }
     </script>
-</body>
-</html>
+</x-layouts.registrar>

@@ -22,18 +22,27 @@ class RegistrarNavbar extends Component
     }
     public function render()
     {
+        $user = auth()->user();
+        if (!$user) return view('livewire.registrar.registrar-navbar');
+
         $pendingCount = Enrollment::where('status', 'Pending')->count();
-        $newEnrolleesCount = $pendingCount;
+        $unreadNotifCount = $user->unreadNotifications()->count();
+        $displayCount = $pendingCount + $unreadNotifCount;
         
-        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+        // 1. Get real DB notifications (from 'notifications' table)
+        $dbNotifications = $user->unreadNotifications()->latest()->take(5)->get();
+
+        // 2. Get enrollment-based alerts (existing logic)
+        $enrollmentAlerts = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
             ->with('user')
             ->orderBy('updated_at', 'desc')
             ->take(5)
             ->get();
 
         return view('livewire.registrar.registrar-navbar', [
-            'newEnrolleesCount' => $newEnrolleesCount,
-            'notifications' => $notifications,
+            'newEnrolleesCount' => $displayCount,
+            'dbNotifications' => $dbNotifications,
+            'enrollmentAlerts' => $enrollmentAlerts,
         ]);
     }
 }

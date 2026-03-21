@@ -11,7 +11,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <!-- Fixed dark background, same as login page -->
+        <div class="fixed inset-0" style="background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 40%, #1a3a6e 100%); z-index: -1;"></div>
+        <div class="min-h-screen" style="position: relative; z-index: 1;">
             @include('layouts.navigation')
 
             <!-- Page Heading -->

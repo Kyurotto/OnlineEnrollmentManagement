@@ -21,7 +21,7 @@ class DashboardController extends Controller
         $totalApplicationsCount = Enrollment::count(); 
         $pendingCount = Enrollment::where('status', 'Pending')->count();
         $enrolledCount = Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count();
-        $programsCount = Course::count();
+        $programsCount = Course::where('type', 'program')->count();
 
         // 2. CALCULATE EXTRA STATS
         $allEnrollments = Enrollment::select('year_level')->get();

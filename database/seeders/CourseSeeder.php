@@ -13,11 +13,11 @@ class CourseSeeder extends Seeder
     {
         // Create courses
         $courses = [
-            ['course_code' => 'ACT', 'course_name' => 'ASSOCIATE IN COMPUTER TECH', 'credits' => 3],
-            ['course_code' => 'BSIS', 'course_name' => 'BS INFORMATION SYSTEMS', 'credits' => 3],
-            ['course_code' => 'BTVTED', 'course_name' => 'BTV Teacher Education', 'credits' => 3],
-            ['course_code' => 'DHRT', 'course_name' => 'HOTEL & RESTAURANT TECH', 'credits' => 3],
-            ['course_code' => 'DIT', 'course_name' => 'DIPLOMA INFO TECH', 'credits' => 3],
+            ['course_code' => 'ACT', 'course_name' => 'ASSOCIATE IN COMPUTER TECH', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'BSIS', 'course_name' => 'BS INFORMATION SYSTEMS', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'BTVTED', 'course_name' => 'BTV Teacher Education', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'DHRT', 'course_name' => 'HOTEL & RESTAURANT TECH', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'DIT', 'course_name' => 'DIPLOMA INFO TECH', 'credits' => 3, 'type' => 'program'],
         ];
 
         foreach ($courses as $course) {

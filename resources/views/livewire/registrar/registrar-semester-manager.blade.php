@@ -1,127 +1,161 @@
-<div>
+<div class="space-y-6">
     @if(session('success'))
-        <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6 shadow-sm">
+        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-xl shadow-lg backdrop-blur-md flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             {{ session('success') }}
         </div>
     @endif
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Semesters List</h2>
-            <button wire:click="openModal" class="bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold py-2 px-4 rounded uppercase tracking-wide transition shadow-sm">
-                Add New Semester
+    <div class="rounded-2xl border overflow-hidden relative"
+         style="background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
+        
+        <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-lg leading-tight uppercase tracking-tight">Semester</h3>
+                    <p class="text-xs text-white/30 font-bold uppercase tracking-widest mt-0.5"></p>
+                </div>
+            </div>
+            <button wire:click="openModal" class="bg-teal-500 hover:bg-teal-400 text-white text-xs font-black py-3 px-6 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-teal-500/20 active:scale-95 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                New Semester
             </button>
         </div>
 
-        <div class="overflow-x-auto border border-gray-200 rounded-lg">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider bg-gray-50">
-                        <th class="py-3 px-4 font-medium">ID</th>
-                        <th class="py-3 px-4 font-medium">Academic Year</th>
-                        <th class="py-3 px-4 font-medium">Name</th>
-                        <th class="py-3 px-4 font-medium">Start Date</th>
-                        <th class="py-3 px-4 font-medium">End Date</th>
-                        <th class="py-3 px-4 font-medium">Status</th>
-                        <th class="py-3 px-4 font-medium text-right">Actions</th>
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left font-medium text-sm">
+                <thead class="text-xs text-white/20 uppercase tracking-widest border-b border-white/5" style="background: rgba(255,255,255,0.03);">
+                    <tr>
+                        <th class="py-5 px-8 font-black">ID</th>
+                        <th class="py-5 px-8 font-black">Academic Year</th>
+                        <th class="py-5 px-8 font-black">Semesters</th>
+                        <th class="py-5 px-8 font-black">Date</th>
+                        <th class="py-5 px-8 text-center font-black">Status</th>
+                        <th class="py-5 px-8 text-right font-black">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm bg-white">
+                <tbody class="divide-y divide-white/5">
                     @forelse($semesters as $semester)
-                    <tr wire:key="semester-{{ $semester->id }}" class="border-b border-gray-200 hover:bg-gray-50 transition group">
-                        <td class="py-4 px-4 text-gray-500">{{ $semester->id }}</td>
-                        <td class="py-4 px-4 font-medium text-gray-900">{{ $semester->academic_year }}</td>
-                        <td class="py-4 px-4 text-gray-600">{{ $semester->name }}</td>
-                        <td class="py-4 px-4 text-gray-500">{{ \Carbon\Carbon::parse($semester->start_date)->format('M d, Y') }}</td>
-                        <td class="py-4 px-4 text-gray-500">{{ \Carbon\Carbon::parse($semester->end_date)->format('M d, Y') }}</td>
-                        <td class="py-4 px-4">
+                    <tr wire:key="semester-{{ $semester->id }}" class="hover:bg-teal-500/[0.03] transition-all group">
+                        <td class="py-5 px-8 text-white/20 font-mono text-xs">#{{ str_pad($semester->id, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td class="py-5 px-8 text-white/40 uppercase tracking-widest font-black text-xs">{{ $semester->academic_year }}</td>
+                        <td class="py-5 px-8">
+                            <span class="text-white font-bold group-hover:text-teal-300 transition-colors uppercase tracking-tight">{{ $semester->name }}</span>
+                        </td>
+                        <td class="py-5 px-8 text-white/30 text-xs font-medium">
+                            <span class="block tracking-tight">{{ \Carbon\Carbon::parse($semester->start_date)->format('M d, Y') }} —</span>
+                            <span class="block tracking-tight text-white/20">{{ \Carbon\Carbon::parse($semester->end_date)->format('M d, Y') }}</span>
+                        </td>
+                        <td class="py-5 px-8 text-center">
                             @if($semester->is_active)
-                                <span class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-2 py-1 rounded-full border border-[#10B981]/20 shadow-sm">Active</span>
+                                <span class="bg-teal-500/10 text-teal-400 text-xs font-black px-4 py-1.5 rounded-full border border-teal-500/20 shadow-sm uppercase tracking-widest animate-pulse">Actived</span>
                             @else
-                                <span class="bg-gray-100 text-gray-500 border border-gray-200 text-xs font-bold px-2 py-1 rounded-full shadow-sm">Inactive</span>
+                                <span class="bg-white/5 text-white/20 text-xs font-black px-4 py-1.5 rounded-full border border-white/5 uppercase tracking-widest">Pending</span>
                             @endif
                         </td>
-                        <td class="py-4 px-4 text-right">
-                            <button wire:click="editModal({{ $semester->id }})"
-                                class="text-[#10B981] hover:text-[#059669] text-xs font-bold uppercase tracking-wider transition mr-3">
-                                Edit
-                            </button>
-
-                            <button wire:click="delete({{ $semester->id }})" wire:confirm="Delete this semester?"
-                                class="text-red-500 hover:text-red-600 text-xs font-bold uppercase tracking-wider transition">
-                                Delete
-                            </button>
+                        <td class="py-5 px-8 text-right whitespace-nowrap">
+                            <div class="flex justify-end gap-2">
+                                <button wire:click="editModal({{ $semester->id }})" class="p-2 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-teal-400 hover:bg-teal-500/10 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </button>
+                                <button wire:click="delete({{ $semester->id }})" wire:confirm="Delete this semester?" class="p-2 rounded-lg bg-white/5 border border-white/5 text-rose-500/50 hover:text-white hover:bg-rose-500 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-6 text-center text-gray-500 text-sm italic">No semesters found.</td>
+                        <td colspan="6" class="py-20 text-center">
+                            <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em] italic">No records found</p>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="mt-4">
-            {{ $semesters->links() }}
-        </div>
+        @if($semesters->hasPages())
+            <div class="p-6 border-t border-white/5 bg-white/[0.01]">
+                {{ $semesters->links('livewire.glass-pagination') }}
+            </div>
+        @endif
     </div>
 
-    <!-- Add/Edit Modal -->
+    <!-- Modal -->
     @if($showModal)
-    <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6 transform transition-all border border-gray-200">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">{{ $isEditMode ? 'Edit Semester' : 'Add New Semester' }}</h3>
-
-            <form wire:submit.prevent="save">
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Academic Year</label>
-                        <select wire:model.defer="academic_year" class="w-full bg-white border border-gray-300 text-gray-900 rounded p-2 text-sm focus:ring-2 focus:ring-[#10B981] outline-none shadow-sm" required>
-                            <option value="" disabled>Select Year</option>
-                            @foreach($academicYears as $year)
-                                <option value="{{ $year->year_name }}">{{ $year->year_name }}</option>
-                            @endforeach
-                        </select>
-                        @error('academic_year') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Semester Name</label>
-                        <select wire:model.defer="name" class="w-full bg-white border border-gray-300 text-gray-900 rounded p-2 text-sm focus:ring-2 focus:ring-[#10B981] outline-none shadow-sm" required>
-                            <option value="First Semester">First Semester</option>
-                            <option value="Second Semester">Second Semester</option>
-                            <option value="Summer">Summer</option>
-                        </select>
-                        @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div class="absolute inset-0 bg-[#060d1a]/95 backdrop-blur-2xl" wire:click="closeModal"></div>
+        
+        <div class="bg-[#0d1f3c] border border-white/10 w-full max-w-2xl rounded-[32px] overflow-hidden shadow-[0_32px_120px_rgba(0,0,0,0.6)] relative z-10 transform animate-in zoom-in-95 duration-300">
+            <div class="p-10">
+                <div class="mb-10 text-center">
+                    <h3 class="text-xl font-bold text-white uppercase tracking-tight">{{ $isEditMode ? 'Edit Semester' : 'New Semester' }}</h3>
+                    <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-1 italic">Semester Information</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Start Date</label>
-                        <input type="date" wire:model.defer="start_date" class="w-full bg-white border border-gray-300 text-gray-900 rounded p-2 text-sm focus:ring-2 focus:ring-[#10B981] outline-none shadow-sm" required>
-                        @error('start_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                <form wire:submit.prevent="save" class="space-y-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Academic Period</label>
+                            <select wire:model.defer="academic_year" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-teal-500/50 appearance-none transition-all cursor-pointer" required>
+                                <option value="" class="bg-[#060d1a]">Select Period</option>
+                                @foreach($academicYears as $year)
+                                    <option value="{{ $year->year_name }}" class="bg-[#060d1a]">{{ $year->year_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('academic_year') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Term Label</label>
+                            <select wire:model.defer="name" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-teal-500/50 appearance-none transition-all cursor-pointer" required>
+                                <option value="First Semester" class="bg-[#060d1a]">First Semester</option>
+                                <option value="Second Semester" class="bg-[#060d1a]">Second Semester</option>
+                                <option value="Summer" class="bg-[#060d1a]">Summer Session</option>
+                            </select>
+                            @error('name') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">End Date</label>
-                        <input type="date" wire:model.defer="end_date" class="w-full bg-white border border-gray-300 text-gray-900 rounded p-2 text-sm focus:ring-2 focus:ring-[#10B981] outline-none shadow-sm" required>
-                        @error('end_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Start Date</label>
+                            <input type="date" wire:model.defer="start_date" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none text-sm font-bold tracking-wider focus:border-teal-500/50 transition-all" required>
+                            @error('start_date') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">End Date</label>
+                            <input type="date" wire:model.defer="end_date" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none text-sm font-bold tracking-wider focus:border-teal-500/50 transition-all" required>
+                            @error('end_date') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-6 flex items-center">
-                    <input type="checkbox" wire:model.defer="is_active" id="is_active_checkbox" class="w-4 h-4 text-[#10B981] rounded border-gray-300 bg-white focus:ring-[#10B981]">
-                    <label for="is_active_checkbox" class="ml-2 text-sm text-gray-600 font-medium cursor-pointer">Set as Active Semester</label>
-                </div>
+                    <div class="relative group overflow-hidden rounded-xl bg-white/5 border border-white/10 p-5 hover:bg-white/10 transition-all cursor-pointer">
+                        <label class="flex items-center gap-4 cursor-pointer">
+                            <input type="checkbox" wire:model.defer="is_active" id="is_active" 
+                                class="w-5 h-5 rounded border-white/10 bg-white/5 text-teal-500 focus:ring-teal-500 transition-all">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-black text-white uppercase tracking-wider">Set Operational</span>
+                                <span class="text-xs text-white/30 uppercase tracking-widest mt-0.5 font-bold italic">Current Active Term</span>
+                            </div>
+                        </label>
+                    </div>
 
-                <div class="flex justify-end gap-2">
-                    <button type="button" wire:click="closeModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 hover:bg-gray-50 rounded transition font-medium shadow-sm">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-sm bg-[#10B981] hover:bg-[#059669] text-white font-bold rounded shadow transition">
-                        <span wire:loading.remove wire:target="save">Save Semester</span>
-                        <span wire:loading wire:target="save">Saving...</span>
-                    </button>
-                </div>
-            </form>
+                    <div class="flex gap-4 pt-6">
+                        <button type="button" wire:click="closeModal" 
+                            class="flex-1 px-8 py-4 text-xs font-bold text-white/40 uppercase tracking-widest border border-white/10 rounded-xl hover:bg-white/5 hover:text-white transition-all">
+                            Back
+                        </button>
+                        <button type="submit" 
+                            class="flex-1 bg-teal-500 hover:bg-teal-400 text-white text-xs font-black py-4 px-8 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-teal-500/20 active:scale-95">
+                            {{ $isEditMode ? 'Update' : 'Save' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     @endif

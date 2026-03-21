@@ -1,150 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Students - Registrar</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Custom Light Pagination matching Carbon & Emerald theme */
-        .custom-pagination p {
-            color: #4B5563 !important;
-            font-size: 0.875rem;
-        }
-
-        .custom-pagination [role="navigation"] span.relative,
-        .custom-pagination [role="navigation"] a.relative {
-            background-color: #FFFFFF !important;
-            border-color: #E5E7EB !important;
-            color: #4B5563 !important;
-        }
-
-        .custom-pagination [role="navigation"] span[aria-current="page"]>span {
-            background-color: #F9FAFB !important;
-            border-color: #10B981 !important;
-            color: #10B981 !important;
-        }
-
-        .custom-pagination [role="navigation"] a.relative:hover {
-            background-color: #F3F4F6 !important;
-            color: #111827 !important;
-        }
-
-        .custom-pagination [role="navigation"] svg {
-            color: #9CA3AF !important;
-        }
-    </style>
-</head>
-
-<body class="bg-gray-50 text-gray-600 flex flex-col min-h-screen">
-
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center gap-8">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">RD</div>
-                        <div>
-                            <h1 class="text-lg font-bold leading-none text-gray-900">Registrar Panel</h1>
-                            <span class="text-xs text-gray-500">Manage Students</span>
-                        </div>
-                    </div>
-                    <div class="flex space-x-6 text-sm font-medium text-gray-500 h-16">
-                        <a href="{{ route('registrar.dashboard') }}"
-                            class="flex items-center hover:text-[#10B981] transition h-full">Dashboard</a>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-6">
-                    <div class="relative">
-                        <svg class="w-6 h-6 text-gray-400 hover:text-[#10B981] transition cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                            </path>
-                        </svg>
-                        @if (isset($pendingCount) && $pendingCount > 0)
-                            <span
-                                class="absolute -top-1 -right-1 bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
-                                {{ $pendingCount }}
-                            </span>
-                        @endif
-                    </div>
-
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-
+<x-layouts.registrar title="Student Registry">
+    <div class="space-y-6 animate-in fade-in duration-500">
         @if (session('success'))
-            <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6 shadow-sm">
-                {{ session('success') }}
+            <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                <span class="text-xs font-black uppercase tracking-widest">{{ session('success') }}</span>
             </div>
         @endif
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
-            <div class="px-6 py-4 border-b border-gray-100 bg-white">
-                <h3 class="text-lg font-bold text-gray-900">Student List</h3>
+        <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
+            <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Student Population Registry</h2>
+                    <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Management of Verified Academic Personas & Operational Status</p>
+                </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-600">
-                    <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Last Name</th>
-                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">First Name</th>
-                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Email</th>
-                            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Program</th>
-                            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Section</th>
-                            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Status</th>
-                            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-right">Action</th>
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse font-bold">
+                    <thead>
+                        <tr class="text-[10px] text-white/20 uppercase tracking-[0.2em] bg-white/[0.02]">
+                            <th class="py-6 px-8">Identifier</th>
+                            <th class="py-6 px-8">Full Legal Name</th>
+                            <th class="py-6 px-8">Email</th>
+                            <th class="py-6 px-8 text-center">Academic Track</th>
+                            <th class="py-6 px-8 text-center">Section</th>
+                            <th class="py-6 px-8">Status</th>
+                            <th class="py-6 px-8 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="text-xs divide-y divide-white/5">
                         @forelse($students as $student)
-                            <tr class="bg-white border-b border-gray-100 hover:bg-gray-50/80 transition-colors">
-                                <td class="px-6 py-4 font-bold text-gray-900 uppercase">
-                                    {{ $student->last_name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 font-bold text-gray-900 uppercase">
-                                    {{ $student->first_name ?? 'N/A' }}</td>
-
-                                <td class="px-6 py-4 text-gray-500 lowercase">{{ $student->email }}</td>
-
-                                <td class="px-6 py-4 font-bold text-[#10B981] text-center uppercase">
-                                    {{ $student->program }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-500 text-center whitespace-nowrap">
-                                    {{ $student->year_display }}</td>
-
-
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-3 py-1 rounded-full border border-[#10B981]/20">
+                            <tr class="hover:bg-white/[0.02] transition-colors group">
+                                <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($student->id, 5, '0', STR_PAD_LEFT) }}</td>
+                                <td class="py-6 px-8">
+                                    <div class="flex flex-col">
+                                        <span class="text-white group-hover:text-purple-400 transition-colors uppercase tracking-wider block">{{ $student->last_name }}, {{ $student->first_name }}</span>
+                                        <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Verified Profile</span>
+                                    </div>
+                                </td>
+                                <td class="py-6 px-8">
+                                    <span class="text-white/40 lowercase tracking-tight">{{ $student->email }}</span>
+                                </td>
+                                <td class="py-6 px-8 text-center">
+                                    <span class="text-purple-400 uppercase tracking-widest font-black text-[10px]">{{ $student->program }}</span>
+                                </td>
+                                <td class="py-6 px-8 text-center">
+                                    <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
+                                </td>
+                                <td class="py-6 px-8">
+                                    <span class="bg-purple-500/10 text-purple-400 text-[10px] font-black px-4 py-1.5 rounded-full border border-purple-500/20 uppercase tracking-widest">
                                         {{ $student->status ?? 'Enrolled' }}
                                     </span>
                                 </td>
-
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                <td class="py-6 px-8 text-right">
                                     <a href="{{ route('registrar.students.edit', $student->id) }}"
-                                        class="text-[#10B981] hover:text-[#059669] font-bold text-xs uppercase tracking-wider transition-colors">
-                                        Edit
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
+                                        Modify
+                                        <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-12 text-center text-gray-400 italic">No approved
-                                    students found.</td>
+                                <td colspan="7" class="py-20 text-center">
+                                    <div class="flex flex-col items-center opacity-20">
+                                        <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                        <span class="text-[10px] font-black uppercase tracking-[0.3em] italic">No Students Documented</span>
+                                    </div>
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -152,19 +75,10 @@
             </div>
 
             @if ($students->hasPages())
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 custom-pagination">
+                <div class="p-8 border-t border-white/5 bg-white/[0.01]">
                     {{ $students->links() }}
                 </div>
             @endif
         </div>
-    </main>
-
-    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-400">
-            © 2026 Your Institution — Registrar Panel
-        </div>
-    </footer>
-
-</body>
-
-</html>
+    </div>
+</x-layouts.registrar>

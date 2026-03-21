@@ -3,44 +3,44 @@
 namespace App\Livewire\Cashier;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
+use App\Models\User;
 use App\Models\Payment;
 use App\Models\Enrollment;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\StudentPaymentConfirmed;
 
+#[Layout('components.layouts.cashier')]
 class CashierDashboardManager extends Component
 {
     public function render()
     {
         // 1. Calculate Stats
-        // Only count payments that are explicitly 'Paid' (Approved)
-        $dailyCollection = Payment::where('status', 'Paid')
-            ->whereDate('updated_at', Carbon::today())
-            ->sum('amount');
-
-        $transactionsToday = Payment::where('status', 'Paid')
-            ->whereDate('updated_at', Carbon::today())
-            ->count();
-            
-        $pendingApprovals = Enrollment::where('status', 'Pending')->count();
-
         $stats = [
-            'daily_collection' => $dailyCollection,
-            'transactions_today' => $transactionsToday,
-            'pending_approvals' => $pendingApprovals,
+            'daily_collection'   => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->sum('amount'),
+            'transactions_today'  => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->count(),
+            'pending_verifications' => Enrollment::whereIn('status', ['Pending', 'Approved'])->count('*'),
         ];
 
-        // 2. Fetch Payments for Today
+        // 2. Fetch Payments for Today (Paid today OR Pending from today)
         $paymentsToday = Payment::with('user')
-            ->whereDate('updated_at', Carbon::today())
-            ->latest()
+            ->where(function($q) {
+                $q->where('status', 'Paid')->whereDate('payment_date', Carbon::today())
+                  ->orWhere('status', 'Pending')->whereDate('created_at', Carbon::today());
+            })
+            ->latest('updated_at')
             ->get();
 
-        // 3. Fetch Payments for Yesterday
+        // 3. Fetch Payments for Yesterday (Paid yesterday OR Pending from yesterday)
         $paymentsYesterday = Payment::with('user')
-            ->whereDate('updated_at', Carbon::yesterday())
-            ->latest()
+            ->where(function($q) {
+                $q->where('status', 'Paid')->whereDate('payment_date', Carbon::yesterday())
+                  ->orWhere('status', 'Pending')->whereDate('created_at', Carbon::yesterday());
+            })
+            ->latest('updated_at')
             ->get();
 
-        return view('livewire.cashier.cashier-dashboard-manager', compact('stats', 'paymentsToday', 'paymentsYesterday'))->layout('components.layouts.cashier');
+        return view('livewire.cashier.cashier-dashboard-manager', compact('stats', 'paymentsToday', 'paymentsYesterday'));
     }
 }

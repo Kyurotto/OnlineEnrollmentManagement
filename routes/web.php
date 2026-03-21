@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 // Admin Livewire Components
 use App\Livewire\Admin\DashboardManager;
 use App\Livewire\Admin\CourseManager;
@@ -33,7 +36,6 @@ use App\Livewire\Student\StudentProfileManager;
 // Admin Staff Manager
 use App\Livewire\StaffManager;
 
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,18 +48,19 @@ Route::get('/', function () {
 });
 
 Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
+    'auth',
 ])->group(function () {
     Route::get('/dashboard', function () {
     $user = Auth::user();
+    if (!$user) return redirect()->route('login');
 
     // Look for the user in the employees table
     $employee = \DB::table('employees')->where('user_id', $user->id)->first();
 
     // Determine the role from either table
     $role = $employee ? $employee->role : $user->role;
+
+
 
     if ($role === 'admin') {
         return redirect()->route('admin.dashboard');

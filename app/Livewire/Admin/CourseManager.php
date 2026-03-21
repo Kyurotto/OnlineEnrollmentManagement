@@ -4,12 +4,16 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Course;
+use Illuminate\Support\Facades\Log;
+use Livewire\WithPagination;
 
 use Livewire\Attributes\Layout;
 
 #[Layout('components.layouts.admin')]
 class CourseManager extends Component
 {
+    use WithPagination;
+
     // Form fields
     public $course_id;
     public $course_code;
@@ -18,6 +22,15 @@ class CourseManager extends Component
     public $description;
 
     public $isEditMode = false;
+
+    public function save()
+    {
+        if ($this->isEditMode) {
+            $this->update();
+        } else {
+            $this->store();
+        }
+    }
 
     protected $rules = [
         'course_code' => 'required|string|max:50',
@@ -35,15 +48,20 @@ class CourseManager extends Component
             'description' => 'nullable|string',
         ]);
 
-        Course::create([
-            'course_code' => $this->course_code,
-            'course_name' => $this->course_name,
-            'credits'     => $this->credits,
-            'description' => $this->description,
-        ]);
+        try {
+            Course::create([
+                'course_code' => $this->course_code,
+                'course_name' => $this->course_name,
+                'credits'     => $this->credits,
+                'description' => $this->description,
+                'type'        => 'course',
+            ]);
 
-        session()->flash('success', 'Course added successfully!');
-        $this->resetFields();
+            session()->flash('success', 'Course added successfully!');
+            $this->resetFields();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Critical Error: ' . $e->getMessage());
+        }
     }
 
     public function edit($id)
@@ -66,17 +84,21 @@ class CourseManager extends Component
             'description' => 'nullable|string',
         ]);
 
-        if ($this->course_id) {
-            $course = Course::find($this->course_id);
-            $course->update([
-                'course_code' => $this->course_code,
-                'course_name' => $this->course_name,
-                'credits'     => $this->credits,
-                'description' => $this->description,
-            ]);
-            $this->isEditMode = false;
-            $this->resetFields();
-            session()->flash('success', 'Course updated successfully!');
+        try {
+            if ($this->course_id) {
+                $course = Course::find($this->course_id);
+                $course->update([
+                    'course_code' => $this->course_code,
+                    'course_name' => $this->course_name,
+                    'credits'     => $this->credits,
+                    'description' => $this->description,
+                ]);
+                $this->isEditMode = false;
+                $this->resetFields();
+                session()->flash('success', 'Course updated successfully!');
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Update Error: ' . $e->getMessage());
         }
     }
 
@@ -106,7 +128,7 @@ class CourseManager extends Component
     public function render()
     {
         return view('livewire.admin.course-manager', [
-            'courses' => Course::all()
+            'courses' => Course::where('type', 'course')->latest()->paginate(10)
         ]);
     }
 }

@@ -46,7 +46,7 @@
                             <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                                 <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Notifications</h3>
                                 @if($newEnrolleesCount > 0)
-                                <span class="bg-rose-100 text-rose-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $newEnrolleesCount }} New</span>
+                                <span class="bg-rose-100 text-rose-600 text-xs font-bold px-2 py-0.5 rounded-full">{{ $newEnrolleesCount }} New</span>
                                 @endif
                             </div>
 
@@ -74,7 +74,7 @@
                                                     <span class="font-medium text-gray-900 uppercase">{{ $notif->first_name ?? ($notif->user->first_name ?? '') }} {{ $notif->last_name ?? ($notif->user->last_name ?? '') }}</span> applied for <span class="uppercase font-bold text-[#10B981]">{{ $notif->course_code }}</span>.
                                                 </p>
                                             @endif
-                                            <p class="text-[10px] text-gray-500 mt-2 text-right">{{ $notif->updated_at->diffForHumans() }}</p>
+                                            <p class="text-xs text-gray-500 mt-2 text-right">{{ $notif->updated_at->diffForHumans() }}</p>
                                         </a>
                                     @endforeach
                                 @else

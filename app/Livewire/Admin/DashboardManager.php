@@ -17,12 +17,10 @@ class DashboardManager extends Component
     {
         // 1. Gather Overview Statistics
         $stats = [
-            'active_courses' => Course::count(),
-            
+            'active_courses' => Course::where('type', 'course')->count(),
             'students'       => User::where('role', 'student')
                                     ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
                                     ->count(),
-                                    
             'total_payments' => Payment::count(),
             'applications'   => Enrollment::where('status', 'Pending')->count(),
             'enrolled'       => Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count(),
@@ -34,6 +32,7 @@ class DashboardManager extends Component
 
         $weeklyApplications = Enrollment::with(['user', 'course'])
             ->whereHas('user')
+            ->whereNotIn('status', ['Rejected', 'Enrolled'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -54,9 +53,9 @@ class DashboardManager extends Component
                 'is_today'    => $date->isToday(),
             ];
         }
-        
+
         // Displays the current Month and Year (e.g. "February 2026")
-        $weekRange = Carbon::now()->format('F Y');
+        $weekRange = Carbon::now()->format('F d, Y');
 
         return view('livewire.admin.dashboard-manager', compact('stats', 'appsByDate', 'weekDates', 'weekRange'));
     }

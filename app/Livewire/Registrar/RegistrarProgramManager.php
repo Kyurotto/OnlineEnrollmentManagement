@@ -72,6 +72,7 @@ class RegistrarProgramManager extends Component
                 'course_name' => $this->course_name,
                 'course_code' => $generatedCode,
                 'description' => $this->description ?? '',
+                'type' => 'program',
             ]);
             session()->flash('success', 'Program added successfully.');
         }
@@ -93,7 +94,7 @@ class RegistrarProgramManager extends Component
 
     public function render()
     {
-        $programs = Course::orderBy('id', 'desc')->paginate(10);
+        $programs = Course::where('type', 'program')->orderBy('id', 'desc')->paginate(10);
         return view('livewire.registrar.registrar-program-manager', compact('programs'));
     }
 }

@@ -79,6 +79,7 @@ class CashierPaymentController extends Controller
             'transaction_id' => $request->reference_no ?? 'CASH-' . time(),
             'status' => 'Paid', 
             'payment_method' => $request->payment_type,
+            'payment_date' => now(),
         ]);
 
         if ($payment->application_id) {
@@ -122,7 +123,10 @@ class CashierPaymentController extends Controller
         $payment = Payment::findOrFail($id);
         $request->validate(['status' => 'required|in:Paid,Rejected']);
         
-        $payment->update(['status' => $request->status]);
+        $payment->update([
+            'status' => $request->status,
+            'payment_date' => $request->status === 'Paid' ? now() : $payment->payment_date
+        ]);
 
         // --- NOTIFICATION LOGIC START ---
         // Only notify if the status was changed to 'Paid'

@@ -61,7 +61,7 @@ class User extends Authenticatable
     ];
 
     public function employee()
-{
-    return $this->hasOne(\Illuminate\Support\Facades\DB::table('employees'), 'user_id');
-}
+    {
+        return $this->hasOne(Employee::class, 'user_id');
+    }
 }

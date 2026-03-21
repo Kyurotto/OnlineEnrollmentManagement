@@ -21,6 +21,15 @@ class CashierPaymentManager extends Component
     public $payment_type = 'Cash';
     public $payment_reference_no = '';
 
+    public $search = '';
+    public $filter_course = 'ALL';
+    public $status = '';
+
+    public function resetFilters()
+    {
+        $this->reset(['search', 'filter_course', 'status']);
+    }
+
     public function toggleDropdown($id)
     {
         $this->activeDropdown = $this->activeDropdown === $id ? null : $id;
@@ -79,13 +88,28 @@ class CashierPaymentManager extends Component
             ]);
             session()->flash('success', 'Payment updated successfully.');
         } else {
-            Payment::create([
+            $payment = Payment::create([
                 'user_id' => $this->payment_user_id,
                 'amount' => $this->payment_amount,
                 'payment_method' => $this->payment_type,
                 'transaction_id' => $this->payment_reference_no,
-                'status' => 'Paid'
+                'status' => 'Paid',
+                'payment_date' => now(), // Explicitly set the collection date
             ]);
+
+            // Auto-update enrollment status if applicable
+            $enrollment = \App\Models\Enrollment::where('user_id', $this->payment_user_id)->latest()->first();
+            if ($enrollment) {
+                $payment->update(['application_id' => $enrollment->id]);
+                $enrollment->update(['status' => 'Enrolled']);
+            }
+
+            // Notify Registrars
+            $registrars = User::where('role', 'registrar')->get();
+            if ($registrars->count() > 0) {
+                \Illuminate\Support\Facades\Notification::send($registrars, new \App\Notifications\StudentPaymentConfirmed($payment));
+            }
+
             session()->flash('success', 'Payment processed successfully.');
         }
 
@@ -94,19 +118,83 @@ class CashierPaymentManager extends Component
 
     public function markAsPaid($id)
     {
+        $payment = Payment::with('user')->find($id);
+        if ($payment) {
+            $payment->update([
+                'status' => 'Paid',
+                'payment_date' => now()
+            ]);
+
+            // Auto-update enrollment status to officialize
+            $enrollment = \App\Models\Enrollment::where('user_id', $payment->user_id)->latest()->first();
+            if ($enrollment) {
+                $payment->update(['application_id' => $enrollment->id]);
+                $enrollment->update(['status' => 'Enrolled']);
+            }
+
+            // Notify Registrars
+            $registrars = User::where('role', 'registrar')->get();
+            if ($registrars->count() > 0) {
+                \Illuminate\Support\Facades\Notification::send($registrars, new \App\Notifications\StudentPaymentConfirmed($payment));
+            }
+
+            session()->flash('success', 'Payment marked as Paid.');
+        }
+        $this->closeDropdowns();
+    }
+
+    public function rejectPayment($id)
+    {
         $payment = Payment::find($id);
         if ($payment) {
-            $payment->status = 'Paid';
-            $payment->save();
-            session()->flash('success', 'Payment marked as Paid.');
+            $payment->update([
+                'status' => 'Rejected',
+                'payment_date' => now()
+            ]);
+
+            // Return enrollment to Pending queue
+            $enrollment = \App\Models\Enrollment::where('user_id', $payment->user_id)->latest()->first();
+            if ($enrollment) {
+                $enrollment->update(['status' => 'Pending']);
+            }
+
+            session()->flash('success', 'Payment rejected. Enrollment returned to Pending queue.');
         }
         $this->closeDropdowns();
     }
 
     public function render()
     {
+        $query = Payment::with(['user', 'application.course'])
+            ->whereHas('application', function ($q) {
+                // Show to cashier as long as it's not rejected/deleted (Pending, Approved, or Enrolled)
+                $q->whereIn('status', ['Pending', 'Approved', 'Enrolled']);
+            })
+            ->latest();
+
+        if ($this->search) {
+            $query->whereHas('user', function($q) {
+                $q->where('first_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('email', 'like', '%' . $this->search . '%');
+            })->orWhere('transaction_id', 'like', '%' . $this->search . '%');
+        }
+
+        if ($this->status) {
+            $query->where('status', $this->status);
+        }
+
+        // Note: Course filtering depends on the application relationship
+        if ($this->filter_course !== 'ALL') {
+             // Basic matching for course blocks or codes
+             $query->whereHas('application', function($q) {
+                 $q->where('course_code', $this->filter_course)
+                   ->orWhere('year_level', 'like', '%' . $this->filter_course . '%');
+             });
+        }
+
         return view('livewire.cashier.cashier-payment-manager', [
-            'payments' => Payment::with(['user'])->latest()->paginate(10),
+            'payments' => $query->paginate(10),
             'students' => User::where('role', 'student')->get(),
         ])->layout('components.layouts.cashier');
     }

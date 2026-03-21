@@ -7,9 +7,6 @@
     @endif
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
-        <div wire:loading class="absolute inset-0 bg-white/50 z-10 flex items-center justify-center backdrop-blur-sm">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10B981]"></div>
-        </div>
 
         <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white">
             <div>
@@ -65,7 +62,7 @@
         <div class="table-container">
             <table class="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                    <tr class="bg-gray-50 border-b border-gray-200 text-xs text-gray-600 uppercase tracking-wider">
+                    <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-600 uppercase tracking-wider">
                         <th class="py-3 px-6 font-bold">Receipt #</th>
                         <th class="py-3 px-6 font-bold">Student Name</th>
                         <th class="py-3 px-6 font-bold">Program/Year</th>
@@ -78,15 +75,15 @@
                 <tbody class="text-sm divide-y divide-gray-200 bg-white">
                     @forelse($payments as $payment)
                     <tr class="hover:bg-gray-50 transition group">
-                        <td class="py-4 px-6 font-mono text-xs text-gray-500"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded border border-gray-200 shadow-sm">#{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</span></td>
-                        <td class="py-4 px-6"><div class="font-bold text-gray-900">{{ optional($payment->user)->name ?? 'Unknown' }}</div><div class="text-xs text-gray-500">{{ optional($payment->user)->email }}</div></td>
-                        <td class="py-4 px-6 text-gray-600">@if(optional($payment->application)->course_code)<span class="font-bold text-gray-900">{{ $payment->application->course_code }}</span><span class="text-xs text-gray-500 block">{{ $payment->application->year_level }}</span>@else<span class="text-gray-400 italic text-xs">N/A</span>@endif</td>
-                        <td class="py-4 px-6 text-gray-600">{{ $payment->created_at->format('M d, Y') }}<span class="text-xs text-gray-500 block">{{ $payment->payment_method ?? 'Cash' }}</span></td>
+                        <td class="py-4 px-6 font-mono text-sm text-gray-500"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded border border-gray-200 shadow-sm">#{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</span></td>
+                        <td class="py-4 px-6"><div class="font-bold text-gray-900">{{ optional($payment->user)->name ?? 'Unknown' }}</div><div class="text-sm text-gray-500">{{ optional($payment->user)->email }}</div></td>
+                        <td class="py-4 px-6 text-gray-600">@if(optional($payment->application)->course_code)<span class="font-bold text-gray-900 text-base">{{ $payment->application->course_code }}</span><span class="text-sm text-gray-500 block">{{ $payment->application->year_level }}</span>@else<span class="text-gray-400 italic text-sm">N/A</span>@endif</td>
+                        <td class="py-4 px-6 text-gray-600">{{ $payment->created_at->format('M d, Y') }}<span class="text-sm text-gray-500 block">{{ $payment->payment_method ?? 'Cash' }}</span></td>
                         <td class="py-4 px-6 font-bold text-[#10B981] text-right">₱{{ number_format($payment->amount, 2) }}</td>
                         <td class="py-4 px-6 text-center">
-                            @if($payment->status === 'Paid') <span class="bg-[#10B981]/10 text-[#10B981] text-[10px] font-bold px-2.5 py-1 rounded-full border border-[#10B981]/20 uppercase tracking-wide shadow-sm">Paid</span>
-                            @elseif($payment->status === 'Rejected') <span class="bg-rose-50 text-rose-600 text-[10px] font-bold px-2.5 py-1 rounded-full border border-rose-200 uppercase tracking-wide shadow-sm">Rejected</span>
-                            @else <span class="bg-amber-50 text-amber-600 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-200 uppercase tracking-wide shadow-sm">Pending</span> @endif
+                            @if($payment->status === 'Paid') <span class="bg-[#10B981]/10 text-[#10B981] text-xs font-bold px-2.5 py-1 rounded-full border border-[#10B981]/20 uppercase tracking-wide shadow-sm">Paid</span>
+                            @elseif($payment->status === 'Rejected') <span class="bg-rose-50 text-rose-600 text-xs font-bold px-2.5 py-1 rounded-full border border-rose-200 uppercase tracking-wide shadow-sm">Rejected</span>
+                            @else <span class="bg-amber-50 text-amber-600 text-xs font-bold px-2.5 py-1 rounded-full border border-amber-200 uppercase tracking-wide shadow-sm">Pending</span> @endif
                         </td>
                         <td class="py-4 px-6 text-right">
                              <div class="flex justify-end gap-2">
@@ -107,7 +104,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50"> {{ $payments->links() }} </div>
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50"> {{ $payments->links('livewire.glass-pagination') }} </div>
     </div>
 
     @if($showModal)
@@ -125,37 +122,37 @@
 
             <form wire:submit.prevent="{{ $isEditMode ? 'update' : 'store' }}" class="p-6 space-y-5">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Select Student</label>
-                    <select wire:model="user_id" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all shadow-sm" required>
+                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Select Student</label>
+                    <select wire:model="payment_user_id" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all shadow-sm" required>
                         <option value="" disabled>Select a student...</option>
                         @foreach($students as $student)
                             <option value="{{ $student->id }}">{{ $student->name }} ({{ $student->email }})</option>
                         @endforeach
                     </select>
-                    @error('user_id') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
+                    @error('payment_user_id') <span class="text-red-500 text-sm font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Amount (₱)</label>
-                    <input type="number" wire:model="amount" step="0.01" class="w-full bg-white border border-gray-300 text-[#10B981] rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none font-bold transition-all placeholder-gray-400 shadow-sm" required>
-                    @error('amount') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
+                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Amount (₱)</label>
+                    <input type="number" wire:model="payment_amount" step="0.01" class="w-full bg-white border border-gray-300 text-[#10B981] rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none font-bold transition-all placeholder-gray-400 shadow-sm" required>
+                    @error('payment_amount') <span class="text-red-500 text-sm font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Payment Method</label>
+                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Payment Method</label>
                     <select wire:model="payment_type" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all shadow-sm" required>
                         <option value="Cash">Cash</option>
                         <option value="Gcash">Gcash</option>
                         <option value="PayMaya">PayMaya</option>
                         <option value="Bank Transfer">Bank Transfer</option>
                     </select>
-                    @error('payment_type') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
+                    @error('payment_type') <span class="text-red-500 text-sm font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Reference No. (Optional)</label>
-                    <input type="text" wire:model="reference_no" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all placeholder-gray-400 shadow-sm" placeholder="OR Number">
-                    @error('reference_no') <span class="text-red-500 text-xs font-bold mt-1">{{ $message }}</span> @enderror
+                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Reference No. (Optional)</label>
+                    <input type="text" wire:model="payment_reference_no" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981] outline-none transition-all placeholder-gray-400 shadow-sm" placeholder="OR Number">
+                    @error('payment_reference_no') <span class="text-red-500 text-sm font-bold mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="pt-4 flex justify-end gap-3">

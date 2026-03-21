@@ -22,48 +22,48 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">First Name</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">First Name</label>
                         <input type="text" wire:model="first_name" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         @error('first_name') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Middle Name</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Middle Name</label>
                         <input type="text" wire:model="middle_name" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Last Name</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Last Name</label>
                     <input type="text" wire:model="last_name" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                     @error('last_name') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">System Username</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">System Username</label>
                     <input type="text" wire:model="username" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                     @error('username') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Email</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
                         <input type="email" wire:model="email" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Phone</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone</label>
                         <input type="text" wire:model="phone" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Address</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Address</label>
                     <input type="text" wire:model="address" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Account Role</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Role</label>
                         <select wire:model="role" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                             <option value="">Select Role...</option>
                             <option value="admin">Administrator</option>
@@ -73,7 +73,7 @@
                         @error('role') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Password</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Password</label>
                         <input type="password" wire:model="password" class="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         @error('password') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
@@ -93,7 +93,7 @@
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase tracking-wider">
+                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                         <tr>
                             <th class="px-6 py-3 font-semibold">Name</th>
                             <th class="px-6 py-3 font-semibold">Username</th>
@@ -110,10 +110,10 @@
                             </td>
                             <td class="px-6 py-4 text-gray-500 font-mono text-xs">{{ $staff->username }}</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                    @if($staff->role == 'admin') bg-purple-100 text-purple-700
-                                    @elseif($staff->role == 'registrar') bg-blue-100 text-blue-700
-                                    @else bg-emerald-100 text-emerald-700 @endif">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm
+                                                {{ $staff->role === 'admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 
+                                                   ($staff->role === 'registrar' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 
+                                                    'bg-emerald-500/10 text-emerald-400 border-emerald-500/20') }}">
                                     {{ $staff->role }}
                                 </span>
                             </td>
@@ -126,7 +126,7 @@
                 </table>
             </div>
             <div class="p-4 border-t border-gray-100">
-                {{ $staffList->links() }}
+                {{ $staffList->links('livewire.glass-pagination') }}
             </div>
         </div>
     </div>

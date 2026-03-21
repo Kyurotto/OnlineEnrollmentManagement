@@ -89,7 +89,7 @@ class RegistrarSectionManager extends Component
                            ->orderBy('id', 'desc')
                            ->paginate(10);
         
-        $courses = Course::all(); 
+        $courses = Course::where('type', 'program')->get(); 
         
         $academicYears = AcademicYear::where('is_active', true)->get();
         if($academicYears->isEmpty()) {

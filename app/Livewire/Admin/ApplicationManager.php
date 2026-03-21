@@ -45,14 +45,24 @@ class ApplicationManager extends Component
 
     public function rejectApplication($id)
     {
-        Enrollment::where('id', $id)->update(['status' => 'Rejected']);
-        session()->flash('success', "Application #{$id} rejected.");
+        $application = Enrollment::findOrFail($id);
+        
+        // Purge user and application per request
+        $user = $application->user;
+        
+        if ($user) {
+            $user->delete();
+        }
+        
+        $application->delete();
+
+        session()->flash('success', "Application #{$id} and associated account destroyed.");
         $this->closeModal();
     }
 
     public function render()
     {
-        $query = Enrollment::query()->with(['user'])->latest();
+        $query = Enrollment::query()->with(['user'])->whereNotIn('status', ['Enrolled', 'Rejected'])->latest();
 
         if (!empty($this->search)) {
             $query->whereHas('user', function ($q) {

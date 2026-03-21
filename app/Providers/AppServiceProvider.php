@@ -8,6 +8,10 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\User;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use App\Models\Employee;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,23 +28,40 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('admin', function (User $user) {
-        $employee = \DB::table('employees')->where('user_id', $user->id)->first();
-        return ($user->role === 'admin') || ($employee && $employee->role === 'admin');
-    });
-
-    // 2. Cashier Gate
-    Gate::define('cashier', function (User $user) {
-        $employee = \DB::table('employees')->where('user_id', $user->id)->first();
-        return ($user->role === 'cashier') || ($employee && $employee->role === 'cashier');
-    });
-
-    // 3. REGISTRAR GATE
-    Gate::define('registrar', function (User $user) {
-        // This checks if the user exists in the employees table with the 'registrar' role
-        $employee = \DB::table('employees')->where('user_id', $user->id)->first();
-        return ($user->role === 'registrar') || ($employee && $employee->role === 'registrar');
+        // 0. SUPER ADMIN BYPASS
+        Gate::before(function (User $user, string $ability) {
+            if ($user->role === 'admin') {
+                return true;
+            }
+            // Check employee record as well
+            $employee = $user->employee;
+            if ($employee && $employee->role === 'admin') {
+                return true;
+            }
         });
+
+        // 1. ADMIN GATE
+        Gate::define('admin', function (User $user) {
+            if ($user->role === 'admin') return true;
+            $employee = $user->employee;
+            return $employee && $employee->role === 'admin';
+        });
+
+        // 2. CASHIER GATE
+        Gate::define('cashier', function (User $user) {
+            if ($user->role === 'cashier') return true;
+            $employee = $user->employee;
+            return $employee && $employee->role === 'cashier';
+        });
+
+        // 3. REGISTRAR GATE
+        Gate::define('registrar', function (User $user) {
+            if ($user->role === 'registrar') return true;
+            $employee = $user->employee;
+            return $employee && $employee->role === 'registrar';
+        });
+
+
 
         // Notification Logic (Shared between Admin and Registrar)
         View::composer(['admin.*', 'registrar.*'], function ($view) {

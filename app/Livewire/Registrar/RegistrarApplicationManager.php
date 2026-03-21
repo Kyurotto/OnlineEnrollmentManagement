@@ -43,9 +43,22 @@ class RegistrarApplicationManager extends Component
     public function reject($id)
     {
         $application = Enrollment::findOrFail($id);
-        $application->update(['status' => 'Rejected']);
         
-        session()->flash('success', 'Application status updated to Rejected.');
+        // Hard deletion of the student account and related artifacts as requested
+        $user = $application->user;
+        
+        // 1. Delete associated payments first
+        $application->payments()->delete();
+        
+        // 2. Delete the User account (The "Hard" rejection)
+        if ($user) {
+            $user->delete();
+        }
+
+        // 3. Delete the application record itself
+        $application->delete();
+        
+        session()->flash('success', 'Application and student account have been permanently removed.');
     }
 
     public function delete($id)
@@ -59,6 +72,7 @@ class RegistrarApplicationManager extends Component
     public function render()
     {
         $applications = Enrollment::with(['user'])
+            ->whereNotIn('status', ['Enrolled', 'Rejected'])
             ->latest()
             ->paginate(10);
 

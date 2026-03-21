@@ -16,7 +16,7 @@ class DashboardController extends Controller
     {
         // 1. Gather Overview Statistics
         $stats = [
-            'active_courses' => Course::count(),
+            'active_courses' => Course::where('type', 'course')->count(),
             
             'students'       => User::where('role', 'student')
                                     ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())

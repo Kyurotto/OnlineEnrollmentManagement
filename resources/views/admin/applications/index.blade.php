@@ -1,210 +1,250 @@
-<div>
+<div class="py-6">
     <style>
-        .modal-backdrop {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #E5E7EB;
-            border-radius: 4px;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(34, 211, 238, 0.2); border-radius: 4px; }
     </style>
 
     <div class="w-full">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white tracking-tight">Admissions Portal</h2>
+            <p class="text-cyan-400/60 text-xs font-bold uppercase tracking-widest mt-1">Reviewing incoming student applications</p>
+        </div>
+
         @if (session('success'))
-            <div class="bg-[#10B981]/10 border border-[#10B981]/20 text-[#10B981] px-4 py-3 rounded relative mb-6 shadow-sm">
+            <div class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-4 py-3 rounded-xl relative mb-8 font-bold shadow-lg backdrop-blur-md flex items-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-white">
-                <h3 class="text-lg font-bold text-gray-900">Applications List</h3>
-                @if ($applications->total() > 0)
-                    <span class="bg-gray-50 text-[#10B981] border border-[#10B981]/20 px-3 py-1 rounded-full text-xs font-bold">
-                        {{ $applications->total() }} Total
-                    </span>
-                @endif
+        <div class="rounded-2xl border overflow-hidden"
+             style="background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
+            
+            <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <h3 class="font-bold text-white flex items-center gap-2">
+                    <span class="w-1 h-5 rounded-full bg-cyan-500 inline-block"></span>
+                    Applications Queue
+                    @if ($applications->total() > 0)
+                        <span class="text-white/40 text-xs font-normal ml-1">({{ $applications->total() }})</span>
+                    @endif
+                </h3>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-600">
-                    <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                <table class="w-full text-sm text-left text-white/70">
+                    <thead class="text-[10px] text-cyan-300 uppercase tracking-widest border-b border-white/5"
+                           style="background: rgba(255,255,255,0.03);">
                         <tr>
-                            <th class="px-6 py-4">ID</th>
-                            <th class="px-6 py-4">Student Name</th>
-                            <th class="px-6 py-4">Email</th>
-                            <th class="px-6 py-4">Program</th>
-                            <th class="px-6 py-4">Date</th>
-                            <th class="px-6 py-4">Status</th>
-                            <th class="px-6 py-4">Actions</th>
+                            <th class="px-6 py-5 font-black">ID</th>
+                            <th class="px-6 py-5 font-black">Student Candidate</th>
+                            <th class="px-6 py-5 font-black">Email Contact</th>
+                            <th class="px-6 py-5 font-black">Program/Year</th>
+                            <th class="px-6 py-5 font-black">Submission Date</th>
+                            <th class="px-6 py-5 font-black text-center">Status</th>
+                            <th class="px-6 py-5 font-black text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-white/5">
                         @forelse($applications as $application)
-                            <tr class="bg-white hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                    #{{ $application->id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900 uppercase">
-                                    {{ $application->first_name }} {{ $application->last_name }}
+                            <tr class="hover:bg-white/5 transition-all group">
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <span class="text-[10px] font-mono font-black text-white/30 group-hover:text-cyan-400/50 transition-colors">
+                                        #{{ $application->id }}
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 lowercase">
-                                    {{ $application->email }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    <span class="font-bold text-[#10B981]">{{ $application->course_code }}</span>
-                                    <span class="text-gray-400 text-xs ml-1">({{ $application->year_level }})</span>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="font-bold text-white group-hover:text-cyan-200 transition-colors uppercase tracking-tight">
+                                        {{ $application->first_name }} {{ $application->last_name }}
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                <td class="px-6 py-5 whitespace-nowrap text-xs text-white/40 italic lowercase">
+                                    {{ $application->email }}
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <span class="px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-black text-[10px] uppercase">
+                                        {{ $application->course_code }}
+                                    </span>
+                                    <span class="text-[10px] text-white/30 font-bold ml-1">{{ $application->year_level }}</span>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap text-xs text-white/50 font-bold">
                                     {{ $application->created_at->format('M d, Y') }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-5 whitespace-nowrap text-center">
                                     @php
-                                        $badgeColor = match (ucfirst($application->status)) {
-                                            'Approved' => 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20',
-                                            'Enrolled' => 'bg-sky-500/10 text-sky-400 border border-sky-500/20',
-                                            'Rejected' => 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
-                                            'Pending' => 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-                                            default => 'bg-gray-100 text-gray-600',
+                                        $badgeStyle = match (ucfirst($application->status)) {
+                                            'Approved' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                            'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                            'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                            'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                            default => 'bg-white/5 text-white/40 border-white/10',
                                         };
-                                        $displayText = ucfirst($application->status) === 'Enrolled' ? 'Paid' : ucfirst($application->status);
+                                        $displayText = ucfirst($application->status) === 'Enrolled' ? 'PAID' : strtoupper($application->status);
                                     @endphp
-                                    <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $badgeColor }}">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-widest shadow-sm {{ $badgeStyle }}">
                                         {{ $displayText }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td class="px-6 py-5 whitespace-nowrap text-right">
                                     <button wire:click="viewApplication({{ $application->id }})"
-                                        class="bg-[#10B981] hover:bg-[#059669] text-white px-3 py-1 rounded text-xs font-bold transition shadow-sm">
-                                        View
+                                        class="p-2 rounded-lg bg-white/5 border border-white/10 text-cyan-300 hover:bg-cyan-500 hover:text-white hover:border-cyan-400 transition-all shadow-sm group/btn">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-10 text-center text-gray-400">No applications found.</td>
+                                <td colspan="7" class="px-6 py-24 text-center">
+                                    <div class="flex flex-col items-center gap-3 opacity-20">
+                                        <svg class="w-16 h-16 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <p class="italic text-sm font-black uppercase tracking-widest">No applications found in queue</p>
+                                    </div>
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="p-4 border-t border-gray-200 bg-gray-50/50">
-                {{ $applications->links() }}
-            </div>
+
+            @if ($applications->hasPages())
+                <div class="px-6 py-4 border-t border-white/5" style="background: rgba(255,255,255,0.02);">
+                    {{ $applications->links() }}
+                </div>
+            @endif
         </div>
 
-        <div class="fixed inset-0 z-50 p-4 modal-backdrop flex items-center justify-center transition-opacity duration-200 {{ $showModal ? '' : 'hidden opacity-0 pointer-events-none' }}">
+        <!-- Glass Modal -->
+        <div class="fixed inset-0 z-50 p-4 backdrop-blur-md bg-[#060d1a]/60 flex items-center justify-center transition-all duration-300 {{ $showModal ? 'opacity-100' : 'opacity-0 pointer-events-none' }}">
             <div class="absolute inset-0" wire:click="closeModal"></div>
 
-            <div class="bg-white w-full max-w-4xl rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh] relative z-10">
+            <div class="w-full max-w-5xl rounded-3xl shadow-2xl border flex flex-col max-h-[90vh] relative z-10 overflow-hidden transform transition-all {{ $showModal ? 'scale-100 translate-y-0' : 'scale-95 translate-y-10' }}"
+                 style="background: #0a1628; border-color: rgba(255,255,255,0.1); box-shadow: 0 0 80px rgba(0,0,0,0.6);">
+                
                 @if ($selectedApp)
-                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-white shrink-0">
-                        <h2 class="text-xl font-bold text-gray-900">Application #{{ $selectedApp->id }}</h2>
-                        <button wire:click="closeModal" class="text-gray-400 hover:text-gray-600 transition focus:outline-none">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
+                    <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-white/5 shrink-0">
+                        <div class="flex items-center gap-4">
+                            <span class="bg-cyan-500/20 text-cyan-400 font-mono text-xs font-black px-3 py-1.5 rounded-xl border border-cyan-500/30">#{{ $selectedApp->id }}</span>
+                            <h2 class="text-xl font-black text-white uppercase tracking-tight">Applications</h2>
+                        </div>
+                        <button wire:click="closeModal" class="text-white/20 hover:text-white transition focus:outline-none">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
 
-                    <div class="p-6 overflow-y-auto custom-scrollbar bg-white">
-                        <div class="space-y-8">
-                            <div>
-                                <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Student Information</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-gray-100 pt-4">
-                                    <div><span class="block text-gray-400 text-xs mb-1">Full Name:</span><span class="font-bold text-gray-900 uppercase">{{ $selectedApp->last_name ?? '' }}, {{ $selectedApp->first_name ?? '' }} {{ $selectedApp->middle_name ?? '' }}</span></div>
-                                    <div><span class="block text-gray-400 text-xs mb-1">Email:</span><span class="font-medium text-gray-900">{{ $selectedApp->email ?? 'N/A' }}</span></div>
-                                    <div><span class="block text-gray-400 text-xs mb-1">Date of Birth:</span><span class="font-medium text-gray-900">{{ $selectedApp->birth_date ?? 'N/A' }}</span></div>
-                                    <div><span class="block text-gray-400 text-xs mb-1">Age:</span><span class="font-medium text-gray-900">{{ $selectedApp->age ?? 'N/A' }}</span></div>
-                                    <div><span class="block text-gray-400 text-xs mb-1">Gender:</span><span class="font-medium text-gray-900 capitalize">{{ $selectedApp->gender ?? 'N/A' }}</span></div>
-                                    <div class="col-span-1 md:col-span-2"><span class="block text-gray-400 text-xs mb-1">Address:</span><span class="font-medium text-gray-900">{{ $selectedApp->address_full ?? 'N/A' }}</span></div>
+                    <div class="p-8 overflow-y-auto custom-scrollbar flex-grow">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                            <!-- Sidebar Info -->
+                            <div class="lg:col-span-1 space-y-8">
+                                <div class="p-6 rounded-2xl bg-white/5 border border-white/5">
+                                    <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 px-1">Program Choice</h3>
+                                    <div class="space-y-4">
+                                        <div class="text-3xl font-black text-white tracking-tighter">{{ $selectedApp->course_code }}</div>
+                                        <div class="text-xs font-bold text-white/40 uppercase tracking-widest">{{ $selectedApp->year_level }}</div>
+                                        <div class="pt-4 border-t border-white/5">
+                                            <span class="text-[10px] font-black text-white/20 uppercase tracking-widest block mb-2">Current Status</span>
+                                            <span class="px-4 py-1.5 rounded-full text-[10px] font-black border uppercase tracking-widest shadow-lg {{ $badgeStyle }}">
+                                                {{ $displayText }}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-5">
-                                <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4">Program Details</h3>
-                                <div class="space-y-4 text-sm">
-                                    <p><span class="font-bold text-gray-500 mr-2">Program:</span><span class="text-[#10B981] font-bold uppercase">{{ $selectedApp->course_code ?? 'N/A' }}</span></p>
-                                    <div class="flex gap-4">
-                                        <span><span class="font-bold text-gray-500">Year:</span> <span class="text-gray-900 font-medium">{{ $selectedApp->year_level ?? 'N/A' }}</span></span>
-                                        <span><span class="font-bold text-gray-500">Status:</span> <span class="text-[#10B981] font-bold uppercase">{{ $selectedApp->status === 'Enrolled' ? 'Paid' : $selectedApp->status ?? 'N/A' }}</span></span>
+                                <div class="px-2">
+                                    <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                        Guardian Details
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1">Father</span><span class="text-sm font-bold text-white uppercase">{{ $selectedApp->father_name ?? 'N/A' }}</span></div>
+                                        <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1">Mother</span><span class="text-sm font-bold text-white uppercase">{{ $selectedApp->mother_maiden_name ?? 'N/A' }}</span></div>
+                                        <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1">Emergency Contact</span><span class="text-sm font-bold text-cyan-300 uppercase">{{ $selectedApp->guardian_name ?? 'N/A' }}</span></div>
+                                        <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1">Contact Phone</span><span class="text-sm font-mono text-white tracking-widest">{{ $selectedApp->guardian_contact ?? 'N/A' }}</span></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Guardian Information</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-gray-100 pt-4">
-                                    <div><span class="block text-gray-400 text-xs mb-1">Father's Name:</span><span class="font-bold text-gray-900 uppercase">{{ $selectedApp->father_name ?? 'N/A' }}</span></div>
-                                    <div><span class="block text-gray-400 text-xs mb-1">Mother's Name:</span><span class="font-bold text-gray-900 uppercase">{{ $selectedApp->mother_maiden_name ?? 'N/A' }}</span></div>
-                                    <div><span class="block text-gray-400 text-xs mb-1">Guardian:</span><span class="font-bold text-gray-900 uppercase">{{ $selectedApp->guardian_name ?? 'N/A' }}</span></div>
-                                    <div><span class="block text-gray-400 text-xs mb-1">Contact #:</span><span class="font-medium text-gray-900">{{ $selectedApp->guardian_contact ?? 'N/A' }}</span></div>
+                            <!-- Main Content Area -->
+                            <div class="lg:col-span-2 space-y-10">
+                                <div>
+                                    <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                        Biographical Data
+                                    </h3>
+                                    <div class="grid grid-cols-2 gap-8 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                        <div><span class="block text-[10px] text-white/20 uppercase font-black mb-1">Given Name</span><span class="text-base font-black text-white uppercase tracking-tight">{{ $selectedApp->first_name }} {{ $selectedApp->middle_name }}</span></div>
+                                        <div><span class="block text-[10px] text-white/20 uppercase font-black mb-1">Surname</span><span class="text-base font-black text-white uppercase tracking-tight">{{ $selectedApp->last_name }}</span></div>
+                                        <div><span class="block text-[10px] text-white/20 uppercase font-black mb-1">Electronic Mail</span><span class="text-sm font-bold text-cyan-400 lowercase italic">{{ $selectedApp->email }}</span></div>
+                                        <div><span class="block text-[10px] text-white/20 uppercase font-black mb-1">Birth Date</span><span class="text-sm font-bold text-white uppercase">{{ $selectedApp->birth_date }} ({{ $selectedApp->age }} yrs)</span></div>
+                                        <div class="col-span-2"><span class="block text-[10px] text-white/20 uppercase font-black mb-1">Residential Address</span><span class="text-sm font-medium text-white/60 leading-relaxed uppercase">{{ $selectedApp->address_full }}</span></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div>
-                                <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3 text-center md:text-left">Submitted Documents</h3>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-gray-100 pt-4">
-                                    @foreach ([['key' => 'form_138_path', 'label' => 'Form 138'], ['key' => 'good_moral_path', 'label' => 'Good Moral'], ['key' => 'psa_path', 'label' => 'PSA Birth Cert'], ['key' => 'id_picture_path', 'label' => 'ID Picture']] as $doc)
-                                        @php $hasFile = !empty($selectedApp[$doc['key']]); @endphp
-                                        <div>
-                                            @if ($hasFile)
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <div class="flex items-center justify-center w-[22px] h-[22px] bg-emerald-500/20 border-2 border-emerald-500 rounded-full shrink-0">
-                                                        <span class="text-emerald-500 font-black text-sm">✓</span>
-                                                    </div>
-                                                    <span class="text-[11px] font-bold uppercase text-gray-900">{{ $doc['label'] }}</span>
+                                <div>
+                                    <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        Supporting Documentation
+                                    </h3>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        @foreach ([['key' => 'form_138_path', 'label' => 'FORM 138'], ['key' => 'good_moral_path', 'label' => 'GOOD MORAL'], ['key' => 'psa_path', 'label' => 'PSA BIRTH'], ['key' => 'id_picture_path', 'label' => 'ID PHOTO']] as $doc)
+                                            @php $hasFile = !empty($selectedApp[$doc['key']]); @endphp
+                                            <div class="space-y-3 group/doc">
+                                                <div class="flex items-center gap-2">
+                                                    @if($hasFile)
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                                                        <span class="text-[9px] font-black uppercase text-white/60 tracking-tighter">{{ $doc['label'] }}</span>
+                                                    @else
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>
+                                                        <span class="text-[9px] font-black uppercase text-rose-500/60 tracking-tighter">{{ $doc['label'] }}</span>
+                                                    @endif
                                                 </div>
-                                                @php
-                                                    $fileUrl = asset('storage/' . $selectedApp[$doc['key']]);
-                                                    $isImage = preg_match('/\.(jpeg|jpg|png|gif|webp)$/i', $selectedApp[$doc['key']]);
-                                                @endphp
-                                                @if ($isImage)
-                                                    <a href="{{ $fileUrl }}" target="_blank" class="block">
-                                                        <img src="{{ $fileUrl }}" class="w-full h-[120px] object-cover rounded-lg border border-gray-200 bg-gray-50">
-                                                    </a>
-                                                @else
-                                                    <a href="{{ $fileUrl }}" target="_blank" class="block no-underline">
-                                                        <div class="w-full h-[120px] rounded-lg border border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-emerald-500">
-                                                            <span class="text-3xl">📄</span>
-                                                            <span class="text-[10px] font-bold uppercase mt-1">PDF</span>
+
+                                                @if ($hasFile)
+                                                    @php
+                                                        $fileUrl = \Storage::disk('public')->url($selectedApp[$doc['key']]);
+                                                        $isImage = preg_match('/\.(jpeg|jpg|png|gif|webp)$/i', $selectedApp[$doc['key']]);
+                                                    @endphp
+                                                    <a href="{{ $fileUrl }}" target="_blank" class="block relative overflow-hidden rounded-xl border border-white/10 aspect-[3/4] group-hover/doc:border-cyan-500/50 transition-all shadow-inner bg-white/5">
+                                                        @if ($isImage)
+                                                            <img src="{{ $fileUrl }}" class="w-full h-full object-cover grayscale group-hover/doc:grayscale-0 transition-all duration-500">
+                                                        @else
+                                                            <div class="w-full h-full flex flex-col items-center justify-center text-cyan-400 opacity-40 group-hover/doc:opacity-100 transition-opacity">
+                                                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                                                <span class="text-[8px] font-black mt-2">VIEW PDF</span>
+                                                            </div>
+                                                        @endif
+                                                        <div class="absolute inset-0 bg-cyan-500/20 opacity-0 group-hover/doc:opacity-100 transition-opacity flex items-center justify-center">
+                                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                         </div>
                                                     </a>
-                                                @endif
-                                            @else
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <div class="flex items-center justify-center w-[22px] h-[22px] bg-rose-500/20 border-2 border-rose-500 rounded-full shrink-0">
-                                                        <span class="text-rose-500 font-black text-sm">✗</span>
+                                                @else
+                                                    <div class="aspect-[3/4] rounded-xl bg-rose-500/5 border border-dashed border-rose-500/20 flex flex-col items-center justify-center opacity-40">
+                                                        <svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                        <span class="text-[8px] font-black text-rose-500 mt-2 uppercase tracking-widest">Missing</span>
                                                     </div>
-                                                    <span class="text-[11px] font-bold uppercase text-rose-500">{{ $doc['label'] }}</span>
-                                                </div>
-                                                <div class="w-full h-[120px] rounded-lg bg-gray-50 border border-dashed border-rose-500/40 flex flex-col items-center justify-center opacity-70">
-                                                    <span class="text-2xl opacity-60">⚠️</span>
-                                                    <span class="text-[10px] font-bold uppercase text-rose-500/60 mt-1">Missing</span>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex justify-between items-center shrink-0">
+                    <div class="px-8 py-6 border-t border-white/5 bg-white/5 flex justify-between items-center shrink-0">
                         @if ($selectedApp->status === 'Pending')
-                            <div class="gap-3 flex">
-                                <button wire:click="approveApplication({{ $selectedApp->id }})" class="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Approve</button>
-                                <button wire:click="rejectApplication({{ $selectedApp->id }})" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Reject</button>
+                            <div class="flex gap-4">
+                                <button wire:click="approveApplication({{ $selectedApp->id }})" 
+                                    class="bg-emerald-500 hover:bg-emerald-400 text-white px-8 py-3 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-widest">
+                                    Approve Candidate
+                                </button>
+                                <button wire:click="rejectApplication({{ $selectedApp->id }})" 
+                                    class="bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white px-8 py-3 rounded-xl text-xs font-black transition uppercase tracking-widest">
+                                    Reject Application
+                                </button>
                             </div>
                         @else
-                            <div></div>
+                            <div class="text-[10px] font-black text-white/20 uppercase tracking-widest">This record is {{ $selectedApp->status }} and cannot be modified.</div>
                         @endif
-                        <button wire:click="closeModal" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold transition ml-auto">Close</button>
+                        <button wire:click="closeModal" class="px-8 py-3 text-xs font-black text-white/40 hover:text-white uppercase tracking-widest transition">Close Panel</button>
                     </div>
                 @endif
             </div>

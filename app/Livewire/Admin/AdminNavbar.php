@@ -23,14 +23,18 @@ class AdminNavbar extends Component
 
     public function render()
     {
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
-        $newEnrolleesCount = $pendingCount;
-
-        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
-            ->with('user')
-            ->orderBy('updated_at', 'desc')
-            ->take(5)
-            ->get();
+        try {
+            $newEnrolleesCount = Enrollment::where('status', 'Pending')->count();
+            
+            $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+                ->with('user')
+                ->orderBy('updated_at', 'desc')
+                ->take(5)
+                ->get();
+        } catch (\Exception $e) {
+            $newEnrolleesCount = 0;
+            $notifications = collect();
+        }
 
         return view('livewire.admin.admin-navbar', [
             'newEnrolleesCount' => $newEnrolleesCount,

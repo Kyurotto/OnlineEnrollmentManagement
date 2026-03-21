@@ -1,13 +1,13 @@
-<nav class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+<nav class="sticky top-0 z-20 shadow-lg border-b" style="background: rgba(6,13,26,0.95); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.4);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center gap-8">
                 <div class="flex items-center gap-3">
-                    <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">
+                    <div class="text-white font-bold p-2 rounded-lg text-sm" style="background: linear-gradient(135deg, #0d1f3c, #1a3a6e); box-shadow: 0 4px 14px rgba(13,31,60,0.6);">
                         AD</div>
                     <div>
-                        <h1 class="text-lg font-bold leading-none text-gray-900">Admin Panel</h1>
-                        <span class="text-xs text-gray-500">
+                        <h1 class="text-lg font-bold leading-none text-white">Admin Panel</h1>
+                        <span class="text-xs" style="color: #8ab4d8;">
                             @if($currentRoute === 'admin.dashboard') Dashboard
                             @elseif($currentRoute === 'admin.applications.index') Manage Applications
                             @elseif($currentRoute === 'admin.courses.index') Manage Courses
@@ -17,17 +17,17 @@
                         </span>
                     </div>
                 </div>
-                <div class="flex space-x-6 text-sm font-medium text-gray-600 h-16">
+                <div class="flex space-x-6 text-sm font-medium h-16" style="color: #8ab4d8;">
                     <a wire:navigate href="{{ route('admin.dashboard') }}"
-                        class="flex items-center hover:text-[#10B981] transition h-full {{ $currentRoute === 'admin.dashboard' ? 'text-[#10B981] border-b-2 border-[#10B981]' : '' }}">Dashboard</a>
+                        class="flex items-center transition h-full" style="{{ $currentRoute === 'admin.dashboard' ? 'color: #a8d5f5; border-bottom: 2px solid #1a3a6e;' : '' }}" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='{{ $currentRoute === 'admin.dashboard' ? '#a8d5f5' : '#8ab4d8' }}'">Dashboard</a>
                 </div>
             </div>
 
             <div class="flex items-center gap-6">
                 <!-- Notifications Dropdown -->
                 <div class="relative mr-2">
-                    <button wire:click="toggleDropdown" class="relative p-2 text-gray-400 hover:text-gray-500 transition focus:outline-none">
-                        <svg class="w-6 h-6 hover:text-[#10B981] transition {{ $showDropdown ? 'text-[#10B981]' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button wire:click="toggleDropdown" class="relative p-2 transition focus:outline-none" style="color: #8ab4d8;">
+                        <svg class="w-6 h-6 transition" style="color: {{ $showDropdown ? '#ffffff' : '#8ab4d8' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                         </svg>
                         @if($newEnrolleesCount > 0)
@@ -39,48 +39,48 @@
                     </button>
 
                     @if($showDropdown)
-                    <div class="absolute right-0 top-12 w-80 bg-white border border-gray-200 shadow-2xl rounded-xl z-50 overflow-hidden transform transition-all">
+                    <div class="absolute right-0 top-12 w-80 shadow-2xl rounded-xl z-50 overflow-hidden transform transition-all" style="background: rgba(6,13,26,0.97); backdrop-filter: blur(16px); border: 1px solid rgba(26,58,110,0.5);">
                         <div class="absolute inset-0 z-[-1]" wire:click="toggleDropdown"></div>
-                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Notifications</h3>
+                        <div class="px-4 py-3 border-b flex justify-between items-center" style="background: rgba(13,31,60,0.8); border-color: rgba(26,58,110,0.4);">
+                            <h3 class="text-sm font-bold uppercase tracking-wide text-white">Notifications</h3>
                             @if($newEnrolleesCount > 0)
-                            <span class="bg-rose-100 text-rose-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $newEnrolleesCount }} New</span>
+                            <span class="bg-rose-100 text-rose-600 text-xs font-bold px-2 py-0.5 rounded-full">{{ $newEnrolleesCount }} New</span>
                             @endif
                         </div>
 
-                        <div class="max-h-64 overflow-y-auto custom-scrollbar bg-gray-50 p-2 space-y-2">
+                        <div class="max-h-64 overflow-y-auto custom-scrollbar p-2 space-y-2" style="background: rgba(6,13,26,0.6);">
                             @if (isset($notifications) && count($notifications) > 0)
                                 @foreach ($notifications as $notif)
                                     <a wire:navigate href="{{ route('admin.applications.index') }}"
-                                        class="block bg-white p-3 rounded-lg border border-gray-200 hover:border-[#10B981] hover:shadow-sm transition group cursor-pointer">
+                                        class="block p-3 rounded-lg border transition group cursor-pointer" style="background: rgba(13,31,60,0.6); border-color: rgba(26,58,110,0.3);" onmouseover="this.style.borderColor='rgba(26,58,110,0.9)'" onmouseout="this.style.borderColor='rgba(26,58,110,0.3)'">
                                         @if ($notif->status === 'Enrolled')
                                             @php
                                                 $paidAmount = \App\Models\Payment::where('application_id', $notif->id)->value('amount');
                                             @endphp
-                                            <p class="text-sm font-bold text-[#10B981] group-hover:text-[#059669] flex items-center gap-1">
+                                            <p class="text-sm font-bold flex items-center gap-1" style="color: #8ab4d8;">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                 </svg>
                                                 Student Paid
                                             </p>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                <span class="font-bold text-gray-900 uppercase">{{ $notif->first_name ?? ($notif->user->first_name ?? '') }} {{ $notif->last_name ?? ($notif->user->last_name ?? '') }}</span> is now <span class="font-bold text-[#10B981]">PAID ₱{{ number_format($paidAmount ?? 0, 2) }}</span>.
+                                            <p class="text-xs mt-1" style="color: #8ab4d8;">
+                                                <span class="font-bold text-white uppercase">{{ $notif->first_name ?? ($notif->user->first_name ?? '') }} {{ $notif->last_name ?? ($notif->user->last_name ?? '') }}</span> is now <span class="font-bold" style="color: #a8d5f5;">PAID ₱{{ number_format($paidAmount ?? 0, 2) }}</span>.
                                             </p>
                                         @else
-                                            <p class="text-sm font-bold text-gray-900 group-hover:text-[#10B981]">New Application</p>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                <span class="font-medium text-gray-900 uppercase">{{ $notif->first_name ?? ($notif->user->first_name ?? '') }} {{ $notif->last_name ?? ($notif->user->last_name ?? '') }}</span> applied for <span class="uppercase font-bold text-[#10B981]">{{ $notif->course_code }}</span>.
+                                            <p class="text-sm font-bold text-white">New Application</p>
+                                            <p class="text-xs mt-1" style="color: #8ab4d8;">
+                                                <span class="font-medium text-white uppercase">{{ $notif->first_name ?? ($notif->user->first_name ?? '') }} {{ $notif->last_name ?? ($notif->user->last_name ?? '') }}</span> applied for <span class="uppercase font-bold" style="color: #a8d5f5;">{{ $notif->course_code }}</span>.
                                             </p>
                                         @endif
-                                        <p class="text-[10px] text-gray-500 mt-2 text-right">{{ $notif->updated_at->diffForHumans() }}</p>
+                                        <p class="text-xs mt-2 text-right" style="color: #4a6fa5;">{{ $notif->updated_at->diffForHumans() }}</p>
                                     </a>
                                 @endforeach
                             @else
-                                <div class="text-center py-6 text-gray-500 text-sm">No notifications</div>
+                                <div class="text-center py-6 text-sm" style="color: #4a6fa5;">No notifications</div>
                             @endif
                         </div>
-                        <div class="bg-gray-50 p-2 border-t border-gray-200 text-center">
-                            <a wire:navigate href="{{ route('admin.applications.index') }}" class="text-xs font-bold text-[#10B981] hover:text-[#059669]">View All Applications →</a>
+                        <div class="p-2 border-t text-center" style="background: rgba(13,31,60,0.8); border-color: rgba(26,58,110,0.4);">
+                            <a wire:navigate href="{{ route('admin.applications.index') }}" class="text-xs font-bold" style="color: #8ab4d8;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#8ab4d8'">View All Applications →</a>
                         </div>
                     </div>
                     @endif
@@ -88,13 +88,13 @@
 
                 @if($currentRoute === 'admin.dashboard')
                 <div class="text-right hidden sm:block">
-                    <div class="text-xs text-gray-500">Signed in as</div>
-                    <div class="text-sm font-bold text-gray-900">Administrator</div>
+                    <div class="text-xs" style="color: #8ab4d8;">Signed in as</div>
+                    <div class="text-sm font-bold text-white">Administrator</div>
                 </div>
 
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition-colors">Logout</button>
+                    <button class="text-white text-sm font-semibold py-2 px-4 rounded-full transition-all" style="background: rgba(220,38,38,0.8); border: 1px solid rgba(220,38,38,0.5);" onmouseover="this.style.background='rgba(220,38,38,1)'" onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
                 </form>
                 @endif
             </div>

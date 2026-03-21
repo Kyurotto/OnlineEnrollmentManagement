@@ -17,10 +17,14 @@ class Enrollment extends Model
         // This tells Laravel that "Enrollment" belongs to a "User"
         return $this->belongsTo(User::class, 'user_id');
     }
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'application_id');
+    }
+
     public function course()
     {
-    // The second argument specifies the custom foreign key
-    return $this->belongsTo(Course::class, 'course_id');
-}
+        return $this->belongsTo(Course::class, 'course_id');
+    }
 
 }

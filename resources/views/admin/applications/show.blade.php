@@ -1,148 +1,201 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-layouts.admin>
+    <div class="py-8 max-w-5xl mx-auto">
+        <style>
+            .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(34, 211, 238, 0.2); border-radius: 4px; }
+        </style>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application #{{ $application->id }} - Details</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .modal-backdrop { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 4px; }
-    </style>
-</head>
-
-<body class="bg-gray-50 text-gray-600 h-screen overflow-hidden flex flex-col">
-
-    <nav class="bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center gap-4">
-                    <div class="bg-[#10B981] text-white font-bold p-2 rounded-lg text-sm shadow-md shadow-[#10B981]/20">APP</div>
-                    <div>
-                        <h1 class="text-lg font-bold leading-none text-gray-900">Application Viewer</h1>
-                        <span class="text-xs text-gray-500">Manage Applications</span>
-                    </div>
+        <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <a href="{{ redirect()->back()->getTargetUrl() }}" class="p-2 rounded-lg bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    </a>
+                    <span class="bg-cyan-500/20 text-cyan-400 font-mono text-xs font-black px-3 py-1.5 rounded-xl border border-cyan-500/30 shadow-sm">#{{ $application->id }}</span>
                 </div>
-                <div class="flex items-center gap-6">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded shadow transition">Logout</button>
+                <h2 class="text-3xl font-black text-white tracking-tight uppercase">Application List</h2>
+                <p class="text-cyan-400/60 text-xs font-bold uppercase tracking-widest mt-1">Full record for {{ $application->user?->name }}</p>
+            </div>
+
+            @if ($application->status === 'Pending')
+                <div class="flex gap-3">
+                    <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="Approved">
+                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-2.5 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-widest">
+                            Approve Candidate
+                        </button>
                     </form>
                 </div>
-            </div>
+            @endif
         </div>
-    </nav>
 
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-        <div class="bg-white w-full max-w-4xl rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="rounded-3xl border overflow-hidden shadow-2xl relative"
+             style="background: #0a1628; border-color: rgba(255,255,255,0.1); box-shadow: 0 0 80px rgba(0,0,0,0.6);">
 
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
-                <h2 class="text-xl font-bold text-gray-900">Application #{{ $application->id }}</h2>
-                <a href="{{ url()->previous() }}" class="text-gray-400 hover:text-gray-900 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </a>
-            </div>
+            <div class="p-8 md:p-12 overflow-y-auto custom-scrollbar">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
-            <div class="p-6 overflow-y-auto custom-scrollbar bg-white">
-                <div class="space-y-8">
-
-                    <div>
-                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3">Student Information</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm border-t border-gray-100 pt-4">
-                            <div><span class="block text-gray-400 text-xs mb-1">Full Name:</span><span class="font-bold text-gray-900 uppercase">{{ $application->user?->last_name ?? 'N/A' }}, {{ $application->user?->first_name ?? 'N/A' }} {{ $application->user?->middle_name ?? '' }}</span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Email:</span><span class="font-medium text-gray-700">{{ $application->user?->email ?? 'N/A' }}</span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Date of Birth:</span><span class="font-medium text-gray-700">{{ $application->user?->birth_date ?? 'N/A' }}</span></div>
-                            <div><span class="block text-gray-400 text-xs mb-1">Age:</span><span class="font-medium text-gray-700">{{ $application->user?->age ?? 'N/A' }}</span></div>
+                    <!-- Sidebar Column -->
+                    <div class="lg:col-span-1 space-y-10">
+                        <!-- Program Card -->
+                        <div class="p-8 rounded-2xl bg-white/5 border border-white/5 relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <svg class="w-24 h-24 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </div>
+                            <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 border-b border-cyan-500/20 pb-2">Program Preference</h3>
+                            <div class="space-y-4">
+                                <div class="text-4xl font-black text-white tracking-tighter">{{ $application->course?->course_code ?? 'N/A' }}</div>
+                                <div class="text-xs font-bold text-white/40 uppercase tracking-widest">{{ $application->year_level }}</div>
+                                <div class="pt-6">
+                                    <span class="text-[10px] font-black text-white/20 uppercase tracking-widest block mb-2 px-1">Current Status</span>
+                                    @php
+                                        $statusStyle = match (ucfirst($application->status)) {
+                                            'Approved' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                            'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                            'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                            'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                            default => 'bg-white/5 text-white/40 border-white/10',
+                                        };
+                                    @endphp
+                                    <span class="inline-block px-4 py-2 rounded-full text-[10px] font-black border uppercase tracking-widest shadow-lg {{ $statusStyle }}">
+                                        {{ strtoupper($application->status) }}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="bg-gray-50 border border-gray-100 rounded-lg p-5">
-                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4">Program Details</h3>
-                        <div class="space-y-4 text-sm">
-                            <p><span class="font-bold text-[#A1A1AA] mr-2">Program:</span><span class="text-[#10B981] font-bold uppercase">{{ $application->course?->course_code ?? 'N/A' }} - {{ $application->course?->course_description ?? '' }}</span></p>
-                            <div class="flex gap-4">
-                                <span><span class="font-bold text-gray-500">Year:</span> <span class="text-gray-700 font-medium">{{ $application->year_level }}</span></span>
-                                <span><span class="font-bold text-gray-500">Status:</span> <span class="text-[#10B981] font-bold uppercase">{{ $application->status }}</span></span>
+                        <!-- Guardian Info -->
+                        <div class="px-2">
+                             <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-8 flex items-center gap-2 border-b border-white/5 pb-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                Guardian Information
+                            </h3>
+                            <div class="space-y-6">
+                                <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1 px-1">Father's Name</span><span class="text-sm font-bold text-white uppercase">{{ $application->father_name ?? 'NOT RECORDED' }}</span></div>
+                                <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1 px-1">Mother's Name</span><span class="text-sm font-bold text-white uppercase">{{ $application->mother_maiden_name ?? 'NOT RECORDED' }}</span></div>
+                                <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1 px-1">Guardian</span><span class="text-sm font-bold text-cyan-300 uppercase">{{ $application->guardian_name ?? 'N/A' }}</span></div>
+                                <div><span class="block text-[10px] text-white/30 uppercase font-black mb-1 px-1">Emergency Ph.</span><span class="text-sm font-mono text-white tracking-widest">{{ $application->guardian_contact ?? 'N/A' }}</span></div>
                             </div>
                         </div>
                     </div>
 
-                    <div>
-                        <h3 class="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-3 text-center md:text-left">Submitted Documents</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-gray-100 pt-4">
-                            @php 
-                                $docs = [
-                                    'form_138_path' => 'Form 138', 
-                                    'good_moral_path' => 'Good Moral', 
-                                    'psa_path' => 'PSA Birth Cert', 
-                                    'id_picture_path' => 'ID Picture'
-                                ]; 
-                            @endphp
-                            
-                            @foreach ($docs as $path => $label)
-                                <div>
-                                    @if (!empty($application->$path))
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                            <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(16, 185, 129, 0.2); border: 2px solid #10B981; border-radius: 50%; flex-shrink: 0;">
-                                                <span style="color: #10B981; font-weight: 900; font-size: 14px; line-height: 1;">✓</span>
-                                            </div>
-                                            <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #111827;">{{ $label }}</span>
-                                        </div>
-
-                                        @php
-                                            $fileUrl = asset('storage/' . $application->$path);
-                                            $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $application->$path);
-                                        @endphp
-                                        
-                                        <a href="{{ $fileUrl }}" target="_blank" style="display: block;">
-                                            @if($isImage)
-                                                <img src="{{ $fileUrl }}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #E5E7EB; background-color: #F9FAFB;">
-                                            @else
-                                                <div style="width: 100%; height: 100px; border-radius: 8px; border: 1px solid #E5E7EB; background-color: #F9FAFB; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #10B981; transition: 0.2s;">
-                                                    <span style="font-size: 24px;">📄</span>
-                                                    <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px;">PDF</span>
-                                                </div>
-                                            @endif
-                                        </a>
-
-                                    @else
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                            <div style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background-color: rgba(244, 63, 94, 0.2); border: 2px solid #f43f5e; border-radius: 50%; flex-shrink: 0;">
-                                                <span style="color: #f43f5e; font-weight: 900; font-size: 14px; line-height: 1;">✗</span>
-                                            </div>
-                                            <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #f43f5e;">{{ $label }}</span>
-                                        </div>
-
-                                        <div style="width: 100%; height: 100px; border-radius: 8px; background-color: #FFF1F2; border: 1px dashed rgba(225, 29, 72, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.7;">
-                                            <span style="font-size: 20px; color: rgba(244, 63, 94, 0.6);">⚠️</span>
-                                            <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: rgba(244, 63, 94, 0.6); margin-top: 4px;">Missing</span>
-                                        </div>
-                                    @endif
+                    <!-- Main Data Column -->
+                    <div class="lg:col-span-2 space-y-12">
+                        <!-- Bio Data -->
+                        <div>
+                            <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-white/5 pb-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                Student Profile
+                            </h3>
+                            <div class="grid grid-cols-2 gap-y-8 gap-x-12 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div class="col-span-2 md:col-span-1 border-l-2 border-cyan-500/20 pl-4">
+                                    <span class="block text-[10px] text-white/20 uppercase font-black mb-1">Given Name</span>
+                                    <span class="text-xl font-black text-white uppercase tracking-tight">{{ $application->user?->first_name }} {{ $application->user?->middle_name }}</span>
                                 </div>
-                            @endforeach
+                                <div class="col-span-2 md:col-span-1 border-l-2 border-cyan-500/20 pl-4">
+                                    <span class="block text-[10px] text-white/20 uppercase font-black mb-1">Surname</span>
+                                    <span class="text-xl font-black text-white uppercase tracking-tight">{{ $application->user?->last_name }}</span>
+                                </div>
+                                <div class="col-span-2 md:col-span-1 border-l-2 border-white/10 pl-4">
+                                    <span class="block text-[10px] text-white/20 uppercase font-black mb-1">Contact Email</span>
+                                    <span class="text-sm font-bold text-cyan-400 lowercase italic">{{ $application->user?->email }}</span>
+                                </div>
+                                <div class="col-span-2 md:col-span-1 border-l-2 border-white/10 pl-4">
+                                    <span class="block text-[10px] text-white/20 uppercase font-black mb-1">Birth Date</span>
+                                    <span class="text-sm font-bold text-white uppercase">{{ $application->user?->birth_date }} ({{ $application->user?->age }} yrs)</span>
+                                </div>
+                                <div class="col-span-2 border-l-2 border-white/10 pl-4">
+                                    <span class="block text-[10px] text-white/20 uppercase font-black mb-1">Address</span>
+                                    <span class="text-sm font-medium text-white/60 leading-relaxed uppercase">{{ $application->user?->address_full }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents Section -->
+                        <div>
+                            <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-white/5 pb-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                Required Documents
+                            </h3>
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                                @php
+                                    $docs = [
+                                        'form_138_path' => 'PROGRESS REPORT',
+                                        'good_moral_path' => 'CERT. GOOD MORAL',
+                                        'psa_path' => 'PSA BIRTH CERT',
+                                        'id_picture_path' => 'IDENTIFICATION'
+                                    ];
+                                @endphp
+
+                                @foreach ($docs as $path => $label)
+                                    <div class="space-y-4 group/doc">
+                                        <div class="flex items-center gap-2">
+                                            @if (!empty($application->$path))
+                                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                                                <span class="text-[9px] font-black uppercase text-white tracking-widest">{{ $label }}</span>
+                                            @else
+                                                <div class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]"></div>
+                                                <span class="text-[9px] font-black uppercase text-rose-500 tracking-widest opacity-60">{{ $label }}</span>
+                                            @endif
+                                        </div>
+
+                                        @if (!empty($application->$path))
+                                            @php
+                                                $fileUrl = \Storage::disk('public')->url($application->$path);
+                                                $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $application->$path);
+                                            @endphp
+
+                                            <a href="{{ $fileUrl }}" target="_blank" class="block aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 group-hover/doc:border-cyan-500/50 transition-all shadow-inner">
+                                                @if($isImage)
+                                                    <img src="{{ $fileUrl }}" class="w-full h-full object-cover grayscale opacity-60 group-hover/doc:grayscale-0 group-hover/doc:opacity-100 transition-all duration-700">
+                                                @else
+                                                    <div class="w-full h-full flex flex-col items-center justify-center text-cyan-400 opacity-30 group-hover/doc:opacity-100 transition-opacity">
+                                                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                                        <span class="text-[8px] font-black mt-3">VIEW PDF</span>
+                                                    </div>
+                                                @endif
+                                                <div class="absolute inset-0 bg-cyan-500/20 opacity-0 group-hover/doc:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                </div>
+                                            </a>
+                                        @else
+                                            <div class="aspect-[3/4] rounded-2xl bg-rose-500/5 border border-dashed border-rose-500/20 flex flex-col items-center justify-center opacity-40">
+                                                <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                <span class="text-[9px] font-black text-rose-500 mt-3 tracking-widest uppercase">Missing File</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
 
                 </div>
             </div>
 
-            <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex justify-end gap-3 shrink-0">
-                <a href="{{ url()->previous() }}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm font-semibold transition">Close</a>
-                
-                @if ($application->status === 'Pending')
-                    <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
-                        @csrf @method('PATCH')
-                        <input type="hidden" name="status" value="Approved">
-                        <button type="submit" class="bg-[#10B981] hover:bg-[#059669] text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md shadow-[#10B981]/20">Approve Application</button>
-                    </form>
-                @endif
+            <!-- Bottom Actions -->
+            <div class="bg-white/5 px-8 py-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-[10px] font-black text-white/20 uppercase tracking-widest text-center md:text-left">
+                    Application Submitted: {{ $application->created_at->diffForHumans() }}
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <a href="{{ route('registrar.applications.index') }}" class="text-xs font-black text-white/40 hover:text-white uppercase tracking-widest transition">
+                        Return to Queue
+                    </a>
+
+                    @if ($application->status === 'Pending')
+                        <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="status" value="Approved">
+                            <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-white px-10 py-4 rounded-2xl text-xs font-black shadow-xl shadow-emerald-500/20 transition-all uppercase tracking-widest">
+                                Confirm Approval
+                            </button>
+                        </form>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
-
-</body>
-</html>
+</x-layouts.admin>
