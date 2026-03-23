@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { 
+        body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 50%, #1a3a6e 100%);
             background-attachment: fixed;
@@ -49,10 +49,12 @@
                         <div class="text-sm font-bold text-white capitalize">{{ Auth::user()->name }}</div>
                     </div>
 
+                    @unless(request()->routeIs('student.enrollment.*', 'student.payment', 'student.profile'))
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button class="text-white text-sm font-semibold py-2 px-6 rounded-full transition-all shadow-lg active:scale-95" style="background: rgba(220,38,38,0.8); border: 1px solid rgba(220,38,38,0.5);" onmouseover="this.style.background='rgba(220,38,38,1)'" onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
                     </form>
+                    @endunless
                 </div>
             </div>
         </div>

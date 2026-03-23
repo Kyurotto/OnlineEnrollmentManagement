@@ -18,7 +18,7 @@
             {{-- Course Selection --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-                
+
                 <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-blue-400 rounded-full"></span>
                     Course Selection
@@ -76,7 +76,7 @@
             {{-- Student Information --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-                
+
                 <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-purple-400 rounded-full"></span>
                     Student Information
@@ -134,7 +134,7 @@
             {{-- Document Requirements --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-                
+
                 <div class="flex justify-between items-start mb-8">
                     <div>
                         <h3 class="text-lg font-bold text-white flex items-center gap-3">
@@ -161,8 +161,8 @@
                             <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10 transition-transform group-hover:scale-105">
                                 <svg class="w-6 h-6 mb-3 text-emerald-400/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
                                 <p class="mb-1 text-[11px] text-white/40 leading-tight">
-                                    @if($$doc['model']) <span class="text-emerald-400 font-black uppercase tracking-widest">Asset Ready</span> 
-                                    @else <span class="font-bold text-white/60">Initialize Upload</span> 
+                                    @if($$doc['model']) <span class="text-emerald-400 font-black uppercase tracking-widest">Asset Ready</span>
+                                    @else <span class="font-bold text-white/60">Initialize Upload</span>
                                     @endif
                                 </p>
                                 <p class="text-[9px] truncate max-w-[180px] {{ $$doc['model'] ? 'text-white font-medium' : 'text-white/20' }}">
