@@ -9,6 +9,7 @@ use App\Models\Payment;
 class RegistrarNavbar extends Component
 {
     public $showDropdown = false;
+    public $showMobileMenu = false;
     public $currentRoute;
 
     public function mount()
@@ -20,8 +21,14 @@ class RegistrarNavbar extends Component
     {
         $this->showDropdown = !$this->showDropdown;
     }
+
+    public function toggleMobileMenu()
+    {
+        $this->showMobileMenu = !$this->showMobileMenu;
+    }
     public function render()
     {
+        /** @var \App\Models\User $user */
         $user = auth()->user();
         if (!$user) return view('livewire.registrar.registrar-navbar');
 

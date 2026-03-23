@@ -6,15 +6,11 @@
                 <h2 class="text-3xl font-bold text-white tracking-tight">My Payments</h2>
                 <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Transaction History & Revenue Verification</p>
             </div>
-            <a href="{{ route('student.dashboard') }}" wire:navigate class="text-xs font-bold text-[#10B981] hover:text-[#34d399] transition-colors flex items-center gap-2 uppercase tracking-widest">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Dashboard
-            </a>
         </div>
 
         <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
              style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-            
+
             <div class="flex items-center justify-between mb-8">
                 <h3 class="text-lg font-bold text-white flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-emerald-400 rounded-full"></span>
@@ -27,7 +23,7 @@
                 @forelse($payments ?? [] as $payment)
                 <div class="p-6 rounded-2xl border transition-all duration-300 flex justify-between items-center group
                      {{ $payment['status'] === 'Completed' ? 'bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/30 shadow-lg shadow-emerald-500/5' : 'bg-white/5 border-white/10 hover:border-white/20' }}">
-                    
+
                     <div class="flex items-center gap-6">
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors
                              {{ $payment['status'] === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-white/10 text-white/40' }}">

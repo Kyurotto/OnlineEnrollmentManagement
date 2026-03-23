@@ -12,10 +12,6 @@
                 <h2 class="text-3xl font-bold text-white tracking-tight">Enrollment Application</h2>
                 <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Enrollment Application</p>
             </div>
-            <a href="{{ route('student.dashboard') }}" wire:navigate class="text-xs font-bold text-[#10B981] hover:text-[#34d399] transition-colors flex items-center gap-2 uppercase tracking-widest">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Dashboard
-            </a>
         </div>
 
         <form wire:submit="submitEnrollment" class="space-y-8 pb-12">
@@ -23,7 +19,7 @@
             {{-- Course Selection --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-                
+
                 <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-blue-400 rounded-full"></span>
                     Course Selection
@@ -31,7 +27,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     @foreach(['ACT' => 'ASSOCIATE IN COMPUTER TECH', 'BSIS' => 'BS INFORMATION SYSTEMS', 'BTVTED' => 'BTV Teacher Education', 'DHRT' => 'HOTEL & RESTAURANT TECH', 'DIT' => 'DIPLOMA INFO TECH'] as $code => $name)
-                    <div wire:key="course-{{ $code }}" 
+                    <div wire:key="course-{{ $code }}"
                           wire:click="$set('course_code', '{{ $code }}')"
                           class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group {{ $course_code === $code ? 'bg-blue-400/10 border-blue-400/50 shadow-lg shadow-blue-500/10' : 'bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20' }}">
                         <input type="radio" wire:model="course_code" value="{{ $code }}" class="sr-only">
@@ -80,7 +76,7 @@
             {{-- Student Information --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-                
+
                 <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-purple-400 rounded-full"></span>
                     Student Information
@@ -135,10 +131,39 @@
                 </div>
             </div>
 
+            {{-- Parent Information --}}
+            <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
+                 style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
+
+                <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-purple-400 rounded-full"></span>
+                    Parent / Guardian Information
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Father's Full Name</label>
+                        <input type="text" wire:model="father_name" placeholder="Full Name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Mother's Maiden Name</label>
+                        <input type="text" wire:model="mother_maiden_name" placeholder="Full Name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Guardian's Full Name</label>
+                        <input type="text" wire:model="guardian_name" placeholder="Full Name (If not parents)" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Guardian Contact Number</label>
+                        <input type="text" wire:model="guardian_contact" placeholder="09XXXXXXXXX" maxlength="11" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                </div>
+            </div>
+
             {{-- Document Requirements --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-                
+
                 <div class="flex justify-between items-start mb-8">
                     <div>
                         <h3 class="text-lg font-bold text-white flex items-center gap-3">
@@ -166,8 +191,8 @@
                             <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10 transition-transform group-hover:scale-105">
                                 <svg class="w-6 h-6 mb-3 text-emerald-400/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
                                 <p class="mb-1 text-xs text-white/40 leading-tight">
-                                    @if($file) <span class="text-emerald-400 font-black uppercase tracking-widest">Asset Ready</span> 
-                                    @else <span class="font-bold text-white/60">Initialize Upload</span> 
+                                    @if($file) <span class="text-emerald-400 font-black uppercase tracking-widest">Asset Ready</span>
+                                    @else <span class="font-bold text-white/60">Initialize Upload</span>
                                     @endif
                                 </p>
                                 <p class="text-xs truncate max-w-[180px] {{ $file ? 'text-white font-medium' : 'text-white/20' }}">

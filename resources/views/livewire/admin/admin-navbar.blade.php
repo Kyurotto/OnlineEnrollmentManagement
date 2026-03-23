@@ -86,18 +86,53 @@
                     @endif
                 </div>
 
-                @if($currentRoute === 'admin.dashboard')
-                <div class="text-right hidden sm:block">
-                    <div class="text-xs" style="color: #8ab4d8;">Signed in as</div>
-                    <div class="text-sm font-bold text-white">Administrator</div>
-                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs" style="color: #8ab4d8;">Signed in as</div>
+                        <div class="text-sm font-bold text-white">Administrator</div>
+                    </div>
 
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button class="text-white text-sm font-semibold py-2 px-4 rounded-full transition-all" style="background: rgba(220,38,38,0.8); border: 1px solid rgba(220,38,38,0.5);" onmouseover="this.style.background='rgba(220,38,38,1)'" onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
-                </form>
-                @endif
+                    <form action="{{ route('logout') }}" method="POST" class="hidden sm:block">
+                        @csrf
+                        <button class="text-white text-sm font-semibold py-2 px-4 rounded-full transition-all" style="background: rgba(220,38,38,0.8); border: 1px solid rgba(220,38,38,0.5);" onmouseover="this.style.background='rgba(220,38,38,1)'" onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
+                    </form>
+
+                    <!-- Mobile Menu Button -->
+                    <button wire:click="toggleMobileMenu" class="sm:hidden p-2 rounded-lg transition" style="color: #8ab4d8; background: rgba(255,255,255,0.05);">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            @if($showMobileMenu)
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            @else
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                            @endif
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</nav>
+
+    <!-- Mobile Menu -->
+    <div class="sm:hidden overflow-hidden transition-all duration-300 {{ $showMobileMenu ? 'max-h-96 opacity-100 border-t' : 'max-h-0 opacity-0 border-none' }}" 
+         style="background: rgba(6,13,26,0.98); border-color: rgba(26,58,110,0.4);">
+        <div class="px-4 py-6 space-y-4">
+            <a wire:navigate href="{{ route('admin.dashboard') }}" 
+               class="block py-3 px-4 rounded-xl text-sm font-bold transition-all {{ $currentRoute === 'admin.dashboard' ? 'text-white' : '' }}"
+               style="{{ $currentRoute === 'admin.dashboard' ? 'background: rgba(26,58,110,0.4); color: #a8d5f5;' : 'color: #8ab4d8;' }}">
+               Dashboard
+            </a>
+            
+            <div class="pt-4 border-t border-white/5">
+                <div class="px-4 mb-4">
+                    <p class="text-[10px] font-black uppercase tracking-widest" style="color: #4a6fa5;">Account Manager</p>
+                    <p class="text-sm font-bold text-white mt-1">Administrator</p>
+                </div>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button class="w-full text-left py-3 px-4 rounded-xl text-sm font-bold text-rose-400 transition-all hover:bg-rose-500/10 active:bg-rose-500/20">
+                        Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>

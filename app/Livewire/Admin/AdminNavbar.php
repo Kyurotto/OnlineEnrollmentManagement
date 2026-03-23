@@ -9,6 +9,7 @@ use App\Models\Payment;
 class AdminNavbar extends Component
 {
     public $showDropdown = false;
+    public $showMobileMenu = false;
     public $currentRoute;
 
     public function mount()
@@ -19,6 +20,11 @@ class AdminNavbar extends Component
     public function toggleDropdown()
     {
         $this->showDropdown = !$this->showDropdown;
+    }
+
+    public function toggleMobileMenu()
+    {
+        $this->showMobileMenu = !$this->showMobileMenu;
     }
 
     public function render()

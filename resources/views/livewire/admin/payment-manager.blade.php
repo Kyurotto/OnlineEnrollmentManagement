@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <div class="table-container">
+        <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                     <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-600 uppercase tracking-wider">
