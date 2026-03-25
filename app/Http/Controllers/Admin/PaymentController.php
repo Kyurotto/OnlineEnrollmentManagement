@@ -83,7 +83,7 @@ class PaymentController extends Controller
 
         if ($payment->application_id) {
             Enrollment::where('id', $payment->application_id)->update([
-                'status' => 'Enrolled',
+                'status' => 'Paid',
                 'updated_at' => now(),
             ]);
         }
@@ -91,8 +91,12 @@ class PaymentController extends Controller
         // --- NOTIFICATION LOGIC START ---
         // Since store() creates it as 'Paid', we notify immediately
         $registrars = User::where('role', 'registrar')->get();
-        if($registrars->count() > 0){
-            Notification::send($registrars, new StudentPaymentConfirmed($payment));
+        $student = User::find($payment->user_id, ['*']);
+        
+        $recipients = $registrars->push($student)->filter(); // Combine staff and student
+
+        if($recipients->count() > 0){
+            Notification::send($recipients, new StudentPaymentConfirmed($payment));
         }
         // --- NOTIFICATION LOGIC END ---
 
@@ -130,15 +134,19 @@ class PaymentController extends Controller
         if ($request->status === 'Paid') {
             if ($payment->application_id) {
                 Enrollment::where('id', $payment->application_id)->update([
-                    'status' => 'Enrolled',
+                    'status' => 'Paid',
                     'updated_at' => now(),
                 ]);
             }
 
             // --- NOTIFICATION LOGIC START ---
             $registrars = User::where('role', 'registrar')->get();
-            if($registrars->count() > 0){
-                Notification::send($registrars, new StudentPaymentConfirmed($payment));
+            $student = User::find($payment->user_id, ['*']);
+            
+            $recipients = $registrars->push($student)->filter(); // Combine staff and student
+
+            if($recipients->count() > 0){
+                Notification::send($recipients, new StudentPaymentConfirmed($payment));
             }
             // --- NOTIFICATION LOGIC END ---
         }

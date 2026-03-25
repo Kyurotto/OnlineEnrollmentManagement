@@ -10,13 +10,23 @@ use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
-    public function index()
-{
-    // 1. Fetch official students (Approved/Enrolled only)
-    $students = User::where('role', 'student')
-                    ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10); 
+    public function index(Request $request)
+    {
+        $enrolledUserIds = Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray();
+        $query = User::where('role', 'student')->whereIn('id', $enrolledUserIds);
+
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%")
+                  ->orWhere('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->orderBy('created_at', 'desc')->paginate(10);
 
     // 2. Attach Program, Section (Year only), and Account details
     foreach ($students as $student) {

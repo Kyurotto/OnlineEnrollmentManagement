@@ -111,8 +111,7 @@
             </table>
         </div>
         <div class="px-6 py-4 border-t border-white/5 font-bold" style="background: rgba(255,255,255,0.02);"> 
-            {{ $payments->links('livewire.glass-pagination') }} 
+            {{ $payments->links('pagination.glass') }} 
         </div>
     </div>
-
 </div>

@@ -32,7 +32,7 @@ class ApplicationController extends Controller
         }
 
         // 2. Count pending applications for the header badge
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();
 
         return view('registrar.students.applications.index', compact('applications', 'pendingCount'));
     }
@@ -62,7 +62,7 @@ class ApplicationController extends Controller
         $application = Enrollment::findOrFail($id);
 
         $request->validate([
-            'status' => 'required|in:Approved,Rejected,Pending',
+            'status' => 'required|in:Approved,Rejected,Pending,Paid,Enrolled',
         ]);
 
         $application->status = $request->status;

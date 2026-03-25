@@ -53,13 +53,13 @@
                                 @php
                                 $badgeColor = match(ucfirst($application->status)) {
                                     'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                    'Enrolled' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                    'Enrolled','Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                                     'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
                                     'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
                                     default => 'bg-white/5 text-white/40 border-white/10',
                                 };
                                 $displayText = ucfirst($application->status);
-                                if ($displayText === 'Enrolled') { $displayText = 'Paid'; }
+                                if (in_array($displayText, ['Enrolled', 'Paid'])) { $displayText = 'Paid'; }
                                 @endphp
                                 <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
                                     {{ $displayText }}
@@ -100,7 +100,7 @@
             </div>
             <div class="p-8 border-t border-white/5 bg-white/[0.01]">
                 @if(method_exists($applications, 'links'))
-                    {{ $applications->links() }}
+                    {{ $applications->links('pagination.glass') }}
                 @endif
             </div>
         </div>
@@ -267,7 +267,7 @@
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
 
         let statusText = app.status;
-        if (statusText === 'Enrolled') { statusText = 'Paid / Finalized'; }
+        if (statusText === 'Enrolled' || statusText === 'Paid') { statusText = 'Paid / Finalized'; }
         document.getElementById('modalStatus').innerText = statusText;
 
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
@@ -347,7 +347,8 @@
         document.getElementById('rejectForm').action = `${baseUrl}/${app.id}`;
 
         const actionButtons = document.getElementById('actionButtons');
-        if (app.status === 'Pending') {
+        const status = (app.status || '').toLowerCase();
+        if (['pending', 'paid', 'enrolled'].includes(status)) {
             actionButtons.classList.add('flex');
             actionButtons.classList.remove('hidden');
         } else {

@@ -51,17 +51,17 @@
                 </div>
 
                 <!-- Course List -->
-                <div class="lg:col-span-2 rounded-2xl border overflow-hidden"
+                <div class="lg:col-span-2 rounded-2xl border overflow-hidden flex flex-col"
                      style="background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
                     <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/5">
                         <h3 class="font-bold text-white flex items-center gap-2">
                             <span class="w-1 h-5 rounded-full bg-blue-500 inline-block"></span>
                             Active Courses
-                            <span class="text-white/40 text-xs font-normal ml-1">({{ count($courses) }})</span>
+                            <span class="text-white/40 text-xs font-normal ml-1">({{ $courses->total() }})</span>
                         </h3>
                     </div>
                     
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto flex-grow">
                         <table class="min-w-full divide-y divide-white/5">
                             <thead class="bg-white/5">
                                 <tr>
@@ -102,9 +102,14 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if($courses->hasPages())
+                        <div class="px-6 py-4 border-t border-white/5 bg-white/5">
+                            {{ $courses->links('pagination.glass') }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </x-layouts.admin>
-html>

@@ -41,6 +41,6 @@ class CashierDashboardManager extends Component
             ->latest('updated_at')
             ->get();
 
-        return view('livewire.cashier.cashier-dashboard-manager', compact('stats', 'paymentsToday', 'paymentsYesterday'));
+        return view('dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
     }
 }

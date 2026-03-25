@@ -211,7 +211,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <a wire:navigate href="{{ route('admin.courses.index') }}" class="block h-full">
+            <a href="{{ route('admin.courses.index') }}" class="block h-full">
                 <div
                     class="p-6 rounded-xl shadow-lg border transition-all cursor-pointer flex justify-between items-start group h-full" style="background: rgba(6,13,26,0.75); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.35);" onmouseover="this.style.borderColor='rgba(26,58,110,0.9)'; this.style.boxShadow='0 8px 24px rgba(13,31,60,0.5)';" onmouseout="this.style.borderColor='rgba(26,58,110,0.35)'; this.style.boxShadow='';">
                     <div>
@@ -228,7 +228,7 @@
                 </div>
             </a>
 
-            <a wire:navigate href="{{ route('admin.students.index') }}" class="block h-full">
+            <a href="{{ route('admin.students.index') }}" class="block h-full">
                 <div
                     class="p-6 rounded-xl shadow-lg border transition-all cursor-pointer flex justify-between items-start group h-full" style="background: rgba(6,13,26,0.75); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.35);" onmouseover="this.style.borderColor='rgba(26,58,110,0.9)'; this.style.boxShadow='0 8px 24px rgba(13,31,60,0.5)';" onmouseout="this.style.borderColor='rgba(26,58,110,0.35)'; this.style.boxShadow='';">
                     <div>
@@ -246,7 +246,7 @@
                 </div>
             </a>
 
-            <a wire:navigate href="{{ route('admin.payments.index') }}" class="block h-full">
+            <a href="{{ route('admin.payments.index') }}" class="block h-full">
                 <div
                     class="p-6 rounded-xl shadow-lg border transition-all cursor-pointer flex justify-between items-start group h-full" style="background: rgba(6,13,26,0.75); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.35);" onmouseover="this.style.borderColor='rgba(26,58,110,0.9)'; this.style.boxShadow='0 8px 24px rgba(13,31,60,0.5)';" onmouseout="this.style.borderColor='rgba(26,58,110,0.35)'; this.style.boxShadow='';">
                     <div>
@@ -264,7 +264,7 @@
                 </div>
             </a>
 
-            <a wire:navigate href="{{ route('admin.applications.index') }}" class="block h-full">
+            <a href="{{ route('admin.applications.index') }}" class="block h-full">
                 <div
                     class="p-6 rounded-xl shadow-lg border transition-all cursor-pointer flex justify-between items-start group h-full" style="background: rgba(6,13,26,0.75); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.35);" onmouseover="this.style.borderColor='rgba(26,58,110,0.9)'; this.style.boxShadow='0 8px 24px rgba(13,31,60,0.5)';" onmouseout="this.style.borderColor='rgba(26,58,110,0.35)'; this.style.boxShadow='';">
                     <div>
@@ -285,7 +285,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-3 p-8 rounded-xl shadow-lg border" style="background: rgba(6,13,26,0.75); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.4);">
                 <h3 class="font-bold text-lg text-white mb-6">Overview</h3>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div class="p-4 rounded-lg border" style="background: rgba(13,31,60,0.5); border-color: rgba(26,58,110,0.4);">
                         <div class="text-xs mb-1 uppercase tracking-wide font-bold" style="color: #4a6fa5;">Active Courses</div>
                         <div class="text-2xl font-bold text-white">{{ $stats['active_courses'] }}</div>
@@ -293,10 +293,6 @@
                     <div class="p-4 rounded-lg border" style="background: rgba(13,31,60,0.5); border-color: rgba(26,58,110,0.4);">
                         <div class="text-xs mb-1 uppercase tracking-wide font-bold" style="color: #4a6fa5;">Total Students</div>
                         <div class="text-2xl font-bold text-white">{{ $stats['students'] }}</div>
-                    </div>
-                    <div class="p-4 rounded-lg border" style="background: rgba(13,31,60,0.5); border-color: rgba(26,58,110,0.4);">
-                        <div class="text-xs mb-1 uppercase tracking-wide font-bold" style="color: #4a6fa5;">Enrolled</div>
-                        <div class="text-2xl font-bold" style="color: #a8d5f5;">{{ $stats['enrolled'] ?? 0 }}</div>
                     </div>
                     <div class="p-4 rounded-lg border" style="background: rgba(13,31,60,0.5); border-color: rgba(26,58,110,0.4);">
                         <div class="text-xs mb-1 uppercase tracking-wide font-bold" style="color: #4a6fa5;">Payments</div>

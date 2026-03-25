@@ -18,43 +18,40 @@
     @livewireStyles
 </head>
 <body class="text-white flex flex-col min-h-screen">
-
-    <nav class="sticky top-0 z-20 shadow-lg border-b" style="background: rgba(6,13,26,0.95); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.4);">
+    <nav class="sticky top-0 z-20 shadow-lg border-b bg-[#060d1a]/95 backdrop-blur-md border-[#1a3a6e]/40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-8">
                     <div class="flex items-center gap-3">
-                        <div class="text-white font-bold p-2 rounded-lg text-sm" style="background: linear-gradient(135deg, #0d1f3c, #1a3a6e); box-shadow: 0 4px 14px rgba(13,31,60,0.6);">
+                        <div class="text-white font-bold p-2 rounded-lg text-sm bg-gradient-to-br from-[#0d1f3c] to-[#1a3a6e] shadow-lg shadow-[#0d1f3c]/60">
                             ST</div>
                         <div>
                             <h1 class="text-lg font-bold leading-none text-white">Student Portal</h1>
-                            <span class="text-xs" style="color: #8ab4d8;">
-                                @if(request()->routeIs('student.dashboard')) Dashboard
-                                @elseif(request()->routeIs('student.enrollment.*')) Enrollment
-                                @elseif(request()->routeIs('student.payment')) Payments
-                                @elseif(request()->routeIs('student.profile')) My Profile
+                            <span class="text-xs text-[#8ab4d8]">
+                                @if(Route::is('student.dashboard')) Dashboard
+                                @elseif(Route::is('student.enrollment.create')) Enrollment
+                                @elseif(Route::is('student.payment')) Payments
+                                @elseif(Route::is('student.profile')) Profile
                                 @endif
                             </span>
                         </div>
                     </div>
-                    <div class="flex space-x-6 text-sm font-medium h-16" style="color: #8ab4d8;">
-                        <a wire:navigate href="{{ route('student.dashboard') }}"
-                            class="flex items-center transition h-full" style="{{ request()->routeIs('student.dashboard') ? 'color: #a8d5f5; border-bottom: 2px solid #1a3a6e;' : '' }}" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='{{ request()->routeIs('student.dashboard') ? '#a8d5f5' : '#8ab4d8' }}'">Dashboard</a>
+                    <div class="flex space-x-6 text-sm font-medium h-16">
+                        <a href="{{ route('student.dashboard') }}"
+                            class="flex items-center transition h-full border-b-2 {{ Route::is('student.dashboard') ? 'text-[#a8d5f5] border-[#1a3a6e]' : 'text-[#8ab4d8] border-transparent hover:text-white' }}">Dashboard</a>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-6">
                     <div class="text-right hidden sm:block">
-                        <div class="text-xs" style="color: #8ab4d8;">Signed in as Student</div>
-                        <div class="text-sm font-bold text-white capitalize">{{ Auth::user()->name }}</div>
+                        <div class="text-xs text-[#8ab4d8]">Signed in as Student</div>
+                        <div class="text-sm font-bold text-white capitalize">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
                     </div>
 
-                    @unless(request()->routeIs('student.enrollment.*', 'student.payment', 'student.profile'))
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button class="text-white text-sm font-semibold py-2 px-6 rounded-full transition-all shadow-lg active:scale-95" style="background: rgba(220,38,38,0.8); border: 1px solid rgba(220,38,38,0.5);" onmouseover="this.style.background='rgba(220,38,38,1)'" onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
+                        <button class="text-white text-sm font-semibold py-2 px-6 rounded-full transition-all shadow-lg active:scale-95 bg-rose-600/80 border border-rose-500/50 hover:bg-rose-600">Logout</button>
                     </form>
-                    @endunless
                 </div>
             </div>
         </div>

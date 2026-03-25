@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Livewire\Student;
+namespace App\Http\Controllers\Student;
 
-use Livewire\Component;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Enrollment;
 use App\Models\Semester;
 use App\Models\AcademicYear;
 
-class StudentDashboardManager extends Component
+class StudentDashboardController extends Controller
 {
-    public function render()
+    public function index()
     {
         $user = Auth::user();
 
@@ -49,7 +49,7 @@ class StudentDashboardManager extends Component
                 ->exists();
         }
 
-        return view('livewire.student.student-dashboard-manager', compact(
+        return view('student.dashboard', compact(
             'activeSemester', 
             'activeYear', 
             'hasPendingApplication',
@@ -57,6 +57,6 @@ class StudentDashboardManager extends Component
             'latestEnrollment',
             'currentYearEnrollment',
             'isEnrolledInActiveYear'
-        ))->layout('components.layouts.student');
+        ));
     }
 }

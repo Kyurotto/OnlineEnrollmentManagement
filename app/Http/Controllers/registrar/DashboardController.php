@@ -11,11 +11,13 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // 1. Fetch Accurate Data Counts
         $studentsCount = User::where('role', 'student')
-                             ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
+                             ->whereHas('application', function($q) {
+                                 $q->whereIn('status', ['Enrolled', 'Approved']);
+                             })
                              ->count();
         
         $totalApplicationsCount = Enrollment::count(); 
@@ -24,35 +26,20 @@ class DashboardController extends Controller
         $programsCount = Course::where('type', 'program')->count();
 
         // 2. CALCULATE EXTRA STATS
-        $allEnrollments = Enrollment::select('year_level')->get();
-
-        $academicYearsCount = $allEnrollments->pluck('year_level')->map(function ($item) {
-            $parts = explode('|', $item); 
-            return isset($parts[2]) ? trim($parts[2]) : null;
-        })->filter()->unique()->count();
-
-        $semestersCount = $allEnrollments->pluck('year_level')->map(function ($item) {
-            $parts = explode('|', $item);
-            return isset($parts[1]) ? trim($parts[1]) : null;
-        })->filter()->unique()->count();
-
-        $sectionsCount = Enrollment::where('status', 'Enrolled')->distinct('year_level')->count('year_level');
+        $sectionsCount = \App\Models\Section::count();
 
         // 3. MAP THE STATS EXACTLY FOR THE HTML VIEW
         $stats = [
-            'students'       => $studentsCount,
-            'applications'   => $pendingCount, 
-            'enrolled'       => $enrolledCount,
-            'programs'       => $programsCount,
-            'academic_years' => $academicYearsCount > 0 ? $academicYearsCount : 1, 
-            'semesters'      => $semestersCount > 0 ? $semestersCount : 1,       
-            'sections'       => $sectionsCount,
+            'students'     => $studentsCount,
+            'applications' => $pendingCount,
+            'programs'     => $programsCount,
+            'sections'     => $sectionsCount,
         ];
 
         // 4. NOTIFICATIONS (Dropdown)
         $newEnrolleesCount = $pendingCount;
 
-        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+        $notifications = Enrollment::whereIn('status', ['Pending', 'Paid', 'Enrolled'])
                             ->with('user')
                             ->orderBy('updated_at', 'desc')
                             ->take(5)
@@ -63,6 +50,7 @@ class DashboardController extends Controller
         $startDate = Carbon::now()->subDays(4)->startOfDay();
 
         $weeklyApplications = Enrollment::with('user')
+            ->whereIn('status', ['Pending', 'Paid'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -87,9 +75,32 @@ class DashboardController extends Controller
         // Displays the current Month and Year (e.g. "February 2026")
         $weekRange = Carbon::now()->format('F Y');
 
+        // Modal Handling
+        $selectedApp = null;
+        if ($request->has('app_id')) {
+            $selectedApp = Enrollment::with('user')->find($request->app_id);
+        }
+
         return view('registrar.dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications', 
-            'appsByDate', 'weekDates', 'weekRange'
+            'appsByDate', 'weekDates', 'weekRange', 'selectedApp'
         ));
+    }
+
+    public function approve($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->update(['status' => 'Approved']);
+        $application->user->update(['status' => 'Enrolled']);
+
+        return redirect()->route('registrar.dashboard')->with('success', 'Application approved successfully.');
+    }
+
+    public function reject($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->update(['status' => 'Rejected']);
+
+        return redirect()->route('registrar.dashboard')->with('success', 'Application rejected.');
     }
 }

@@ -53,7 +53,7 @@
                 </button>
 
                 <div class="pt-6">
-                    <a wire:navigate class="text-[10px] font-black text-white/40 hover:text-cyan-400 uppercase tracking-widest transition-colors py-2" href="{{ route('login') }}">
+                    <a class="text-[10px] font-black text-white/40 hover:text-cyan-400 uppercase tracking-widest transition-colors py-2" href="{{ route('login') }}">
                         Already have an account? Log In
                     </a>
                 </div>

@@ -12,6 +12,9 @@ use App\Models\Semester;
 use App\Models\AcademicYear;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\NewEnrollmentSubmitted;
+
 class EnrollmentController extends Controller
 {
     public function create()
@@ -104,6 +107,12 @@ class EnrollmentController extends Controller
 
         // 6. UPDATE USER STATUS
         User::where('id', $user->id)->update(['status' => 'Pending']);
+
+        // 7. NOTIFY ADMINS AND REGISTRARS
+        $staff = User::whereIn('role', ['admin', 'registrar'])->get();
+        if ($staff->count() > 0) {
+            Notification::send($staff, new NewEnrollmentSubmitted($enrollment));
+        }
 
         return redirect()->route('student.dashboard')->with('success', 'Application submitted successfully!');
     }

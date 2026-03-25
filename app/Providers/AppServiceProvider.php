@@ -30,43 +30,71 @@ class AppServiceProvider extends ServiceProvider
     {
         // 0. SUPER ADMIN BYPASS
         Gate::before(function (User $user, string $ability) {
-            if ($user->role === 'admin') {
-                return true;
-            }
-            // Check employee record as well
-            $employee = $user->employee;
+            // Find employee by user_id or fallback to email (for seeder compatibility)
+            $employee = $user->employee ?: Employee::where('email', '=', $user->email, 'and')->first();
             if ($employee && $employee->role === 'admin') {
                 return true;
             }
         });
 
-        // 1. ADMIN GATE
         Gate::define('admin', function (User $user) {
-            if ($user->role === 'admin') return true;
-            $employee = $user->employee;
+            $employee = $user->employee ?: Employee::where('email', '=', $user->email, 'and')->first();
             return $employee && $employee->role === 'admin';
         });
 
-        // 2. CASHIER GATE
         Gate::define('cashier', function (User $user) {
-            if ($user->role === 'cashier') return true;
-            $employee = $user->employee;
+            $employee = $user->employee ?: Employee::where('email', '=', $user->email, 'and')->first();
             return $employee && $employee->role === 'cashier';
         });
 
-        // 3. REGISTRAR GATE
         Gate::define('registrar', function (User $user) {
-            if ($user->role === 'registrar') return true;
-            $employee = $user->employee;
+            $employee = $user->employee ?: Employee::where('email', '=', $user->email, 'and')->first();
             return $employee && $employee->role === 'registrar';
         });
 
 
 
-        // Notification Logic (Shared between Admin and Registrar)
+        // Admin Navbar Data
+        // Admin Layout Data
+        View::composer('components.layouts.admin', function ($view) {
+            $user = auth()->user();
+            try {
+                $unreadNotifCount = $user ? $user->unreadNotifications()->count() : 0;
+                $dbNotifications = $user ? $user->unreadNotifications()->latest()->take(10)->get() : collect();
+            } catch (\Exception $e) {
+                $unreadNotifCount = 0;
+                $dbNotifications = collect();
+            }
+
+            $view->with([
+                'newEnrolleesCount' => $unreadNotifCount,
+                'dbNotifications'   => $dbNotifications,
+                'currentRoute'      => request()->route() ? request()->route()->getName() : null,
+            ]);
+        });
+
+        // Registrar Layout Data
+        View::composer('components.layouts.registrar', function ($view) {
+            $user = auth()->user();
+            try {
+                $unreadNotifCount = $user ? $user->unreadNotifications()->count() : 0;
+                $dbNotifications = $user ? $user->unreadNotifications()->latest()->take(10)->get() : collect();
+            } catch (\Exception $e) {
+                $unreadNotifCount = 0;
+                $dbNotifications = collect();
+            }
+
+            $view->with([
+                'newEnrolleesCount' => $unreadNotifCount,
+                'dbNotifications'   => $dbNotifications,
+                'currentRoute'      => request()->route() ? request()->route()->getName() : null,
+            ]);
+        });
+
+        // Current Notification Logic (Existing)
         View::composer(['admin.*', 'registrar.*'], function ($view) {
             try {
-                $pendingCount = Enrollment::where('status', 'Pending')->count();
+                $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();
             } catch (\Exception $e) {
                 $pendingCount = 0;
             }
@@ -76,7 +104,7 @@ class AppServiceProvider extends ServiceProvider
         // 4. CASHIER NOTIFICATIONS
         View::composer(['cashier.*'], function ($view) {
             try {
-                $pendingPaymentsCount = Payment::where('status', 'Pending')->count();
+                $pendingPaymentsCount = Payment::where('status', '=', 'Pending')->count();
             } catch (\Exception $e) {
                 $pendingPaymentsCount = 0;
             }

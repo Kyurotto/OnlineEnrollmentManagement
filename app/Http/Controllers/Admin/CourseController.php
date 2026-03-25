@@ -15,8 +15,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::all();
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        $courses = Course::where('type', '=', 'course', 'and')->latest()->paginate(10);
+        $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();
         return view('admin.courses.index', compact('courses', 'pendingCount'));
     }
 
@@ -50,9 +50,7 @@ class CourseController extends Controller
     public function edit($id)
     {
         $course = Course::findOrFail($id);
-
-        // ADD THIS LINE:
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();
 
         // Pass both variables to the view
         return view('admin.courses.edit', compact('course', 'pendingCount'));

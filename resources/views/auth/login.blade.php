@@ -136,7 +136,7 @@
 
                         <div class="w-full flex justify-center mt-6 px-2">
                             @if (Route::has('password.request'))
-                                <a href="{{ route('password.request') }}" wire:navigate class="text-sm font-black text-white/20 hover:text-blue-400 uppercase tracking-widest transition-colors">
+                                <a href="{{ route('password.request') }}" class="text-sm font-black text-white/20 hover:text-blue-400 uppercase tracking-widest transition-colors">
                                     Forgot Password?
                                 </a>
                             @endif

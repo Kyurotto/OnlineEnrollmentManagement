@@ -25,8 +25,18 @@ class StudentPaymentConfirmed extends Notification
 
     public function toArray($notifiable)
     {
+        $amount = number_format($this->payment->amount, 2);
+        
+        // For Student
+        if ($notifiable->role === 'student') {
+            $message = "Your payment of ₱{$amount} has been confirmed. You are now officially enrolled!";
+        } else {
+            // For Registrar/Admin
+            $message = $this->payment->user->name . " has paid ₱{$amount}.";
+        }
+
         return [
-            'message' => $this->payment->user->name . ' has paid ₱' . number_format($this->payment->amount, 2),
+            'message' => $message,
             'payment_id' => $this->payment->id,
             'student_id' => $this->payment->user_id,
             'time' => now(),

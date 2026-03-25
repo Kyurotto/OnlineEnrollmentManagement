@@ -14,10 +14,10 @@ class ApplicationController extends Controller
         // 1. Fetch main list for the table
         $applications = Enrollment::with(['user'])->latest()->paginate(10);
 
-        // 2. Notification Logic (Fetch 'Pending' for badge count, 'Enrolled' for Paid alerts)
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        // 2. Notification Logic (Count strictly 'Pending' for badge count)
+        $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();
         
-        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'], 'and')
                             ->with('user')
                             ->orderBy('updated_at', 'desc')
                             ->take(5)

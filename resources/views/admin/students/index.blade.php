@@ -16,12 +16,21 @@
             <div class="rounded-2xl border overflow-hidden"
                  style="background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
 
-                <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <div class="px-6 py-5 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white/5">
                     <h3 class="font-bold text-white flex items-center gap-2">
                         <span class="w-1 h-5 rounded-full bg-purple-500 inline-block"></span>
                         Students List
-                        <span class="text-white/40 text-xs font-normal ml-1">({{ count($students) }})</span>
+                        <span class="text-white/40 text-xs font-normal ml-1">({{ $students->total() }})</span>
                     </h3>
+
+                    <form action="{{ route('admin.students.index') }}" method="GET" class="relative group w-full md:w-80">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-purple-400">
+                            <svg class="h-4 w-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               class="pl-11 pr-4 w-full bg-white/5 border border-white/10 rounded-xl py-3 text-sm text-white focus:border-purple-500/50 outline-none transition-all placeholder-white/10 font-bold uppercase tracking-tight shadow-inner"
+                               placeholder="Search students...">
+                    </form>
                 </div>
 
                 <div class="overflow-x-auto min-h-[400px]">
@@ -78,12 +87,11 @@
                 </div>
 
                 @if ($students->hasPages())
-                    <div class="px-6 py-4 border-t border-white/5" style="background: rgba(255,255,255,0.02);">
-                        {{ $students->links() }}
+                    <div class="px-6 py-4 border-t border-white/5 bg-white/5">
+                        {{ $students->appends(request()->query())->links('pagination.glass') }}
                     </div>
                 @endif
             </div>
         </div>
     </div>
 </x-layouts.admin>
-ml>

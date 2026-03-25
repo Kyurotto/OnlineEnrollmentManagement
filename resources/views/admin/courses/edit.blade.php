@@ -16,7 +16,7 @@
                 
                 <form action="{{ route('admin.courses.update', $course->id) }}" method="POST" class="space-y-8">
                     @csrf
-                    @method('PUT')
+                    @method('PATCH')
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-2">
@@ -59,4 +59,3 @@
         </div>
     </div>
 </x-layouts.admin>
-tml>

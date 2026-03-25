@@ -76,7 +76,7 @@
 
             @if ($students->hasPages())
                 <div class="p-8 border-t border-white/5 bg-white/[0.01]">
-                    {{ $students->links() }}
+                    {{ $students->links('pagination.glass') }}
                 </div>
             @endif
         </div>
