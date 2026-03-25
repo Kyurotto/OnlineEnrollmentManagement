@@ -96,11 +96,11 @@
             </a>
             <a href="{{ route('registrar.academic_years.index') }}" class="p-5 rounded-2xl border bg-rose-500/5 border-rose-500/10 hover:bg-rose-500/10 transition-all group flex items-center gap-4">
                 <div class="p-3 rounded-xl bg-rose-500/20 text-rose-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">A.Y.</h3>
+                <h3 class="font-black text-white text-sm uppercase tracking-widest">Academic Year</h3>
             </a>
             <a href="{{ route('registrar.semesters.index') }}" class="p-5 rounded-2xl border bg-emerald-500/5 border-emerald-500/10 hover:bg-emerald-500/10 transition-all group flex items-center gap-4">
                 <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Semesters</h3>
+                <h3 class="font-black text-white text-sm uppercase tracking-widest">Semester</h3>
             </a>
         </div>
 
@@ -124,7 +124,7 @@
         <div class="fixed inset-0 z-[100] p-4 flex items-center justify-center transition-all duration-500 backdrop-blur-2xl bg-[#060d1a]/95">
             <a href="{{ route('registrar.dashboard') }}" class="absolute inset-0 cursor-default"></a>
             <div class="rounded-[40px] shadow-2xl w-full max-w-5xl relative z-10 border overflow-hidden transform transition-all bg-[#0a1628] border-white/10 animate-in zoom-in-95 duration-500">
-                
+
                 {{-- Modal Header --}}
                 <div class="px-10 py-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                     <div class="flex items-center gap-6">
@@ -135,10 +135,10 @@
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </a>
                 </div>
-                
+
                 <div class="overflow-y-auto max-h-[80vh] custom-scrollbar">
                     <div class="p-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
-                        
+
                         {{-- Left Column: Program Choice --}}
                         <div class="lg:col-span-4 space-y-6">
                             <div class="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-8 shadow-inner">
@@ -167,7 +167,7 @@
 
                         {{-- Right Column: Main Content --}}
                         <div class="lg:col-span-8 space-y-12">
-                            
+
                             {{-- Biographical Data Section --}}
                             <div class="space-y-6">
                                 <div class="flex items-center gap-3">
@@ -236,7 +236,7 @@
                             <span class="text-[8px] font-black text-white/20 uppercase tracking-[0.3em]">Status: {{ strtoupper($selectedApp->status) }}</span>
                             <span class="text-[10px] font-black text-white/40 uppercase tracking-widest italic decoration-emerald-500/30 underline decoration-2 underline-offset-8">Confirmed Submission</span>
                         </div>
-                        
+
                         <div class="flex items-center gap-4">
                             @if(in_array(ucfirst($selectedApp->status), ['Pending', 'Paid', 'Enrolled']))
                                 <form action="{{ route('registrar.dashboard.reject', $selectedApp->id) }}" method="POST">

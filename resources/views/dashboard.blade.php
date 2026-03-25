@@ -111,11 +111,11 @@
             </a>
             <a href="{{ route('registrar.academic_years.index') }}" class="p-5 rounded-2xl border bg-rose-500/5 border-rose-500/10 hover:bg-rose-500/10 transition-all group flex items-center gap-4">
                 <div class="p-3 rounded-xl bg-rose-500/20 text-rose-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">A.Y.</h3>
+                <h3 class="font-black text-white text-sm uppercase tracking-widest">Academic Year</h3>
             </a>
             <a href="{{ route('registrar.semesters.index') }}" class="p-5 rounded-2xl border bg-emerald-500/5 border-emerald-500/10 hover:bg-emerald-500/10 transition-all group flex items-center gap-4">
                 <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Semesters</h3>
+                <h3 class="font-black text-white text-sm uppercase tracking-widest">Semester</h3>
             </a>
         @endif
     </div>
