@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Student;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -49,7 +49,7 @@ class StudentDashboardController extends Controller
                 ->exists();
         }
 
-        return view('student.dashboard', compact(
+        return view('dashboard', compact(
             'activeSemester', 
             'activeYear', 
             'hasPendingApplication',

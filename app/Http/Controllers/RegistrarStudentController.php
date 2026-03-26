@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Registrar;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Enrollment;
 use Illuminate\Validation\Rule;
 
-class StudentController extends Controller
+class RegistrarStudentController extends Controller
 {
     /**
      * Display a listing of students (Registrar View).

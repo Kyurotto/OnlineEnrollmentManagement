@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Cashier;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use App\Models\Payment;
 use App\Models\Enrollment;
 use Carbon\Carbon;
 
-class DashboardController extends Controller
+class CashierDashboardController extends Controller
 {
     public function index()
     {
@@ -42,6 +42,6 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        return view('cashier.dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
+        return view('dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
     }
 }

@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Livewire\Admin;
+
+use Livewire\Component;
+use Livewire\WithPagination;
+use App\Models\Enrollment;
+
+class AdminApplicationManager extends Component
+{
+    use WithPagination;
+
+    public $search = '';
+    public $status = 'All statuses';
+    public $sortField = 'enrollments.id';
+    public $sortDirection = 'desc';
+    public $selectedId;
+
+    protected $queryString = ['search', 'status', 'sortField', 'sortDirection'];
+
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingStatus() { $this->resetPage(); }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+    public function selectApplication($id)
+    {
+        $this->selectedId = $id;
+    }
+
+    public function approve($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->status = 'Approved';
+        $application->save();
+
+        if ($application->user) {
+            $application->user->update(['status' => 'Enrolled']);
+        }
+
+        session()->flash('success', 'Application status updated to Approved.');
+    }
+
+    public function reject($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->status = 'Rejected';
+        $application->save();
+
+        session()->flash('success', 'Application status updated to Rejected.');
+    }
+
+    public function destroy($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->delete();
+
+        session()->flash('success', 'Application record deleted successfully.');
+    }
+
+    public function render()
+    {
+        $query = Enrollment::with('user');
+
+        if (!empty($this->search)) {
+            $query->whereHas('user', function ($q) {
+                $q->where('first_name', 'like', "%{$this->search}%")
+                  ->orWhere('last_name', 'like', "%{$this->search}%")
+                  ->orWhere('email', 'like', "%{$this->search}%");
+            })->orWhere('course_code', 'like', "%{$this->search}%");
+        }
+
+        if ($this->status !== 'All statuses') {
+            $query->where('status', $this->status);
+        }
+
+        $applications = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+
+        foreach ($applications as $application) {
+            // Simplify year level display (e.g., "1st Year | 2nd Semester" -> "1st Year")
+            if (!empty($application->year_level)) {
+                $parts = explode('|', $application->year_level);
+                $application->year_display = trim($parts[0]);
+            } else {
+                $application->year_display = 'N/A';
+            }
+        }
+
+        return view('livewire.admin.admin-application-manager', [
+            'applications' => $applications
+        ])->layout('components.layouts.admin', ['title' => 'Applications']);
+    }
+}

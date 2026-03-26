@@ -7,7 +7,7 @@
                 </a>
                 <div>
                     <h2 class="text-3xl font-black text-white tracking-tight">Edit Academic Program</h2>
-                    <p class="text-blue-400/60 text-xs font-bold uppercase tracking-widest mt-1">Modifying: {{ $course->course_code }}</p>
+                    <p class="text-blue-400/60 text-xs font-bold uppercase tracking-widest mt-1">Updating: {{ $course->course_code }}</p>
                 </div>
             </div>
 

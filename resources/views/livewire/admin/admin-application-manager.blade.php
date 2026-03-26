@@ -1,40 +1,108 @@
-<x-layouts.registrar title="Enrollment Applications">
-    <div class="space-y-6 animate-in fade-in duration-500">
-        @if(session('success'))
-            <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                <span class="text-xs font-black uppercase tracking-widest">{{ session('success') }}</span>
-            </div>
-        @endif
+<div class="space-y-6 animate-in fade-in duration-500" x-data="{ modalOpen: false }">
+    @if(session('success'))
+        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+            <span class="text-xs font-black uppercase tracking-widest">{{ session('success') }}</span>
+        </div>
+    @endif
 
-        <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
-            <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Applications</h2>
-                    <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1"></p>
+    <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
+        <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex-shrink-0">
+                <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">Applications</h2>
+                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">Student Enrollment Lifecycle & Review Pipeline</p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                <div class="relative group w-full sm:w-64">
+                    <input type="text" wire:model.live.debounce.500ms="search"
+                        placeholder="Search Applicant or Course..."
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all shadow-inner tracking-wider">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/5">
-                        {{ $pendingCount }} Pending Approval
-                    </span>
+                <div class="w-full sm:w-44">
+                    <select wire:model.live="status" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                        <option value="All statuses" class="bg-[#0a0f1d]">All Status</option>
+                        <option value="Pending" class="bg-[#0a0f1d]">Pending</option>
+                        <option value="Approved" class="bg-[#0a0f1d]">Approved</option>
+                        <option value="Rejected" class="bg-[#0a0f1d]">Rejected</option>
+                        <option value="Paid" class="bg-[#0a0f1d]">Paid</option>
+                    </select>
                 </div>
             </div>
+        </div>
 
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left border-collapse font-bold">
-                    <thead>
-                        <tr class="text-[10px] text-white/20 uppercase tracking-[0.2em] border-b border-white/5 bg-white/[0.01]">
-                            <th class="py-6 px-8 text-left">ID</th>
-                            <th class="py-6 px-8 text-left">Full Name</th>
-                            <th class="py-6 px-8 text-left">Account Details</th>
-                            <th class="py-6 px-8 text-left">Program</th>
-                            <th class="py-6 px-8 text-left">Date</th>
-                            <th class="py-6 px-8 text-center">Status</th>
-                            <th class="py-6 px-8 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-xs divide-y divide-white/5">
-                        @forelse($applications as $application)
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse font-bold">
+                <thead class="text-[10px] text-white/20 uppercase tracking-[0.2em] border-b border-white/5 bg-white/[0.01]">
+                    <tr>
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.id')">
+                            <div class="flex items-center gap-2">
+                                ID
+                                <span class="transition-opacity {{ $sortField === 'enrollments.id' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'enrollments.id' && $sortDirection === 'asc')
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            </div>
+                        </th>
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('last_name')">
+                            <div class="flex items-center gap-2">
+                                Full Name
+                                <span class="transition-opacity {{ $sortField === 'last_name' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'last_name' && $sortDirection === 'asc')
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            </div>
+                        </th>
+                        <th class="py-6 px-8 text-left">Account Details</th>
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.course_code')">
+                            <div class="flex items-center gap-2">
+                                Program
+                                <span class="transition-opacity {{ $sortField === 'enrollments.course_code' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'enrollments.course_code' && $sortDirection === 'asc')
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            </div>
+                        </th>
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.created_at')">
+                            <div class="flex items-center gap-2">
+                                Date
+                                <span class="transition-opacity {{ $sortField === 'enrollments.created_at' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'enrollments.created_at' && $sortDirection === 'asc')
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            </div>
+                        </th>
+                        <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('status')">
+                            <div class="flex items-center gap-2 justify-center pl-5">
+                                Status
+                                <span class="transition-opacity {{ $sortField === 'status' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'status' && $sortDirection === 'asc')
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            </div>
+                        </th>
+                        <th class="py-6 px-8 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-xs divide-y divide-white/5">
+                    @forelse($applications as $application)
                         <tr class="hover:bg-white/[0.02] transition-colors group">
                             <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
                             <td class="py-6 px-8">
@@ -46,69 +114,69 @@
                             <td class="py-6 px-8 text-white/40 lowercase tracking-tight">{{ $application->email }}</td>
                             <td class="py-6 px-8 whitespace-nowrap">
                                 <span class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
-                                <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_level }})</span>
+                                <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
                             </td>
                             <td class="py-6 px-8 text-white/30 font-medium italic tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
                             <td class="py-6 px-8">
                                 @php
-                                $badgeColor = match(ucfirst($application->status)) {
-                                    'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                    'Enrolled','Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                                    'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                    'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                    default => 'bg-white/5 text-white/40 border-white/10',
-                                };
-                                $displayText = ucfirst($application->status);
-                                if (in_array($displayText, ['Enrolled', 'Paid'])) { $displayText = 'Paid'; }
+                                    $badgeColor = match(ucfirst($application->status)) {
+                                        'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        'Enrolled','Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                        'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                        'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        default => 'bg-white/5 text-white/40 border-white/10',
+                                    };
+                                    $displayText = match($application->status) {
+                                        'Enrolled' => 'Paid',
+                                        default => $application->status
+                                    };
                                 @endphp
                                 <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
                                     {{ $displayText }}
                                 </span>
                             </td>
-                            <td class="py-6 px-8 text-right">
-                                <div class="flex justify-end items-center gap-3">
-                                    <button type="button" data-application="{{ json_encode($application) }}"
-                                        data-user="{{ json_encode($application->user) }}"
-                                        onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
+                            <td class="py-6 px-8">
+                                <div class="flex justify-end items-center gap-4">
+                                    <button type="button" @click="modalOpen = true; openModal({{ json_encode($application) }}); @this.set('selectedId', {{ $application->id }})"
                                         class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20">
                                         View Details
                                     </button>
+
                                 </div>
                             </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
-                            <td colspan="7" class="py-20 text-center">
+                            <td colspan="7" class="py-24 text-center">
                                 <div class="flex flex-col items-center opacity-20">
-                                    <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    <span class="text-[10px] font-black uppercase tracking-[0.3em] italic">No Applications Found</span>
+                                    <svg class="w-16 h-16 mb-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-white">No applications found in the review pipeline</span>
                                 </div>
                             </td>
                         </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="p-8 border-t border-white/5 bg-white/[0.01]">
-                @if(method_exists($applications, 'links'))
-                    {{ $applications->links('pagination') }}
-                @endif
-            </div>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
+
+        @if($applications->hasPages())
+            <div class="p-8 border-t border-white/5 bg-white/[0.01]">
+                {{ $applications->links('pagination') }}
+            </div>
+        @endif
     </div>
 
-    {{-- Universal Application Analysis Modal --}}
-    <div id="applicationModal" class="fixed inset-0 z-[100] hidden opacity-0 pointer-events-none transition-all duration-300 items-center justify-center p-4">
-        <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" onclick="closeModal()"></div>
-
-        <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform scale-95 transition-all duration-300" id="modalContent">
-
+    <!-- Details Modal -->
+    <div x-show="modalOpen" wire:ignore class="fixed inset-0 z-50 p-4 flex items-center justify-center transition-all duration-300" x-cloak>
+        <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false"></div>
+        <div class="relative w-full max-w-5xl bg-[#0d1f3c] rounded-[40px] border border-white/10 shadow-[0_32px_120px_rgba(0,0,0,0.6)] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]" id="modalContent">
+            <!-- Modal Header -->
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                 <div>
                     <h2 class="text-2xl font-black text-white italic uppercase tracking-tight" id="modalTitle">Application Details</h2>
                     <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process</p>
                 </div>
-                <button onclick="closeModal()" class="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center">
+                <button @click="modalOpen = false" class="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -222,31 +290,36 @@
                 </div>
             </div>
 
+            <!-- Modal Footer -->
             <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
-                <div id="actionButtons" class="items-center gap-4 hidden">
-                    <form id="approveForm" method="POST">
-                        @csrf @method('PATCH')
-                        <input type="hidden" name="status" value="Approved">
-                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
-                            Approve
-                        </button>
-                    </form>
-            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6 shrink-0">
-            <div class="flex gap-4" id="actionButtons">
-                {{-- Action buttons injected via JS --}}
+                <div class="flex items-center gap-4">
+                    <button type="button" 
+                        wire:click="approve(selectedId)" 
+                        @click="modalOpen = false"
+                        class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
+                        Approve
+                    </button>
+                    <button type="button" 
+                        wire:click="reject(selectedId)" 
+                        wire:confirm="Are you sure you want to reject this application?" 
+                        @click="modalOpen = false"
+                        class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95">
+                        Reject Application
+                    </button>
+                </div>
+                <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
+                    Close Details
+                </button>
             </div>
-            <button onclick="closeModal()" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 transition-all ml-auto italic">Close Details</button>
-        </div>
         </div>
     </div>
 
     <script>
-    function openModal(app, user, course) {
+    function openModal(app) {
         document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
-        const updateRoute = "{{ route('registrar.applications.index') }}/" + app.id;
         const middle = app.middle_name ? ' ' + app.middle_name : '';
         const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
-
+        
         // Student Profile section
         document.getElementById('modalNameValue').innerText = fullName;
         document.getElementById('modalEmail').innerText = app.email || 'N/A';
@@ -256,41 +329,13 @@
         document.getElementById('modalAge').innerText = app.age || 'N/A';
         document.getElementById('modalGender').innerText = app.gender || 'N/A';
         document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
-        // Document Assets
-        // ... (existing doc logic)
         
-        // Action Buttons
-        const actionButtons = document.getElementById('actionButtons');
-        if (app.status === 'Pending') {
-            actionButtons.innerHTML = `
-                <form action="${updateRoute}" method="POST">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="Approved">
-                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
-                        Approve
-                    </button>
-                </form>
-                <form action="${updateRoute}" method="POST" onsubmit="return confirm('Reject this application?')">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="Rejected">
-                    <button type="submit" class="bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white px-8 py-4 rounded-2xl text-[10px] font-black transition-all uppercase tracking-[0.2em]">
-                        Reject Application
-                    </button>
-                </form>
-            `;
-        } else {
-            actionButtons.innerHTML = `<div class="text-[10px] font-black text-white/20 uppercase tracking-widest italic tracking-[0.2em]">Status: ${app.status.toUpperCase()}</div>`;
-        }
-
-        let courseCode = app.course_code || 'N/A';
-        document.getElementById('modalCourse').innerText = courseCode;
-
+        // Program details
+        document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
-
-        let statusText = app.status;
-        if (statusText === 'Enrolled' || statusText === 'Paid') { statusText = 'Paid / Finalized'; }
-        document.getElementById('modalStatus').innerText = statusText;
-
+        document.getElementById('modalStatus').innerText = app.status || 'N/A';
+        
+        // Guardian info
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
         document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
         document.getElementById('modalGuardian').innerText = app.guardian_name || 'N/A';
@@ -362,47 +407,6 @@
 
             docsContainer.innerHTML += `<div>${headerHtml}${boxHtml}</div>`;
         });
-
-        const baseUrl = "{{ url('registrar/applications') }}";
-        document.getElementById('approveForm').action = `${baseUrl}/${app.id}`;
-        document.getElementById('rejectForm').action = `${baseUrl}/${app.id}`;
-
-        const actionButtons = document.getElementById('actionButtons');
-        const status = (app.status || '').toLowerCase();
-        if (['pending', 'paid', 'enrolled'].includes(status)) {
-            actionButtons.classList.add('flex');
-            actionButtons.classList.remove('hidden');
-        } else {
-            actionButtons.classList.remove('flex');
-            actionButtons.classList.add('hidden');
-        }
-
-        const modal = document.getElementById('applicationModal');
-        const content = document.getElementById('modalContent');
-        modal.classList.add('flex');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            content.classList.remove('scale-95');
-        }, 10);
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('applicationModal');
-        const content = document.getElementById('modalContent');
-        modal.classList.add('opacity-0', 'pointer-events-none');
-        content.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        }, 300);
-    }
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('applicationModal');
-        if (event.target == modal) closeModal();
     }
     </script>
-</x-layouts.registrar>
+</div>

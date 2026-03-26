@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Registrar;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course; 
 use App\Models\Section;
 
-class ProgramController extends Controller
+class RegistrarProgramController extends Controller
 {
     public function index()
     {

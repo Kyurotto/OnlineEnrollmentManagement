@@ -55,7 +55,7 @@
                                 <td class="py-6 px-8 text-right">
                                     <a href="{{ route('registrar.students.edit', $student->id) }}"
                                         class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
-                                        Modify
+                                        UPDATE
                                         <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                                     </a>
                                 </td>
@@ -76,7 +76,7 @@
 
             @if ($students->hasPages())
                 <div class="p-8 border-t border-white/5 bg-white/[0.01]">
-                    {{ $students->links('pagination.glass') }}
+                    {{ $students->links('pagination') }}
                 </div>
             @endif
         </div>

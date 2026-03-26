@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Cashier;
+namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\Layout;

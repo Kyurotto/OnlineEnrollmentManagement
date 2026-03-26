@@ -75,6 +75,6 @@ class DashboardController extends Controller
         // Displays the current Month and Year (e.g. "February 2026")
         $weekRange = Carbon::now()->format('F Y');
 
-        return view('admin.dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange'));
+        return view('dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange'));
     }
 }

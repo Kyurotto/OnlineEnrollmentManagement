@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Registrar;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,7 +9,7 @@ use App\Models\Enrollment;
 use App\Models\Course;
 use Carbon\Carbon;
 
-class DashboardController extends Controller
+class RegistrarDashboardController extends Controller
 {
     public function index(Request $request)
     {
@@ -81,7 +81,7 @@ class DashboardController extends Controller
             $selectedApp = Enrollment::with('user')->find($request->app_id);
         }
 
-        return view('registrar.dashboard', compact(
+        return view('dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications', 
             'appsByDate', 'weekDates', 'weekRange', 'selectedApp'
         ));

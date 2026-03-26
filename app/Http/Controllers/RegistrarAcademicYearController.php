@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Registrar;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AcademicYear;
 
-class AcademicYearController extends Controller
+class RegistrarAcademicYearController extends Controller
 {
     public function index()
     {

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Student;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Payment;
 
-class ProfileController extends Controller
+class StudentProfileController extends Controller
 {
     /**
      * Display the student's profile form.

@@ -50,6 +50,7 @@
                                 <div class="text-xs text-white/40 italic">Signed in as</div>
                                 <div class="text-sm font-bold text-white uppercase">{{ auth()->user()->name }}</div>
                             </div>
+                            @if(request()->routeIs('cashier.dashboard'))
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button class="text-white text-sm font-semibold py-2 px-6 rounded-full transition-all shadow-lg active:scale-95"
@@ -57,7 +58,8 @@
                                     onmouseover="this.style.background='rgba(220,38,38,1)'"
                                     onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
                             </form>
-                            <button @click="showMobileMenu = !showMobileMenu" class="sm:hidden p-2 rounded-lg transition" 
+                            @endif
+                            <button @click="showMobileMenu = !showMobileMenu" class="sm:hidden p-2 rounded-lg transition"
                                 style="color: #8ab4d8; background: rgba(255,255,255,0.05);">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path x-show="!showMobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -70,7 +72,7 @@
             </div>
 
             <!-- Mobile Menu -->
-            <div x-show="showMobileMenu" x-cloak class="sm:hidden overflow-hidden transition-all duration-300" 
+            <div x-show="showMobileMenu" x-cloak class="sm:hidden overflow-hidden transition-all duration-300"
                 style="background: rgba(6,13,26,0.98); border-top: 1px solid rgba(26,58,110,0.4);">
                 <div class="px-4 py-6 space-y-4">
                     <a href="{{ route('cashier.dashboard') }}"

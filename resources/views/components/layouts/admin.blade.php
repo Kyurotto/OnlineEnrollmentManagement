@@ -77,8 +77,8 @@
                                     <div class="max-h-64 overflow-y-auto custom-scrollbar p-2 space-y-2" style="background: rgba(6,13,26,0.6);">
                                         @if(isset($dbNotifications) && $dbNotifications->count() > 0)
                                             @foreach($dbNotifications as $notification)
-                                                <div @click="fetch('{{ route('notifications.markAsRead', $notification->id) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }).then(() => { window.location.href = '{{ route('admin.applications.index') }}' })" 
-                                                     class="block p-3 rounded-lg border transition group cursor-pointer hover:bg-white/5 active:scale-[0.98]" 
+                                                <div @click="fetch('{{ route('notifications.markAsRead', $notification->id) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }).then(() => { window.location.href = '{{ route('admin.applications.index') }}' })"
+                                                     class="block p-3 rounded-lg border transition group cursor-pointer hover:bg-white/5 active:scale-[0.98]"
                                                      style="background: rgba(16,185,129,0.05); border-color: rgba(16,185,129,0.2);">
                                                     <p class="text-xs text-white/90">{{ $notification->data['message'] ?? 'Notification' }}</p>
                                                     <p class="text-[9px] mt-2 text-right text-white/20">{{ $notification->created_at->diffForHumans() }}</p>
@@ -101,6 +101,7 @@
                                 <div class="text-xs text-white/40 italic">Signed in as</div>
                                 <div class="text-sm font-bold text-white">Administrator</div>
                             </div>
+                            @if(request()->routeIs('admin.dashboard'))
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button class="text-white text-sm font-semibold py-2 px-4 rounded-full transition-all"
@@ -108,6 +109,7 @@
                                     onmouseover="this.style.background='rgba(220,38,38,1)'"
                                     onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
                             </form>
+                            @endif
                             <button @click="showMobileMenu = !showMobileMenu" class="sm:hidden p-2 rounded-lg transition" style="color: #8ab4d8; background: rgba(255,255,255,0.05);">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path x-show="!showMobileMenu" d="M4 6h16M4 12h16m-7 6h7"></path><path x-show="showMobileMenu" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>

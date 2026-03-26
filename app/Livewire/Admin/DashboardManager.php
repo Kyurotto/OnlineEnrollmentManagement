@@ -58,12 +58,8 @@ class DashboardManager extends Component
     public function rejectApplication($id)
     {
         $application = Enrollment::findOrFail($id);
-        $user = $application->user;
-        if ($user) {
-            $user->delete();
-        }
-        $application->delete();
-        session()->flash('success', "Application #{$id} and associated account destroyed.");
+        $application->update(['status' => 'Rejected']);
+        session()->flash('success', "Application #{$id} rejected.");
         $this->closeModal();
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Registrar;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use App\Models\Enrollment; // Assuming your model is Enrollment
 use App\Models\User;
 use App\Models\Course;
 
-class ApplicationController extends Controller
+class RegistrarApplicationController extends Controller
 {
     /**
      * Display the list of applications (The First HTML Page).

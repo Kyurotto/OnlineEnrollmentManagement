@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Registrar;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use App\Models\Semester;
 use App\Models\AcademicYear; // Import is required!
 use Carbon\Carbon;
 
-class SemesterController extends Controller
+class RegistrarSemesterController extends Controller
 {
     public function index()
     {

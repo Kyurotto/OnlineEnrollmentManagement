@@ -48,10 +48,12 @@
                         <div class="text-sm font-bold text-white capitalize">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
                     </div>
 
+                    @if(Route::is('student.dashboard'))
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button class="text-white text-sm font-semibold py-2 px-6 rounded-full transition-all shadow-lg active:scale-95 bg-rose-600/80 border border-rose-500/50 hover:bg-rose-600">Logout</button>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>

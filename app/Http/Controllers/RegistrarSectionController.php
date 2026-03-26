@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Registrar;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use App\Models\Section;
 use App\Models\Course;       
 use App\Models\AcademicYear; 
 
-class SectionController extends Controller
+class RegistrarSectionController extends Controller
 {
     public function index()
     {

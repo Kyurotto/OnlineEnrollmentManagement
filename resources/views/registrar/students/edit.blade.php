@@ -1,4 +1,4 @@
-<x-layouts.registrar title="Modify Student Record">
+<x-layouts.registrar title="Update Student Record">
     <div class="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
         <div class="mb-10 flex items-center justify-between">
             <div class="flex items-center gap-6">
@@ -6,7 +6,7 @@
                     <svg class="w-5 h-5 group-hover/back:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
                 </a>
                 <div>
-                    <h2 class="text-3xl font-black text-white tracking-tight uppercase italic">Profile Modification</h2>
+                    <h2 class="text-3xl font-black text-white tracking-tight uppercase italic">Profile Update</h2>
                     <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mt-1 italic">Updating Verified Academic Persona Record</p>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                     <div class="space-y-3">
                         <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2 italic">Operational Status</label>
                         <div class="relative">
-                            <select name="status" class="w-full bg-white/[0.03] text-white border border-white/10 py-5 px-6 rounded-2xl outline-none text-sm font-bold tracking-wider focus:border-purple-500/50 hover:bg-white/[0.05] appearance-none transition-all shadow-inner">
+                            <select name="status" class="w-full bg-white/[0.03] bg-none text-white border border-white/10 py-5 px-6 rounded-2xl outline-none text-sm font-bold tracking-wider focus:border-purple-500/50 hover:bg-white/[0.05] appearance-none transition-all shadow-inner">
                                 <option value="Not Enrolled" {{ $student->status == 'Not Enrolled' ? 'selected' : '' }} class="bg-[#0d1f3c]">Not Enrolled</option>
                                 <option value="Enrolled" {{ $student->status == 'Enrolled' ? 'selected' : '' }} class="bg-[#0d1f3c]">Enrolled</option>
                                 <option value="Active" {{ $student->status == 'Active' ? 'selected' : '' }} class="bg-[#0d1f3c]">Active / Validated</option>

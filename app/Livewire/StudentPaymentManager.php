@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Student;
+namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +28,6 @@ class StudentPaymentManager extends Component
             ];
         });
 
-        return view('livewire.student.student-payment-manager', compact('payments'))->layout('components.layouts.student');
+        return view('livewire.student-payment-manager', compact('payments'))->layout('components.layouts.student');
     }
 }

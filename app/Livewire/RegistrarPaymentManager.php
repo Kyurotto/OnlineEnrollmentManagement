@@ -1,7 +1,7 @@
 <?php
-
-namespace App\Livewire\Admin;
-
+ 
+namespace App\Livewire;
+ 
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Payment;
@@ -9,30 +9,27 @@ use App\Models\User;
 use App\Models\Enrollment;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\StudentPaymentConfirmed;
-
-use Livewire\Attributes\Layout;
-
-class PaymentManager extends Component
+ 
+class RegistrarPaymentManager extends Component
 {
     use WithPagination;
-
+ 
     public $search = '';
     public $filter_course = 'ALL';
     public $status = 'All statuses';
     public $sortField = 'payments.id';
     public $sortDirection = 'desc';
-
+ 
     public function resetFilters()
     {
         $this->reset(['search', 'filter_course', 'status']);
         $this->resetPage();
     }
-
-    // Reset pagination when filters change
+ 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingFilterCourse() { $this->resetPage(); }
     public function updatingStatus() { $this->resetPage(); }
-
+ 
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -42,31 +39,31 @@ class PaymentManager extends Component
             $this->sortDirection = 'asc';
         }
     }
-
+ 
     public $showModal = false;
     public $isEditMode = false;
     public $selectedPaymentId;
-
+ 
     // Form fields
     public $user_id;
     public $amount;
     public $payment_type = 'Cash';
     public $reference_no;
-
+ 
     protected $rules = [
         'user_id' => 'required|exists:users,id',
         'amount' => 'required|numeric|min:1',
         'payment_type' => 'required|string',
         'reference_no' => 'nullable|string',
     ];
-
+ 
     public function openCreateModal()
     {
         $this->resetValidation();
         $this->reset(['user_id', 'amount', 'reference_no', 'payment_type', 'isEditMode', 'selectedPaymentId']);
         $this->showModal = true;
     }
-
+ 
     public function openEditModal($id)
     {
         $this->resetValidation();
@@ -79,19 +76,19 @@ class PaymentManager extends Component
         $this->isEditMode = true;
         $this->showModal = true;
     }
-
+ 
     public function closeModal()
     {
         $this->showModal = false;
         $this->reset(['user_id', 'amount', 'reference_no', 'payment_type', 'isEditMode', 'selectedPaymentId']);
     }
-
+ 
     public function store()
     {
         $this->validate();
-
+ 
         $latestEnrollment = Enrollment::where('user_id', $this->user_id)->latest()->first();
-
+ 
         $payment = Payment::create([
             'user_id' => $this->user_id,
             'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
@@ -100,27 +97,27 @@ class PaymentManager extends Component
             'status' => 'Paid', 
             'payment_method' => $this->payment_type,
         ]);
-
+ 
         if ($payment->application_id) {
             Enrollment::where('id', $payment->application_id)->update([
                 'status' => 'Paid',
                 'updated_at' => now(),
             ]);
         }
-
+ 
         // Notifications
-        $registrars = User::where('role', 'registrar')->get();
+        $admins = User::where('role', 'admin')->get();
         $student = User::find($this->user_id);
-        $recipients = $registrars->push($student)->filter();
-
+        $recipients = $admins->push($student)->filter();
+ 
         if($recipients->count() > 0){
             Notification::send($recipients, new StudentPaymentConfirmed($payment));
         }
-
+ 
         $this->closeModal();
         session()->flash('success', 'Payment processed successfully.');
     }
-
+ 
     public function update()
     {
         $this->validate();
@@ -132,16 +129,16 @@ class PaymentManager extends Component
             'payment_method' => $this->payment_type,
             'transaction_id' => $this->reference_no,
         ]);
-
+ 
         $this->closeModal();
         session()->flash('success', 'Payment updated successfully.');
     }
-
+ 
     public function updateStatus($id, $status)
     {
         $payment = Payment::findOrFail($id);
         $payment->update(['status' => $status]);
-
+ 
         if ($status === 'Paid') {
             if ($payment->application_id) {
                 Enrollment::where('id', $payment->application_id)->update([
@@ -149,36 +146,36 @@ class PaymentManager extends Component
                     'updated_at' => now(),
                 ]);
             }
-
-            $registrars = User::where('role', 'registrar')->get();
+ 
+            $admins = User::where('role', 'admin')->get();
             $student = User::find($payment->user_id);
-            $recipients = $registrars->push($student)->filter();
-
+            $recipients = $admins->push($student)->filter();
+ 
             if($recipients->count() > 0){
                 Notification::send($recipients, new StudentPaymentConfirmed($payment));
             }
         }
-
+ 
         session()->flash('success', "Payment status updated to $status.");
     }
-
+ 
     public function destroy($id)
     {
         Payment::findOrFail($id)->delete();
         session()->flash('success', 'Payment record deleted.');
     }
-
+ 
     public function render()
     {
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
             ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
             ->with(['user', 'application']); 
-
+ 
         if ($this->status != 'All statuses') {
             $query->where('payments.status', $this->status);
         }
-
+ 
         if ($this->filter_course != 'ALL') {
             $filter = $this->filter_course;
             if (str_contains($filter, '-')) {
@@ -195,7 +192,7 @@ class PaymentManager extends Component
                 $query->where('enrollments.course_code', $filter);
             }
         }
-
+ 
         if (!empty($this->search)) {
             $search = $this->search;
             $query->where(function($q) use ($search) {
@@ -207,13 +204,13 @@ class PaymentManager extends Component
                 });
             });
         }
-
+ 
         $payments = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
         $students = User::where('role', 'student')->orderBy('name')->get();
-
-        return view('livewire.admin-payment-manager', [
+ 
+        return view('livewire.registrar-payment-manager', [
             'payments' => $payments,
             'students' => $students
-        ])->layout('components.layouts.admin', ['title' => 'Payment Management']);
+        ])->layout('components.layouts.registrar', ['title' => 'Payment Management']);
     }
 }

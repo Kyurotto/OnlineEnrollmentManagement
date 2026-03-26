@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Student;
+namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -80,6 +80,6 @@ class StudentProfileManager extends Component
                         ];
                     });
 
-        return view('livewire.student.student-profile-manager', compact('payments'))->layout('components.layouts.student');
+        return view('livewire.student-profile-manager', compact('payments'))->layout('components.layouts.student');
     }
 }

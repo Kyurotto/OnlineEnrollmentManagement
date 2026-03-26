@@ -14,27 +14,37 @@ use App\Livewire\Admin\ApplicationManager;
 use App\Livewire\Admin\AdminNavbar;
 
 // Registrar Controllers
-use App\Http\Controllers\Registrar\DashboardController as RegistrarDashboardController;
-use App\Http\Controllers\Registrar\StudentController as RegistrarStudentController;
-use App\Http\Controllers\Registrar\ApplicationController as RegistrarApplicationController;
-use App\Http\Controllers\Registrar\AcademicYearController as RegistrarAcademicYearController;
-use App\Http\Controllers\Registrar\SemesterController as RegistrarSemesterController;
-use App\Http\Controllers\Registrar\ProgramController as RegistrarProgramController;
-use App\Http\Controllers\Registrar\SectionController as RegistrarSectionController;
+use App\Http\Controllers\RegistrarDashboardController;
+use App\Http\Controllers\RegistrarStudentController;
+use App\Http\Controllers\RegistrarApplicationController;
+use App\Http\Controllers\RegistrarAcademicYearController;
+use App\Http\Controllers\RegistrarSemesterController;
+use App\Http\Controllers\RegistrarProgramController;
+use App\Http\Controllers\RegistrarSectionController;
 
 // Cashier Controllers
-use App\Http\Controllers\Cashier\CashierPaymentController;
-use App\Livewire\Cashier\CashierDashboardManager;
+use App\Http\Controllers\CashierPaymentController;
+use App\Livewire\CashierDashboardManager;
+use App\Livewire\Cashier\PaymentManager as CashierPaymentManager;
 
 // Student Controllers
-use App\Http\Controllers\Student\StudentDashboardController;
-use App\Http\Controllers\Student\StudentEnrollmentController;
+use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentEnrollmentController;
+use App\Http\Controllers\StudentPaymentController;
+use App\Http\Controllers\StudentProfileController;
 
 // Student Livewire Components
-use App\Livewire\Student\StudentDashboardManager;
-use App\Livewire\Student\StudentEnrollmentManager;
-use App\Livewire\Student\StudentPaymentManager; 
-use App\Livewire\Student\StudentProfileManager;
+use App\Livewire\StudentPaymentManager; 
+use App\Livewire\StudentProfileManager;
+
+// Registrar Livewire Components
+use App\Livewire\RegistrarApplicationManager;
+use App\Livewire\RegistrarStudentManager;
+use App\Livewire\RegistrarPaymentManager;
+
+// Admin Livewire Components
+use App\Livewire\Admin\AdminStudentManager;
+use App\Livewire\Admin\AdminApplicationManager;
 
 
 
@@ -92,14 +102,12 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::get('/dashboard', [RegistrarDashboardController::class, 'index'])->name('dashboard');
     Route::patch('/dashboard/applications/{id}/approve', [RegistrarDashboardController::class, 'approve'])->name('dashboard.approve');
     Route::patch('/dashboard/applications/{id}/reject', [RegistrarDashboardController::class, 'reject'])->name('dashboard.reject');
-    Route::get('/students', [RegistrarStudentController::class, 'index'])->name('students.index');
+    Route::get('/students', RegistrarStudentManager::class)->name('students.index');
     Route::get('/students/{id}/edit', [RegistrarStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [RegistrarStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [RegistrarStudentController::class, 'destroy'])->name('students.destroy');
     
-    Route::get('/applications', [RegistrarApplicationController::class, 'index'])->name('applications.index');
-    Route::patch('/applications/{id}', [RegistrarApplicationController::class, 'update'])->name('applications.update');
-    Route::delete('/applications/{id}', [RegistrarApplicationController::class, 'destroy'])->name('applications.destroy');
+    Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
     
     Route::get('/academic-years', [RegistrarAcademicYearController::class, 'index'])->name('academic_years.index');
     Route::post('/academic-years', [RegistrarAcademicYearController::class, 'store'])->name('academic_years.store');
@@ -121,6 +129,8 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::post('/sections', [RegistrarSectionController::class, 'store'])->name('sections.store');
     Route::patch('/sections/{id}', [RegistrarSectionController::class, 'update'])->name('sections.update');
     Route::delete('/sections/{id}', [RegistrarSectionController::class, 'destroy'])->name('sections.destroy');
+
+    Route::get('/payments', RegistrarPaymentManager::class)->name('payments.index');
 });
 
 /*
@@ -136,10 +146,11 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::patch('/courses/{id}', [AdminCourseController::class, 'update'])->name('courses.update');
     Route::delete('/courses/{id}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
     Route::get('/payments', PaymentManager::class)->name('payments.index');
-    Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
-    Route::get('/applications', [App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');
-    Route::patch('/applications/{id}', [App\Http\Controllers\Admin\ApplicationController::class, 'update'])->name('applications.update');
-    Route::delete('/applications/{id}', [App\Http\Controllers\Admin\ApplicationController::class, 'destroy'])->name('applications.destroy');
+    Route::get('/students', AdminStudentManager::class)->name('students.index');
+    Route::get('/students/{id}/edit', [AdminStudentController::class, 'edit'])->name('students.edit');
+    Route::patch('/students/{id}', [AdminStudentController::class, 'update'])->name('students.update');
+    Route::delete('/students/{id}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
+    Route::get('/applications', AdminApplicationManager::class)->name('applications.index');
 
 
     // API/Export routes
@@ -155,10 +166,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
 */
 Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')->group(function () {
     Route::get('/dashboard', CashierDashboardManager::class)->name('dashboard');
-    Route::get('/payments', [CashierPaymentController::class, 'index'])->name('payments.index');
-    Route::post('/payments', [CashierPaymentController::class, 'store'])->name('payments.store');
-    Route::patch('/payments/{id}', [CashierPaymentController::class, 'update'])->name('payments.update');
-    Route::patch('/payments/{id}/status', [CashierPaymentController::class, 'updateStatus'])->name('payments.update_status');
+    Route::get('/payments', CashierPaymentManager::class)->name('payments.index');
 });
 
 /*

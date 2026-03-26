@@ -63,16 +63,10 @@
                             </td>
                             <td class="py-5 px-8 text-right whitespace-nowrap">
                                 <div class="flex justify-end gap-2">
-                                    <a href="{{ route('registrar.semesters.index', ['edit_id' => $semester->id]) }}" class="p-2 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-teal-400 hover:bg-teal-500/10 transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    <a href="{{ route('registrar.semesters.index', ['edit_id' => $semester->id]) }}" 
+                                       class="px-4 py-1.5 rounded-lg bg-teal-500/10 border border-teal-500/20 text-[10px] font-black uppercase tracking-widest text-teal-400 hover:bg-teal-500 hover:text-white transition-all shadow-lg shadow-teal-500/5">
+                                        EDIT
                                     </a>
-                                    <form action="{{ route('registrar.semesters.destroy', $semester->id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this semester?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-2 rounded-lg bg-white/5 border border-white/5 text-rose-500/50 hover:text-white hover:bg-rose-500 transition-all">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -89,7 +83,7 @@
 
             @if($semesters->hasPages())
                 <div class="p-6 border-t border-white/5 bg-white/[0.01]">
-                    {{ $semesters->links('pagination.glass') }}
+                    {{ $semesters->links('pagination') }}
                 </div>
             @endif
         </div>
