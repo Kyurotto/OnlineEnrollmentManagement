@@ -25,7 +25,7 @@ use App\Http\Controllers\RegistrarSectionController;
 // Cashier Controllers
 use App\Http\Controllers\CashierPaymentController;
 use App\Livewire\CashierDashboardManager;
-use App\Livewire\Cashier\PaymentManager as CashierPaymentManager;
+use App\Livewire\PaymentManager as CashierPaymentManager;
 
 // Student Controllers
 use App\Http\Controllers\StudentDashboardController;
