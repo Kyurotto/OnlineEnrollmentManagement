@@ -40,7 +40,6 @@ use App\Livewire\StudentProfileManager;
 // Registrar Livewire Components
 use App\Livewire\RegistrarApplicationManager;
 use App\Livewire\RegistrarStudentManager;
-use App\Livewire\RegistrarPaymentManager;
 
 // Admin Livewire Components
 use App\Livewire\Admin\AdminStudentManager;
@@ -130,7 +129,7 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::patch('/sections/{id}', [RegistrarSectionController::class, 'update'])->name('sections.update');
     Route::delete('/sections/{id}', [RegistrarSectionController::class, 'destroy'])->name('sections.destroy');
 
-    Route::get('/payments', RegistrarPaymentManager::class)->name('payments.index');
+
 });
 
 /*
