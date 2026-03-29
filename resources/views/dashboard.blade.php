@@ -261,15 +261,6 @@
                     <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Daily Revenue & Collection Metrics</p>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white/60 tracking-widest uppercase">
-                    {{ now()->format('F d, Y') }}
-                </div>
-                <a href="{{ route('cashier.payments.index') }}" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black py-3.5 px-8 rounded-xl uppercase tracking-[0.15em] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center gap-3">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                    New Payment
-                </a>
-            </div>
         </div>
     </div>
 
@@ -522,35 +513,6 @@
             </div>
         </div>
 
-        {{-- Quick Action Cards --}}
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <a href="{{ route('registrar.students.index') }}" class="p-5 rounded-2xl border bg-purple-500/5 border-purple-500/10 hover:bg-purple-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-purple-500/20 text-purple-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Students</h3>
-            </a>
-            <a href="{{ route('registrar.applications.index') }}" class="p-5 rounded-2xl border bg-cyan-500/5 border-cyan-500/10 hover:bg-cyan-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-cyan-500/20 text-cyan-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Applications</h3>
-            </a>
-            <a href="{{ route('registrar.programs.index') }}" class="p-5 rounded-2xl border bg-indigo-500/5 border-indigo-500/10 hover:bg-indigo-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-indigo-500/20 text-indigo-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Programs</h3>
-            </a>
-            <a href="{{ route('registrar.sections.index') }}" class="p-5 rounded-2xl border bg-amber-500/5 border-amber-500/10 hover:bg-amber-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-amber-500/20 text-amber-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Sections</h3>
-            </a>
-            <a href="{{ route('registrar.academic_years.index') }}" class="p-5 rounded-2xl border bg-rose-500/5 border-rose-500/10 hover:bg-rose-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-rose-500/20 text-rose-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Academic Year</h3>
-            </a>
-            <a href="{{ route('registrar.semesters.index') }}" class="p-5 rounded-2xl border bg-emerald-500/5 border-emerald-500/10 hover:bg-emerald-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Semester</h3>
-            </a>
-
-        </div>
-
         {{-- Overview Stats --}}
         <div class="p-6 rounded-2xl border bg-white/5 backdrop-blur-md border-white/10 shadow-2xl">
             <h3 class="font-black text-white mb-5 flex items-center gap-2 italic uppercase tracking-[0.2em] text-xs">
@@ -781,52 +743,7 @@
         </div>
     </div>
 
-    {{-- Quick Action Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        @if(auth()->user()->role === 'admin')
-            <a href="{{ route('admin.courses.index') }}" class="p-5 rounded-2xl border bg-blue-500/5 border-blue-500/10 hover:bg-blue-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-blue-500/20 text-blue-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Courses</h3>
-            </a>
-            <a href="{{ route('admin.students.index') }}" class="p-5 rounded-2xl border bg-purple-500/5 border-purple-500/10 hover:bg-purple-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-purple-500/20 text-purple-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Students</h3>
-            </a>
-            <a href="{{ route('admin.payments.index') }}" class="p-5 rounded-2xl border bg-emerald-500/5 border-emerald-500/10 hover:bg-emerald-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Payments</h3>
-            </a>
-            <a href="{{ route('admin.applications.index') }}" class="p-5 rounded-2xl border bg-orange-500/5 border-orange-500/10 hover:bg-orange-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-orange-500/20 text-orange-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Applications</h3>
-            </a>
-        @else
-            <a href="{{ route('registrar.students.index') }}" class="p-5 rounded-2xl border bg-purple-500/5 border-purple-500/10 hover:bg-purple-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-purple-500/20 text-purple-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Students</h3>
-            </a>
-            <a href="{{ route('registrar.applications.index') }}" class="p-5 rounded-2xl border bg-cyan-500/5 border-cyan-500/10 hover:bg-cyan-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-cyan-500/20 text-cyan-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Applications</h3>
-            </a>
-            <a href="{{ route('registrar.programs.index') }}" class="p-5 rounded-2xl border bg-indigo-500/5 border-indigo-500/10 hover:bg-indigo-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-indigo-500/20 text-indigo-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Programs</h3>
-            </a>
-            <a href="{{ route('registrar.sections.index') }}" class="p-5 rounded-2xl border bg-amber-500/5 border-amber-500/10 hover:bg-amber-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-amber-500/20 text-amber-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Sections</h3>
-            </a>
-            <a href="{{ route('registrar.academic_years.index') }}" class="p-5 rounded-2xl border bg-rose-500/5 border-rose-500/10 hover:bg-rose-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-rose-500/20 text-rose-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Academic Year</h3>
-            </a>
-            <a href="{{ route('registrar.semesters.index') }}" class="p-5 rounded-2xl border bg-emerald-500/5 border-emerald-500/10 hover:bg-emerald-500/10 transition-all group flex items-center gap-4">
-                <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 transition-transform group-hover:scale-110"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <h3 class="font-black text-white text-sm uppercase tracking-widest">Semester</h3>
-            </a>
-        @endif
-    </div>
+    {{-- Quick Action Cards Removed (Moved to Sidebar) --}}
 
     {{-- Overview Stats --}}
     <div class="p-6 rounded-2xl border bg-white/5 backdrop-blur-md border-white/10 shadow-2xl">

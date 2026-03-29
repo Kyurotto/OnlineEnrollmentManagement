@@ -5,74 +5,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Student Portal' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 50%, #1a3a6e 100%);
-            background-attachment: fixed;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
     </style>
     @livewireStyles
 </head>
-<body class="text-white flex flex-col min-h-screen">
-    <nav class="sticky top-0 z-20 shadow-lg border-b bg-[#060d1a]/95 backdrop-blur-md border-[#1a3a6e]/40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center gap-8">
-                    <div class="flex items-center gap-3">
-                        <div class="text-white font-bold p-2 rounded-lg text-sm bg-gradient-to-br from-[#0d1f3c] to-[#1a3a6e] shadow-lg shadow-[#0d1f3c]/60">
-                            ST</div>
-                        <div>
-                            <h1 class="text-lg font-bold leading-none text-white">Student Portal</h1>
-                            <span class="text-xs text-[#8ab4d8]">
-                                @if(Route::is('student.dashboard')) Dashboard
-                                @elseif(Route::is('student.enrollment.create')) Enrollment
-                                @elseif(Route::is('student.payment')) Payments
-                                @elseif(Route::is('student.profile')) Profile
-                                @endif
+<body class="text-gray-600 flex flex-row min-h-screen" style="background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 40%, #1a3a6e 100%); background-attachment: fixed; min-height: 100vh;">
+
+    {{-- Sidebar --}}
+    <aside class="hidden sm:flex flex-col w-64 flex-shrink-0 sticky top-0 h-screen overflow-y-auto z-30"
+           style="background: rgba(6,13,26,0.97); backdrop-filter: blur(12px);">
+
+        {{-- Sidebar Branding --}}
+        <div class="flex items-center gap-3 px-5 h-16 flex-shrink-0" style="border-bottom: 1px solid rgba(26,58,110,0.4);">
+            <div class="text-white font-black p-2 rounded-xl text-sm uppercase flex-shrink-0 tracking-widest"
+                 style="background: linear-gradient(135deg, #0d1f3c, #1a3a6e); box-shadow: 0 4px 14px rgba(13,31,60,0.6), 0 0 0 1px rgba(99,179,237,0.15);">ST</div>
+            <div>
+                <div class="text-sm font-bold leading-none text-white tracking-tight">Student Portal</div>
+                <div class="text-[10px] mt-0.5 font-semibold uppercase tracking-widest" style="color: rgba(138,180,216,0.55);">Information System</div>
+            </div>
+        </div>
+
+        {{-- Nav Items --}}
+        <div class="px-3 py-4 flex-1">
+            <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2" style="color: rgba(138,180,216,0.35);">Navigation</p>
+            <nav class="space-y-0.5">
+
+                {{-- Dashboard --}}
+                <a href="{{ route('student.dashboard') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-all duration-200 relative"
+                   style="{{ request()->routeIs('student.dashboard') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                   onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                   onmouseout="this.style.background='{{ request()->routeIs('student.dashboard') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                   {{ request()->routeIs('student.dashboard') ? 'data-active=1' : '' }}>
+                    @if(request()->routeIs('student.dashboard'))
+                        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style="background: #63b3ed;"></span>
+                    @endif
+                    <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg" style="background: rgba(99,179,237,0.12);">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
+                    </span>
+                    Dashboard
+                </a>
+
+                {{-- Divider --}}
+                <div class="my-2 mx-2" style="border-top: 1px solid rgba(26,58,110,0.3);"></div>
+
+                {{-- Services Dropdown --}}
+                <div x-data="{ open: {{ request()->routeIs('student.enrollment.*', 'student.payment', 'student.profile') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" 
+                            class="flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-all duration-200"
+                            style="color: #8ab4d8;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#ffffff';"
+                            onmouseout="this.style.background='transparent'; this.style.color='#8ab4d8';">
+                        <div class="flex items-center gap-3">
+                            <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg" style="background: rgba(99,179,237,0.08);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             </span>
+                            Services
                         </div>
-                    </div>
-                    <div class="flex space-x-6 text-sm font-medium h-16">
-                        <a href="{{ route('student.dashboard') }}"
-                            class="flex items-center transition h-full border-b-2 {{ Route::is('student.dashboard') ? 'text-[#a8d5f5] border-[#1a3a6e]' : 'text-[#8ab4d8] border-transparent hover:text-white' }}">Dashboard</a>
+                        <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+
+                    <div x-show="open" style="display: none;" class="mt-1 ml-4 pl-3 border-l border-[rgba(26,58,110,0.4)] space-y-0.5">
+                        
+                        {{-- Enrollment --}}
+                        <a href="{{ route('student.enrollment.create') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                           style="{{ request()->routeIs('student.enrollment.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                           onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                           onmouseout="this.style.background='{{ request()->routeIs('student.enrollment.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                           {{ request()->routeIs('student.enrollment.*') ? 'data-active=1' : '' }}>
+                            @if(request()->routeIs('student.enrollment.*'))
+                                <span class="absolute -left-[14px] top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                            @endif
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
+                            Enrollment
+                        </a>
+
+                        {{-- Payments --}}
+                        <a href="{{ route('student.payment') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                           style="{{ request()->routeIs('student.payment') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                           onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                           onmouseout="this.style.background='{{ request()->routeIs('student.payment') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                           {{ request()->routeIs('student.payment') ? 'data-active=1' : '' }}>
+                            @if(request()->routeIs('student.payment'))
+                                <span class="absolute -left-[14px] top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                            @endif
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            Payments
+                        </a>
+
+                        {{-- Profile --}}
+                        <a href="{{ route('student.profile') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                           style="{{ request()->routeIs('student.profile') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                           onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                           onmouseout="this.style.background='{{ request()->routeIs('student.profile') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                           {{ request()->routeIs('student.profile') ? 'data-active=1' : '' }}>
+                            @if(request()->routeIs('student.profile'))
+                                <span class="absolute -left-[14px] top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                            @endif
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            Profile
+                        </a>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-6">
-                    <div class="text-right hidden sm:block">
-                        <div class="text-xs text-[#8ab4d8]">Signed in as Student</div>
-                        <div class="text-sm font-bold text-white capitalize">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
-                    </div>
+            </nav>
+        </div>
+    </aside>
 
-                    @if(Route::is('student.dashboard'))
+    {{-- Right side: navbar + content --}}
+    <div class="flex flex-col flex-1 min-w-0">
+
+        {{-- Navbar --}}
+        <nav class="sticky top-0 z-20 shadow-lg border-b h-16 flex items-center"
+             style="background: rgba(6,13,26,0.95); backdrop-filter: blur(12px); border-color: rgba(26,58,110,0.4);">
+            <div class="w-full px-6 flex justify-end items-center gap-6">
+
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs text-white/40 italic">Signed in as Student</div>
+                        <div class="text-sm font-bold text-white capitalize">{{ auth()->user()->first_name ?? 'Student' }}</div>
+                    </div>
+                    @if(request()->routeIs('student.dashboard'))
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button class="text-white text-sm font-semibold py-2 px-6 rounded-full transition-all shadow-lg active:scale-95 bg-rose-600/80 border border-rose-500/50 hover:bg-rose-600">Logout</button>
+                        <button class="text-white text-sm font-semibold py-2 px-4 rounded-full transition-all tracking-wide"
+                            style="background: rgba(220,38,38,0.8); border: 1px solid rgba(220,38,38,0.5);"
+                            onmouseover="this.style.background='rgba(220,38,38,1)'"
+                            onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
                     </form>
                     @endif
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full animate-in fade-in duration-700">
-        {{ $slot }}
-    </main>
+        {{-- Content --}}
+        <main class="flex-1 px-6 py-8 animate-in fade-in duration-700">
+            {{ $slot }}
+        </main>
 
-    <footer class="border-t py-6 mt-auto shadow-inner" style="background: rgba(6,13,26,0.6); border-color: rgba(26,58,110,0.3);">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <div class="text-sm font-medium" style="color: #4a6fa5;">
+        {{-- Footer --}}
+        <footer class="py-6 border-t" style="background: rgba(6,13,26,0.85); border-color: rgba(26,58,110,0.4);">
+            <div class="text-center text-sm" style="color: #4a6fa5;">
                 © 2026 Your Institution — Student Portal
             </div>
-            <div class="text-xs font-bold uppercase tracking-widest opacity-40">
-                Student Information System
-            </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     @livewireScripts
 </body>
