@@ -55,25 +55,22 @@
     </style>
 
     <div class="fixed inset-0 w-screen h-screen flex items-center justify-center p-4 overflow-hidden">
-        <!-- Ambient Background Glows -->
         <div class="absolute top-[20%] left-[10%] w-[30%] h-[30%] bg-blue-500/10 blur-[120px] rounded-full"></div>
         <div class="absolute bottom-[20%] right-[10%] w-[30%] h-[30%] bg-emerald-500/10 blur-[120px] rounded-full"></div>
 
         <div id="container" class="relative glass-card md:rounded-[40px] overflow-hidden w-full md:w-[900px] max-w-full min-h-[600px] flex flex-col md:block animate-in fade-in zoom-in duration-700">
 
-                <!-- Mobile Toggle -->
                 <div class="md:hidden flex w-full bg-white/5 border-b border-white/10 backdrop-blur-md">
                     <button id="mobileSignInBtn" class="w-1/2 py-5 font-black text-sm uppercase tracking-widest text-white transition-all bg-blue-500/20 border-b-2 border-blue-500">Log In</button>
                     <button id="mobileSignUpBtn" class="w-1/2 py-5 font-black text-sm uppercase tracking-widest text-white/30 hover:text-white transition-all">Sign Up</button>
                 </div>
 
-                <!-- Sign Up Form -->
                 <div id="mobile-sign-up" class="hidden md:block sign-up-container md:absolute top-0 h-full left-0 w-full md:w-1/2 md:opacity-0 md:z-[1] transition-all duration-[700ms] cubic-bezier(0.4, 0, 0.2, 1) py-10 md:py-0 bg-transparent">
                     <form method="POST" action="{{ route('register') }}" class="flex items-center justify-center flex-col px-8 md:px-16 h-full text-center">
                         @csrf
                         <div class="mb-10">
                             <h2 class="font-black text-3xl text-white mb-2 tracking-tighter uppercase leading-none">Register</h2>
-                            <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest"></p>
+                            <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Create Student Account</p>
                         </div>
 
                         <div class="w-full space-y-5">
@@ -111,13 +108,12 @@
                     </form>
                 </div>
 
-                <!-- Sign In Form -->
-                <div id="mobile-sign-in" class="block md:block sign-in-container md:absolute top-0 h-full left-0 w-full md:w-1/2 md:z-[2] transition-all duration-[700ms] cubic-bezier(0.4, 0, 0.2, 1) py-10 md:py-0 flex-grow bg-transparent">
+                <div id="mobile-sign-in" class="block md:block sign-in-container md:absolute top-0 h-full left-0 w-full md:w-1/2 md:z-[2] transition-all duration-[700ms] cubic-bezier(0.4, 0, 0.2, 1) py-10 md:py-0 flex-grow bg-transparent border-r border-white/5">
                     <form method="POST" action="{{ route('login') }}" class="flex items-center justify-center flex-col px-8 md:px-16 h-full text-center">
                         @csrf
                         <div class="mb-12">
                             <h2 class="font-black text-4xl text-white mb-2 tracking-tighter uppercase leading-none italic">Log In</h2>
-                            <p class="text-xs font-bold text-blue-400 uppercase tracking-widest"></p>
+                            <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Portal Access</p>
                         </div>
 
                         <div class="w-full space-y-5">
@@ -136,7 +132,7 @@
 
                         <div class="w-full flex justify-center mt-6 px-2">
                             @if (Route::has('password.request'))
-                                <a href="{{ route('password.request') }}" class="text-sm font-black text-white/20 hover:text-blue-400 uppercase tracking-widest transition-colors">
+                                <a href="{{ route('password.request') }}" class="text-xs font-black text-white/20 hover:text-blue-400 uppercase tracking-widest transition-colors">
                                     Forgot Password?
                                 </a>
                             @endif
@@ -152,28 +148,26 @@
                     </form>
                 </div>
 
-                <!-- Overlay Panels -->
                 <div class="hidden md:block overlay-container absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-all duration-[700ms] cubic-bezier(0.4, 0, 0.2, 1) z-[100] group">
                     <div class="overlay text-white relative -left-full h-full w-[200%] transition-transform duration-[700ms] cubic-bezier(0.4, 0, 0.2, 1)"
                          style="background: linear-gradient(135deg, #0d1f3c 0%, #060d1a 100%);">
 
-                        <!-- Decorative Patterns -->
                         <div class="absolute inset-0 opacity-10 pointer-events-none"
                              style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 32px 32px;"></div>
 
                         <div class="overlay-left absolute flex items-center justify-center flex-col px-16 text-center top-0 h-full w-1/2 -translate-x-[20%] transition-transform duration-[700ms] cubic-bezier(0.4, 0, 0.2, 1)">
-                            <div class="w-24 h-24 rounded-[32px] bg-white/5 border border-white/10 flex items-center justify-center mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform rotate-12 group-hover:rotate-0 transition-transform duration-700">
-                                <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                            <div class="w-28 h-28 rounded-full bg-[#1a2333] border border-white/10 flex items-center justify-center mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform rotate-6 group-hover:rotate-0 transition-transform duration-700 overflow-hidden">
+                                <img src="{{ asset('image/logo.jfif') }}" alt="NTC Logo" class="h-full w-full object-cover">
                             </div>
-                            <h2 class="font-black text-4xl text-white tracking-tighter uppercase leading-none">Access</h2>
+                            <h2 class="font-black text-4xl text-white tracking-tighter uppercase leading-none italic">Log In</h2>
                             <p class="text-xs font-black text-blue-400/50 uppercase tracking-[0.4em] mt-4 mb-12 leading-relaxed">
                                 System Entry Port
                             </p>
                         </div>
 
                         <div class="overlay-right absolute flex items-center justify-center flex-col px-16 text-center top-0 h-full w-1/2 right-0 translate-x-0 transition-transform duration-[700ms] cubic-bezier(0.4, 0, 0.2, 1)">
-                            <div class="w-24 h-24 rounded-[32px] bg-white/5 border border-white/10 flex items-center justify-center mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform -rotate-12 group-hover:rotate-0 transition-transform duration-700">
-                                <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                            <div class="w-28 h-28 rounded-full bg-[#1a2333] border border-white/10 flex items-center justify-center mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform -rotate-6 group-hover:rotate-0 transition-transform duration-700 overflow-hidden">
+                                <img src="{{ asset('image/logo.jfif') }}" alt="NTC Logo" class="h-full w-full object-cover">
                             </div>
                             <h2 class="font-black text-4xl text-white tracking-tighter uppercase leading-none">Register</h2>
                             <p class="text-xs font-black text-emerald-400/50 uppercase tracking-[0.4em] mt-4 mb-12 leading-relaxed">
@@ -203,7 +197,7 @@
         });
 
         // Initialize State
-        overlayContainer.style.borderRadius = "40px 0 0 40px";
+        overlayContainer.style.borderRadius = "0 40px 40px 0";
 
         @if ($errors->has('name') || $errors->has('password_confirmation'))
             container.classList.add("right-panel-active");
