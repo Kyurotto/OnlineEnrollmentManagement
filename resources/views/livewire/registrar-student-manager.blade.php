@@ -42,7 +42,7 @@
                         </th>
                         <th class="py-6 px-8 cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('last_name')">
                             <div class="flex items-center gap-2">
-                                Full Name
+                                FULL NAME
                                 <span class="transition-opacity {{ $sortField === 'last_name' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
                                     @if($sortField === 'last_name' && $sortDirection === 'asc')
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
@@ -52,10 +52,10 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8">Account Details</th>
+                        <th class="py-6 px-8">ACCOUNT DETAILS</th>
                         <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.course_code')">
                             <div class="flex items-center justify-center gap-2">
-                                Academic Track
+                                ACADEMIC TRACK
                                 <span class="transition-opacity {{ $sortField === 'enrollments.course_code' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
                                     @if($sortField === 'enrollments.course_code' && $sortDirection === 'asc')
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
@@ -67,7 +67,7 @@
                         </th>
                         <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('year_level')">
                             <div class="flex items-center justify-center gap-2">
-                                Section
+                                SECTION
                                 <span class="transition-opacity {{ $sortField === 'year_level' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
                                     @if($sortField === 'year_level' && $sortDirection === 'asc')
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
@@ -77,8 +77,8 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8">Status</th>
-                        <th class="py-6 px-8 text-right">Actions</th>
+                        <th class="py-6 px-8">STATUS</th>
+                        <th class="py-6 px-8 text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">
@@ -101,8 +101,16 @@
                                 <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
                             </td>
                             <td class="py-6 px-8">
-                                <span class="bg-purple-500/10 text-purple-400 text-[10px] font-black px-4 py-1.5 rounded-full border border-purple-500/20 uppercase tracking-widest">
-                                    {{ $student->status ?? 'Enrolled' }}
+                                @php
+                                    $statusColor = match (strtolower($student->status ?? 'enrolled')) {
+                                        'active', 'approved', 'enrolled' => 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+                                        'pending' => 'text-amber-400 bg-amber-400/10 border-amber-400/20',
+                                        'rejected', 'inactive' => 'text-rose-400 bg-rose-400/10 border-rose-400/20',
+                                        default => 'text-purple-400 bg-purple-500/10 border-purple-500/20',
+                                    };
+                                @endphp
+                                <span class="{{ $statusColor }} text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
+                                    {{ $student->status ?: 'Enrolled' }}
                                 </span>
                             </td>
                             <td class="py-6 px-8 text-right">

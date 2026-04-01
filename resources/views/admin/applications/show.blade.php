@@ -17,7 +17,7 @@
                 <p class="text-cyan-400/60 text-xs font-bold uppercase tracking-widest mt-1">Full record for {{ $application->user?->name }}</p>
             </div>
 
-            @if ($application->status === 'Pending')
+            @if (in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
                 <div class="flex gap-3">
                     <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
                         @csrf @method('PATCH')
@@ -185,7 +185,7 @@
                         Return to Queue
                     </a>
 
-                    @if ($application->status === 'Pending')
+                    @if (in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
                         <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="Approved">

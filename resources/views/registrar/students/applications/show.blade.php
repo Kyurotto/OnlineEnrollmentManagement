@@ -10,7 +10,7 @@
                     <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process • ID #{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</p>
                 </div>
             </div>
-            @if (in_array($application->status, ['Pending', 'Paid', 'Enrolled']))
+            @if (in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
                 <div class="hidden md:flex items-center gap-4">
                     <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
                         @csrf @method('PATCH')
@@ -143,7 +143,7 @@
                 </div>
 
                 <div class="flex md:hidden flex-col gap-4 pt-10">
-                    @if (in_array($application->status, ['Pending', 'Paid', 'Enrolled']))
+                    @if (in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
                         <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="Approved">

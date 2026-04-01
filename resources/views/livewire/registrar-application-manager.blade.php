@@ -29,6 +29,15 @@
                         <option value="Rejected" class="bg-[#0a0f1d]">Rejected</option>
                     </select>
                 </div>
+                <div class="w-full sm:w-44">
+                    <select wire:model.live="year_level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                        <option value="All Years" class="bg-[#0a0f1d]">All Years</option>
+                        <option value="1st Year" class="bg-[#0a0f1d]">BSIS 1</option>
+                        <option value="2nd Year" class="bg-[#0a0f1d]">BSIS 2</option>
+                        <option value="3rd Year" class="bg-[#0a0f1d]">BSIS 3</option>
+                        <option value="4th Year" class="bg-[#0a0f1d]">BSIS 4</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -402,7 +411,7 @@
         // Action Buttons visibility
         const actionButtons = document.getElementById('actionButtons');
         const status = (app.status || '').toLowerCase();
-        if (['pending', 'paid', 'enrolled'].includes(status)) {
+        if (['pending', 'enrolled', 'paid'].includes(status)) {
             actionButtons.classList.remove('hidden');
             actionButtons.classList.add('flex');
         } else {
