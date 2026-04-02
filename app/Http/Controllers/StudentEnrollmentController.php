@@ -12,16 +12,35 @@ use App\Models\Course;
 
 class StudentEnrollmentController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
+        $level = $request->query('level');
+
+        // If no level provided, show the selection screen
+        if (!$level) {
+            return view('student.enrollment_choice');
+        }
+
+        // Validate level parameter
+        if (!in_array($level, ['shs', 'college'])) {
+            return redirect()->route('student.enrollment.create')->with('error', 'Invalid enrollment level selected.');
+        }
+
         $user = Auth::user();
-        
+
+        // Fetch programs and strands from the database
+        $programs = Course::where('type', 'program')->orderBy('course_code', 'asc')->get();
+        $strands = Course::where('type', 'shs')->orderBy('course_code', 'asc')->get();
+
         // Initial data for the form
         $data = [
+            'level' => $level,
             'email' => $user->email,
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'middle_name' => $user->middle_name,
+            'programs' => $programs,
+            'strands' => $strands,
         ];
 
         // Restore draft from session
@@ -43,7 +62,16 @@ class StudentEnrollmentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $level = $request->input('level');
+
+        // Validate level parameter
+        if (!in_array($level, ['shs', 'college'])) {
+            return back()->with('error', 'Invalid enrollment level.')->withInput();
+        }
+
+        // Build validation rules based on enrollment level
+        $validationRules = [
+            'level' => 'required|in:shs,college',
             'course_code' => 'required',
             'year_level' => 'required',
             'semester' => 'required',
@@ -58,23 +86,41 @@ class StudentEnrollmentController extends Controller
             'mother_maiden_name' => 'nullable|string|max:255',
             'guardian_name' => 'nullable|string|max:255',
             'guardian_contact' => 'nullable|string|max:11',
-            'form_137' => 'nullable|file|max:5120',
-            'good_moral' => 'nullable|file|max:5120',
-            'psa' => 'nullable|file|max:5120',
             'id_picture' => 'nullable|image|max:2048',
-        ]);
+        ];
 
-        $course = Course::where('course_code', $request->course_code)
-                        ->where('type', 'program')
-                        ->first();
+        // Different document validation based on level
+        if ($level === 'shs') {
+            $validationRules = array_merge($validationRules, [
+                'form_137' => 'nullable|file|max:5120',  // SF9
+                'sf10' => 'nullable|file|max:5120',      // Permanent Record
+                'good_moral' => 'nullable|file|max:5120', // Optional for SHS
+                'psa' => 'nullable|file|max:5120',        // PSA Birth Certificate
+            ]);
+        } else {
+            // College documents
+            $validationRules = array_merge($validationRules, [
+                'form_137' => 'nullable|file|max:5120',
+                'good_moral' => 'nullable|file|max:5120',
+                'psa' => 'nullable|file|max:5120',
+            ]);
+        }
+
+        $request->validate($validationRules);
+
+        $course = Course::where('course_code', $request->course_code)->first();
 
         if (!$course) {
             return back()->with('error', 'Selected program is invalid or not registered in the system.')->withInput();
         }
 
-        // Handle File Uploads
+        // Handle File Uploads based on level
         $paths = [];
-        foreach (['form_137' => 'form_138_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path'] as $field => $dbField) {
+        $fileMap = $level === 'shs'
+            ? ['form_137' => 'form_137_path', 'sf10' => 'sf10_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path']
+            : ['form_137' => 'form_137_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path'];
+
+        foreach ($fileMap as $field => $dbField) {
             if ($request->hasFile($field)) {
                 $paths[$dbField] = $request->file($field)->store('enrollments/docs', 'public');
             }
@@ -87,6 +133,7 @@ class StudentEnrollmentController extends Controller
             'user_id' => Auth::id(),
             'course_id' => $course->id,
             'course_code' => $request->course_code,
+            'level' => $level,
             'year_level' => $unifiedYearLevel,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,

@@ -12,5 +12,6 @@ class Course extends Model
         'description',
         'credits',
         'type',
+        'track',
     ];
 }

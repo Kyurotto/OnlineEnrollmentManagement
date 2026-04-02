@@ -24,43 +24,119 @@
         <form action="{{ route('student.enrollment.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8 pb-12">
             @csrf
 
-            {{-- Course Selection --}}
+            {{-- Hidden Level Field --}}
+            <input type="hidden" name="level" value="{{ $level }}">
+
+            {{-- Course / Strand Selection --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
 
                 <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
-                    <span class="w-1.5 h-6 bg-blue-400 rounded-full"></span>
-                    Course Selection
+                    <span class="w-1.5 h-6 rounded-full" style="background-color: {{ $level === 'shs' ? '#10B981' : '#3B82F6' }};"></span>
+                    {{ $level === 'shs' ? 'Strand Selection' : 'Course Selection' }}
                 </h3>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    @foreach(['ACT' => 'ASSOCIATE IN COMPUTER TECH', 'BSIS' => 'BS INFORMATION SYSTEMS', 'BTVTED' => 'BTV Teacher Education', 'DHRT' => 'HOTEL & RESTAURANT TECH', 'DIT' => 'DIPLOMA INFO TECH'] as $code => $name)
-                    <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-blue-400/10 has-[:checked]:border-blue-400/50 has-[:checked]:shadow-lg has-[:checked]:shadow-blue-500/10">
-                        <input type="radio" name="course_code" value="{{ $code }}" {{ old('course_code', $course_code ?? '') === $code ? 'checked' : '' }} class="sr-only peer">
-                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors border-white/20 peer-checked:border-blue-400">
-                            <div class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-in zoom-in hidden peer-checked:block"></div>
+                @if($level === 'shs')
+                    {{-- SHS Tracks --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        {{-- Academic Track --}}
+                        <div class="space-y-4">
+                            <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Academic Track</p>
+                            @php
+                                $acadStrands = $strands->filter(function($strand) {
+                                    $autoTrack = match(strtoupper($strand->course_code)) {
+                                        'STEM', 'HUMSS', 'HUMMS', 'GAS', 'ABM' => 'ACAD',
+                                        'HE', 'ICT' => 'TVL',
+                                        default => null
+                                    };
+                                    $finalTrack = !empty($strand->track) ? $strand->track : $autoTrack;
+                                    return $finalTrack === 'ACAD';
+                                });
+                            @endphp
+                            @forelse($acadStrands as $strand)
+                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-emerald-400/10 has-[:checked]:border-emerald-400/50 has-[:checked]:shadow-lg has-[:checked]:shadow-emerald-500/10">
+                                    <input type="radio" name="course_code" value="{{ $strand->course_code }}" {{ old('course_code', $course_code ?? '') === $strand->course_code ? 'checked' : '' }} class="sr-only peer" required>
+                                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors border-white/20 peer-checked:border-emerald-400">
+                                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-in zoom-in hidden peer-checked:block"></div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <span class="block text-sm font-bold text-white peer-checked:text-emerald-400">{{ $strand->course_code }}</span>
+                                        <span class="text-xs text-white/40 uppercase tracking-widest">{{ $strand->course_name }}</span>
+                                    </div>
+                                </label>
+                            @empty
+                                <p class="text-xs text-white/40">No Academic tracks available</p>
+                            @endforelse
                         </div>
-                        <div class="ml-4">
-                            <span class="block text-sm font-bold text-white peer-checked:text-blue-400">{{ $code }}</span>
-                            <span class="text-xs text-white/40 uppercase tracking-widest">{{ $name }}</span>
+
+                        {{-- Tech-Voc Track --}}
+                        <div class="space-y-4">
+                            <p class="text-xs font-bold text-purple-400 uppercase tracking-widest">Technical Vocational Track</p>
+                            @php
+                                $tvlStrands = $strands->filter(function($strand) {
+                                    $autoTrack = match(strtoupper($strand->course_code)) {
+                                        'STEM', 'HUMSS', 'HUMMS', 'GAS', 'ABM' => 'ACAD',
+                                        'HE', 'ICT' => 'TVL',
+                                        default => null
+                                    };
+                                    $finalTrack = !empty($strand->track) ? $strand->track : $autoTrack;
+                                    return $finalTrack === 'TVL';
+                                });
+                            @endphp
+                            @forelse($tvlStrands as $strand)
+                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-purple-400/10 has-[:checked]:border-purple-400/50 has-[:checked]:shadow-lg has-[:checked]:shadow-purple-500/10">
+                                    <input type="radio" name="course_code" value="{{ $strand->course_code }}" {{ old('course_code', $course_code ?? '') === $strand->course_code ? 'checked' : '' }} class="sr-only peer" required>
+                                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors border-white/20 peer-checked:border-purple-400">
+                                        <div class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-in zoom-in hidden peer-checked:block"></div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <span class="block text-sm font-bold text-white peer-checked:text-purple-400">{{ $strand->course_code }}</span>
+                                        <span class="text-xs text-white/40 uppercase tracking-widest">{{ $strand->course_name }}</span>
+                                    </div>
+                                </label>
+                            @empty
+                                <p class="text-xs text-white/40">No Tech-Voc tracks available</p>
+                            @endforelse
                         </div>
-                    </label>
-                    @endforeach
-                </div>
+                    </div>
+                @else
+                    {{-- College Programs --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        @forelse($programs as $program)
+                            <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-blue-400/10 has-[:checked]:border-blue-400/50 has-[:checked]:shadow-lg has-[:checked]:shadow-blue-500/10">
+                                <input type="radio" name="course_code" value="{{ $program->course_code }}" {{ old('course_code', $course_code ?? '') === $program->course_code ? 'checked' : '' }} class="sr-only peer" required>
+                                <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors border-white/20 peer-checked:border-blue-400">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-in zoom-in hidden peer-checked:block"></div>
+                                </div>
+                                <div class="ml-4">
+                                    <span class="block text-sm font-bold text-white peer-checked:text-blue-400">{{ $program->course_code }}</span>
+                                    <span class="text-xs text-white/40 uppercase tracking-widest">{{ $program->course_name }}</span>
+                                </div>
+                            </label>
+                        @empty
+                            <p class="text-xs text-white/40">No college programs available</p>
+                        @endforelse
+                    </div>
+                @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Year Level</label>
-                        <select name="year_level" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer">
+                        <select name="year_level" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
                             <option value="">Select Year</option>
-                            @foreach(['1st Year', '2nd Year', '3rd Year', '4th Year'] as $year)
-                                <option value="{{ $year }}" {{ old('year_level', $year_level ?? '') === $year ? 'selected' : '' }}>{{ $year }}</option>
-                            @endforeach
+                            @if($level === 'shs')
+                                <option value="Grade 11" {{ old('year_level', $year_level ?? '') === 'Grade 11' ? 'selected' : '' }}>Grade 11</option>
+                                <option value="Grade 12" {{ old('year_level', $year_level ?? '') === 'Grade 12' ? 'selected' : '' }}>Grade 12</option>
+                            @else
+                                @foreach(['1st Year', '2nd Year', '3rd Year', '4th Year'] as $year)
+                                    <option value="{{ $year }}" {{ old('year_level', $year_level ?? '') === $year ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Semester</label>
-                        <select name="semester" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer">
+                        <select name="semester" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
                             <option value="">Select Semester</option>
                             <option value="1st Semester" {{ old('semester', $semester ?? '') === '1st Semester' ? 'selected' : '' }}>1st Semester</option>
                             <option value="2nd Semester" {{ old('semester', $semester ?? '') === '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
@@ -68,7 +144,7 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Academic Year</label>
-                        <select name="academic_year" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer">
+                        <select name="academic_year" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
                             <option value="">Select Year</option>
                             @foreach($academicYears as $year)
                                 <option value="{{ $year->year_name }}" {{ old('academic_year', $academic_year ?? '') === $year->year_name ? 'selected' : '' }}>{{ $year->year_name }}</option>
@@ -136,6 +212,43 @@
                 </div>
             </div>
 
+            {{-- Address Information --}}
+            <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
+                 style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
+
+                <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-teal-400 rounded-full"></span>
+                    Address Information
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">House No. / Unit</label>
+                        <input type="text" name="house_no" value="{{ old('house_no', $house_no ?? '') }}" placeholder="e.g. 123, Unit 4A" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Street / Road</label>
+                        <input type="text" name="street" value="{{ old('street', $street ?? '') }}" placeholder="Street name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Barangay</label>
+                        <input type="text" name="barangay" value="{{ old('barangay', $barangay ?? '') }}" placeholder="Barangay name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">City / Municipality</label>
+                        <input type="text" name="city" value="{{ old('city', $city ?? '') }}" placeholder="City or municipality" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Province</label>
+                        <input type="text" name="province" value="{{ old('province', $province ?? '') }}" placeholder="Province name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">ZIP / Postal Code</label>
+                        <input type="text" name="zip" value="{{ old('zip', $zip ?? '') }}" placeholder="Postal code" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                </div>
+            </div>
+
             {{-- Parent Information --}}
             <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
@@ -179,33 +292,66 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach([
+                @php
+                    $docs = ($level === 'shs') ? [
+                        ['model' => 'form_137', 'label' => 'JHS Report Card (SF9)', 'desc' => 'Original SF9 with school seal and signature'],
+                        ['model' => 'sf10', 'label' => 'SF10 (Permanent Record)', 'desc' => 'Certified copy of SF10'],
+                        ['model' => 'good_moral', 'label' => 'Certificate of Good Moral', 'desc' => 'Optional - from previous school'],
+                        ['model' => 'id_picture', 'label' => '2pcs 2x2 ID Portrait', 'desc' => 'White background, formal attire'],
+                        ['model' => 'psa', 'label' => 'PSA Birth Certificate', 'desc' => 'Authenticated copy of birth certificate']
+                    ] : [
                         ['model' => 'form_137', 'label' => 'Form 137 (Report Card)', 'desc' => "Original copy with principal's signature"],
                         ['model' => 'good_moral', 'label' => 'Certificate of Good Moral', 'desc' => 'Issued by your previous institution'],
                         ['model' => 'psa', 'label' => 'PSA Birth Certification', 'desc' => 'Clear copy of the original PSA document'],
                         ['model' => 'id_picture', 'label' => '2x2 ID Portrait', 'desc' => 'White background, formal attire']
-                    ] as $doc)
-                    <div class="bg-white/5 p-6 rounded-2xl border border-white/10 group transition-all duration-300 hover:border-emerald-400/30">
-                        <div class="mb-4">
-                            <h4 class="text-sm font-bold text-white tracking-tight">{{ $doc['label'] }}</h4>
-                            <p class="text-xs text-white/30 mt-0.5">{{ $doc['desc'] }}</p>
-                        </div>
-                        <label for="file-{{ $doc['model'] }}" class="flex flex-col items-center justify-center w-full h-32 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-white/5 hover:bg-emerald-500/5 transition-all group overflow-hidden relative">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10 transition-transform group-hover:scale-105">
-                                <svg class="w-6 h-6 mb-3 text-emerald-400/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
-                                <p class="mb-1 text-xs text-white/40 leading-tight">
-                                    <span class="font-bold text-white/60">Initialize Upload</span>
-                                </p>
-                                <p class="text-xs text-white/20">PNG, JPG or PDF</p>
-                                <p class="text-[10px] text-emerald-400 mt-2 hidden" id="feedback-{{ $doc['model'] }}">File Selected</p>
+                    ];
+                @endphp
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach($docs as $doc)
+                        <div class="bg-white/5 p-6 rounded-2xl border border-white/10 group transition-all duration-300 hover:border-emerald-400/30">
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-white tracking-tight">{{ $doc['label'] }}</h4>
+                                <p class="text-xs text-white/30 mt-0.5">{{ $doc['desc'] }}</p>
                             </div>
-                            <input type="file" id="file-{{ $doc['model'] }}" name="{{ $doc['model'] }}" class="sr-only" accept="image/*,application/pdf" onchange="document.getElementById('feedback-{{ $doc['model'] }}').classList.remove('hidden')" />
-                        </label>
-                    </div>
+                            <label for="file-{{ $doc['model'] }}" class="flex flex-col items-center justify-center w-full h-32 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-white/5 hover:bg-emerald-500/5 transition-all group overflow-hidden relative">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10 transition-transform group-hover:scale-105">
+                                    <svg class="w-6 h-6 mb-3 text-emerald-400/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
+                                    <p class="mb-1 text-xs text-white/40 leading-tight">
+                                        <span class="font-bold text-white/60">Initialize Upload</span>
+                                    </p>
+                                    <p class="text-xs text-white/20">PNG, JPG or PDF</p>
+                                    <p class="text-[10px] text-emerald-400 mt-2 hidden" id="feedback-{{ $doc['model'] }}">File Selected</p>
+                                </div>
+                                <input type="file" id="file-{{ $doc['model'] }}" name="{{ $doc['model'] }}" class="sr-only" accept="image/*,application/pdf" onchange="document.getElementById('feedback-{{ $doc['model'] }}').classList.remove('hidden')" />
+                            </label>
+                        </div>
                     @endforeach
                 </div>
             </div>
+
+            {{-- HCI Guidance: Required Field Scroller --}}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.querySelector('form');
+                    form.addEventListener('submit', function(e) {
+                        // Check for invalid fields using the constraint validation API
+                        const invalidElement = form.querySelector(':invalid');
+                        if (invalidElement) {
+                            e.preventDefault();
+                            invalidElement.focus();
+                            // Smooth scroll to the required field for better user guidance
+                            invalidElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                            // Add visual feedback to the invalid field
+                            invalidElement.classList.add('ring-2', 'ring-rose-500');
+                            setTimeout(() => {
+                                invalidElement.classList.remove('ring-2', 'ring-rose-500');
+                            }, 3000);
+                        }
+                    });
+                });
+            </script>
 
             {{-- Error Handling & Submission --}}
             <div class="flex flex-col items-end gap-4">

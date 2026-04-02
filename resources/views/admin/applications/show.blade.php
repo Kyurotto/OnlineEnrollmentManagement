@@ -43,10 +43,18 @@
                             <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                 <svg class="w-24 h-24 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </div>
-                            <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-6 border-b border-cyan-500/20 pb-2">Program Preference</h3>
+                            <div class="flex items-center justify-between mb-6 border-b border-cyan-500/20 pb-2">
+                                <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Program Preference</h3>
+                                @php
+                                    $isSHS = in_array($application->course_code, ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
+                                @endphp
+                                <span class="px-2 py-1 text-[9px] font-bold rounded-full border {{ $isSHS ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30' }}">
+                                    {{ $isSHS ? 'SHS' : 'COLLEGE' }}
+                                </span>
+                            </div>
                             <div class="space-y-4">
-                                <div class="text-4xl font-black text-white tracking-tighter">{{ $application->course?->course_code ?? 'N/A' }}</div>
-                                <div class="text-xs font-bold text-white/40 uppercase tracking-widest">{{ $application->year_level }}</div>
+                                <h3 class="text-4xl font-black text-white tracking-tighter">{{ $application->course_code ?? 'N/A' }}</h3>
+                                <p class="text-white/40 text-sm italic">{{ $application->year_level }}</p>
                                 <div class="pt-6">
                                     <span class="text-[10px] font-black text-white/20 uppercase tracking-widest block mb-2 px-1">Current Status</span>
                                     @php
@@ -118,16 +126,32 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 Required Documents
                             </h3>
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                                @php
-                                    $docs = [
-                                        'form_138_path' => 'PROGRESS REPORT',
-                                        'good_moral_path' => 'CERT. GOOD MORAL',
-                                        'psa_path' => 'PSA BIRTH CERT',
-                                        'id_picture_path' => 'IDENTIFICATION'
-                                    ];
-                                @endphp
 
+                            @php
+                                $isSHS = in_array($application->course_code, ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
+                                $docs = $isSHS
+                                    ? [
+                                        'form_137_path' => 'JHS Report Card (SF9)',
+                                        'sf10_path' => 'SF10 (Permanent Record)',
+                                        'good_moral_path' => 'Certificate of Good Moral',
+                                        'psa_path' => 'PSA Birth Certificate',
+                                        'id_picture_path' => '2x2 ID Portrait'
+                                    ]
+                                    : [
+                                        'form_137_path' => 'Form 137 (Report Card)',
+                                        'good_moral_path' => 'Certificate of Good Moral',
+                                        'psa_path' => 'PSA Birth Certificate',
+                                        'id_picture_path' => '2x2 ID Portrait'
+                                    ];
+                            @endphp
+
+                            <div class="mb-6">
+                                <div class="inline-block px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest {{ $isSHS ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30' }}">
+                                    {{ $isSHS ? 'Senior High School' : 'College' }}
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
                                 @foreach ($docs as $path => $label)
                                     <div class="space-y-4 group/doc">
                                         <div class="flex items-center gap-2">

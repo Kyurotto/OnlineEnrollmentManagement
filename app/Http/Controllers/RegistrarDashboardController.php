@@ -19,8 +19,8 @@ class RegistrarDashboardController extends Controller
                                  $q->whereIn('status', ['Enrolled', 'Approved']);
                              })
                              ->count();
-        
-        $totalApplicationsCount = Enrollment::count(); 
+
+        $totalApplicationsCount = Enrollment::count();
         $pendingCount = Enrollment::where('status', 'Pending')->count();
         $enrolledCount = Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count();
         $programsCount = Course::where('type', 'program')->count();
@@ -71,7 +71,7 @@ class RegistrarDashboardController extends Controller
                 'is_today'    => $date->isToday(),
             ];
         }
-        
+
         // Displays the current Month and Year (e.g. "February 2026")
         $weekRange = Carbon::now()->format('F Y');
 
@@ -81,9 +81,16 @@ class RegistrarDashboardController extends Controller
             $selectedApp = Enrollment::with('user')->find($request->app_id);
         }
 
+        // 6. CALCULATE SHS vs COLLEGE ENROLLMENT COUNTS
+        $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+        $shs_count = Enrollment::whereIn('course_code', $shsStrands)->count();
+        $college_count = Enrollment::whereNotIn('course_code', $shsStrands)->count();
+        $total_count = Enrollment::count();
+
         return view('dashboard', compact(
-            'stats', 'newEnrolleesCount', 'notifications', 
-            'appsByDate', 'weekDates', 'weekRange', 'selectedApp'
+            'stats', 'newEnrolleesCount', 'notifications',
+            'appsByDate', 'weekDates', 'weekRange', 'selectedApp',
+            'shs_count', 'college_count', 'total_count'
         ));
     }
 
