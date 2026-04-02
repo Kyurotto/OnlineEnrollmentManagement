@@ -9,6 +9,9 @@ use App\Models\Semester;
 use App\Models\AcademicYear;
 use App\Models\Enrollment;
 use App\Models\Course;
+use App\Models\User;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\NewEnrollmentSubmitted;
 
 class StudentEnrollmentController extends Controller
 {
@@ -164,6 +167,12 @@ class StudentEnrollmentController extends Controller
 
         // Clear draft on successful submission
         session()->forget('enrollment_draft_' . Auth::id());
+
+        // 6. Notify Admins and Registrars
+        $staff = User::whereIn('role', ['admin', 'registrar'])->get();
+        if ($staff->count() > 0) {
+            Notification::send($staff, new NewEnrollmentSubmitted($enrollment));
+        }
 
         return redirect()->route('student.dashboard')->with('success', 'Enrollment application submitted successfully to the Registrar.');
     }
