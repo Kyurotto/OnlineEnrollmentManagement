@@ -4,60 +4,93 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Course; 
+use App\Models\Course;
 use App\Models\Section;
 
 class RegistrarProgramController extends Controller
 {
     public function index()
     {
-        // Fetch programs, ordered by latest
-        $programs = Course::orderBy('id', 'desc')->paginate(10);
-        return view('registrar.programs.index', compact('programs'));
+        // Fetch College Programs and SHS Strands separately
+        $programs = Course::where('type', 'program')->orderBy('id', 'desc')->get();
+        $strands = Course::where('type', 'shs')->orderBy('id', 'desc')->get();
+
+        return view('registrar.programs.index', compact('programs', 'strands'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'course_name' => 'required|string|unique:courses,course_name',
+        $rules = [
+            'course_code' => 'required|string|unique:courses,course_code',
+            'course_name' => 'required|string',
             'description' => 'nullable|string',
-        ]);
+            'type' => 'required|in:program,shs',
+        ];
 
-        // Auto-generate a simple code if your DB requires it, otherwise just save name
-        // Here we use the first few letters of the name as a fallback code if needed
-        $generatedCode = strtoupper(substr($request->course_name, 0, 4)) . rand(10,99);
+        // Track is required only for SHS strands
+        if ($request->type === 'shs') {
+            $rules['track'] = 'required|in:ACAD,TVL';
+        }
 
-        Course::create([
-            'course_name' => $request->course_name,
-            'course_code' => $generatedCode, // Auto-filled behind the scenes
-            'description' => $request->description ?? '',
-        ]);
+        $validated = $request->validate($rules);
 
-        return back()->with('success', 'Program added successfully.');
+        $data = [
+            'course_code' => $validated['course_code'],
+            'course_name' => $validated['course_name'],
+            'description' => $validated['description'] ?? '',
+            'type' => $validated['type'],
+        ];
+
+        // Add track for SHS strands - always include if type is SHS
+        if ($validated['type'] === 'shs') {
+            $data['track'] = $validated['track'] ?? null;
+        }
+
+        Course::create($data);
+
+        $label = $request->type === 'program' ? 'Program' : 'Strand';
+        return back()->with('success', $label . ' added successfully.');
     }
 
     public function update(Request $request, $id)
     {
         $program = Course::findOrFail($id);
-        
-         $request->validate([
-            'course_name' => 'required|string|unique:courses,course_name,' . $id,
+
+        $rules = [
+            'course_code' => 'required|string|unique:courses,course_code,' . $id,
+            'course_name' => 'required|string',
             'description' => 'nullable|string',
-        ]);
+        ];
 
-        $program->update([
-            'course_name' => $request->course_name,
-            'description' => $request->description,
-        ]);
+        // Track is required for SHS strands
+        if ($program->type === 'shs') {
+            $rules['track'] = 'required|in:ACAD,TVL';
+        }
 
-        return back()->with('success', 'Program updated successfully.');
+        $validated = $request->validate($rules);
+
+        $data = [
+            'course_code' => $validated['course_code'],
+            'course_name' => $validated['course_name'],
+            'description' => $validated['description'] ?? '',
+        ];
+
+        // Always add track for SHS strands - ensure it's saved to database
+        if ($program->type === 'shs') {
+            $data['track'] = $validated['track'] ?? null;
+        }
+
+        $program->update($data);
+
+        $label = $program->type === 'program' ? 'Program' : 'Strand';
+        return back()->with('success', $label . ' updated successfully.');
     }
 
     public function destroy($id)
     {
         try {
             $course = Course::findOrFail($id);
-            
+
             // Delete related sections first to prevent constraint errors
             Section::where('course_id', $id)->delete();
 

@@ -70,6 +70,11 @@
                             </div>
                         </th>
                         <th class="py-6 px-8 text-left text-white/20 uppercase tracking-[0.2em]">Account Details</th>
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors">
+                            <div class="flex items-center gap-2">
+                                Level
+                            </div>
+                        </th>
                         <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.course_code')">
                             <div class="flex items-center gap-2">
                                 Program
@@ -121,8 +126,24 @@
                         </td>
                         <td class="py-6 px-8 text-white/40 lowercase tracking-tight">{{ $application->email }}</td>
                         <td class="py-6 px-8 whitespace-nowrap">
-                            <span class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
-                            <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
+                            @php
+                                $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+                                $isSHS = in_array($application->course_code, $shsStrands);
+                            @endphp
+
+                            @if($isSHS)
+                                <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">
+                                    Senior High
+                                </span>
+                            @else
+                                <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg">
+                                    College
+                                </span>
+                            @endif
+                        </td>
+                        <td class="py-6 px-8 whitespace-nowrap">
+                            <div class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</div>
+                            <span class="text-white/20 text-[9px] font-bold">({{ $application->year_display }})</span>
                         </td>
                         <td class="py-6 px-8 text-white/30 font-medium italic tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
                         <td class="py-6 px-8">
@@ -315,11 +336,11 @@
         document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
         const middle = app.middle_name ? ' ' + app.middle_name : '';
         const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
-        
+
         // Header info
         // The original modalName was for the full name in the student profile, now it's modalNameValue
-        // document.getElementById('modalName').innerText = fullName; 
-        
+        // document.getElementById('modalName').innerText = fullName;
+
         // Student Profile section
         document.getElementById('modalNameValue').innerText = fullName;
         document.getElementById('modalEmail').innerText = app.email || 'N/A';
@@ -329,12 +350,12 @@
         document.getElementById('modalAge').innerText = app.age || 'N/A';
         document.getElementById('modalGender').innerText = app.gender || 'N/A';
         document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
-        
+
         // Program details
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A'; // Renamed from modalProgram to modalCourse to match existing HTML
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         document.getElementById('modalStatus').innerText = app.status || 'N/A';
-        
+
         // Guardian info
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
         document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';

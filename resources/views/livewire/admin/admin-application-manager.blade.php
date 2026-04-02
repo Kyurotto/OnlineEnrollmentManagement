@@ -71,6 +71,11 @@
                             </div>
                         </th>
                         <th class="py-6 px-8 text-left">Account Details</th>
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors">
+                            <div class="flex items-center gap-2">
+                                Level
+                            </div>
+                        </th>
                         <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.course_code')">
                             <div class="flex items-center gap-2">
                                 Program
@@ -121,6 +126,22 @@
                                 </div>
                             </td>
                             <td class="py-6 px-8 text-white/40 lowercase tracking-tight">{{ $application->email }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                @php
+                                    $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+                                    $isSHS = in_array($application->course_code, $shsStrands);
+                                @endphp
+
+                                @if($isSHS)
+                                    <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">
+                                        Senior High
+                                    </span>
+                                @else
+                                    <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg">
+                                        College
+                                    </span>
+                                @endif
+                            </td>
                             <td class="py-6 px-8 whitespace-nowrap">
                                 <span class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
                                 <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
@@ -301,16 +322,22 @@
 
             <!-- Modal Footer -->
             <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+
+                <div class="flex items-center gap-4">
+                    <button type="button"
+                        wire:click="approve(selectedId)"
+
                 <div id="actionButtons" class="items-center gap-4 hidden">
                     <button type="button" 
                         wire:click="approve(selectedId)" 
+
                         @click="modalOpen = false"
                         class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
                         Approve
                     </button>
-                    <button type="button" 
-                        wire:click="reject(selectedId)" 
-                        wire:confirm="Are you sure you want to reject this application?" 
+                    <button type="button"
+                        wire:click="reject(selectedId)"
+                        wire:confirm="Are you sure you want to reject this application?"
                         @click="modalOpen = false"
                         class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95">
                         Reject Application
@@ -328,7 +355,7 @@
         document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
         const middle = app.middle_name ? ' ' + app.middle_name : '';
         const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
-        
+
         // Student Profile section
         document.getElementById('modalNameValue').innerText = fullName;
         document.getElementById('modalEmail').innerText = app.email || 'N/A';
@@ -338,12 +365,12 @@
         document.getElementById('modalAge').innerText = app.age || 'N/A';
         document.getElementById('modalGender').innerText = app.gender || 'N/A';
         document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
-        
+
         // Program details
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         document.getElementById('modalStatus').innerText = app.status || 'N/A';
-        
+
         // Guardian info
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
         document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';

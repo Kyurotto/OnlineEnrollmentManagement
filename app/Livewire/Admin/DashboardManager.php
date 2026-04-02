@@ -129,6 +129,12 @@ class DashboardManager extends Component
             ->take(5)
             ->get();
 
+        // 4. CALCULATE SHS vs COLLEGE ENROLLMENT COUNTS
+        $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+        $shs_count = Enrollment::whereIn('course_code', $shsStrands)->count();
+        $college_count = Enrollment::whereNotIn('course_code', $shsStrands)->count();
+        $total_count = Enrollment::count();
+
         return view('dashboard', [
             'stats' => $stats,
             'appsByDate' => $appsByDate,
@@ -137,6 +143,9 @@ class DashboardManager extends Component
             'applications' => $applications,
             'newEnrolleesCount' => $newEnrolleesCount,
             'notifications' => $notifications,
+            'shs_count' => $shs_count,
+            'college_count' => $college_count,
+            'total_count' => $total_count,
         ]);
     }
 }

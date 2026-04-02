@@ -246,7 +246,7 @@
     {{-- SECTION 1 — Header Node --}}
     <div class="p-8 rounded-2xl border relative overflow-hidden group shadow-2xl shadow-black/40"
          style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-        
+
         <div class="absolute top-0 right-0 p-12 opacity-5 mt-[-20px] mr-[-20px] transition-transform group-hover:scale-110 duration-700">
             <svg class="w-64 h-64 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
@@ -330,7 +330,7 @@
     {{-- SECTION 3 — Transaction Logs --}}
     <div class="p-6 rounded-2xl border shadow-2xl shadow-black/40 overflow-hidden"
          style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-        
+
         <div class="flex items-center gap-3 mb-6 px-4">
             <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
             <div>
@@ -510,6 +510,28 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+        </div>
+
+        {{-- Enrollment Overview Cards (SHS vs College) --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- SHS Card -->
+            <div class="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+                <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Senior High</p>
+                <h3 class="text-3xl font-black text-white mt-1">{{ $shs_count }}</h3>
+                <p class="text-[10px] text-emerald-400/50 mt-4">Total Applicants</p>
+            </div>
+            <!-- College Card -->
+            <div class="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+                <p class="text-xs font-bold text-blue-400 uppercase tracking-widest">College</p>
+                <h3 class="text-3xl font-black text-white mt-1">{{ $college_count }}</h3>
+                <p class="text-[10px] text-blue-400/50 mt-4">Total Applicants</p>
+            </div>
+            <!-- Consolidated Card -->
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <p class="text-xs font-bold text-white/40 uppercase tracking-widest">Consolidated</p>
+                <h3 class="text-3xl font-black text-white mt-1">{{ $total_count }}</h3>
+                <p class="text-[10px] text-white/20 mt-4">Overall Enrollment</p>
             </div>
         </div>
 
@@ -744,6 +766,28 @@
     </div>
 
     {{-- Quick Action Cards Removed (Moved to Sidebar) --}}
+
+    {{-- Enrollment Overview Cards (SHS vs College) --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- SHS Card -->
+        <div class="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+            <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Senior High</p>
+            <h3 class="text-3xl font-black text-white mt-1">{{ $shs_count }}</h3>
+            <p class="text-[10px] text-emerald-400/50 mt-4">Total Applicants</p>
+        </div>
+        <!-- College Card -->
+        <div class="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+            <p class="text-xs font-bold text-blue-400 uppercase tracking-widest">College</p>
+            <h3 class="text-3xl font-black text-white mt-1">{{ $college_count }}</h3>
+            <p class="text-[10px] text-blue-400/50 mt-4">Total Applicants</p>
+        </div>
+        <!-- Consolidated Card -->
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-white/40 uppercase tracking-widest">Consolidated</p>
+            <h3 class="text-3xl font-black text-white mt-1">{{ $total_count }}</h3>
+            <p class="text-[10px] text-white/20 mt-4">Overall Enrollment</p>
+        </div>
+    </div>
 
     {{-- Overview Stats --}}
     <div class="p-6 rounded-2xl border bg-white/5 backdrop-blur-md border-white/10 shadow-2xl">

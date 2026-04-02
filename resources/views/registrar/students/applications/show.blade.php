@@ -65,13 +65,13 @@
                         <div class="bg-cyan-500/5 border border-cyan-500/10 rounded-[40px] p-10 space-y-10 h-full flex flex-col justify-center shadow-inner">
                             <div class="flex flex-col gap-2">
                                 <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest italic">Program</span>
-                                <span class="text-3xl font-black text-white uppercase italic tracking-tighter leading-tight">{{ $application->course?->course_code ?? 'N/A' }}</span>
+                                <span class="text-3xl font-black text-white uppercase italic tracking-tighter leading-tight">{{ $application->course_code ?? 'N/A' }}</span>
                                 <span class="text-[10px] font-bold text-white/30 uppercase tracking-wider">{{ $application->course?->course_description ?? '' }}</span>
                             </div>
                             <div class="flex items-center gap-12 pt-8 border-t border-cyan-500/10">
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Year Level</span>
-                                    <span class="text-lg font-black text-white uppercase italic">Level {{ $application->year_level }}</span>
+                                    <span class="text-lg font-black text-white uppercase italic">{{ $application->year_level }}</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
@@ -84,18 +84,35 @@
 
                 {{-- Document Assets --}}
                 <div class="space-y-8">
-                    <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Required Documents</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Required Documents</h3>
+                        </div>
+                        @php
+                            $isSHS = in_array($application->course_code, ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
+                        @endphp
+                        <span class="px-3 py-1 text-[9px] font-bold rounded-full border {{ $isSHS ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30' }}">
+                            {{ $isSHS ? 'SHS Documents' : 'College Documents' }}
+                        </span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         @php
-                            $docs = [
-                                'form_138_path' => 'Form 138',
-                                'good_moral_path' => 'Good Moral',
-                                'psa_path' => 'PSA Birth Cert',
-                                'id_picture_path' => 'ID Picture'
-                            ];
+                            $isSHS = in_array($application->course_code, ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
+                            $docs = $isSHS
+                                ? [
+                                    'form_137_path' => 'JHS Card (SF9)',
+                                    'sf10_path' => 'SF10 Record',
+                                    'good_moral_path' => 'Good Moral',
+                                    'psa_path' => 'PSA Birth Cert',
+                                    'id_picture_path' => '2x2 ID Picture'
+                                ]
+                                : [
+                                    'form_137_path' => 'Form 137',
+                                    'good_moral_path' => 'Good Moral',
+                                    'psa_path' => 'PSA Birth Cert',
+                                    'id_picture_path' => 'ID Picture'
+                                ];
                         @endphp
 
                         @foreach ($docs as $path => $label)
