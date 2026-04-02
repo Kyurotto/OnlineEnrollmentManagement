@@ -30,6 +30,15 @@
                         <option value="Paid" class="bg-[#0a0f1d]">Paid</option>
                     </select>
                 </div>
+                <div class="w-full sm:w-44">
+                    <select wire:model.live="year_level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                        <option value="All Years" class="bg-[#0a0f1d]">All Years</option>
+                        <option value="1st Year" class="bg-[#0a0f1d]">BSIS 1</option>
+                        <option value="2nd Year" class="bg-[#0a0f1d]">BSIS 2</option>
+                        <option value="3rd Year" class="bg-[#0a0f1d]">BSIS 3</option>
+                        <option value="4th Year" class="bg-[#0a0f1d]">BSIS 4</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -313,9 +322,15 @@
 
             <!-- Modal Footer -->
             <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+
                 <div class="flex items-center gap-4">
                     <button type="button"
                         wire:click="approve(selectedId)"
+
+                <div id="actionButtons" class="items-center gap-4 hidden">
+                    <button type="button" 
+                        wire:click="approve(selectedId)" 
+
                         @click="modalOpen = false"
                         class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
                         Approve
@@ -428,6 +443,17 @@
 
             docsContainer.innerHTML += `<div>${headerHtml}${boxHtml}<\/div>`;
         });
+
+        // Action Buttons visibility
+        const actionButtons = document.getElementById('actionButtons');
+        const status = (app.status || '').toLowerCase();
+        if (['pending', 'enrolled', 'paid'].includes(status)) {
+            actionButtons.classList.remove('hidden');
+            actionButtons.classList.add('flex');
+        } else {
+            actionButtons.classList.add('hidden');
+            actionButtons.classList.remove('flex');
+        }
     }
     </script>
 </div>

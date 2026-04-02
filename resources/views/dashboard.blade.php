@@ -669,7 +669,7 @@
                         </div>
 
                         <div class="flex items-center gap-4">
-                            @if(in_array(ucfirst($selectedApp->status), ['Pending', 'Paid', 'Enrolled']))
+                            @if(in_array(strtolower($selectedApp->status), ['pending', 'enrolled']))
                                 <form action="{{ route('registrar.dashboard.reject', $selectedApp->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
@@ -920,7 +920,7 @@
                             </div>
 
                             <div class="flex items-center gap-4">
-                                @if(in_array(ucfirst($selectedApp->status), ['Pending', 'Paid', 'Enrolled']))
+                                @if(in_array(strtolower($selectedApp->status), ['pending', 'enrolled']))
                                     <button wire:click="rejectApplication({{ $selectedApp->id }})" class="bg-white/5 hover:bg-rose-500/10 text-white/30 hover:text-rose-500 px-8 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] border border-white/5 hover:border-rose-500/20 active:scale-95">Deny Entry</button>
                                     <button wire:click="approveApplication({{ $selectedApp->id }})" class="bg-cyan-500 hover:bg-cyan-400 text-black px-12 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] shadow-2xl shadow-cyan-500/40 active:scale-95 flex items-center gap-2">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>

@@ -11,9 +11,8 @@
         <div
             class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-                <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Student Management</h2>
-                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">Administrative
-                    Control & Academic Records Overview</p>
+                <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">Student Population Registry</h2>
+                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">Management of Verified Academic Personas & Operational Status</p>
             </div>
             <div class="flex items-center gap-4 w-full md:w-auto">
                 <div class="relative group w-full md:w-72">
@@ -71,9 +70,37 @@
                             </div>
                         </th>
                         <th class="py-6 px-8">Account Details</th>
+                        <th class="py-6 px-8 cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.course_code')">
+                            <div class="flex items-center justify-center gap-2">
+                                ACADEMIC TRACK
+                                <span class="transition-opacity {{ $sortField === 'enrollments.course_code' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @foreach(['asc', 'desc'] as $dir)
+                                        @if ($sortField === 'enrollments.course_code' && $sortDirection === $dir)
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="{{ $dir === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                            </svg>
+                                        @endif
+                                    @endforeach
+                                </span>
+                            </div>
+                        </th>
+                        <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('year_level')">
+                            <div class="flex items-center justify-center gap-2">
+                                SECTION
+                                <span class="transition-opacity {{ $sortField === 'year_level' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @foreach(['asc', 'desc'] as $dir)
+                                        @if ($sortField === 'year_level' && $sortDirection === $dir)
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="{{ $dir === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                            </svg>
+                                        @endif
+                                    @endforeach
+                                </span>
+                            </div>
+                        </th>
                         <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('status')">
                             <div class="flex items-center justify-center gap-2">
-                                Status
+                                STATUS
                                 <span class="transition-opacity {{ $sortField === 'status' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
                                     @if ($sortField === 'status' && $sortDirection === 'asc')
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,8 +116,7 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8">Role</th>
-                        <th class="py-6 px-8 text-right">Actions</th>
+                        <th class="py-6 px-8 text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">
@@ -116,26 +142,22 @@
                                 </div>
                             </td>
                             <td class="py-6 px-8 text-center">
+                                <span class="text-blue-400 uppercase tracking-widest font-black text-[10px]">{{ $student->program }}</span>
+                            </td>
+                            <td class="py-6 px-8 text-center">
+                                <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
+                            </td>
+                            <td class="py-6 px-8 text-center">
                                 @php
-                                    $statusColor = match ($student->status) {
-                                        'active',
-                                        'approved',
-                                        'Enrolled'
-                                            => 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+                                    $statusColor = match (strtolower($student->status ?? 'enrolled')) {
+                                        'active', 'approved', 'enrolled' => 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
                                         'pending' => 'text-amber-400 bg-amber-400/10 border-amber-400/20',
-                                        'inactive' => 'text-rose-400 bg-rose-400/10 border-rose-400/20',
-                                        default => 'text-white/40 bg-white/5 border-white/10',
+                                        'rejected', 'inactive' => 'text-rose-400 bg-rose-400/10 border-rose-400/20',
+                                        default => 'text-blue-400 bg-blue-500/10 border-blue-500/20',
                                     };
                                 @endphp
-                                <span
-                                    class="{{ $statusColor }} text-[9px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
+                                <span class="{{ $statusColor }} text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
                                     {{ $student->status ?: 'Enrolled' }}
-                                </span>
-                            </td>
-                            <td class="py-6 px-8">
-                                <span
-                                    class="bg-blue-500/10 text-blue-400 text-[10px] font-black px-4 py-1.5 rounded-full border border-blue-500/20 uppercase tracking-widest">
-                                    {{ $student->role }}
                                 </span>
                             </td>
                             <td class="py-6 px-8 text-right">

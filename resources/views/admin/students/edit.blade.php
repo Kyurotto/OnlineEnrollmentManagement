@@ -1,8 +1,8 @@
-<x-layouts.registrar title="Update Student Record">
+<x-layouts.admin title="Update Student Record">
     <div class="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
         <div class="mb-10 flex items-center justify-between">
             <div class="flex items-center gap-6">
-                <a href="{{ route('registrar.students.index') }}" class="group/back flex items-center justify-center w-12 h-12 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all active:scale-95 shadow-xl">
+                <a href="{{ route('admin.students.index') }}" class="group/back flex items-center justify-center w-12 h-12 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all active:scale-95 shadow-xl">
                     <svg class="w-5 h-5 group-hover/back:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
                 </a>
                 <div>
@@ -15,7 +15,7 @@
         <div class="glass-card rounded-[40px] border-white/5 shadow-2xl overflow-hidden relative group">
             <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-500/10 blur-[100px] rounded-full group-hover:bg-purple-500/15 transition-colors duration-1000"></div>
             
-            <form action="{{ route('registrar.students.update', $student->id) }}" method="POST" class="p-10 md:p-14 relative z-10 space-y-10">
+            <form action="{{ route('admin.students.update', $student->id) }}" method="POST" class="p-10 md:p-14 relative z-10 space-y-10">
                 @csrf 
                 @method('PATCH')
 
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-6 pt-10">
-                    <a href="{{ route('registrar.students.index') }}" 
+                    <a href="{{ route('admin.students.index') }}" 
                         class="flex-1 px-10 py-5 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white text-center transition-all bg-white/[0.01]">
                         Cancel
                     </a>
@@ -62,4 +62,4 @@
             </form>
         </div>
     </div>
-</x-layouts.registrar>
+</x-layouts.admin>

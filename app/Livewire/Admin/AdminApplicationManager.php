@@ -14,12 +14,20 @@ class AdminApplicationManager extends Component
     public $status = 'All statuses';
     public $sortField = 'enrollments.id';
     public $sortDirection = 'desc';
+    public $year_level = 'All Years';
     public $selectedId;
 
-    protected $queryString = ['search', 'status', 'sortField', 'sortDirection'];
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'status' => ['except' => 'All statuses'],
+        'year_level' => ['except' => 'All Years'],
+        'sortField' => ['except' => 'enrollments.id'],
+        'sortDirection' => ['except' => 'desc']
+    ];
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingStatus() { $this->resetPage(); }
+    public function updatingYearLevel() { $this->resetPage(); }
 
     public function sortBy($field)
     {
@@ -80,6 +88,10 @@ class AdminApplicationManager extends Component
 
         if ($this->status !== 'All statuses') {
             $query->where('status', $this->status);
+        }
+
+        if ($this->year_level !== 'All Years') {
+            $query->where('year_level', 'like', "{$this->year_level}%");
         }
 
         $applications = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
