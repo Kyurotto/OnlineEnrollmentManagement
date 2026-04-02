@@ -322,15 +322,9 @@
 
             <!-- Modal Footer -->
             <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
-
-                <div class="flex items-center gap-4">
-                    <button type="button"
-                        wire:click="approve(selectedId)"
-
                 <div id="actionButtons" class="items-center gap-4 hidden">
                     <button type="button" 
                         wire:click="approve(selectedId)" 
-
                         @click="modalOpen = false"
                         class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
                         Approve
