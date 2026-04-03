@@ -100,7 +100,27 @@
     {{-- Action Matrix --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {{-- Enrollment Card --}}
-        @if($canEnroll && !$isEnrolledInActiveYear)
+        @if($hasSubmitted)
+            {{-- Review Application Card --}}
+            <a href="{{ route('student.enrollment.review') }}" class="group block h-full">
+                <div class="p-8 rounded-2xl border h-full transition-all duration-500 hover:scale-[1.02] relative overflow-hidden"
+                     style="background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h4 class="text-xs font-bold text-amber-400/80 uppercase tracking-[0.2em] mb-1">Application</h4>
+                            <div class="text-2xl font-black text-white tracking-tight">Review Application</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-amber-500/10 text-amber-400 group-hover:rotate-12 transition-transform shadow-lg shadow-amber-500/10">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-white/40 leading-relaxed mb-6">View and review your submitted enrollment application details.</p>
+                    <div class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
+                        View Application <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </div>
+            </a>
+        @elseif($canEnroll && !$isEnrolledInActiveYear)
         <a href="{{ route('student.enrollment.create') }}" class="group block h-full">
             <div class="p-8 rounded-2xl border h-full transition-all duration-500 hover:scale-[1.02] relative overflow-hidden"
                  style="background: rgba(99,179,237,0.06); border-color: rgba(99,179,237,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">

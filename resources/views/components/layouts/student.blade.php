@@ -53,7 +53,7 @@
 
                 {{-- Services Dropdown --}}
                 <div x-data="{ open: {{ request()->routeIs('student.enrollment.*', 'student.payment', 'student.profile') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" 
+                    <button @click="open = !open"
                             class="flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-all duration-200"
                             style="color: #8ab4d8;"
                             onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#ffffff';"
@@ -68,9 +68,16 @@
                     </button>
 
                     <div x-show="open" style="display: none;" class="mt-1 ml-4 pl-3 border-l border-[rgba(26,58,110,0.4)] space-y-0.5">
-                        
+
                         {{-- Enrollment --}}
-                        <a href="{{ route('student.enrollment.create') }}"
+                        @php
+                            $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+                            $hasSubmittedSidebar = \App\Models\Enrollment::where('user_id', auth()->id())
+                                ->whereIn('status', ['Pending', 'Approved', 'Enrolled', 'Rejected'])
+                                ->where('year_level', 'LIKE', '%' . ($activeYear->year_name ?? '') . '%')
+                                ->exists();
+                        @endphp
+                        <a href="{{ $hasSubmittedSidebar ? route('student.enrollment.review') : route('student.enrollment.create') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
                            style="{{ request()->routeIs('student.enrollment.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
                            onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
@@ -80,7 +87,7 @@
                                 <span class="absolute -left-[14px] top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
                             @endif
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
-                            Enrollment
+                            {{ $hasSubmittedSidebar ? 'Review Application' : 'Enrollment' }}
                         </a>
 
                         {{-- Payments --}}

@@ -176,4 +176,29 @@ class StudentEnrollmentController extends Controller
 
         return redirect()->route('student.dashboard')->with('success', 'Enrollment application submitted successfully to the Registrar.');
     }
+
+    /**
+     * Display the review view for an enrollment application
+     */
+    public function review()
+    {
+        $user = Auth::user();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+
+        // Get the existing enrollment for the current active year
+        $enrollment = null;
+        if ($activeYear) {
+            $enrollment = Enrollment::where('user_id', $user->id)
+                ->whereIn('status', ['Pending', 'Approved', 'Enrolled', 'Rejected'])
+                ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                ->first();
+        }
+
+        // If no enrollment found, redirect to dashboard
+        if (!$enrollment) {
+            return redirect()->route('student.dashboard')->with('error', 'No enrollment application found for review.');
+        }
+
+        return view('student.enrollment_review', compact('enrollment'));
+    }
 }

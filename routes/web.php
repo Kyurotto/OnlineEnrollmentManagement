@@ -34,7 +34,7 @@ use App\Http\Controllers\StudentPaymentController;
 use App\Http\Controllers\StudentProfileController;
 
 // Student Livewire Components
-use App\Livewire\StudentPaymentManager; 
+use App\Livewire\StudentPaymentManager;
 use App\Livewire\StudentProfileManager;
 
 // Registrar Livewire Components
@@ -105,25 +105,25 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::get('/students/{id}/edit', [RegistrarStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [RegistrarStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [RegistrarStudentController::class, 'destroy'])->name('students.destroy');
-    
+
     Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
-    
+
     Route::get('/academic-years', [RegistrarAcademicYearController::class, 'index'])->name('academic_years.index');
     Route::post('/academic-years', [RegistrarAcademicYearController::class, 'store'])->name('academic_years.store');
     Route::patch('/academic-years/{id}', [RegistrarAcademicYearController::class, 'update'])->name('academic_years.update');
     Route::delete('/academic-years/{id}', [RegistrarAcademicYearController::class, 'destroy'])->name('academic_years.destroy');
-    
+
     Route::get('/semesters', [RegistrarSemesterController::class, 'index'])->name('semesters.index');
     Route::post('/semesters', [RegistrarSemesterController::class, 'store'])->name('semesters.store');
     Route::patch('/semesters/{id}', [RegistrarSemesterController::class, 'update'])->name('semesters.update');
     Route::delete('/semesters/{id}', [RegistrarSemesterController::class, 'destroy'])->name('semesters.destroy');
     Route::patch('/semesters/{id}/activate', [RegistrarSemesterController::class, 'activate'])->name('semesters.activate');
-    
+
     Route::get('/programs', [RegistrarProgramController::class, 'index'])->name('programs.index');
     Route::post('/programs', [RegistrarProgramController::class, 'store'])->name('programs.store');
     Route::patch('/programs/{id}', [RegistrarProgramController::class, 'update'])->name('programs.update');
     Route::delete('/programs/{id}', [RegistrarProgramController::class, 'destroy'])->name('programs.destroy');
-    
+
     Route::get('/sections', [RegistrarSectionController::class, 'index'])->name('sections.index');
     Route::post('/sections', [RegistrarSectionController::class, 'store'])->name('sections.store');
     Route::patch('/sections/{id}', [RegistrarSectionController::class, 'update'])->name('sections.update');
@@ -176,6 +176,7 @@ Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')-
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
     Route::get('/enrollment/create', [StudentEnrollmentController::class, 'create'])->name('enrollment.create');
+    Route::get('/enrollment/review', [StudentEnrollmentController::class, 'review'])->name('enrollment.review');
     Route::post('/enrollment', [StudentEnrollmentController::class, 'store'])->name('enrollment.store');
     Route::get('/payments', StudentPaymentManager::class)->name('payment');
     Route::get('/profile', StudentProfileManager::class)->name('profile');
@@ -190,7 +191,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
