@@ -176,14 +176,14 @@
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="py-24 text-center">
-                                <div class="flex flex-col items-center opacity-20">
-                                    <svg class="w-16 h-16 mb-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-white">No applications found in the review pipeline</span>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="8" class="py-24 text-center">
+                            <div class="flex flex-col items-center opacity-20">
+                                <svg class="w-16 h-16 mb-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-white">No applications found in the review pipeline</span>
+                            </div>
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -318,10 +318,29 @@
                         {{-- Injected via JS --}}
                     </div>
                 </div>
+
+                {{-- Promissory Note Asset --}}
+                <div class="space-y-6 pt-6 hidden" id="modalPromissorySection">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Promissory Note & Reason</h3>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8">
+                        <div id="modalPromissoryFile" class="lg:col-span-1">
+                            {{-- Injected via JS --}}
+                        </div>
+                        <div class="lg:col-span-2 space-y-2">
+                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
+                            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[80px]">
+                                <p class="text-[11px] text-white/60 leading-relaxed italic" id="modalPromissoryReason"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Modal Footer -->
-            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
                 <div id="actionButtons" class="items-center gap-4 hidden">
                     <button type="button" 
                         wire:click="approve(selectedId)" 
@@ -437,6 +456,47 @@
 
             docsContainer.innerHTML += `<div>${headerHtml}${boxHtml}<\/div>`;
         });
+
+        // Promissory Note Handling
+        const promissorySection = document.getElementById('modalPromissorySection');
+        const promissoryFile = document.getElementById('modalPromissoryFile');
+        const promissoryReason = document.getElementById('modalPromissoryReason');
+
+        if (app.promissory_note_path || app.promissory_reason) {
+            promissorySection.classList.remove('hidden');
+            promissoryReason.innerText = app.promissory_reason || 'No explanation provided.';
+            
+            if (app.promissory_note_path) {
+                const noteUrl = storageBase + app.promissory_note_path;
+                const isPdf = app.promissory_note_path.toLowerCase().endsWith('.pdf');
+                
+                promissoryFile.innerHTML = `
+                    <div class="space-y-3">
+                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment<\/span>
+                        <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
+                            <\/div>
+                            <div>
+                                <p class="text-[10px] font-black text-white uppercase tracking-wider">Download Note<\/p>
+                                <p class="text-[8px] text-amber-500/60 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}<\/p>
+                            <\/div>
+                        <\/a>
+                    <\/div>
+                `;
+            } else {
+                promissoryFile.innerHTML = `
+                    <div class="space-y-3">
+                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment<\/span>
+                        <div class="p-4 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] flex items-center justify-center opacity-30">
+                            <span class="text-[8px] font-black text-white uppercase tracking-widest italic">No File<\/span>
+                        <\/div>
+                    <\/div>
+                `;
+            }
+        } else {
+            promissorySection.classList.add('hidden');
+        }
 
         // Action Buttons visibility
         const actionButtons = document.getElementById('actionButtons');
