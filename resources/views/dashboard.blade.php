@@ -177,10 +177,16 @@
     </div>
 
     {{-- Requirements Section --}}
-    <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40 overflow-hidden"
+    <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40 overflow-hidden relative"
          style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
 
-        <div class="flex items-center gap-3 mb-8">
+        {{-- Background Logo --}}
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+             style="opacity: 0.08;">
+            <img src="{{ asset('image/logo.jfif') }}" alt="Logo" class="w-80 h-80 rounded-full object-cover">
+        </div>
+
+        <div class="relative z-10 flex items-center gap-3 mb-8">
             <div class="w-1.5 h-6 bg-[#10B981] rounded-full"></div>
             <div>
                 <h3 class="text-xl font-bold text-white tracking-tight">Enrollment Requirements</h3>
@@ -188,54 +194,119 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-8">
-            <div class="space-y-4">
-                <h4 class="text-xs font-black text-[#10B981] uppercase tracking-[0.2em] flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Eligibility Matrix
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 relative z-10">
+            <!-- Senior High School Section -->
+            <div class="p-6 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-4">
+                <h4 class="text-xs font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                    Senior High School (SHS)
                 </h4>
-                <ul class="space-y-3">
-                    <li class="flex items-start gap-3">
-                        <span class="mt-1 w-1 h-1 rounded-full bg-white/20"></span>
-                        <span class="text-sm text-white/50 leading-relaxed">Registry Status: Must be a verified portal user.</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="mt-1 w-1 h-1 rounded-full bg-white/20"></span>
-                        <span class="text-sm text-white/50 leading-relaxed">Academic Merit: Meet program-specific entry criteria.</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="mt-1 w-1 h-1 rounded-full bg-white/20"></span>
-                        <span class="text-sm text-white/50 leading-relaxed">Payments: Settled fees or approved payments.</span>
-                    </li>
-                </ul>
+
+                <div class="space-y-3">
+                    <p class="text-xs font-semibold text-white/70">Eligibility:</p>
+                    <ul class="space-y-2 ml-2">
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-0.5 h-0.5 rounded-full bg-emerald-400/50 flex-shrink-0"></span>
+                            <span class="text-xs text-white/50">Grade 11-12 students</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-0.5 h-0.5 rounded-full bg-emerald-400/50 flex-shrink-0"></span>
+                            <span class="text-xs text-white/50">Select from Academic or Tech-Voc strands</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-0.5 h-0.5 rounded-full bg-emerald-400/50 flex-shrink-0"></span>
+                            <span class="text-xs text-white/50">Valid JHS credentials required</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 pt-2 border-t border-emerald-500/10">
+                    <p class="text-xs font-semibold text-white/70">Required Documents:</p>
+                    <ul class="space-y-2 ml-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-emerald-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">SF9 (JHS Report Card)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-emerald-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">SF10 (Permanent Record)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-emerald-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">Certificate of Good Moral (optional)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-emerald-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">PSA Birth Certificate</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-emerald-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">2x2 ID Portrait (2 pieces)</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="space-y-4">
+
+            <!-- College Section -->
+            <div class="p-6 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-4">
                 <h4 class="text-xs font-black text-blue-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Required Documentation
+                    <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                    College
                 </h4>
-                <ul class="space-y-3">
-                    <li class="flex items-start gap-3">
-                        <span class="mt-1 w-1 h-1 rounded-full bg-white/20"></span>
-                        <span class="text-sm text-white/50 leading-relaxed">Form 137 / SHS Report Card (Original Copy)</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="mt-1 w-1 h-1 rounded-full bg-white/20"></span>
-                        <span class="text-sm text-white/50 leading-relaxed">PSA Birth Certification (Clear Copy)</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="mt-1 w-1 h-1 rounded-full bg-white/20"></span>
-                        <span class="text-sm text-white/50 leading-relaxed">Identity Validation Assets (2x2 Portraits)</span>
-                    </li>
-                </ul>
+
+                <div class="space-y-3">
+                    <p class="text-xs font-semibold text-white/70">Eligibility:</p>
+                    <ul class="space-y-2 ml-2">
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-0.5 h-0.5 rounded-full bg-blue-400/50 flex-shrink-0"></span>
+                            <span class="text-xs text-white/50">Senior High graduates or equivalent</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-0.5 h-0.5 rounded-full bg-blue-400/50 flex-shrink-0"></span>
+                            <span class="text-xs text-white/50">Select from 5 college programs</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-0.5 h-0.5 rounded-full bg-blue-400/50 flex-shrink-0"></span>
+                            <span class="text-xs text-white/50">Valid tertiary entry documentation</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 pt-2 border-t border-blue-500/10">
+                    <p class="text-xs font-semibold text-white/70">Required Documents:</p>
+                    <ul class="space-y-2 ml-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">Form 137 (SHS Report Card)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">Certificate of Good Moral</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">PSA Birth Certificate</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">2x2 ID Portrait (2 pieces)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 text-xs">•</span>
+                            <span class="text-xs text-white/50">Valid ID or government-issued document</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
+        <div class="relative z-10">
         @if($canEnroll && !$isEnrolledInActiveYear)
         <a href="{{ route('student.enrollment.create') }}" class="inline-block bg-[#10B981] hover:bg-[#34d399] text-black font-black py-4 px-10 rounded-xl shadow-xl shadow-emerald-500/20 transition-all active:scale-95 uppercase tracking-widest text-xs">Apply Now</a>
         @else
         <button disabled class="inline-block bg-white/5 text-white/20 border border-white/10 font-bold py-4 px-10 rounded-xl cursor-not-allowed uppercase tracking-widest text-xs italic">Application Already Submitted</button>
         @endif
+        </div>
     </div>
 </div>
 </x-layouts.student>
