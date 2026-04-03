@@ -21,7 +21,7 @@
             </div>
         @endif
 
-        <form action="{{ route('student.enrollment.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8 pb-12">
+        <form action="{{ route('student.enrollment.store') }}" method="POST" class="space-y-8 pb-12">
             @csrf
 
             {{-- Hidden Level Field --}}
@@ -166,11 +166,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Last Name</label>
-                        <input type="text" name="last_name" value="{{ old('last_name', $last_name ?? '') }}" placeholder="Surname" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="last_name" value="{{ old('last_name', $last_name ?? '') }}" placeholder="Surname" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">First Name</label>
-                        <input type="text" name="first_name" value="{{ old('first_name', $first_name ?? '') }}" placeholder="Given Name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="first_name" value="{{ old('first_name', $first_name ?? '') }}" placeholder="Given Name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Middle Name</label>
@@ -179,22 +179,22 @@
 
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Birth Date</label>
-                        <input type="date" name="birth_date" value="{{ old('birth_date', $birth_date ?? '') }}" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none transition-colors">
+                        <input type="date" name="birth_date" value="{{ old('birth_date', $birth_date ?? '') }}" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Age</label>
-                        <input type="number" name="age" value="{{ old('age', $age ?? '') }}" placeholder="00" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="number" name="age" value="{{ old('age', $age ?? '') }}" placeholder="00" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Gender</label>
                         <div class="flex items-center gap-6 py-2.5">
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="gender" value="male" {{ old('gender', $gender ?? '') === 'male' ? 'checked' : '' }} class="sr-only peer">
+                                <input type="radio" name="gender" value="male" {{ old('gender', $gender ?? '') === 'male' ? 'checked' : '' }} class="sr-only peer" required>
                                 <div class="w-4 h-4 rounded-full border transition-all duration-300 border-white/20 peer-checked:border-purple-400 peer-checked:bg-purple-400"></div>
                                 <span class="text-sm font-medium text-white/40 peer-checked:text-purple-400 transition-colors">Male</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="gender" value="female" {{ old('gender', $gender ?? '') === 'female' ? 'checked' : '' }} class="sr-only peer">
+                                <input type="radio" name="gender" value="female" {{ old('gender', $gender ?? '') === 'female' ? 'checked' : '' }} class="sr-only peer" required>
                                 <div class="w-4 h-4 rounded-full border transition-all duration-300 border-white/20 peer-checked:border-purple-400 peer-checked:bg-purple-400"></div>
                                 <span class="text-sm font-medium text-white/40 peer-checked:text-purple-400 transition-colors">Female</span>
                             </label>
@@ -207,7 +207,7 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Contact Number</label>
-                        <input type="text" name="contact" value="{{ old('contact', $contact ?? '') }}" placeholder="09XXXXXXXXX" maxlength="11" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="contact" value="{{ old('contact', $contact ?? '') }}" placeholder="09XXXXXXXXX" maxlength="11" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                 </div>
             </div>
@@ -224,27 +224,27 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">House No. / Unit</label>
-                        <input type="text" name="house_no" value="{{ old('house_no', $house_no ?? '') }}" placeholder="e.g. 123, Unit 4A" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="house_no" value="{{ old('house_no', $house_no ?? '') }}" placeholder="e.g. 123, Unit 4A" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Street / Road</label>
-                        <input type="text" name="street" value="{{ old('street', $street ?? '') }}" placeholder="Street name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="street" value="{{ old('street', $street ?? '') }}" placeholder="Street name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Barangay</label>
-                        <input type="text" name="barangay" value="{{ old('barangay', $barangay ?? '') }}" placeholder="Barangay name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="barangay" value="{{ old('barangay', $barangay ?? '') }}" placeholder="Barangay name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">City / Municipality</label>
-                        <input type="text" name="city" value="{{ old('city', $city ?? '') }}" placeholder="City or municipality" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="city" value="{{ old('city', $city ?? '') }}" placeholder="City or municipality" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Province</label>
-                        <input type="text" name="province" value="{{ old('province', $province ?? '') }}" placeholder="Province name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="province" value="{{ old('province', $province ?? '') }}" placeholder="Province name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">ZIP / Postal Code</label>
-                        <input type="text" name="zip" value="{{ old('zip', $zip ?? '') }}" placeholder="Postal code" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors">
+                        <input type="text" name="zip" value="{{ old('zip', $zip ?? '') }}" placeholder="Postal code" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                 </div>
             </div>
@@ -275,58 +275,6 @@
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Guardian Contact Number</label>
                         <input type="text" name="guardian_contact" value="{{ old('guardian_contact', $guardian_contact ?? '') }}" placeholder="09XXXXXXXXX" maxlength="11" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
                     </div>
-                </div>
-            </div>
-
-            {{-- Document Requirements --}}
-            <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
-                 style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
-
-                <div class="flex justify-between items-start mb-8">
-                    <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-3">
-                            <span class="w-1.5 h-6 bg-emerald-400 rounded-full"></span>
-                            Document Verification
-                        </h3>
-                        <p class="text-xs font-bold text-white/20 uppercase tracking-widest italic mt-1">Upload high-resolution assets for verification</p>
-                    </div>
-                </div>
-
-                @php
-                    $docs = ($level === 'shs') ? [
-                        ['model' => 'form_137', 'label' => 'JHS Report Card (SF9)', 'desc' => 'Original SF9 with school seal and signature'],
-                        ['model' => 'sf10', 'label' => 'SF10 (Permanent Record)', 'desc' => 'Certified copy of SF10'],
-                        ['model' => 'good_moral', 'label' => 'Certificate of Good Moral', 'desc' => 'Optional - from previous school'],
-                        ['model' => 'id_picture', 'label' => '2pcs 2x2 ID Portrait', 'desc' => 'White background, formal attire'],
-                        ['model' => 'psa', 'label' => 'PSA Birth Certificate', 'desc' => 'Authenticated copy of birth certificate']
-                    ] : [
-                        ['model' => 'form_137', 'label' => 'Form 137 (Report Card)', 'desc' => "Original copy with principal's signature"],
-                        ['model' => 'good_moral', 'label' => 'Certificate of Good Moral', 'desc' => 'Issued by your previous institution'],
-                        ['model' => 'psa', 'label' => 'PSA Birth Certification', 'desc' => 'Clear copy of the original PSA document'],
-                        ['model' => 'id_picture', 'label' => '2x2 ID Portrait', 'desc' => 'White background, formal attire']
-                    ];
-                @endphp
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach($docs as $doc)
-                        <div class="bg-white/5 p-6 rounded-2xl border border-white/10 group transition-all duration-300 hover:border-emerald-400/30">
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-white tracking-tight">{{ $doc['label'] }}</h4>
-                                <p class="text-xs text-white/30 mt-0.5">{{ $doc['desc'] }}</p>
-                            </div>
-                            <label for="file-{{ $doc['model'] }}" class="flex flex-col items-center justify-center w-full h-32 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-white/5 hover:bg-emerald-500/5 transition-all group overflow-hidden relative">
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10 transition-transform group-hover:scale-105">
-                                    <svg class="w-6 h-6 mb-3 text-emerald-400/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
-                                    <p class="mb-1 text-xs text-white/40 leading-tight">
-                                        <span class="font-bold text-white/60">Initialize Upload</span>
-                                    </p>
-                                    <p class="text-xs text-white/20">PNG, JPG or PDF</p>
-                                    <p class="text-[10px] text-emerald-400 mt-2 hidden" id="feedback-{{ $doc['model'] }}">File Selected</p>
-                                </div>
-                                <input type="file" id="file-{{ $doc['model'] }}" name="{{ $doc['model'] }}" class="sr-only" accept="image/*,application/pdf" onchange="document.getElementById('feedback-{{ $doc['model'] }}').classList.remove('hidden')" />
-                            </label>
-                        </div>
-                    @endforeach
                 </div>
             </div>
 

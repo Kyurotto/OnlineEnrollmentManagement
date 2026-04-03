@@ -49,40 +49,26 @@
                 </a>
 
                 {{-- Divider --}}
-                <div class="my-2 mx-2" style="border-top: 1px solid rgba(26,58,110,0.3);"></div>
+                <div class="my-4 mx-2" style="border-top: 1px solid rgba(26,58,110,0.3);"></div>
 
-                {{-- Management Dropdown --}}
-                <div x-data="{ open: {{ request()->routeIs('cashier.payments.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" 
-                            class="flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-all duration-200"
-                            style="color: #8ab4d8;"
-                            onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#ffffff';"
-                            onmouseout="this.style.background='transparent'; this.style.color='#8ab4d8';">
-                        <div class="flex items-center gap-3">
-                            <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg" style="background: rgba(99,179,237,0.08);">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            </span>
-                            Management
-                        </div>
-                        <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
+                {{-- Management Section (Simplified) --}}
+                <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2" style="color: rgba(138,180,216,0.35);">Management</p>
 
-                    <div x-show="open" style="display: none;" class="mt-1 ml-4 pl-3 border-l border-[rgba(26,58,110,0.4)] space-y-0.5">
-                        
-                        {{-- Payments --}}
-                        <a href="{{ route('cashier.payments.index') }}"
-                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                           style="{{ request()->routeIs('cashier.payments.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
-                           onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                           onmouseout="this.style.background='{{ request()->routeIs('cashier.payments.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
-                           {{ request()->routeIs('cashier.payments.*') ? 'data-active=1' : '' }}>
-                            @if(request()->routeIs('cashier.payments.*'))
-                                <span class="absolute -left-[14px] top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
-                            @endif
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            Payments
-                        </a>
-                    </div>
+                <div class="mt-1 space-y-0.5">
+                    
+                    {{-- Payments --}}
+                    <a href="{{ route('cashier.payments.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('cashier.payments.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('cashier.payments.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('cashier.payments.*') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('cashier.payments.*'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        Payments
+                    </a>
                 </div>
 
             </nav>

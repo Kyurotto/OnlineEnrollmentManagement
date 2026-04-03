@@ -621,10 +621,10 @@
             </div>
         </div>
 
-        {{-- Modal logic --}}
+        {{-- Modal --}}
         @if ($selectedApp)
-        <div class="fixed inset-0 z-[100] p-4 flex items-center justify-center transition-all duration-500 backdrop-blur-2xl bg-[#060d1a]/95">
-            <a href="{{ route('registrar.dashboard') }}" class="absolute inset-0 cursor-default"></a>
+        <a href="{{ route('registrar.dashboard') }}" class="fixed inset-0 bg-[#060d1a]/85 backdrop-blur-sm z-[90] cursor-default transition-opacity duration-300"></a>
+        <div class="fixed inset-0 z-[100] p-4 flex items-center justify-center transition-all duration-500">
             <div class="rounded-[40px] shadow-2xl w-full max-w-5xl relative z-10 border overflow-hidden transform transition-all bg-[#0d1f3c] border-white/10 animate-in zoom-in-95 duration-500">
 
                 {{-- Modal Header --}}
@@ -700,8 +700,14 @@
                                 </div>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     @php
-                                        $docs = [
-                                            'Form 138' => $selectedApp->form_138_path ?? null,
+                                        $docs = ($selectedApp->level === 'shs') ? [
+                                            'Form 137' => $selectedApp->form_137_path ?? null,
+                                            'SF10' => $selectedApp->sf10_path ?? null,
+                                            'Good Moral' => $selectedApp->good_moral_path ?? null,
+                                            'PSA Birth' => $selectedApp->psa_path ?? null,
+                                            'ID Photo' => $selectedApp->id_picture_path ?? null,
+                                        ] : [
+                                            'Form 137' => $selectedApp->form_137_path ?? null,
                                             'Good Moral' => $selectedApp->good_moral_path ?? null,
                                             'PSA Birth' => $selectedApp->psa_path ?? null,
                                             'ID Photo' => $selectedApp->id_picture_path ?? null,
@@ -715,7 +721,7 @@
                                             </div>
                                             <div class="aspect-[3/4] rounded-2xl border bg-white/[0.02] border-white/5 flex flex-col items-center justify-center gap-3 group border-dashed relative overflow-hidden">
                                                 @if($file)
-                                                    <img src="{{ asset('storage/'.$file) }}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                                                    <img src="/storage/{{ $file }}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
                                                     <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <span class="text-[8px] font-black text-white uppercase tracking-widest">View File</span>
                                                     </div>
@@ -756,7 +762,6 @@
                                 </form>
                             @endif
                             <a href="{{ route('registrar.dashboard') }}" class="bg-white/5 hover:bg-white/10 text-white/40 hover:text-white px-10 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] border border-white/5 italic">Close Panel</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -836,8 +841,6 @@
         </div>
     </div>
 
-    {{-- Quick Action Cards Removed (Moved to Sidebar) --}}
-
     {{-- Enrollment Overview Cards (SHS vs College) --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- SHS Card -->
@@ -875,10 +878,24 @@
         </div>
     </div>
 
-    {{-- Modal logic --}}
-    <div class="fixed inset-0 z-50 p-4 flex items-center justify-center transition-all duration-300 backdrop-blur-md bg-[#060d1a]/60 {{ $showModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none' }}">
-        <div class="absolute inset-0" wire:click="closeModal"></div>
-        <div class="rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 border overflow-hidden transform transition-all bg-[#0d1f3c] border-white/10 {{ $showModal ? 'scale-100' : 'scale-95' }}">
+    {{-- Modal Container (Admin — uses Livewire state) --}}
+    <div x-data="{ open: @entangle('showModal') }" 
+         x-show="open" 
+         class="fixed inset-0 z-[100] p-4 flex items-center justify-center"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         style="display: none;">
+        
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-[#060d1a]/85 backdrop-blur-sm cursor-pointer" wire:click="closeModal"></div>
+
+        {{-- Modal Box --}}
+        <div class="rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 border overflow-hidden transform transition-all bg-[#0d1f3c] border-white/10"
+             :class="open ? 'scale-100 opacity-100' : 'scale-95 opacity-0'">
             @if ($selectedApp)
                 <div class="px-10 py-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                     <div class="flex items-center gap-6">
@@ -952,8 +969,14 @@
                                     </div>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                         @php
-                                            $docs = [
-                                                'Form 138' => $selectedApp->form_138_path ?? null,
+                                            $docs = ($selectedApp->level === 'shs') ? [
+                                                'Form 137' => $selectedApp->form_137_path ?? null,
+                                                'SF10' => $selectedApp->sf10_path ?? null,
+                                                'Good Moral' => $selectedApp->good_moral_path ?? null,
+                                                'PSA Birth' => $selectedApp->psa_path ?? null,
+                                                'ID Photo' => $selectedApp->id_picture_path ?? null,
+                                            ] : [
+                                                'Form 137' => $selectedApp->form_137_path ?? null,
                                                 'Good Moral' => $selectedApp->good_moral_path ?? null,
                                                 'PSA Birth' => $selectedApp->psa_path ?? null,
                                                 'ID Photo' => $selectedApp->id_picture_path ?? null,
@@ -967,7 +990,7 @@
                                                 </div>
                                                 <div class="aspect-[3/4] rounded-2xl border bg-white/[0.02] border-white/5 flex flex-col items-center justify-center gap-3 group border-dashed relative overflow-hidden">
                                                     @if($file)
-                                                        <img src="{{ asset('storage/'.$file) }}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                                                        <img src="/storage/{{ $file }}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
                                                         <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <span class="text-[8px] font-black text-white uppercase tracking-widest">View File</span>
                                                         </div>
