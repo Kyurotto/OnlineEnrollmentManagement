@@ -27,7 +27,7 @@ class CashierDashboardController extends Controller
         $stats = [
             'daily_collection' => $dailyCollection,
             'transactions_today' => $transactionsToday,
-            'pending_approvals' => $pendingApprovals,
+            'pending_verifications' => $pendingApprovals,
         ];
 
         // 2. Fetch Payments for Today

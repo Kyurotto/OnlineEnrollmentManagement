@@ -75,7 +75,13 @@ class DashboardController extends Controller
         // Displays the current Month and Year (e.g. "February 2026")
         $weekRange = Carbon::now()->format('F Y');
 
-        return view('dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange'));
+        // Calculate SHS vs College enrollment counts
+        $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+        $shs_count = Enrollment::whereIn('course_code', $shsStrands)->count();
+        $college_count = Enrollment::whereNotIn('course_code', $shsStrands)->count();
+        $total_count = Enrollment::count();
+
+        return view('dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange', 'shs_count', 'college_count', 'total_count'));
     }
 
     /**
