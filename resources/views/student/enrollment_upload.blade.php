@@ -31,7 +31,7 @@
             </div>
         @endif
 
-        <form action="{{ route('student.enrollment.upload.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8 pb-12">
+        <form id="upload-form" action="{{ route('student.enrollment.upload.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8 pb-12">
             @csrf
 
             {{-- Document Requirements --}}
@@ -85,24 +85,31 @@
                             
                             <label for="file-{{ $doc['model'] }}" class="relative flex flex-col items-center justify-center w-full h-40 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-white/5 hover:bg-emerald-500/5 transition-all group overflow-hidden">
                                 @if($doc['path'])
-                                    <div class="absolute inset-0 z-0 opacity-20 transition-opacity group-hover:opacity-10 blur-[1px]">
+                                    <div class="absolute inset-0 z-0 opacity-40 transition-opacity group-hover:opacity-20 text-center flex items-center justify-center">
                                         @if(Str::endsWith($doc['path'], ['.pdf']))
-                                            <div class="flex items-center justify-center h-full bg-white/5 uppercase font-black text-white/20 text-[10px]">PDF DOCUMENT</div>
+                                            <div class="bg-white/5 uppercase font-black text-white/30 text-[10px] tracking-widest">PDF DOCUMENT</div>
                                         @else
                                             <img src="{{ asset('storage/' . $doc['path']) }}" class="w-full h-full object-cover">
                                         @endif
                                     </div>
                                 @endif
 
+                                {{-- Live Preview Layer --}}
+                                <div id="preview-container-{{ $doc['model'] }}" class="absolute inset-0 z-20 hidden bg-[#0d1f3c]"></div>
+
                                 <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10 transition-transform group-hover:scale-105">
-                                    <svg class="w-7 h-7 mb-3 {{ $doc['path'] ? 'text-emerald-400' : 'text-emerald-400/60' }} group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
-                                    <p class="mb-1 text-xs text-white/40 leading-tight">
-                                        <span class="font-bold text-white/60">{{ $doc['path'] ? 'Update Document' : 'Initialize Upload' }}</span>
-                                    </p>
-                                    <p class="text-[10px] text-white/20">PNG, JPG or PDF (Max 5MB)</p>
-                                    <p class="text-[10px] text-emerald-400 mt-2 hidden" id="feedback-{{ $doc['model'] }}">File Selected</p>
+                                    <div id="upload-icon-{{ $doc['model'] }}">
+                                        <svg class="w-7 h-7 mb-3 {{ $doc['path'] ? 'text-emerald-400' : 'text-emerald-400/60' }} group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path></svg>
+                                    </div>
+                                    <div id="upload-text-{{ $doc['model'] }}">
+                                        <p class="mb-1 text-xs text-white/40 leading-tight">
+                                            <span class="font-bold text-white/60">{{ $doc['path'] ? 'Update Document' : 'Initialize Upload' }}</span>
+                                        </p>
+                                        <p class="text-[10px] text-white/20 uppercase tracking-tighter">PNG, JPG or PDF (Max 5MB)</p>
+                                    </div>
+                                    <p class="text-[10px] text-emerald-400 mt-2 hidden font-bold uppercase tracking-widest" id="feedback-{{ $doc['model'] }}">File Selected</p>
                                 </div>
-                                <input type="file" id="file-{{ $doc['model'] }}" name="{{ $doc['model'] }}" class="sr-only" accept="image/*,application/pdf" onchange="document.getElementById('feedback-{{ $doc['model'] }}').classList.remove('hidden')" />
+                                <input type="file" id="file-{{ $doc['model'] }}" name="{{ $doc['model'] }}" class="sr-only" accept="image/*,application/pdf" onchange="previewFile(this, '{{ $doc['model'] }}')" />
                             </label>
                             
                             @if($doc['path'])
@@ -134,14 +141,54 @@
                 </div>
                 @endif
 
-                <button type="submit"
+        </form>
+
+        {{-- Action Buttons --}}
+        <div class="flex flex-col items-end gap-4 mt-8">
+            <div class="flex items-center justify-end gap-4 w-full">
+                <a href="{{ route('student.dashboard') }}" class="text-xs font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest px-6 py-4 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/10">
+                    Cancel
+                </a>
+                <button type="submit" form="upload-form"
                     class="bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 px-12 rounded-2xl shadow-2xl shadow-emerald-500/20 transition-all transform active:scale-95 uppercase tracking-[0.2em] text-xs flex items-center gap-3">
-                    Update All Documents
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Submit Documents
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                 </button>
             </div>
-
-        </form>
+        </div>
     </div>
 </div>
+
+<script>
+function previewFile(input, model) {
+    const file = input.files[0];
+    const feedback = document.getElementById('feedback-' + model);
+    const container = document.getElementById('preview-container-' + model);
+    const icon = document.getElementById('upload-icon-' + model);
+    const textGroup = document.getElementById('upload-text-' + model);
+    
+    if (file) {
+        // Show feedback text
+        feedback.classList.remove('hidden');
+        feedback.textContent = 'File: ' + file.name;
+        
+        // Handle image preview
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                container.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain animate-in zoom-in duration-300">`;
+                container.classList.remove('hidden');
+                icon.classList.add('hidden');
+                textGroup.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        } else if (file.type === 'application/pdf') {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full bg-emerald-500/10 text-emerald-400 font-black text-[10px] uppercase tracking-widest animate-in fade-in">PDF Document Loaded</div>`;
+            container.classList.remove('hidden');
+            icon.classList.add('hidden');
+            textGroup.classList.add('hidden');
+        }
+    }
+}
+</script>
 </x-layouts.student>
