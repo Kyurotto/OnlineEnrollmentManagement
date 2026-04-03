@@ -89,25 +89,7 @@ class StudentEnrollmentController extends Controller
             'mother_maiden_name' => 'nullable|string|max:255',
             'guardian_name' => 'nullable|string|max:255',
             'guardian_contact' => 'nullable|string|max:11',
-            'id_picture' => 'nullable|image|max:2048',
         ];
-
-        // Different document validation based on level
-        if ($level === 'shs') {
-            $validationRules = array_merge($validationRules, [
-                'form_137' => 'nullable|file|max:5120',  // SF9
-                'sf10' => 'nullable|file|max:5120',      // Permanent Record
-                'good_moral' => 'nullable|file|max:5120', // Optional for SHS
-                'psa' => 'nullable|file|max:5120',        // PSA Birth Certificate
-            ]);
-        } else {
-            // College documents
-            $validationRules = array_merge($validationRules, [
-                'form_137' => 'nullable|file|max:5120',
-                'good_moral' => 'nullable|file|max:5120',
-                'psa' => 'nullable|file|max:5120',
-            ]);
-        }
 
         $request->validate($validationRules);
 
@@ -117,22 +99,10 @@ class StudentEnrollmentController extends Controller
             return back()->with('error', 'Selected program is invalid or not registered in the system.')->withInput();
         }
 
-        // Handle File Uploads based on level
-        $paths = [];
-        $fileMap = $level === 'shs'
-            ? ['form_137' => 'form_137_path', 'sf10' => 'sf10_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path']
-            : ['form_137' => 'form_137_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path'];
-
-        foreach ($fileMap as $field => $dbField) {
-            if ($request->hasFile($field)) {
-                $paths[$dbField] = $request->file($field)->store('enrollments/docs', 'public');
-            }
-        }
-
         // Unified Year Level String: "Year | Semester | Academic Year"
         $unifiedYearLevel = "{$request->year_level} | {$request->semester} | {$request->academic_year}";
 
-        $enrollment = Enrollment::create(array_merge([
+        $enrollment = Enrollment::create([
             'user_id' => Auth::id(),
             'course_id' => $course->id,
             'course_code' => $request->course_code,
@@ -153,7 +123,7 @@ class StudentEnrollmentController extends Controller
             'guardian_name' => $request->guardian_name,
             'guardian_contact' => $request->guardian_contact,
             'status' => 'Pending',
-        ], $paths));
+        ]);
 
         // Auto-create 1,000 PHP Downpayment for the Cashier/Student History
         \App\Models\Payment::create([
@@ -174,6 +144,66 @@ class StudentEnrollmentController extends Controller
             Notification::send($staff, new NewEnrollmentSubmitted($enrollment));
         }
 
-        return redirect()->route('student.dashboard')->with('success', 'Enrollment application submitted successfully to the Registrar.');
+        return redirect()->route('student.enrollment.upload')->with('success', 'Information saved. Please upload your documents to proceed.');
+    }
+
+    public function upload()
+    {
+        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+
+        if (!$enrollment) {
+            return redirect()->route('student.enrollment.create')->with('info', 'Please submit your enrollment application first.');
+        }
+
+        return view('student.enrollment_upload', compact('enrollment'));
+    }
+
+    public function storeUpload(Request $request)
+    {
+        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+
+        if (!$enrollment) {
+            return redirect()->route('student.enrollment.create')->with('error', 'No active enrollment record found.');
+        }
+
+        $level = $enrollment->level;
+        
+        $validationRules = [
+            'id_picture' => 'nullable|image|max:2048',
+        ];
+
+        if ($level === 'shs') {
+            $validationRules = array_merge($validationRules, [
+                'form_137' => 'nullable|file|max:5120',
+                'sf10' => 'nullable|file|max:5120',
+                'good_moral' => 'nullable|file|max:5120',
+                'psa' => 'nullable|file|max:5120',
+            ]);
+        } else {
+            $validationRules = array_merge($validationRules, [
+                'form_137' => 'nullable|file|max:5120',
+                'good_moral' => 'nullable|file|max:5120',
+                'psa' => 'nullable|file|max:5120',
+            ]);
+        }
+
+        $request->validate($validationRules);
+
+        $fileMap = $level === 'shs'
+            ? ['form_137' => 'form_137_path', 'sf10' => 'sf10_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path']
+            : ['form_137' => 'form_137_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path'];
+
+        $updatedData = [];
+        foreach ($fileMap as $field => $dbField) {
+            if ($request->hasFile($field)) {
+                $updatedData[$dbField] = $request->file($field)->store('enrollments/docs', 'public');
+            }
+        }
+
+        if (!empty($updatedData)) {
+            $enrollment->update($updatedData);
+        }
+
+        return back()->with('success', 'Documents uploaded successfully.');
     }
 }

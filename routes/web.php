@@ -177,6 +177,8 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
     Route::get('/enrollment/create', [StudentEnrollmentController::class, 'create'])->name('enrollment.create');
     Route::post('/enrollment', [StudentEnrollmentController::class, 'store'])->name('enrollment.store');
+    Route::get('/enrollment/upload', [StudentEnrollmentController::class, 'upload'])->name('enrollment.upload');
+    Route::post('/enrollment/upload', [StudentEnrollmentController::class, 'storeUpload'])->name('enrollment.upload.store');
     Route::get('/payments', StudentPaymentManager::class)->name('payment');
     Route::get('/profile', StudentProfileManager::class)->name('profile');
 });
