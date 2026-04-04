@@ -32,11 +32,18 @@ class RegistrarStudentManager extends Component
     public function render()
     {
         $query = User::query()
-            ->select('users.*', 'enrollments.course_code', 'enrollments.year_level', 'courses.course_name')
-            ->join('enrollments', 'users.id', '=', 'enrollments.user_id')
-            ->leftJoin('courses', 'enrollments.course_code', '=', 'courses.course_code')
+            ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level', 'courses.course_name')
+            ->joinSub(
+                Enrollment::select('user_id', 'course_code', 'year_level', 'status', 'promissory_reason')
+                    ->whereIn('id', function($q) {
+                        $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
+                    }),
+                'latest_enrollments',
+                'users.id', '=', 'latest_enrollments.user_id'
+            )
+            ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('enrollments.status', ['Enrolled', 'Approved']);
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved']);
 
         // Search logic
         if (!empty($this->search)) {
@@ -44,7 +51,8 @@ class RegistrarStudentManager extends Component
                 $q->where('users.first_name', 'like', "%{$this->search}%")
                   ->orWhere('users.last_name', 'like', "%{$this->search}%")
                   ->orWhere('users.email', 'like', "%{$this->search}%")
-                  ->orWhere('enrollments.course_code', 'like', "%{$this->search}%");
+                  ->orWhere('latest_enrollments.course_code', 'like', "%{$this->search}%")
+                  ->orWhere('latest_enrollments.promissory_reason', 'like', "%{$this->search}%");
             });
         }
 
