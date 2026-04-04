@@ -18,8 +18,8 @@
                 <div class="relative group w-full md:w-72">
                     <input type="text" wire:model.live.debounce.500ms="search"
                         placeholder="Search Students or Credentials..."
-                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all shadow-inner tracking-wider">
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
+                        class="w-full bg-black/20 border border-white/5 rounded-2xl pl-12 pr-6 py-4 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all shadow-inner tracking-wider">
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
