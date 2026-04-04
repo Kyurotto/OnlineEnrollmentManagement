@@ -167,7 +167,7 @@
                             </td>
                             <td class="py-6 px-8">
                                 <div class="flex justify-end items-center gap-4">
-                                    <button type="button" @click="modalOpen = true; openModal({{ json_encode($application) }}); selectedId = {{ $application->id }}"
+                                    <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
                                         class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20">
                                         View Details
                                     </button>
@@ -364,7 +364,7 @@
     </div>
 
     <script>
-    function openModal(app) {
+    function openModal(app, docMapping) {
         document.getElementById('modalTitle').innerText = (app.user.first_name || '') + ' ' + (app.user.last_name || '');
         const middle = app.user.middle_name ? ' ' + app.user.middle_name : '';
         const fullName = (app.user.first_name || '') + middle + ' ' + (app.user.last_name || '');
@@ -393,30 +393,26 @@
         const docsContainer = document.getElementById('modalDocuments');
         docsContainer.innerHTML = '';
 
-        const documents = [
-            { key: 'form_138_path', label: 'Form 138' },
-            { key: 'good_moral_path', label: 'Good Moral' },
-            { key: 'psa_path', label: 'PSA Birth' },
-            { key: 'id_picture_path', label: 'ID Image' }
-        ];
+        const documents = docMapping;
 
         const storageBase = @json(asset('storage')) + '/';
 
-        documents.forEach(doc => {
-            const hasFile = app[doc.key] ? true : false;
+        Object.keys(documents).forEach(key => {
+            const label = documents[key];
+            const hasFile = app[key] ? true : false;
             let headerHtml = '';
             let boxHtml = '';
 
             if (hasFile) {
-                const fileUrl = storageBase + app[doc.key];
-                const isImage = app[doc.key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
+                const fileUrl = storageBase + app[key];
+                const isImage = app[key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
 
                 headerHtml = `
                     <div class="flex items-center gap-2 mb-3">
                         <div class="flex items-center justify-center w-5 h-5 bg-emerald-500/20 border-2 border-emerald-500 rounded-full shrink-0">
                             <span class="text-emerald-500 font-black text-xs">✓<\/span>
                         <\/div>
-                        <span class="text-[9px] font-black uppercase text-white tracking-widest">${doc.label}<\/span>
+                        <span class="text-[9px] font-black uppercase text-white tracking-widest">${label}<\/span>
                     <\/div>
                 `;
 
@@ -433,7 +429,7 @@
                     boxHtml = `
                         <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] h-32 flex flex-col items-center justify-center">
                             <svg class="w-10 h-10 text-cyan-400 opacity-40 group-hover/asset:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
-                            <span class="text-[8px] font-black text-cyan-400 mt-2 tracking-[0.3em]">VIEW PDF<\/span>
+                            <span class="text-[8px] font-black text-cyan-400 mt-2 tracking-[0.3em]">VIEW FILE<\/span>
                         <\/a>
                     `;
                 }
@@ -443,13 +439,13 @@
                         <div class="flex items-center justify-center w-5 h-5 bg-rose-500/20 border-2 border-rose-500 rounded-full shrink-0">
                             <span class="text-rose-500 font-black text-xs">!<\/span>
                         <\/div>
-                        <span class="text-[9px] font-black uppercase text-rose-500 tracking-widest">${doc.label}<\/span>
+                        <span class="text-[9px] font-black uppercase text-rose-500 tracking-widest">${label}<\/span>
                     <\/div>
                 `;
 
                 boxHtml = `
                     <div class="w-full h-32 rounded-2xl border-2 border-dashed border-rose-500/10 bg-rose-500/5 flex flex-col items-center justify-center opacity-40">
-                        <span class="text-[8px] font-black text-rose-500 tracking-[0.3em]">MISSING FILE<\/span>
+                        <span class="text-[8px] font-black text-rose-500 tracking-[0.3em]">MISSING<\/span>
                     <\/div>
                 `;
             }

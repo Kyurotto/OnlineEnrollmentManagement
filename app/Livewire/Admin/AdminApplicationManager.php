@@ -76,14 +76,19 @@ class AdminApplicationManager extends Component
 
     public function render()
     {
-        $query = Enrollment::with('user');
+        $query = Enrollment::with('user')
+            ->join('users', 'enrollments.user_id', '=', 'users.id');
 
         if (!empty($this->search)) {
-            $query->whereHas('user', function ($q) {
-                $q->where('first_name', 'like', "%{$this->search}%")
-                  ->orWhere('last_name', 'like', "%{$this->search}%")
-                  ->orWhere('email', 'like', "%{$this->search}%");
-            })->orWhere('course_code', 'like', "%{$this->search}%");
+            $query->where(function ($q) {
+                $q->whereHas('user', function ($sub) {
+                    $sub->where('first_name', 'like', "%{$this->search}%")
+                        ->orWhere('last_name', 'like', "%{$this->search}%")
+                        ->orWhere('email', 'like', "%{$this->search}%");
+                })
+                ->orWhere('enrollments.course_code', 'like', "%{$this->search}%")
+                ->orWhere('enrollments.promissory_reason', 'like', "%{$this->search}%");
+            });
         }
 
         if ($this->status !== 'All statuses') {
