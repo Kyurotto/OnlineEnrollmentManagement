@@ -70,7 +70,7 @@ $isLivewire = isset($this) && (method_exists($this, 'gotoPage') || method_exists
 
                 <div>
                     <span class="relative z-0 inline-flex shadow-sm rounded-xl overflow-hidden border border-white/10 bg-white/5">
-                        {{-- Previous Page Link --}}
+                        <!-- Previous Page Link -->
                         @if ($paginator->onFirstPage())
                             <span aria-disabled="true" class="relative inline-flex items-center px-3 py-2 text-white/20 cursor-default">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -95,7 +95,7 @@ $isLivewire = isset($this) && (method_exists($this, 'gotoPage') || method_exists
                             @endif
                         @endif
 
-                        {{-- Pagination Elements --}}
+                        <!-- Pagination Elements -->
                         @foreach ($elements as $element)
                             @if (is_string($element))
                                 <span aria-disabled="true">
@@ -134,7 +134,7 @@ $isLivewire = isset($this) && (method_exists($this, 'gotoPage') || method_exists
                             @endif
                         @endforeach
 
-                        {{-- Next Page Link --}}
+                        <!-- Next Page Link -->
                         @if ($paginator->hasMorePages())
                             @if ($isLivewire)
                                 <button type="button" wire:click="nextPage('{{ $paginator->getPageName() }}')" x-on:click="{{ $scrollIntoViewJsSnippet }}" 

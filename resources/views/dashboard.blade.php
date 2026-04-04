@@ -215,7 +215,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 relative z-10">
-            <!-- Senior High School Section -->
             <div class="p-6 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-4">
                 <h4 class="text-xs font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
@@ -267,7 +266,6 @@
                 </div>
             </div>
 
-            <!-- College Section -->
             <div class="p-6 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-4">
                 <h4 class="text-xs font-black text-blue-400 uppercase tracking-[0.2em] flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full bg-blue-400"></div>
@@ -530,12 +528,12 @@
     <div class="space-y-6 animate-in fade-in duration-500">
         @if(session('success'))
             <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-xl shadow-lg backdrop-blur-md flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
-                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 {{ session('success') }}
             </div>
         @endif
 
-        {{-- Stats & Calendar Section --}}
+        {{-- Stats & Calendar Section (Inlined) --}}
         <div class="p-6 rounded-2xl border"
              style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
 
@@ -553,47 +551,35 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                @foreach ($weekDates as $day)
+                @foreach($weekDates as $day)
                     <div class="rounded-xl flex flex-col h-[380px]"
-                         style="{{ $day['is_today'] ? 'border: 1px solid rgba(99,179,237,0.5); background: rgba(99,179,237,0.08); shadow: 0 0 20px rgba(99,179,237,0.15);' : 'border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03);' }}">
+                         style="{{ $day['is_today'] ? 'border: 1px solid rgba(99,179,237,0.5); background: rgba(99,179,237,0.08);' : 'border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03);' }}">
                         <div class="text-center py-3 rounded-t-xl" style="{{ $day['is_today'] ? 'border-bottom: 1px solid rgba(99,179,237,0.3); background: rgba(99,179,237,0.12);' : 'border-bottom: 1px solid rgba(255,255,255,0.07);' }}">
                             <p class="text-[10px] font-black uppercase tracking-widest" style="color: {{ $day['is_today'] ? '#63b3ed' : 'rgba(255,255,255,0.35)' }};">{{ $day['day_name'] }}</p>
                             <p class="text-2xl font-black mt-0.5" style="color: {{ $day['is_today'] ? '#90cdf4' : 'rgba(255,255,255,0.8)' }};">{{ $day['day_num'] }}</p>
                             @if($day['is_today']) <span class="inline-block mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter bg-blue-400 text-black">Today</span> @endif
                         </div>
                         <div class="p-2.5 flex-1 overflow-y-auto space-y-2 custom-scrollbar">
-                            @php $dayApps = $appsByDate->get($day['date_string'], collect()); @endphp
-                            @if ($dayApps->isEmpty())
+                            @php
+                            $dayApps = isset($appsByDate[$day['date_string']]) ? collect($appsByDate[$day['date_string']]) : collect();
+                            @endphp
+                            @if($dayApps->isEmpty())
                                 <div class="h-full flex items-center justify-center text-[8px] uppercase tracking-[0.2em] font-black text-white/10 italic">No Data</div>
                             @else
-                                @foreach ($dayApps as $app)
+                                @foreach($dayApps as $app)
                                     @php
-                                        $style = match(ucfirst($app->status)) {
-                                            'Pending' => [
-                                                'bg' => 'rgba(251,191,36,0.08)',
-                                                'border' => '1px solid rgba(251,191,36,0.2)',
-                                                'text' => '#fcd34d',
-                                                'dot' => '#fbbf24'
-                                            ],
-                                            'Approved','Enrolled','Paid' => [
-                                                'bg' => 'rgba(34,211,238,0.08)',
-                                                'border' => '1px solid rgba(34,211,238,0.2)',
-                                                'text' => '#67e8f9',
-                                                'dot' => '#22d3ee'
-                                            ],
-                                            default => [
-                                                'bg' => 'rgba(255,255,255,0.04)',
-                                                'border' => '1px solid rgba(255,255,255,0.1)',
-                                                'text' => 'rgba(255,255,255,0.4)',
-                                                'dot' => 'rgba(255,255,255,0.2)'
-                                            ],
+                                        $status = ucfirst($app['status'] ?? 'Pending');
+                                        $style = match($status) {
+                                            'Pending' => ['bg' => 'rgba(251,191,36,0.08)', 'border' => '1px solid rgba(251,191,36,0.2)', 'text' => '#fcd34d', 'dot' => '#fbbf24'],
+                                            'Approved','Enrolled','Paid' => ['bg' => 'rgba(34,211,238,0.08)', 'border' => '1px solid rgba(34,211,238,0.2)', 'text' => '#67e8f9', 'dot' => '#22d3ee'],
+                                            default => ['bg' => 'rgba(255,255,255,0.04)', 'border' => '1px solid rgba(255,255,255,0.1)', 'text' => 'rgba(255,255,255,0.4)', 'dot' => 'rgba(255,255,255,0.2)'],
                                         };
                                     @endphp
-                                    <a href="{{ route('registrar.dashboard', ['app_id' => $app->id]) }}" class="p-2.5 rounded-lg border flex flex-col gap-1.5 transition-all hover:scale-105 active:scale-95" style="background: {{ $style['bg'] }}; border-color: {{ $style['border'] }};">
-                                        <p class="text-[10px] font-bold text-white truncate uppercase tracking-tight">{{ $app->user->name ?? 'Student' }}</p>
+                                    <a href="{{ route('registrar.dashboard', ['app_id' => $app['id']]) }}" class="p-2.5 rounded-lg border flex flex-col gap-1.5 transition-all hover:scale-105 active:scale-95 text-left w-full" style="background: {{ $style['bg'] }}; border-color: {{ $style['border'] }};">
+                                        <p class="text-[10px] font-bold text-white truncate uppercase tracking-tight">{{ $app['first_name'] ?? '' }} {{ $app['last_name'] ?? '' }}</p>
                                         <div class="flex items-center gap-1.5">
                                             <span class="w-1 h-1 rounded-full" style="background: {{ $style['dot'] }};"></span>
-                                            <span class="text-[8px] font-black uppercase tracking-widest italic" style="color: {{ $style['text'] }};">{{ in_array($app->status, ['Enrolled', 'Paid']) ? 'Paid' : $app->status }}</span>
+                                            <span class="text-[8px] font-black uppercase tracking-widest italic" style="color: {{ $style['text'] }};">{{ $status === 'Enrolled' ? 'Paid' : $status }}</span>
                                         </div>
                                     </a>
                                 @endforeach
@@ -606,19 +592,16 @@
 
         {{-- Enrollment Overview Cards (SHS vs College) --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- SHS Card -->
             <div class="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
                 <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Senior High</p>
                 <h3 class="text-3xl font-black text-white mt-1">{{ $shs_count }}</h3>
                 <p class="text-[10px] text-emerald-400/50 mt-4">Total Applicants</p>
             </div>
-            <!-- College Card -->
             <div class="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20">
                 <p class="text-xs font-bold text-blue-400 uppercase tracking-widest">College</p>
                 <h3 class="text-3xl font-black text-white mt-1">{{ $college_count }}</h3>
                 <p class="text-[10px] text-blue-400/50 mt-4">Total Applicants</p>
             </div>
-            <!-- Consolidated Card -->
             <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
                 <p class="text-xs font-bold text-white/40 uppercase tracking-widest">Consolidated</p>
                 <h3 class="text-3xl font-black text-white mt-1">{{ $total_count }}</h3>
@@ -631,7 +614,7 @@
             <h3 class="font-black text-white mb-5 flex items-center gap-2 italic uppercase tracking-[0.2em] text-xs">
                 <span class="w-1 h-4 rounded-full bg-cyan-500"></span> Overview
             </h3>
-            <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-{{ count($stats) }} gap-4">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 @foreach($stats as $key => $val)
                     <div class="p-4 rounded-xl border border-white/5 bg-white/[0.02] text-center shadow-inner group">
                         <div class="text-[8px] font-black uppercase tracking-[0.3em] mb-2 text-white/30 group-hover:text-cyan-400 transition-colors">{{ str_replace('_', ' ', $key) }}</div>
@@ -828,306 +811,289 @@
 </x-layouts.registrar>
 
 @elseif($role === 'admin')
-<div class="space-y-6">
-    {{-- Stats & Calendar Section --}}
-    <div class="p-6 rounded-2xl border"
-         style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
+<div> <div class="space-y-6" wire:poll.5s="refreshStats">
+        {{-- Stats & Calendar Section --}}
+        <div class="p-6 rounded-2xl border"
+             style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
 
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-            <div class="flex items-center gap-3">
-                <div class="p-2.5 rounded-xl" style="background: rgba(99,179,237,0.15); color: #63b3ed;">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-xl" style="background: rgba(99,179,237,0.15); color: #63b3ed;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white leading-none">Welcome, Administrator</h2>
+                        <p class="text-xs mt-1 text-white/50 italic uppercase tracking-widest font-bold">Registry & Operations Summary</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="text-xl font-bold text-white leading-none">Welcome, {{ auth()->user()->role === 'admin' ? 'Administrator' : 'Registrar' }}</h2>
-                    <p class="text-xs mt-1 text-white/50 italic uppercase tracking-widest font-bold">Registry & Operations Summary</p>
-                </div>
+                <div class="px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest" style="background: rgba(99,179,237,0.15); border: 1px solid rgba(99,179,237,0.3); color: #63b3ed;">{{ $weekRange }}</div>
             </div>
-            <div class="px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest" style="background: rgba(99,179,237,0.15); border: 1px solid rgba(99,179,237,0.3); color: #63b3ed;">{{ $weekRange }}</div>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-            @foreach ($weekDates as $day)
-                <div class="rounded-xl flex flex-col h-[380px]"
-                     style="{{ $day['is_today'] ? 'border: 1px solid rgba(99,179,237,0.5); background: rgba(99,179,237,0.08); shadow: 0 0 20px rgba(99,179,237,0.15);' : 'border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03);' }}">
-                    <div class="text-center py-3 rounded-t-xl" style="{{ $day['is_today'] ? 'border-bottom: 1px solid rgba(99,179,237,0.3); background: rgba(99,179,237,0.12);' : 'border-bottom: 1px solid rgba(255,255,255,0.07);' }}">
-                        <p class="text-[10px] font-black uppercase tracking-widest" style="color: {{ $day['is_today'] ? '#63b3ed' : 'rgba(255,255,255,0.35)' }};">{{ $day['day_name'] }}</p>
-                        <p class="text-2xl font-black mt-0.5" style="color: {{ $day['is_today'] ? '#90cdf4' : 'rgba(255,255,255,0.8)' }};">{{ $day['day_num'] }}</p>
-                        @if($day['is_today']) <span class="inline-block mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter bg-blue-400 text-black">Today</span> @endif
-                    </div>
-                    <div class="p-2.5 flex-1 overflow-y-auto space-y-2 custom-scrollbar">
-                        @php $dayApps = $appsByDate->get($day['date_string'], collect()); @endphp
-                        @if ($dayApps->isEmpty())
-                            <div class="h-full flex items-center justify-center text-[8px] uppercase tracking-[0.2em] font-black text-white/10 italic">No Data</div>
-                        @else
-                            @foreach ($dayApps as $app)
-                                @php
-                                    $style = match(ucfirst($app->status)) {
-                                        'Pending' => [
-                                            'bg' => 'rgba(251,191,36,0.08)',
-                                            'border' => '1px solid rgba(251,191,36,0.2)',
-                                            'text' => '#fcd34d',
-                                            'dot' => '#fbbf24'
-                                        ],
-                                        'Approved','Enrolled' => [
-                                            'bg' => 'rgba(34,211,238,0.08)',
-                                            'border' => '1px solid rgba(34,211,238,0.2)',
-                                            'text' => '#67e8f9',
-                                            'dot' => '#22d3ee'
-                                        ],
-                                        default => [
-                                            'bg' => 'rgba(255,255,255,0.04)',
-                                            'border' => '1px solid rgba(255,255,255,0.1)',
-                                            'text' => 'rgba(255,255,255,0.4)',
-                                            'dot' => 'rgba(255,255,255,0.2)'
-                                        ],
-                                    };
-                                @endphp
-                                <button type="button" wire:click="viewApplication({{ $app->id }})" class="p-2.5 rounded-lg border flex flex-col gap-1.5 transition-all hover:scale-105 active:scale-95 text-left w-full" style="background: {{ $style['bg'] }}; border-color: {{ $style['border'] }};">
-                                    <p class="text-[10px] font-bold text-white truncate uppercase tracking-tight">{{ $app->user->name ?? 'Student' }}</p>
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="w-1 h-1 rounded-full" style="background: {{ $style['dot'] }};"></span>
-                                        <span class="text-[8px] font-black uppercase tracking-widest italic" style="color: {{ $style['text'] }};">{{ $app->status === 'Enrolled' ? 'Paid' : $app->status }}</span>
-                                    </div>
-                                </button>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
-    {{-- Enrollment Overview Cards (SHS vs College) --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- SHS Card -->
-        <div class="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-            <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Senior High</p>
-            <h3 class="text-3xl font-black text-white mt-1">{{ $shs_count }}</h3>
-            <p class="text-[10px] text-emerald-400/50 mt-4">Total Applicants</p>
-        </div>
-        <!-- College Card -->
-        <div class="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20">
-            <p class="text-xs font-bold text-blue-400 uppercase tracking-widest">College</p>
-            <h3 class="text-3xl font-black text-white mt-1">{{ $college_count }}</h3>
-            <p class="text-[10px] text-blue-400/50 mt-4">Total Applicants</p>
-        </div>
-        <!-- Consolidated Card -->
-        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
-            <p class="text-xs font-bold text-white/40 uppercase tracking-widest">Consolidated</p>
-            <h3 class="text-3xl font-black text-white mt-1">{{ $total_count }}</h3>
-            <p class="text-[10px] text-white/20 mt-4">Overall Enrollment</p>
-        </div>
-    </div>
-
-    {{-- Overview Stats --}}
-    <div class="p-6 rounded-2xl border bg-white/5 backdrop-blur-md border-white/10 shadow-2xl">
-        <h3 class="font-black text-white mb-5 flex items-center gap-2 italic uppercase tracking-[0.2em] text-xs">
-            <span class="w-1 h-4 rounded-full bg-cyan-500"></span> Overview
-        </h3>
-        <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-{{ count($stats) }} gap-4">
-            @foreach($stats as $key => $val)
-                <div class="p-4 rounded-xl border border-white/5 bg-white/[0.02] text-center shadow-inner group">
-                    <div class="text-[8px] font-black uppercase tracking-[0.3em] mb-2 text-white/30 group-hover:text-cyan-400 transition-colors">{{ str_replace('_', ' ', $key) }}</div>
-                    <div class="text-3xl font-black text-white tracking-tighter">{{ $val }}</div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
-    {{-- Modal Container (Admin — uses Livewire state) --}}
-    <div x-data="{ open: @entangle('showModal') }" 
-         x-show="open" 
-         class="fixed inset-0 z-[100] p-4 flex items-center justify-center"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         style="display: none;">
-        
-        {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-[#060d1a]/85 backdrop-blur-sm cursor-pointer" wire:click="closeModal"></div>
-
-        {{-- Modal Box --}}
-        <div class="rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 border overflow-hidden transform transition-all bg-[#0d1f3c] border-white/10"
-             :class="open ? 'scale-100 opacity-100' : 'scale-95 opacity-0'">
-            @if ($selectedApp)
-                <div class="px-10 py-8 border-b border-white/5 flex justify-between items-center bg-white/5">
-                    <div class="flex items-center gap-6">
-                        <span class="bg-cyan-500/20 text-cyan-400 font-mono text-xs font-black px-4 py-2 rounded-xl border border-cyan-500/30 italic">#{{ str_pad($selectedApp->id, 2, '0', STR_PAD_LEFT) }}</span>
-                        <h3 class="text-2xl font-black text-white uppercase tracking-[0.15em]">Application Details</h3>
-                    </div>
-                    <button wire:click="closeModal" class="text-white/20 hover:text-white transition p-3 rounded-2xl hover:bg-white/10">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-
-                    <div class="overflow-y-auto max-h-[80vh] custom-scrollbar">
-                        <div class="p-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
-
-                            {{-- Left Column: Program Choice --}}
-                            <div class="lg:col-span-4 space-y-6">
-                                <div class="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-8 shadow-inner">
-                                    <div class="space-y-4">
-                                        <span class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.4em] block">Program Choice</span>
-                                        <h2 class="text-6xl font-black text-white tracking-tighter uppercase leading-none">{{ $selectedApp->course_code }}</h2>
-                                        <p class="text-xs font-bold text-white/40 uppercase tracking-[0.2em] leading-relaxed">{{ $selectedApp->year_level }}</p>
-                                    </div>
-
-                                    <div class="pt-8 border-t border-white/5 space-y-4">
-                                        <span class="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] block">Current Status</span>
-                                        @php
-                                            $statusBase = ucfirst($selectedApp->status);
-                                            $statusLabel = in_array($statusBase, ['Enrolled', 'Paid']) ? 'PAID' : strtoupper($statusBase);
-                                            $statusClass = match ($statusBase) {
-                                                'Approved','Enrolled','Paid' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                                'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                                'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                                default => 'bg-white/5 text-white/40 border-white/10',
-                                            };
-                                        @endphp
-                                        <div class="inline-block px-6 py-2 rounded-full border text-[10px] font-black tracking-[0.2em] {{ $statusClass }} shadow-lg">{{ $statusLabel }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Right Column: Main Content --}}
-                            <div class="lg:col-span-8 space-y-12">
-
-                                {{-- Biographical Data Section --}}
-                                <div class="space-y-6">
-                                    <div class="flex items-center gap-3">
-                                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                        <h4 class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Biographical Data</h4>
-                                    </div>
-                                    <div class="p-8 rounded-[32px] bg-white/[0.01] border border-white/5 grid grid-cols-2 gap-8">
-                                        <div class="space-y-2">
-                                            <span class="text-[8px] font-black text-white/20 uppercase tracking-widest block">Given Name</span>
-                                            <span class="text-2xl font-black text-white uppercase tracking-tight">{{ $selectedApp->first_name }}</span>
-                                        </div>
-                                        <div class="space-y-2">
-                                            <span class="text-[8px] font-black text-white/20 uppercase tracking-widest block">Surname</span>
-                                            <span class="text-2xl font-black text-white uppercase tracking-tight">{{ $selectedApp->last_name }}</span>
-                                        </div>
-                                        <div class="col-span-2 space-y-2">
-                                            <span class="text-[8px] font-black text-white/20 uppercase tracking-widest block">Residential Address</span>
-                                            <span class="text-xs font-bold text-white/60 uppercase tracking-tight leading-relaxed">{{ $selectedApp->address_full ?? '— Not Provided —' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Supporting Documentation Section --}}
-                                <div class="space-y-6">
-                                    <div class="flex items-center gap-3">
-                                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        <h4 class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Supporting Documentation</h4>
-                                    </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        @php
-                                            $docs = ($selectedApp->level === 'shs') ? [
-                                                'Form 137' => $selectedApp->form_137_path ?? null,
-                                                'SF10' => $selectedApp->sf10_path ?? null,
-                                                'Good Moral' => $selectedApp->good_moral_path ?? null,
-                                                'PSA Birth' => $selectedApp->psa_path ?? null,
-                                                'ID Photo' => $selectedApp->id_picture_path ?? null,
-                                            ] : [
-                                                'Form 137' => $selectedApp->form_137_path ?? null,
-                                                'Good Moral' => $selectedApp->good_moral_path ?? null,
-                                                'PSA Birth' => $selectedApp->psa_path ?? null,
-                                                'ID Photo' => $selectedApp->id_picture_path ?? null,
-                                            ];
-                                        @endphp
-                                        @foreach($docs as $label => $file)
-                                            <div class="space-y-3">
-                                                <div class="flex items-center gap-2 mb-1 pl-1">
-                                                    <span class="w-1.5 h-1.5 rounded-full {{ $file ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
-                                                    <span class="text-[8px] font-black text-white/30 uppercase tracking-widest">{{ $label }}</span>
-                                                </div>
-                                                <div class="aspect-[3/4] rounded-2xl border bg-white/[0.02] border-white/5 flex flex-col items-center justify-center gap-3 group border-dashed relative overflow-hidden">
-                                                    @if($file)
-                                                        <img src="/storage/{{ $file }}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
-                                                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <span class="text-[8px] font-black text-white uppercase tracking-widest">View File</span>
-                                                        </div>
-                                                    @else
-                                                        <svg class="w-8 h-8 text-white/5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                                        <span class="text-[8px] font-black text-white/10 uppercase tracking-[0.2em]">Missing</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                {{-- Promissory Note Asset --}}
-                                @if($selectedApp->promissory_note_path || $selectedApp->promissory_reason)
-                                <div class="space-y-6 pt-10 border-t border-white/5">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                                        <h4 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Promissory Note & Reason</h4>
-                                    </div>
-                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8">
-                                        <div class="lg:col-span-1 space-y-4">
-                                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment</span>
-                                            @if($selectedApp->promissory_note_path)
-                                                @php
-                                                    $isPdf = Str::endsWith($selectedApp->promissory_note_path, '.pdf');
-                                                @endphp
-                                                <a href="{{ \Storage::disk('public')->url($selectedApp->promissory_note_path) }}" target="_blank" class="flex items-center gap-4 p-5 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">
-                                                    <div class="w-11 h-11 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
-                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[10px] font-black text-white uppercase tracking-wider">Download Note</p>
-                                                        <p class="text-[8px] text-amber-500/60 uppercase font-bold mt-0.5">{{ $isPdf ? 'PDF Format' : 'Word Doc' }}</p>
-                                                    </div>
-                                                </a>
-                                            @else
-                                                <div class="p-5 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] flex items-center justify-center opacity-30">
-                                                    <span class="text-[8px] font-black text-white uppercase tracking-widest italic">No File Provided</span>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="lg:col-span-2 space-y-3">
-                                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
-                                            <div class="p-8 rounded-3xl bg-white/[0.02] border border-white/5 min-h-[100px]">
-                                                <p class="text-xs text-white/60 leading-relaxed italic">
-                                                    {{ $selectedApp->promissory_reason ?? 'No explanation provided.' }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-
-                            </div>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                @foreach($weekDates as $day)
+                    <div class="rounded-xl flex flex-col h-[380px]"
+                         style="{{ $day['is_today'] ? 'border: 1px solid rgba(99,179,237,0.5); background: rgba(99,179,237,0.08);' : 'border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03);' }}">
+                        <div class="text-center py-3 rounded-t-xl" style="{{ $day['is_today'] ? 'border-bottom: 1px solid rgba(99,179,237,0.3); background: rgba(99,179,237,0.12);' : 'border-bottom: 1px solid rgba(255,255,255,0.07);' }}">
+                            <p class="text-[10px] font-black uppercase tracking-widest" style="color: {{ $day['is_today'] ? '#63b3ed' : 'rgba(255,255,255,0.35)' }};">{{ $day['day_name'] }}</p>
+                            <p class="text-2xl font-black mt-0.5" style="color: {{ $day['is_today'] ? '#90cdf4' : 'rgba(255,255,255,0.8)' }};">{{ $day['day_num'] }}</p>
+                            @if($day['is_today']) <span class="inline-block mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter bg-blue-400 text-black">Today</span> @endif
                         </div>
-
-                        <div class="bg-white/5 px-10 py-10 border-t border-white/5 flex justify-between items-center bg-[#070f1d]">
-                            <div class="flex flex-col gap-1 pl-2">
-                                <span class="text-[8px] font-black text-white/20 uppercase tracking-[0.3em]">Status: {{ strtoupper($selectedApp->status) }}</span>
-                                <span class="text-[10px] font-black text-white/40 uppercase tracking-widest italic decoration-emerald-500/30 underline decoration-2 underline-offset-8">Confirmed Submission</span>
-                            </div>
-
-                            <div class="flex items-center gap-4">
-                                @if(in_array(strtolower($selectedApp->status), ['pending', 'enrolled', 'paid']))
-                                    <button wire:click="rejectApplication({{ $selectedApp->id }})" class="bg-white/5 hover:bg-rose-500/10 text-white/30 hover:text-rose-500 px-8 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] border border-white/5 hover:border-rose-500/20 active:scale-95">Deny Entry</button>
-                                    <button wire:click="approveApplication({{ $selectedApp->id }})" class="bg-cyan-500 hover:bg-cyan-400 text-black px-12 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] shadow-2xl shadow-cyan-500/40 active:scale-95 flex items-center gap-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        Grant Approval
+                        <div class="p-2.5 flex-1 overflow-y-auto space-y-2 custom-scrollbar">
+                            @php
+                            $dayApps = isset($appsByDate[$day['date_string']]) ? collect($appsByDate[$day['date_string']]) : collect();
+                            @endphp
+                            @if($dayApps->isEmpty())
+                                <div class="h-full flex items-center justify-center text-[8px] uppercase tracking-[0.2em] font-black text-white/10 italic">No Data</div>
+                            @else
+                                @foreach($dayApps as $app)
+                                    @php
+                                        $status = ucfirst($app['status'] ?? 'Pending');
+                                        $style = match($status) {
+                                            'Pending' => ['bg' => 'rgba(251,191,36,0.08)', 'border' => '1px solid rgba(251,191,36,0.2)', 'text' => '#fcd34d', 'dot' => '#fbbf24'],
+                                            'Approved','Enrolled' => ['bg' => 'rgba(34,211,238,0.08)', 'border' => '1px solid rgba(34,211,238,0.2)', 'text' => '#67e8f9', 'dot' => '#22d3ee'],
+                                            default => ['bg' => 'rgba(255,255,255,0.04)', 'border' => '1px solid rgba(255,255,255,0.1)', 'text' => 'rgba(255,255,255,0.4)', 'dot' => 'rgba(255,255,255,0.2)'],
+                                        };
+                                    @endphp
+                                    <button type="button" wire:click="viewApplication({{ $app['id'] }})" class="p-2.5 rounded-lg border flex flex-col gap-1.5 transition-all hover:scale-105 active:scale-95 text-left w-full" style="background: {{ $style['bg'] }}; border-color: {{ $style['border'] }};">
+                                        <p class="text-[10px] font-bold text-white truncate uppercase tracking-tight">{{ $app['first_name'] ?? '' }} {{ $app['last_name'] ?? '' }}</p>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="w-1 h-1 rounded-full" style="background: {{ $style['dot'] }};"></span>
+                                            <span class="text-[8px] font-black uppercase tracking-widest italic" style="color: {{ $style['text'] }};">{{ $status === 'Enrolled' ? 'Paid' : $status }}</span>
+                                        </div>
                                     </button>
-                                @endif
-                                <button wire:click="closeModal" class="bg-white/5 hover:bg-white/10 text-white/40 hover:text-white px-10 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] border border-white/5 italic">Close Panel</button>
-                            </div>
+                                @endforeach
+                            @endif
                         </div>
                     </div>
-                </div>
-            @endif
+                @endforeach
+            </div>
         </div>
+
+        {{-- Enrollment Overview Cards (SHS vs College) --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+                <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Senior High</p>
+                <h3 class="text-3xl font-black text-white mt-1">{{ $shs_count }}</h3>
+                <p class="text-[10px] text-emerald-400/50 mt-4">Total Applicants</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+                <p class="text-xs font-bold text-blue-400 uppercase tracking-widest">College</p>
+                <h3 class="text-3xl font-black text-white mt-1">{{ $college_count }}</h3>
+                <p class="text-[10px] text-blue-400/50 mt-4">Total Applicants</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <p class="text-xs font-bold text-white/40 uppercase tracking-widest">Consolidated</p>
+                <h3 class="text-3xl font-black text-white mt-1">{{ $total_count }}</h3>
+                <p class="text-[10px] text-white/20 mt-4">Overall Enrollment</p>
+            </div>
+        </div>
+
+        {{-- Overview Stats --}}
+        <div class="p-6 rounded-2xl border bg-white/5 backdrop-blur-md border-white/10 shadow-2xl">
+            <h3 class="font-black text-white mb-5 flex items-center gap-2 italic uppercase tracking-[0.2em] text-xs">
+                <span class="w-1 h-4 rounded-full bg-cyan-500"></span> Overview
+            </h3>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach($stats as $key => $val)
+                    <div class="p-4 rounded-xl border border-white/5 bg-white/[0.02] text-center shadow-inner group">
+                        <div class="text-[8px] font-black uppercase tracking-[0.3em] mb-2 text-white/30 group-hover:text-cyan-400 transition-colors">{{ str_replace('_', ' ', $key) }}</div>
+                        <div class="text-3xl font-black text-white tracking-tighter">{{ $val }}</div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Modal Container (Admin — uses Livewire state) --}}
+        <div x-data="{ open: @entangle('showModal') }"
+             x-show="open"
+             class="fixed inset-0 z-[100] p-4 flex items-center justify-center"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             style="display: none;">
+
+            {{-- Backdrop --}}
+            <div class="absolute inset-0 bg-[#060d1a]/85 backdrop-blur-sm cursor-pointer" wire:click="closeModal"></div>
+
+            {{-- Modal Box --}}
+            <div class="rounded-3xl shadow-2xl w-full max-w-4xl relative z-10 border overflow-hidden transform transition-all bg-[#0d1f3c] border-white/10"
+                 :class="open ? 'scale-100 opacity-100' : 'scale-95 opacity-0'">
+                @if ($selectedApp)
+                    <div class="px-10 py-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+                        <div class="flex items-center gap-6">
+                            <span class="bg-cyan-500/20 text-cyan-400 font-mono text-xs font-black px-4 py-2 rounded-xl border border-cyan-500/30 italic">#{{ str_pad($selectedApp->id, 2, '0', STR_PAD_LEFT) }}</span>
+                            <h3 class="text-2xl font-black text-white uppercase tracking-[0.15em]">Application Details</h3>
+                        </div>
+                        <button wire:click="closeModal" class="text-white/20 hover:text-white transition p-3 rounded-2xl hover:bg-white/10">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                        <div class="overflow-y-auto max-h-[80vh] custom-scrollbar">
+                            <div class="p-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+                                {{-- Left Column: Program Choice --}}
+                                <div class="lg:col-span-4 space-y-6">
+                                    <div class="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-8 shadow-inner">
+                                        <div class="space-y-4">
+                                            <span class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.4em] block">Program Choice</span>
+                                            <h2 class="text-6xl font-black text-white tracking-tighter uppercase leading-none">{{ $selectedApp->course_code }}</h2>
+                                            <p class="text-xs font-bold text-white/40 uppercase tracking-[0.2em] leading-relaxed">{{ $selectedApp->year_level }}</p>
+                                        </div>
+
+                                        <div class="pt-8 border-t border-white/5 space-y-4">
+                                            <span class="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] block">Current Status</span>
+                                            @php
+                                                $statusBase = ucfirst($selectedApp->status);
+                                                $statusLabel = in_array($statusBase, ['Enrolled', 'Paid']) ? 'PAID' : strtoupper($statusBase);
+                                                $statusClass = match ($statusBase) {
+                                                    'Approved','Enrolled','Paid' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                                    'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                                    'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                                    default => 'bg-white/5 text-white/40 border-white/10',
+                                                };
+                                            @endphp
+                                            <div class="inline-block px-6 py-2 rounded-full border text-[10px] font-black tracking-[0.2em] {{ $statusClass }} shadow-lg">{{ $statusLabel }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Right Column: Main Content --}}
+                                <div class="lg:col-span-8 space-y-12">
+
+                                    {{-- Biographical Data Section --}}
+                                    <div class="space-y-6">
+                                        <div class="flex items-center gap-3">
+                                            <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                            <h4 class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Biographical Data</h4>
+                                        </div>
+                                        <div class="p-8 rounded-[32px] bg-white/[0.01] border border-white/5 grid grid-cols-2 gap-8">
+                                            <div class="space-y-2">
+                                                <span class="text-[8px] font-black text-white/20 uppercase tracking-widest block">Given Name</span>
+                                                <span class="text-2xl font-black text-white uppercase tracking-tight">{{ $selectedApp->first_name }}</span>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <span class="text-[8px] font-black text-white/20 uppercase tracking-widest block">Surname</span>
+                                                <span class="text-2xl font-black text-white uppercase tracking-tight">{{ $selectedApp->last_name }}</span>
+                                            </div>
+                                            <div class="col-span-2 space-y-2">
+                                                <span class="text-[8px] font-black text-white/20 uppercase tracking-widest block">Residential Address</span>
+                                                <span class="text-xs font-bold text-white/60 uppercase tracking-tight leading-relaxed">{{ $selectedApp->address_full ?? '— Not Provided —' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Supporting Documentation Section --}}
+                                    <div class="space-y-6">
+                                        <div class="flex items-center gap-3">
+                                            <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            <h4 class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Supporting Documentation</h4>
+                                        </div>
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            @php
+                                                $docs = ($selectedApp->level === 'shs') ? [
+                                                    'Form 137' => $selectedApp->form_137_path ?? null,
+                                                    'SF10' => $selectedApp->sf10_path ?? null,
+                                                    'Good Moral' => $selectedApp->good_moral_path ?? null,
+                                                    'PSA Birth' => $selectedApp->psa_path ?? null,
+                                                    'ID Photo' => $selectedApp->id_picture_path ?? null,
+                                                ] : [
+                                                    'Form 137' => $selectedApp->form_137_path ?? null,
+                                                    'Good Moral' => $selectedApp->good_moral_path ?? null,
+                                                    'PSA Birth' => $selectedApp->psa_path ?? null,
+                                                    'ID Photo' => $selectedApp->id_picture_path ?? null,
+                                                ];
+                                            @endphp
+                                            @foreach($docs as $label => $file)
+                                                <div class="space-y-3">
+                                                    <div class="flex items-center gap-2 mb-1 pl-1">
+                                                        <span class="w-1.5 h-1.5 rounded-full {{ $file ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                                                        <span class="text-[8px] font-black text-white/30 uppercase tracking-widest">{{ $label }}</span>
+                                                    </div>
+                                                    <div class="aspect-[3/4] rounded-2xl border bg-white/[0.02] border-white/5 flex flex-col items-center justify-center gap-3 group border-dashed relative overflow-hidden">
+                                                        @if($file)
+                                                            <img src="/storage/{{ $file }}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                                                            <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <span class="text-[8px] font-black text-white uppercase tracking-widest">View File</span>
+                                                            </div>
+                                                        @else
+                                                            <svg class="w-8 h-8 text-white/5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                            <span class="text-[8px] font-black text-white/10 uppercase tracking-[0.2em]">Missing</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    {{-- Promissory Note Asset --}}
+                                    @if($selectedApp->promissory_note_path || $selectedApp->promissory_reason)
+                                    <div class="space-y-6 pt-10 border-t border-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                            <h4 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Promissory Note & Reason</h4>
+                                        </div>
+                                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8">
+                                            <div class="lg:col-span-1 space-y-4">
+                                                <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment</span>
+                                                @if($selectedApp->promissory_note_path)
+                                                    @php
+                                                        $isPdf = Str::endsWith($selectedApp->promissory_note_path, '.pdf');
+                                                    @endphp
+                                                    <a href="{{ \Storage::disk('public')->url($selectedApp->promissory_note_path) }}" target="_blank" class="flex items-center gap-4 p-5 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">
+                                                        <div class="w-11 h-11 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-[10px] font-black text-white uppercase tracking-wider">Download Note</p>
+                                                            <p class="text-[8px] text-amber-500/60 uppercase font-bold mt-0.5">{{ $isPdf ? 'PDF Format' : 'Word Doc' }}</p>
+                                                        </div>
+                                                    </a>
+                                                @else
+                                                    <div class="p-5 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] flex items-center justify-center opacity-30">
+                                                        <span class="text-[8px] font-black text-white uppercase tracking-widest italic">No File Provided</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="lg:col-span-2 space-y-3">
+                                                <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
+                                                <div class="p-8 rounded-3xl bg-white/[0.02] border border-white/5 min-h-[100px]">
+                                                    <p class="text-xs text-white/60 leading-relaxed italic">
+                                                        {{ $selectedApp->promissory_reason ?? 'No explanation provided.' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                </div>
+                            </div>
+
+                            <div class="bg-white/5 px-10 py-10 border-t border-white/5 flex justify-between items-center bg-[#070f1d]">
+                                <div class="flex flex-col gap-1 pl-2">
+                                    <span class="text-[8px] font-black text-white/20 uppercase tracking-[0.3em]">Status: {{ strtoupper($selectedApp->status) }}</span>
+                                    <span class="text-[10px] font-black text-white/40 uppercase tracking-widest italic decoration-emerald-500/30 underline decoration-2 underline-offset-8">Confirmed Submission</span>
+                                </div>
+
+                                <div class="flex items-center gap-4">
+                                    @if(in_array(strtolower($selectedApp->status), ['pending', 'enrolled', 'paid']))
+                                        <button wire:click="rejectApplication({{ $selectedApp->id }})" class="bg-white/5 hover:bg-rose-500/10 text-white/30 hover:text-rose-500 px-8 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] border border-white/5 hover:border-rose-500/20 active:scale-95">Deny Entry</button>
+                                        <button wire:click="approveApplication({{ $selectedApp->id }})" class="bg-cyan-500 hover:bg-cyan-400 text-black px-12 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] shadow-2xl shadow-cyan-500/40 active:scale-95 flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            Grant Approval
+                                        </button>
+                                    @endif
+                                    <button wire:click="closeModal" class="bg-white/5 hover:bg-white/10 text-white/40 hover:text-white px-10 py-4 rounded-[20px] text-[10px] font-black transition-all uppercase tracking-[0.2em] border border-white/5 italic">Close Panel</button>
+                                </div>
+                            </div>
+                        </div>
+                @endif
+            </div>
+        </div>
+
     </div>
-
-</div>
-
-@endif
+</div> @endif

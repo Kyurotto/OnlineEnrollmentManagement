@@ -3,15 +3,18 @@
 namespace App\Livewire\Admin;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Enrollment;
 use Carbon\Carbon;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.admin')]
+#[Poll('5s')]
 class DashboardManager extends Component
 {
     use WithPagination;
@@ -41,6 +44,12 @@ class DashboardManager extends Component
     {
         $this->showModal = false;
         $this->selectedApp = null;
+    }
+
+    #[On('refresh-stats')]
+    public function refreshStats()
+    {
+        // This will trigger a re-render
     }
 
     public function approveApplication($id)
@@ -122,7 +131,7 @@ class DashboardManager extends Component
         $weekRange = Carbon::now()->format('F d, Y');
 
         // Admin Dashboard Navbar Data (Duplicate logic for safety if needed, but shared via Provider usually)
-        $newEnrolleesCount = Enrollment::where('status', 'Pending')->count();
+        $newEnrolleesCount = Auth::user()->unreadNotifications->count();
         $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
             ->with('user')
             ->orderBy('updated_at', 'desc')

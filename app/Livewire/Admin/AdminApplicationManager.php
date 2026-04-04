@@ -77,7 +77,8 @@ class AdminApplicationManager extends Component
     public function render()
     {
         $query = Enrollment::with('user')
-            ->join('users', 'enrollments.user_id', '=', 'users.id');
+            ->join('users', 'enrollments.user_id', '=', 'users.id')
+            ->select('enrollments.*');
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -92,11 +93,11 @@ class AdminApplicationManager extends Component
         }
 
         if ($this->status !== 'All statuses') {
-            $query->where('status', $this->status);
+            $query->where('enrollments.status', $this->status);
         }
 
         if ($this->year_level !== 'All Years') {
-            $query->where('year_level', 'like', "{$this->year_level}%");
+            $query->where('enrollments.year_level', 'like', "{$this->year_level}%");
         }
 
         $applications = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
