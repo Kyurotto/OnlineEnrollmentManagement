@@ -10,8 +10,6 @@ use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 use App\Livewire\Admin\DashboardManager;
 use App\Livewire\Admin\PaymentManager;
-use App\Livewire\Admin\ApplicationManager;
-use App\Livewire\Admin\AdminNavbar;
 
 // Registrar Controllers
 use App\Http\Controllers\RegistrarDashboardController;
