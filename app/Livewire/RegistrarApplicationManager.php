@@ -97,7 +97,7 @@ class RegistrarApplicationManager extends Component
         }
 
         if ($this->status !== 'All statuses') {
-            $query->where('status', $this->status);
+            $query->where('enrollments.status', $this->status);
         }
 
         if ($this->year_level !== 'All Years') {

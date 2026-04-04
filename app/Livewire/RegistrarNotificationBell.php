@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Livewire;
+
+use Livewire\Component;
+use App\Models\Enrollment;
+use Illuminate\Support\Facades\Auth;
+
+class RegistrarNotificationBell extends Component
+{
+    public $showDropdown = false;
+
+    protected $listeners = ['refreshNotifications' => '$refresh'];
+
+    public function loadNotifications()
+    {
+        // Triggered by frontend
+    }
+
+    public function markAllAsRead()
+    {
+        $user = Auth::user();
+        if ($user) {
+            $user->unreadNotifications->markAsRead();
+        }
+        $this->dispatch('refreshNotifications');
+    }
+
+    public function render()
+    {
+        $notifications = Enrollment::whereIn('status', ['Pending', 'Paid', 'Enrolled'])
+            ->with('user')
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get();
+
+        $unreadCount = Auth::user() ? Auth::user()->unreadNotifications->count() : 0;
+
+        return view('livewire.registrar-notification-bell', [
+            'notifications' => $notifications,
+            'unreadCount' => $unreadCount,
+        ]);
+    }
+}

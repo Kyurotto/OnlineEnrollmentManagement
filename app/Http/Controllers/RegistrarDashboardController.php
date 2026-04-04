@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Enrollment;
 use App\Models\Course;
@@ -37,7 +38,7 @@ class RegistrarDashboardController extends Controller
         ];
 
         // 4. NOTIFICATIONS (Dropdown)
-        $newEnrolleesCount = $pendingCount;
+        $newEnrolleesCount = Auth::user()->unreadNotifications->count();
 
         $notifications = Enrollment::whereIn('status', ['Pending', 'Paid', 'Enrolled'])
                             ->with('user')
