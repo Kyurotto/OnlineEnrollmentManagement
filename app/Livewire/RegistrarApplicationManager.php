@@ -86,9 +86,13 @@ class RegistrarApplicationManager extends Component
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('users.first_name', 'like', "%{$this->search}%")
-                  ->orWhere('users.last_name', 'like', "%{$this->search}%")
-                  ->orWhere('enrollments.course_code', 'like', "%{$this->search}%");
+                $q->whereHas('user', function ($sub) {
+                    $sub->where('first_name', 'like', "%{$this->search}%")
+                        ->orWhere('last_name', 'like', "%{$this->search}%")
+                        ->orWhere('email', 'like', "%{$this->search}%");
+                })
+                ->orWhere('enrollments.course_code', 'like', "%{$this->search}%")
+                ->orWhere('enrollments.promissory_reason', 'like', "%{$this->search}%");
             });
         }
 
