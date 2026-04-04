@@ -123,6 +123,56 @@
                         </div>
                     @endforeach
                 </div>
+
+                {{-- Promissory Note Section --}}
+                <div class="mt-12 pt-10 border-t border-white/5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div class="md:col-span-1 space-y-4">
+                            <h4 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                Promissory Note (Alternative)
+                            </h4>
+                            <p class="text-[10px] text-white/30 leading-relaxed uppercase tracking-wider">If you cannot provide all documents right now, please upload a promissory note explaining your situation.</p>
+                        </div>
+                        
+                        <div class="md:col-span-2 space-y-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div class="space-y-3">
+                                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Upload Note (Word/PDF)</label>
+                                    <label for="promissory_note" class="relative flex flex-col items-center justify-center w-full h-32 border-2 border-amber-500/20 border-dashed rounded-xl cursor-pointer bg-amber-500/5 hover:bg-amber-500/10 transition-all group overflow-hidden">
+                                        @if($enrollment->promissory_note_path)
+                                            <div class="absolute inset-0 z-0 opacity-20 flex items-center justify-center font-black text-amber-400 text-[8px] tracking-[0.4em] uppercase">Note Stored</div>
+                                        @endif
+                                        <div id="preview-container-promissory_note" class="absolute inset-0 z-20 hidden bg-[#0d1f3c]"></div>
+
+                                        <div class="text-center relative z-10 transition-transform group-hover:scale-105">
+                                            <div id="upload-icon-promissory_note">
+                                                <svg class="w-6 h-6 mb-2 text-amber-400/60 group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            </div>
+                                            <p class="text-[10px] font-bold text-white/60">Attach Note</p>
+                                            <p class="text-[10px] text-amber-400 mt-1 hidden font-bold" id="feedback-promissory_note">Selected</p>
+                                        </div>
+                                        <input type="file" id="promissory_note" name="promissory_note" class="sr-only" accept=".doc,.docx,application/pdf" onchange="previewFile(this, 'promissory_note')" />
+                                    </label>
+                                    @if($enrollment->promissory_note_path)
+                                        <div class="flex justify-end">
+                                            <a href="{{ asset('storage/' . $enrollment->promissory_note_path) }}" target="_blank" class="text-[9px] font-black text-amber-400/60 hover:text-amber-400 uppercase tracking-widest transition-colors">View Saved Note</a>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="space-y-3">
+                                    <label for="promissory_reason" class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Reason for Missing Documents</label>
+                                    <textarea id="promissory_reason" name="promissory_reason" rows="4" 
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/10 focus:outline-none focus:border-amber-400/30 transition-colors resize-none" 
+                                        placeholder="Explain why documents are currently unavailable..."
+                                    >{{ old('promissory_reason', $enrollment->promissory_reason) }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
 
             {{-- Error Handling & Submission --}}

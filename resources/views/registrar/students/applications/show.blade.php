@@ -159,6 +159,56 @@
                     </div>
                 </div>
 
+                {{-- Promissory Note Review --}}
+                @if($application->promissory_note_path || $application->promissory_reason)
+                <div class="space-y-8 pt-10 border-t border-white/5">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Promissory Note & Reasoning</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-amber-500/5 border border-amber-500/10 rounded-[40px] p-10">
+                        <div class="lg:col-span-1 space-y-4">
+                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment</span>
+                            @if($application->promissory_note_path)
+                                @php
+                                    $noteUrl = \Storage::disk('public')->url($application->promissory_note_path);
+                                    $isPdf = Str::endsWith($application->promissory_note_path, '.pdf');
+                                @endphp
+                                <a href="{{ $noteUrl }}" target="_blank" class="group/note block p-6 rounded-3xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                                            @if($isPdf)
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                            @else
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-black text-white uppercase tracking-wider">Download Note</p>
+                                            <p class="text-[8px] text-amber-500/60 uppercase font-bold mt-0.5">{{ $isPdf ? 'PDF Format' : 'Word Document' }}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            @else
+                                <div class="p-6 rounded-3xl border border-dashed border-white/5 bg-white/[0.02] flex items-center justify-center">
+                                    <span class="text-[8px] font-black text-white/20 uppercase tracking-widest italic">No File Attached</span>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <div class="lg:col-span-2 space-y-4">
+                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
+                            <div class="p-8 rounded-3xl bg-white/[0.03] border border-white/5 min-h-[100px]">
+                                <p class="text-xs text-white/70 leading-relaxed italic">
+                                    {{ $application->promissory_reason ?? 'No explanation provided.' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 <div class="flex md:hidden flex-col gap-4 pt-10">
                     @if (in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
                         <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">

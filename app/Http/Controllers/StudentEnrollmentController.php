@@ -170,6 +170,8 @@ class StudentEnrollmentController extends Controller
         
         $validationRules = [
             'id_picture' => 'nullable|image|max:2048',
+            'promissory_note' => 'nullable|file|mimes:doc,docx,pdf|max:5120',
+            'promissory_reason' => 'nullable|string|max:1000',
         ];
 
         if ($level === 'shs') {
@@ -200,10 +202,19 @@ class StudentEnrollmentController extends Controller
             }
         }
 
+        // Handle Promissory Note
+        if ($request->hasFile('promissory_note')) {
+            $updatedData['promissory_note_path'] = $request->file('promissory_note')->store('enrollments/promissory', 'public');
+        }
+
+        if ($request->has('promissory_reason')) {
+            $updatedData['promissory_reason'] = $request->promissory_reason;
+        }
+
         if (!empty($updatedData)) {
             $enrollment->update($updatedData);
         }
 
-        return back()->with('success', 'Documents uploaded successfully.');
+        return back()->with('success', 'Information and documents updated successfully.');
     }
 }

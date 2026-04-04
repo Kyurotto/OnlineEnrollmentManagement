@@ -16,21 +16,22 @@
                 <div class="relative group w-full sm:w-64">
                     <input type="text" wire:model.live.debounce.500ms="search"
                         placeholder="Search Applicant or Course..."
-                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 transition-all shadow-inner tracking-wider">
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all shadow-inner tracking-wider">
                     <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
                 <div class="w-full sm:w-44">
-                    <select wire:model.live="status" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                    <select wire:model.live="status" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
                         <option value="All statuses" class="bg-[#0a0f1d]">All Status</option>
                         <option value="Pending" class="bg-[#0a0f1d]">Pending</option>
                         <option value="Approved" class="bg-[#0a0f1d]">Approved</option>
                         <option value="Rejected" class="bg-[#0a0f1d]">Rejected</option>
+                        <option value="Paid" class="bg-[#0a0f1d]">Paid</option>
                     </select>
                 </div>
                 <div class="w-full sm:w-44">
-                    <select wire:model.live="year_level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                    <select wire:model.live="year_level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
                         <option value="All Years" class="bg-[#0a0f1d]">All Years</option>
                         <option value="1st Year" class="bg-[#0a0f1d]">BSIS 1</option>
                         <option value="2nd Year" class="bg-[#0a0f1d]">BSIS 2</option>
@@ -57,11 +58,11 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('last_name')">
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('users.last_name')">
                             <div class="flex items-center gap-2">
                                 Full Name
-                                <span class="transition-opacity {{ $sortField === 'last_name' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
-                                    @if($sortField === 'last_name' && $sortDirection === 'asc')
+                                <span class="transition-opacity {{ $sortField === 'users.last_name' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'users.last_name' && $sortDirection === 'asc')
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
                                     @else
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
@@ -69,7 +70,7 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-left text-white/20 uppercase tracking-[0.2em]">Account Details</th>
+                        <th class="py-6 px-8 text-left">Account Details</th>
                         <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors">
                             <div class="flex items-center gap-2">
                                 Level
@@ -116,68 +117,70 @@
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">
                     @forelse($applications as $application)
-                    <tr class="hover:bg-white/[0.02] transition-colors group">
-                        <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
-                        <td class="py-6 px-8">
-                            <div class="flex flex-col">
-                                <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider block font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
-                                <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
-                            </div>
-                        </td>
-                        <td class="py-6 px-8 text-white/40 lowercase tracking-tight">{{ $application->email }}</td>
-                        <td class="py-6 px-8 whitespace-nowrap">
-                            @php
-                                $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-                                $isSHS = in_array($application->course_code, $shsStrands);
-                            @endphp
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
+                            <td class="py-6 px-8">
+                                <div class="flex flex-col">
+                                    <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider block font-bold">{{ $application->user->last_name }}, {{ $application->user->first_name }} {{ $application->user->middle_name }}</span>
+                                    <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
+                                </div>
+                            </td>
+                            <td class="py-6 px-8 text-white/40 lowercase tracking-tight">{{ $application->user->email }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                @php
+                                    $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+                                    $isSHS = in_array($application->course_code, $shsStrands);
+                                @endphp
 
-                            @if($isSHS)
-                                <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">
-                                    Senior High
+                                @if($isSHS)
+                                    <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">
+                                        Senior High
+                                    </span>
+                                @else
+                                    <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg">
+                                        College
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                <span class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
+                                <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
+                            </td>
+                            <td class="py-6 px-8 text-white/30 font-medium italic tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
+                            <td class="py-6 px-8">
+                                @php
+                                    $badgeColor = match(ucfirst($application->status)) {
+                                        'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        'Enrolled','Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                        'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                        'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        default => 'bg-white/5 text-white/40 border-white/10',
+                                    };
+                                    $displayText = match($application->status) {
+                                        'Enrolled' => 'Paid',
+                                        default => $application->status
+                                    };
+                                @endphp
+                                <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
+                                    {{ $displayText }}
                                 </span>
-                            @else
-                                <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg">
-                                    College
-                                </span>
-                            @endif
-                        </td>
-                        <td class="py-6 px-8 whitespace-nowrap">
-                            <div class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</div>
-                            <span class="text-white/20 text-[9px] font-bold">({{ $application->year_display }})</span>
-                        </td>
-                        <td class="py-6 px-8 text-white/30 font-medium italic tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
-                        <td class="py-6 px-8">
-                            @php
-                            $badgeColor = match(ucfirst($application->status)) {
-                                'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                'Enrolled','Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                                'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                default => 'bg-white/5 text-white/40 border-white/10',
-                            };
-                            $displayText = ucfirst($application->status);
-                            if (in_array($displayText, ['Enrolled', 'Paid'])) { $displayText = 'Paid'; }
-                            @endphp
-                            <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
-                                {{ $displayText }}
-                            </span>
-                        </td>
-                        <td class="py-6 px-8 text-right">
-                            <div class="flex justify-end items-center gap-3">
-                                    <button type="button" @click="modalOpen = true; openModal({{ json_encode($application) }}); @this.set('selectedId', {{ $application->id }})"
+                            </td>
+                            <td class="py-6 px-8">
+                                <div class="flex justify-end items-center gap-4">
+                                    <button type="button" @click="modalOpen = true; openModal({{ json_encode($application) }}); selectedId = {{ $application->id }}"
                                         class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20">
                                         View Details
                                     </button>
 
-                            </div>
-                        </td>
-                    </tr>
+                                </div>
+                            </td>
+                        </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-20 text-center">
+                        <td colspan="8" class="py-24 text-center">
                             <div class="flex flex-col items-center opacity-20">
-                                <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                <span class="text-[10px] font-black uppercase tracking-[0.3em] italic">No Applications Found</span>
+                                <svg class="w-16 h-16 mb-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-white">No applications found in the review pipeline</span>
                             </div>
                         </td>
                     </tr>
@@ -185,9 +188,12 @@
                 </tbody>
             </table>
         </div>
-        <div class="p-8 border-t border-white/5 bg-white/[0.01]">
-            {{ $applications->links('pagination') }}
-        </div>
+
+        @if($applications->hasPages())
+            <div class="p-8 border-t border-white/5 bg-white/[0.01]">
+                {{ $applications->links('pagination') }}
+            </div>
+        @endif
     </div>
 
     {{-- Universal Application Analysis Modal --}}
@@ -198,55 +204,55 @@
 
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                 <div>
-                    <h2 class="text-2xl font-black text-white italic uppercase tracking-tight" id="modalTitle">Application Details</h2>
-                    <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process</p>
+                    <span class="text-[9px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-1 block italic text-shadow shadow-cyan-500/20">Analysis Protocol</span>
+                    <h2 class="text-2xl font-black text-white uppercase italic tracking-tight" id="modalTitle">Application Details</h2>
                 </div>
-                <button @click="modalOpen = false" class="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button @click="modalOpen = false" class="p-4 rounded-2xl bg-white/5 text-white/20 hover:text-white transition-colors border border-white/10">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18"></path></svg>
                 </button>
             </div>
 
             <div class="p-8 md:p-12 overflow-y-auto custom-scrollbar flex-grow space-y-12">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {{-- Student Information --}}
+                    {{-- Student Profile --}}
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
                             <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Student Profile</h3>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Applicant Profile</h3>
                         </div>
                         <div class="grid grid-cols-1 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
                             <div class="grid grid-cols-2 gap-8">
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
-                                    <span class="text-xs font-bold text-cyan-400 capitalize" id="modalNameValue"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalNameValue"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Email Address</span>
-                                    <span class="text-xs font-bold text-white/60 lowercase" id="modalEmail"></span>
+                                    <span class="text-xs font-bold text-white lowercase" id="modalEmail"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Application ID</span>
-                                    <span class="text-xs font-bold text-white/40 font-mono tracking-tighter" id="modalAppId"></span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Reference ID</span>
+                                    <span class="text-xs font-bold text-cyan-400 uppercase" id="modalAppId"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Submitted On</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalSubmitted"></span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Applied On</span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalSubmitted"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Date of Birth</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalDob"></span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Birth Date</span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalDob"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Age</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalAge"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalAge"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Gender</span>
-                                    <span class="text-xs font-bold text-white/60 capitalize" id="modalGender"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalGender"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Address</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalAddress"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalAddress"></span>
                                 </div>
                             </div>
                         </div>
@@ -255,22 +261,24 @@
                     {{-- Program & Lifecycle --}}
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
-                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                             <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Program Details</h3>
                         </div>
-                        <div class="bg-cyan-500/5 border border-cyan-500/10 rounded-[32px] p-8 space-y-8 h-full flex flex-col justify-center">
-                            <div class="flex flex-col gap-2">
-                                <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest italic">Program</span>
-                                <span class="text-2xl font-black text-white uppercase italic tracking-tighter" id="modalCourse"></span>
-                            </div>
-                            <div class="flex items-center gap-10 pt-6 border-t border-cyan-500/10">
+                        <div class="bg-blue-500/5 border border-blue-500/10 rounded-[32px] p-8 h-full flex flex-col justify-center">
+                            <div class="space-y-4">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Year Level</span>
-                                    <span class="text-sm font-black text-white uppercase" id="modalYear"></span>
+                                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Applied Program</span>
+                                    <span class="text-2xl font-black text-white uppercase italic tracking-tighter" id="modalCourse"></span>
                                 </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
-                                    <span class="text-sm font-black text-cyan-400 uppercase tracking-[0.1em]" id="modalStatus"></span>
+                                <div class="grid grid-cols-2 gap-8 pt-6 border-t border-white/5">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Academic Level</span>
+                                        <span class="text-xs font-bold text-white uppercase" id="modalYear"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
+                                        <span class="text-xs font-black text-cyan-400 uppercase tracking-widest" id="modalStatus"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -313,54 +321,74 @@
                         {{-- Injected via JS --}}
                     </div>
                 </div>
+
+                {{-- Promissory Note Asset --}}
+                <div class="space-y-6 pt-6 hidden" id="modalPromissorySection">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Promissory Note & Reason</h3>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8">
+                        <div id="modalPromissoryFile" class="lg:col-span-1">
+                            {{-- Injected via JS --}}
+                        </div>
+                        <div class="lg:col-span-2 space-y-2">
+                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
+                            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[80px]">
+                                <p class="text-[11px] text-white/60 leading-relaxed italic" id="modalPromissoryReason"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-                <div id="actionButtons" class="items-center gap-4 hidden">
-                    <button type="button" wire:click="approve(selectedId)" onclick="closeModal()" class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
-                        Approve
+            <!-- Modal Footer -->
+            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
+                    <button type="button" 
+                        @click="modalOpen = false; @this.approve(selectedId)" 
+                        class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 shrink-0">
+                        Approve Enrollment
                     </button>
-                    <button type="button" wire:click="reject(selectedId)" wire:confirm="Are you sure you want to reject this application?" onclick="closeModal()" class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95">
+                    <button type="button"
+                        @click="if(confirm('Are you sure you want to reject this application?')) { modalOpen = false; @this.reject(selectedId) }"
+                        class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95 shrink-0">
                         Reject Application
                     </button>
                 </div>
-                <button onclick="closeModal()" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
-                    Close Details
+                <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
+                    Close Protocol
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-    function openModal(app, user, course) {
-        document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
-        const middle = app.middle_name ? ' ' + app.middle_name : '';
-        const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
-
-        // Header info
-        // The original modalName was for the full name in the student profile, now it's modalNameValue
-        // document.getElementById('modalName').innerText = fullName;
+    function openModal(app) {
+        document.getElementById('modalTitle').innerText = (app.user.first_name || '') + ' ' + (app.user.last_name || '');
+        const middle = app.user.middle_name ? ' ' + app.user.middle_name : '';
+        const fullName = (app.user.first_name || '') + middle + ' ' + (app.user.last_name || '');
 
         // Student Profile section
         document.getElementById('modalNameValue').innerText = fullName;
-        document.getElementById('modalEmail').innerText = app.email || 'N/A';
-        document.getElementById('modalAppId').innerText = '#' + String(app.id).padStart(5, '0');
+        document.getElementById('modalEmail').innerText = app.user.email || 'N/A';
+        document.getElementById('modalAppId').innerText = 'REF-' + String(app.id).padStart(5, '0');
         document.getElementById('modalSubmitted').innerText = new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('modalDob').innerText = app.birth_date || 'N/A';
-        document.getElementById('modalAge').innerText = app.age || 'N/A';
-        document.getElementById('modalGender').innerText = app.gender || 'N/A';
-        document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
+        document.getElementById('modalDob').innerText = app.user.birth_date || 'N/A';
+        document.getElementById('modalAge').innerText = app.user.age || 'N/A';
+        document.getElementById('modalGender').innerText = app.user.gender || 'N/A';
+        document.getElementById('modalAddress').innerText = app.user.address_full || 'N/A';
 
         // Program details
-        document.getElementById('modalCourse').innerText = app.course_code || 'N/A'; // Renamed from modalProgram to modalCourse to match existing HTML
+        document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         document.getElementById('modalStatus').innerText = app.status || 'N/A';
 
         // Guardian info
-        document.getElementById('modalFather').innerText = app.father_name || 'N/A';
-        document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
-        document.getElementById('modalGuardian').innerText = app.guardian_name || 'N/A';
-        document.getElementById('modalContact').innerText = app.guardian_contact || 'N/A'; // Renamed from modalEmergency to modalContact to match existing HTML
+        document.getElementById('modalFather').innerText = app.user.father_name || 'N/A';
+        document.getElementById('modalMother').innerText = app.user.mother_maiden_name || 'N/A';
+        document.getElementById('modalGuardian').innerText = app.user.guardian_name || 'N/A';
+        document.getElementById('modalContact').innerText = app.user.guardian_contact || 'N/A';
 
         const docsContainer = document.getElementById('modalDocuments');
         docsContainer.innerHTML = '';
@@ -429,10 +457,51 @@
             docsContainer.innerHTML += `<div>${headerHtml}${boxHtml}<\/div>`;
         });
 
+        // Promissory Note Handling
+        const promissorySection = document.getElementById('modalPromissorySection');
+        const promissoryFile = document.getElementById('modalPromissoryFile');
+        const promissoryReason = document.getElementById('modalPromissoryReason');
+
+        if (app.promissory_note_path || app.promissory_reason) {
+            promissorySection.classList.remove('hidden');
+            promissoryReason.innerText = app.promissory_reason || 'No explanation provided.';
+            
+            if (app.promissory_note_path) {
+                const noteUrl = storageBase + app.promissory_note_path;
+                const isPdf = app.promissory_note_path.toLowerCase().endsWith('.pdf');
+                
+                promissoryFile.innerHTML = `
+                    <div class="space-y-3">
+                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment<\/span>
+                        <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
+                            <\/div>
+                            <div>
+                                <p class="text-[10px] font-black text-white uppercase tracking-wider">Download Note<\/p>
+                                <p class="text-[8px] text-amber-500/60 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}<\/p>
+                            <\/div>
+                        <\/a>
+                    <\/div>
+                `;
+            } else {
+                promissoryFile.innerHTML = `
+                    <div class="space-y-3">
+                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment<\/span>
+                        <div class="p-4 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] flex items-center justify-center opacity-30">
+                            <span class="text-[8px] font-black text-white uppercase tracking-widest italic">No File<\/span>
+                        <\/div>
+                    <\/div>
+                `;
+            }
+        } else {
+            promissorySection.classList.add('hidden');
+        }
+
         // Action Buttons visibility
         const actionButtons = document.getElementById('actionButtons');
         const status = (app.status || '').toLowerCase();
-        if (['pending', 'enrolled', 'paid'].includes(status)) {
+        if (['pending'].includes(status)) {
             actionButtons.classList.remove('hidden');
             actionButtons.classList.add('flex');
         } else {
