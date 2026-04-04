@@ -20,7 +20,7 @@ class StudentDashboardController extends Controller
 
         // 2. Check if student has a PENDING application for the CURRENT ACTIVE SEMESTER
         $hasPendingApplication = false;
-        
+
         if ($activeYear) {
             $hasPendingApplication = Enrollment::where('user_id', $user->id)
                 ->where('status', 'Pending')
@@ -49,14 +49,27 @@ class StudentDashboardController extends Controller
                 ->exists();
         }
 
+        // 6. Check if an enrollment record already exists for this user in the active year
+        $existingEnrollment = null;
+        $hasSubmitted = false;
+        if ($activeYear) {
+            $existingEnrollment = Enrollment::where('user_id', $user->id)
+                ->whereIn('status', ['Pending', 'Approved', 'Enrolled', 'Rejected'])
+                ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                ->first();
+            $hasSubmitted = $existingEnrollment !== null;
+        }
+
         return view('dashboard', compact(
-            'activeSemester', 
-            'activeYear', 
+            'activeSemester',
+            'activeYear',
             'hasPendingApplication',
-            'myEnrollments', 
+            'myEnrollments',
             'latestEnrollment',
             'currentYearEnrollment',
-            'isEnrolledInActiveYear'
+            'isEnrolledInActiveYear',
+            'hasSubmitted',
+            'existingEnrollment'
         ));
     }
 }
