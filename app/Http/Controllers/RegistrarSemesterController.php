@@ -47,7 +47,7 @@ class RegistrarSemesterController extends Controller
             'is_active' => $isActive,
         ]);
 
-        return back()->with('success', 'Semester created successfully.');
+        return redirect()->route('registrar.semesters.index')->with('success', 'Semester created successfully.');
     }
 
     public function update(Request $request, $id)
@@ -75,13 +75,13 @@ class RegistrarSemesterController extends Controller
             'is_active' => $isActive,
         ]);
 
-        return back()->with('success', 'Semester updated successfully.');
+        return redirect()->route('registrar.semesters.index')->with('success', 'Semester updated successfully.');
     }
 
     public function destroy($id)
     {
         Semester::findOrFail($id)->delete();
-        return back()->with('success', 'Semester deleted successfully.');
+        return redirect()->route('registrar.semesters.index')->with('success', 'Semester deleted successfully.');
     }
 
     // --- NEW: Custom Activate Function (Button Click) ---
@@ -95,7 +95,7 @@ class RegistrarSemesterController extends Controller
         // Explicitly update this semester to active (redundancy check)
         $semester->update(['is_active' => true]);
 
-        return back()->with('success', "Active status updated for {$semester->academic_year} - {$semester->name}.");
+        return redirect()->route('registrar.semesters.index')->with('success', "Active status updated for {$semester->academic_year} - {$semester->name}.");
     }
 
     // Helper function to keep code clean

@@ -49,7 +49,7 @@ class RegistrarProgramController extends Controller
         Course::create($data);
 
         $label = $request->type === 'program' ? 'Program' : 'Strand';
-        return back()->with('success', $label . ' added successfully.');
+        return redirect()->route('registrar.programs.index')->with('success', $label . ' added successfully.');
     }
 
     public function update(Request $request, $id)
@@ -83,7 +83,7 @@ class RegistrarProgramController extends Controller
         $program->update($data);
 
         $label = $program->type === 'program' ? 'Program' : 'Strand';
-        return back()->with('success', $label . ' updated successfully.');
+        return redirect()->route('registrar.programs.index')->with('success', $label . ' updated successfully.');
     }
 
     public function destroy($id)
@@ -95,9 +95,9 @@ class RegistrarProgramController extends Controller
             Section::where('course_id', $id)->delete();
 
             $course->delete();
-            return back()->with('success', 'Program deleted successfully.');
+            return redirect()->route('registrar.programs.index')->with('success', 'Program deleted successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Cannot delete program. It contains active enrollments or records.');
+            return redirect()->route('registrar.programs.index')->with('error', 'Cannot delete program. It contains active enrollments or records.');
         }
     }
 }

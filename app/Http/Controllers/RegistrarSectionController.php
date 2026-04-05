@@ -43,7 +43,7 @@ class RegistrarSectionController extends Controller
             'section_name' => strtoupper($request->section_name), // Force Uppercase
         ]);
 
-        return back()->with('success', 'Section created successfully.');
+        return redirect()->route('registrar.sections.index')->with('success', 'Section created successfully.');
     }
 
     public function update(Request $request, $id)
@@ -62,12 +62,12 @@ class RegistrarSectionController extends Controller
             'section_name' => strtoupper($request->section_name),
         ]);
 
-        return back()->with('success', 'Section updated successfully.');
+        return redirect()->route('registrar.sections.index')->with('success', 'Section updated successfully.');
     }
 
     public function destroy($id)
     {
         Section::findOrFail($id)->delete();
-        return back()->with('success', 'Section deleted successfully.');
+        return redirect()->route('registrar.sections.index')->with('success', 'Section deleted successfully.');
     }
 }
