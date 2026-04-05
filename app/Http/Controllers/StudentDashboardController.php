@@ -49,6 +49,35 @@ class StudentDashboardController extends Controller
                 ->exists();
         }
 
+        // 6. Calculate Progress Steps for the Progress Bar
+        $steps = [
+            'application' => $latestEnrollment ? 'green' : 'grey',
+            'online_docs' => 'grey',
+            'physical_docs' => 'grey',
+            'payment' => 'grey',
+            'enroll' => 'grey'
+        ];
+
+        if ($latestEnrollment) {
+            // 1. Online Docs Logic
+            $hasPromissory = !empty($latestEnrollment->promissory_note_path);
+            $steps['online_docs'] = $hasPromissory ? 'yellow' : 'green';
+
+            // 2. Physical Docs Logic
+            if ($latestEnrollment->physical_documents_received) {
+                $steps['physical_docs'] = 'green';
+            } else {
+                $steps['physical_docs'] = $hasPromissory ? 'yellow' : 'grey';
+            }
+
+            // 3. Payment Logic (Checks for any 'Paid' status linked to this application)
+            $hasPaid = $latestEnrollment->payments()->where('status', 'Paid')->exists();
+            $steps['payment'] = $hasPaid ? 'green' : ($latestEnrollment->status == 'Approved' ? 'yellow' : 'grey');
+
+            // 4. Enroll Logic
+            $steps['enroll'] = ($latestEnrollment->status == 'Enrolled') ? 'green' : 'grey';
+        }
+
         return view('dashboard', compact(
             'activeSemester', 
             'activeYear', 
@@ -56,7 +85,8 @@ class StudentDashboardController extends Controller
             'myEnrollments', 
             'latestEnrollment',
             'currentYearEnrollment',
-            'isEnrolledInActiveYear'
+            'isEnrolledInActiveYear',
+            'steps'
         ));
     }
 }

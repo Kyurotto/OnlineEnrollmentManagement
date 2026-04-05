@@ -1,10 +1,14 @@
-<div x-data="{ modalOpen: false, selectedId: null }" @keydown.escape.window="modalOpen = false" class="space-y-6 animate-in fade-in duration-500">
-    @if(session('success'))
-        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-            <span class="text-xs font-black uppercase tracking-widest">{{ session('success') }}</span>
-        </div>
-    @endif
+<div x-data="{ modalOpen: false, selectedId: null }" 
+     x-init="
+        $watch('modalOpen', value => {
+            if (value === false) {
+                selectedId = null;
+            }
+        })
+     "
+     @keydown.escape.window="modalOpen = false; selectedId = null"
+     @modal-reset.window="modalOpen = false; selectedId = null"
+     class="space-y-6 animate-in fade-in duration-500">
 
     <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
         <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -197,8 +201,8 @@
     </div>
 
     {{-- Universal Application Analysis Modal --}}
-    <div x-show="modalOpen" wire:ignore x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false"></div>
+    <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false; selectedId = null"></div>
 
         <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent">
 
@@ -207,7 +211,7 @@
                     <span class="text-[9px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-1 block italic text-shadow shadow-cyan-500/20">Analysis Protocol</span>
                     <h2 class="text-2xl font-black text-white uppercase italic tracking-tight" id="modalTitle">Application Details</h2>
                 </div>
-                <button @click="modalOpen = false" class="p-4 rounded-2xl bg-white/5 text-white/20 hover:text-white transition-colors border border-white/10">
+                <button @click="modalOpen = false; selectedId = null" class="p-4 rounded-2xl bg-white/5 text-white/20 hover:text-white transition-colors border border-white/10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18"></path></svg>
                 </button>
             </div>
@@ -346,17 +350,27 @@
             <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
                     <button type="button" 
-                        @click="modalOpen = false; @this.approve(selectedId)" 
+                        @click="
+                            @this.togglePhysicalDocuments(selectedId);
+                            modalOpen = false;
+                            setTimeout(() => { location.reload(); }, 800);
+                        " 
+                        id="togglePhysicalBtn"
+                        class="text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0">
+                        Done Hard Docs
+                    </button>
+                    <button type="button" 
+                        @click="@this.approve(selectedId); setTimeout(() => { location.reload(); }, 800);" 
                         class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 shrink-0">
                         Approve Enrollment
                     </button>
                     <button type="button"
-                        @click="if(confirm('Are you sure you want to reject this application?')) { modalOpen = false; @this.reject(selectedId) }"
+                        @click="if(confirm('Are you sure you want to reject this application?')) { @this.reject(selectedId); setTimeout(() => { location.reload(); }, 800); }"
                         class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95 shrink-0">
                         Reject Application
                     </button>
                 </div>
-                <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
+                <button @click="modalOpen = false; selectedId = null" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
                     Close Protocol
                 </button>
             </div>
@@ -383,6 +397,16 @@
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         document.getElementById('modalStatus').innerText = app.status || 'N/A';
+
+        // Toggle Physical Documents Button Styling
+        const toggleBtn = document.getElementById('togglePhysicalBtn');
+        if (app.physical_documents_received) {
+            toggleBtn.textContent = 'Cancel Hard Docs';
+            toggleBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 shrink-0';
+        } else {
+            toggleBtn.textContent = 'Done Hard Docs';
+            toggleBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-cyan-500 text-black shrink-0';
+        }
 
         // Guardian info
         document.getElementById('modalFather').innerText = app.user.father_name || 'N/A';
@@ -509,5 +533,16 @@
             actionButtons.classList.remove('flex');
         }
     }
+
+    // Listen for Livewire modal-reset event
+    document.addEventListener('livewire:navigated', () => {
+        // Re-initialize if needed after Livewire updates
+    });
+
+    // Dispatch custom event when modal-reset Livewire event fires
+    Livewire.on('modal-reset', () => {
+        const event = new CustomEvent('modal-reset');
+        window.dispatchEvent(event);
+    });
     </script>
 </div>

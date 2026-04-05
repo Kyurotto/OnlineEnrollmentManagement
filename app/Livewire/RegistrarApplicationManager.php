@@ -4,10 +4,12 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 use App\Models\Enrollment;
 use App\Models\Course;
 use App\Models\User;
 
+#[Layout('components.layouts.registrar')]
 class RegistrarApplicationManager extends Component
 {
     use WithPagination;
@@ -69,6 +71,19 @@ class RegistrarApplicationManager extends Component
         session()->flash('success', 'Application status updated to Rejected.');
     }
 
+    public function togglePhysicalDocuments($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->physical_documents_received = !$application->physical_documents_received;
+        $application->save();
+
+        $status = $application->physical_documents_received ? 'marked as received' : 'unmarked';
+        session()->flash('success', "Physical documents $status.");
+        
+        // Emit event to reset Alpine state
+        $this->dispatch('modal-reset');
+    }
+
     public function destroy($id)
     {
         $application = Enrollment::findOrFail($id);
@@ -126,6 +141,6 @@ class RegistrarApplicationManager extends Component
         return view('livewire.registrar-application-manager', [
             'applications' => $applications,
             'pendingCount' => $pendingCount
-        ])->layout('components.layouts.registrar', ['title' => 'Enrollment Applications']);
+        ]);
     }
 }
