@@ -35,10 +35,11 @@ class CourseController extends Controller
 
         // 2. Create Course (Map inputs to DB columns)
         $course = new Course();
-        $course->course_code = $request->course_code; // Fixed: Saving to 'course_code'
-        $course->course_name = $request->course_name; // Fixed: Saving to 'course_name'
+        $course->course_code = $request->course_code;
+        $course->course_name = $request->course_name;
         $course->credits = $request->credits;
         $course->description = $request->description;
+        $course->type = 'course'; // Explicitly set type to 'course' (Prevents it from showing in Registrar's Programs)
         $course->save();
 
         return redirect()->route('admin.courses.index')->with('success', 'Course added successfully!');
@@ -84,6 +85,7 @@ class CourseController extends Controller
         $course->course_name = $request->course_name;
         $course->credits = $request->credits;
         $course->description = $request->description;
+        $course->type = 'course'; // Ensure type remains 'course'
         $course->save();
 
         // 3. RETURN RESPONSE
