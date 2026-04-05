@@ -34,7 +34,7 @@ class RegistrarAcademicYearController extends Controller
             'is_active' => $request->has('is_active') ? true : false,
         ]);
 
-        return back()->with('success', 'Academic Year created successfully.');
+        return redirect()->route('registrar.academic_years.index')->with('success', 'Academic Year created successfully.');
     }
 
     public function update(Request $request, $id)
@@ -55,12 +55,12 @@ class RegistrarAcademicYearController extends Controller
             'is_active' => $request->has('is_active') ? true : false,
         ]);
 
-        return back()->with('success', 'Academic Year updated successfully.');
+        return redirect()->route('registrar.academic_years.index')->with('success', 'Academic Year updated successfully.');
     }
 
     public function destroy($id)
     {
         AcademicYear::findOrFail($id)->delete();
-        return back()->with('success', 'Academic Year deleted successfully.');
+        return redirect()->route('registrar.academic_years.index')->with('success', 'Academic Year deleted successfully.');
     }
 }
