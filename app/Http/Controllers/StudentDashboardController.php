@@ -20,7 +20,7 @@ class StudentDashboardController extends Controller
 
         // 2. Check if student has a PENDING application for the CURRENT ACTIVE SEMESTER
         $hasPendingApplication = false;
-        
+
         if ($activeYear) {
             $hasPendingApplication = Enrollment::where('user_id', $user->id)
                 ->where('status', 'Pending')
@@ -62,22 +62,22 @@ class StudentDashboardController extends Controller
             // 1. Online Docs Logic - Check if ALL required documents are uploaded
             $level = $latestEnrollment->level;
             $allDocsUploaded = true;
-            
+
             if ($level === 'shs') {
                 $requiredDocs = ['form_137_path', 'sf10_path', 'good_moral_path', 'psa_path', 'id_picture_path'];
             } else {
                 $requiredDocs = ['form_137_path', 'good_moral_path', 'psa_path', 'id_picture_path'];
             }
-            
+
             foreach ($requiredDocs as $doc) {
                 if (empty($latestEnrollment->$doc)) {
                     $allDocsUploaded = false;
                     break;
                 }
             }
-            
+
             $hasPromissory = !empty($latestEnrollment->promissory_note_path);
-            
+
             if ($allDocsUploaded) {
                 $steps['online_docs'] = 'green'; // All documents uploaded
             } elseif ($hasPromissory) {
@@ -101,15 +101,28 @@ class StudentDashboardController extends Controller
             $steps['enroll'] = ($latestEnrollment->status == 'Enrolled') ? 'green' : ($hasPaid ? 'yellow' : 'grey');
         }
 
+        // 7. Check if an enrollment record already exists for this user in the active year
+        $existingEnrollment = null;
+        $hasSubmitted = false;
+        if ($activeYear) {
+            $existingEnrollment = Enrollment::where('user_id', $user->id)
+                ->whereIn('status', ['Pending', 'Approved', 'Enrolled', 'Rejected'])
+                ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                ->first();
+            $hasSubmitted = $existingEnrollment !== null;
+        }
+
         return view('dashboard', compact(
-            'activeSemester', 
-            'activeYear', 
+            'activeSemester',
+            'activeYear',
             'hasPendingApplication',
-            'myEnrollments', 
+            'myEnrollments',
             'latestEnrollment',
             'currentYearEnrollment',
             'isEnrolledInActiveYear',
-            'steps'
+            'steps',
+            'hasSubmitted',
+            'existingEnrollment'
         ));
     }
 }
