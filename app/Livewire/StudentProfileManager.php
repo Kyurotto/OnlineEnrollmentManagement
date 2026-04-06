@@ -5,11 +5,17 @@ namespace App\Livewire;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use App\Models\User;
 use App\Models\Payment;
+use App\Models\Enrollment;
 
 class StudentProfileManager extends Component
 {
+    // Context for conditional rendering
+    public $context = 'profile';
+
+
     // Profile Fields
     public $first_name;
     public $middle_name;
@@ -21,13 +27,15 @@ class StudentProfileManager extends Component
     public $password;
     public $password_confirmation;
 
-    public function mount()
+    public function mount($context = 'profile')
     {
+        $this->context = $context;
         $user = Auth::user();
         $this->first_name = $user->first_name;
         $this->middle_name = $user->middle_name;
         $this->last_name = $user->last_name;
         $this->email = $user->email;
+
     }
 
     public function updateProfile()

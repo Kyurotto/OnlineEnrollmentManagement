@@ -10,8 +10,8 @@
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h2 class="text-3xl font-bold text-white tracking-tight">Enrollment Application</h2>
-                <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Enrollment Application</p>
+                <h2 class="text-3xl font-bold text-white tracking-tight">Edit Enrollment Application</h2>
+                <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Modify Your Submission</p>
             </div>
         </div>
 
@@ -21,8 +21,9 @@
             </div>
         @endif
 
-        <form action="{{ route('student.enrollment.store') }}" method="POST" class="space-y-8 pb-12">
+        <form action="{{ route('student.enrollment.update') }}" method="POST" class="space-y-8 pb-12">
             @csrf
+            @method('PUT')
 
             {{-- Hidden Level Field --}}
             <input type="hidden" name="level" value="{{ $level }}">
@@ -119,11 +120,11 @@
                         <select name="year_level" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
                             <option value="">Select Year</option>
                             @if($level === 'shs')
-                                <option value="Grade 11" {{ old('year_level', $year_level ?? '') === 'Grade 11' ? 'selected' : '' }}>Grade 11</option>
-                                <option value="Grade 12" {{ old('year_level', $year_level ?? '') === 'Grade 12' ? 'selected' : '' }}>Grade 12</option>
+                                <option value="Grade 11" {{ old('year_level', $year_level_part ?? '') === 'Grade 11' ? 'selected' : '' }}>Grade 11</option>
+                                <option value="Grade 12" {{ old('year_level', $year_level_part ?? '') === 'Grade 12' ? 'selected' : '' }}>Grade 12</option>
                             @else
                                 @foreach(['1st Year', '2nd Year', '3rd Year', '4th Year'] as $year)
-                                    <option value="{{ $year }}" {{ old('year_level', $year_level ?? '') === $year ? 'selected' : '' }}>{{ $year }}</option>
+                                    <option value="{{ $year }}" {{ old('year_level', $year_level_part ?? '') === $year ? 'selected' : '' }}>{{ $year }}</option>
                                 @endforeach
                             @endif
                         </select>
@@ -132,8 +133,8 @@
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Semester</label>
                         <select name="semester" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
                             <option value="">Select Semester</option>
-                            <option value="1st Semester" {{ old('semester', $semester ?? '') === '1st Semester' ? 'selected' : '' }}>1st Semester</option>
-                            <option value="2nd Semester" {{ old('semester', $semester ?? '') === '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
+                            <option value="1st Semester" {{ old('semester', $semester_part ?? '') === '1st Semester' ? 'selected' : '' }}>1st Semester</option>
+                            <option value="2nd Semester" {{ old('semester', $semester_part ?? '') === '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -141,7 +142,7 @@
                         <select name="academic_year" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
                             <option value="">Select Year</option>
                             @foreach($academicYears as $year)
-                                <option value="{{ $year->year_name }}" {{ old('academic_year', $academic_year ?? '') === $year->year_name ? 'selected' : '' }}>{{ $year->year_name }}</option>
+                                <option value="{{ $year->year_name }}" {{ old('academic_year', $year_part ?? '') === $year->year_name ? 'selected' : '' }}>{{ $year->year_name }}</option>
                             @endforeach
                         </select>
                     </div>

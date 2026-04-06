@@ -1,4 +1,5 @@
 <div>
+    @if($context !== 'enrollment-actions')
     <div class="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-700">
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -158,4 +159,29 @@
             </div>
         </div>
     </div>
+    @endif
+
+    {{-- Enrollment Actions Context --}}
+    @if($context === 'enrollment-actions')
+    <div>
+        @php
+            $enrollment = \App\Models\Enrollment::where('user_id', auth()->id())->first();
+            $isFinalized = $enrollment && in_array($enrollment->status, ['Enrolled', 'Paid']);
+        @endphp
+
+        <div class="flex-1 group relative">
+            @if(!$isFinalized)
+                <a href="{{ route('student.enrollment.edit') }}" class="w-full h-full flex items-center justify-center px-6 py-3 rounded-xl font-bold bg-amber-600 hover:bg-amber-500 text-white border border-amber-500/50 shadow-lg shadow-amber-500/20 transition-all">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    Proceed to Edit Application
+                </a>
+            @else
+                <button disabled title="Cannot edit a finalized/paid application" class="w-full h-full flex items-center justify-center px-6 py-3 rounded-xl font-bold bg-white/5 text-white/20 border border-white/10 cursor-not-allowed opacity-50">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    Application Finalized (Edit Locked)
+                </button>
+            @endif
+        </div>
+    </div>
+    @endif
 </div>
