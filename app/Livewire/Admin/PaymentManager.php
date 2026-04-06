@@ -97,7 +97,7 @@ class PaymentManager extends Component
             'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
             'amount' => $this->amount,
             'transaction_id' => $this->reference_no ?? 'CASH-' . time(),
-            'status' => 'Paid', 
+            'status' => 'Paid',
             'payment_method' => $this->payment_type,
         ]);
 
@@ -124,7 +124,7 @@ class PaymentManager extends Component
     public function update()
     {
         $this->validate();
-        
+
         $payment = Payment::findOrFail($this->selectedPaymentId);
         $payment->update([
             'user_id' => $this->user_id,
@@ -172,8 +172,8 @@ class PaymentManager extends Component
     {
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
-            ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
-            ->with(['user', 'application']); 
+            ->leftJoin('users', 'payments.user_id', '=', 'users.id')
+            ->with(['user', 'application']);
 
         if ($this->status != 'All statuses') {
             $query->where('payments.status', $this->status);
@@ -187,7 +187,7 @@ class PaymentManager extends Component
                     $courseCode = $parts[0];
                     $yearDigit = $parts[1];
                     $suffix = match($yearDigit) { '1' => 'st', '2' => 'nd', '3' => 'rd', default => 'th' };
-                    $yearString = $yearDigit . $suffix . ' Year'; 
+                    $yearString = $yearDigit . $suffix . ' Year';
                     $query->where('enrollments.course_code', $courseCode)
                         ->where('enrollments.year_level', 'like', $yearString . '%');
                 }
@@ -200,7 +200,7 @@ class PaymentManager extends Component
             $search = $this->search;
             $query->where(function($q) use ($search) {
                 $q->where('payments.id', 'like', "%{$search}%")
-                ->orWhere('payments.transaction_id', 'like', "%{$search}%") 
+                ->orWhere('payments.transaction_id', 'like', "%{$search}%")
                 ->orWhereHas('user', function($u) use ($search) {
                     $u->where('users.name', 'like', "%{$search}%")
                         ->orWhere('users.email', 'like', "%{$search}%");

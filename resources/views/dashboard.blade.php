@@ -25,9 +25,9 @@
         $currentAcademicYear = $activeYear;
         if ($currentAcademicYear && $currentYearEnrollment) {
             $isEnrollmentForCurrentYear = strpos($currentYearEnrollment->year_level, $currentAcademicYear->year_name) !== false;
-            $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved']) || !$isEnrollmentForCurrentYear;
+            $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved', 'Paid']) || !$isEnrollmentForCurrentYear;
         } else {
-            $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved']);
+            $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved', 'Paid']);
         }
     @endphp
 
