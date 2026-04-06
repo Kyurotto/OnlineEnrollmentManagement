@@ -243,30 +243,6 @@ class StudentEnrollmentController extends Controller
         return view('student.enrollment_review', compact('enrollment'));
     }
 
-    public function requestEdit()
-    {
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
-
-        if (!$enrollment) {
-            return back()->with('error', 'No active enrollment record found.');
-        }
-
-        if ($enrollment->edit_request_status === 'Pending') {
-            return back()->with('info', 'Edit request is already pending.');
-        }
-
-        $enrollment->edit_request_status = 'Pending';
-        $enrollment->save();
-
-        // Notify Admins and Registrars about the edit request
-        $staff = User::whereIn('role', ['admin', 'registrar'])->get();
-        if ($staff->count() > 0) {
-            Notification::send($staff, new \App\Notifications\EditEnrollmentRequested($enrollment));
-        }
-
-        return back()->with('success', 'Edit request sent to registrar. Please wait for approval.');
-    }
-
     public function edit()
     {
         $user = Auth::user();
@@ -362,8 +338,6 @@ class StudentEnrollmentController extends Controller
             'mother_maiden_name' => $request->mother_maiden_name,
             'guardian_name' => $request->guardian_name,
             'guardian_contact' => $request->guardian_contact,
-            // Reset edit request status only — keep the current enrollment status unchanged
-            'edit_request_status' => 'None',
         ]);
 
         return redirect()->route('student.enrollment.review')->with('success', 'Your application has been successfully updated and is pending review.');

@@ -55,11 +55,9 @@
                                 });
                             @endphp
                             @forelse($acadStrands as $strand)
-                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-emerald-400/10 has-[:checked]:border-emerald-400/50 has-[:checked]:shadow-lg has-[:checked]:shadow-emerald-500/10">
+                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-emerald-500/10 has-[:checked]:border-emerald-500 has-[:checked]:ring-2 has-[:checked]:ring-emerald-500/20 has-[:checked]:shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                                     <input type="radio" name="course_code" value="{{ $strand->course_code }}" {{ old('course_code', $course_code ?? '') === $strand->course_code ? 'checked' : '' }} class="sr-only peer" required>
-                                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors border-white/20 peer-checked:border-emerald-400">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-in zoom-in hidden peer-checked:block"></div>
-                                    </div>
+                                    <div class="w-5 h-5 rounded-full border-2 transition-all duration-300 border-white/20 peer-checked:border-emerald-400 peer-checked:bg-emerald-400"></div>
                                     <div class="ml-4">
                                         <span class="block text-sm font-bold text-white peer-checked:text-emerald-400">{{ $strand->course_code }}</span>
                                         <span class="text-xs text-white/40 uppercase tracking-widest">{{ $strand->course_name }}</span>
@@ -85,11 +83,9 @@
                                 });
                             @endphp
                             @forelse($tvlStrands as $strand)
-                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-purple-400/10 has-[:checked]:border-purple-400/50 has-[:checked]:shadow-lg has-[:checked]:shadow-purple-500/10">
+                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-purple-500/10 has-[:checked]:border-purple-500 has-[:checked]:ring-2 has-[:checked]:ring-purple-500/20 has-[:checked]:shadow-[0_0_15px_rgba(168,85,247,0.3)]">
                                     <input type="radio" name="course_code" value="{{ $strand->course_code }}" {{ old('course_code', $course_code ?? '') === $strand->course_code ? 'checked' : '' }} class="sr-only peer" required>
-                                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors border-white/20 peer-checked:border-purple-400">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-in zoom-in hidden peer-checked:block"></div>
-                                    </div>
+                                    <div class="w-5 h-5 rounded-full border-2 transition-all duration-300 border-white/20 peer-checked:border-purple-400 peer-checked:bg-purple-400"></div>
                                     <div class="ml-4">
                                         <span class="block text-sm font-bold text-white peer-checked:text-purple-400">{{ $strand->course_code }}</span>
                                         <span class="text-xs text-white/40 uppercase tracking-widest">{{ $strand->course_name }}</span>
@@ -104,11 +100,9 @@
                     {{-- College Programs --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                         @forelse($programs as $program)
-                            <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-blue-400/10 has-[:checked]:border-blue-400/50 has-[:checked]:shadow-lg has-[:checked]:shadow-blue-500/10">
+                            <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-blue-500/10 has-[:checked]:border-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-500/20 has-[:checked]:shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                                 <input type="radio" name="course_code" value="{{ $program->course_code }}" {{ old('course_code', $course_code ?? '') === $program->course_code ? 'checked' : '' }} class="sr-only peer" required>
-                                <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors border-white/20 peer-checked:border-blue-400">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-in zoom-in hidden peer-checked:block"></div>
-                                </div>
+                                <div class="w-5 h-5 rounded-full border-2 transition-all duration-300 border-white/20 peer-checked:border-blue-400 peer-checked:bg-blue-400"></div>
                                 <div class="ml-4">
                                     <span class="block text-sm font-bold text-white peer-checked:text-blue-400">{{ $program->course_code }}</span>
                                     <span class="text-xs text-white/40 uppercase tracking-widest">{{ $program->course_name }}</span>
@@ -191,13 +185,13 @@
                         <div class="flex items-center gap-6 py-2.5">
                             <label class="flex items-center gap-2 cursor-pointer group">
                                 <input type="radio" name="gender" value="male" {{ old('gender', $gender ?? '') === 'male' ? 'checked' : '' }} class="sr-only peer" required>
-                                <div class="w-4 h-4 rounded-full border transition-all duration-300 border-white/20 peer-checked:border-purple-400 peer-checked:bg-purple-400"></div>
-                                <span class="text-sm font-medium text-white/40 peer-checked:text-purple-400 transition-colors">Male</span>
+                                <div class="w-4 h-4 rounded-full border transition-all duration-300 border-white/20 peer-checked:border-blue-400 peer-checked:bg-blue-400"></div>
+                                <span class="text-sm font-medium text-white/40 peer-checked:text-blue-400 transition-colors">Male</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
                                 <input type="radio" name="gender" value="female" {{ old('gender', $gender ?? '') === 'female' ? 'checked' : '' }} class="sr-only peer" required>
-                                <div class="w-4 h-4 rounded-full border transition-all duration-300 border-white/20 peer-checked:border-purple-400 peer-checked:bg-purple-400"></div>
-                                <span class="text-sm font-medium text-white/40 peer-checked:text-purple-400 transition-colors">Female</span>
+                                <div class="w-4 h-4 rounded-full border transition-all duration-300 border-white/20 peer-checked:border-blue-400 peer-checked:bg-blue-400"></div>
+                                <span class="text-sm font-medium text-white/40 peer-checked:text-blue-400 transition-colors">Female</span>
                             </label>
                         </div>
                     </div>

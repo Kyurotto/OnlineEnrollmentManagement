@@ -60,15 +60,6 @@ class RegistrarApplicationManager extends Component
         session()->flash('success', 'Application status updated to Approved.');
     }
 
-    public function approveEditRequest($id)
-    {
-        $application = Enrollment::findOrFail($id);
-        $application->edit_request_status = 'Approved';
-        $application->save();
-
-        session()->flash('success', 'Edit request for application approved.');
-    }
-
     public function reject($id)
     {
         $application = Enrollment::findOrFail($id);

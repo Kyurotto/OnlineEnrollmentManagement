@@ -15,8 +15,6 @@ class StudentProfileManager extends Component
     // Context for conditional rendering
     public $context = 'profile';
 
-    // Enrollment edit request state
-    public $enrollmentEditRequestStatus = 'None';
 
     // Profile Fields
     public $first_name;
@@ -38,35 +36,6 @@ class StudentProfileManager extends Component
         $this->last_name = $user->last_name;
         $this->email = $user->email;
 
-        // Load enrollment edit request status for the enrollment-actions context
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
-        $this->enrollmentEditRequestStatus = $enrollment?->edit_request_status ?? 'None';
-    }
-
-    public function requestEdit()
-    {
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
-
-        if (!$enrollment) {
-            session()->flash('edit-request-error', 'No active enrollment record found.');
-            return;
-        }
-
-        if ($this->enrollmentEditRequestStatus === 'Pending') {
-            return;
-        }
-
-        $enrollment->edit_request_status = 'Pending';
-        $enrollment->save();
-
-        // Notify Admins and Registrars
-        $staff = User::whereIn('role', ['admin', 'registrar'])->get();
-        if ($staff->count() > 0) {
-            Notification::send($staff, new \App\Notifications\EditEnrollmentRequested($enrollment));
-        }
-
-        $this->enrollmentEditRequestStatus = 'Pending';
-        session()->flash('edit-requested', 'Edit request sent to registrar. Please wait for approval.');
     }
 
     public function updateProfile()
