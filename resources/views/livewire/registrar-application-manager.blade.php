@@ -13,8 +13,16 @@
     <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
         <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex-shrink-0">
-                <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">Applications</h2>
-                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">Student Enrollment Lifecycle & Review Pipeline</p>
+                <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">
+                    @if($level === 'college') College Applications
+                    @elseif($level === 'shs') SHS Applications
+                    @else Applications @endif
+                </h2>
+                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">
+                    @if($level === 'college') College Enrollment Lifecycle & Review Pipeline
+                    @elseif($level === 'shs') Senior High School Enrollment Lifecycle & Review Pipeline
+                    @else Student Enrollment Lifecycle & Review Pipeline @endif
+                </p>
             </div>
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                 <div class="relative group w-full sm:w-64">

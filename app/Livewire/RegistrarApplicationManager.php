@@ -19,6 +19,16 @@ class RegistrarApplicationManager extends Component
     public $sortField = 'enrollments.id';
     public $sortDirection = 'desc';
     public $year_level = 'All Years';
+    public $level = null;
+
+    public function mount()
+    {
+        if (request()->routeIs('registrar.applications.college')) {
+            $this->level = 'college';
+        } elseif (request()->routeIs('registrar.applications.shs')) {
+            $this->level = 'shs';
+        }
+    }
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -99,6 +109,10 @@ class RegistrarApplicationManager extends Component
             ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->with(['user']);
 
+        if ($this->level) {
+            $query->where('enrollments.level', $this->level);
+        }
+
         if (!empty($this->search)) {
             $query->where(function ($q) {
                 $q->whereHas('user', function ($sub) {
@@ -139,8 +153,12 @@ class RegistrarApplicationManager extends Component
             }
         }
 
-        // 2. Count pending applications for the header badge
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        // 2. Count pending applications for the header badge (respecting the current level)
+        $pendingCountQuery = Enrollment::where('status', 'Pending');
+        if ($this->level) {
+            $pendingCountQuery->where('level', $this->level);
+        }
+        $pendingCount = $pendingCountQuery->count();
 
         return view('livewire.registrar-application-manager', [
             'applications' => $applications,
