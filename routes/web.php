@@ -105,6 +105,8 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::delete('/students/{id}', [RegistrarStudentController::class, 'destroy'])->name('students.destroy');
 
     Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
+    Route::get('/applications/college', RegistrarApplicationManager::class)->name('applications.college');
+    Route::get('/applications/shs', RegistrarApplicationManager::class)->name('applications.shs');
 
     Route::get('/academic-years', [RegistrarAcademicYearController::class, 'index'])->name('academic_years.index');
     Route::post('/academic-years', [RegistrarAcademicYearController::class, 'store'])->name('academic_years.store');
