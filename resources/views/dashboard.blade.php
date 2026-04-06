@@ -101,11 +101,10 @@
     @endif
 
     {{-- Action Matrix --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {{-- Enrollment Card --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         @if($hasSubmitted)
             {{-- Review Application Card --}}
-            <a href="{{ route('student.enrollment.review') }}" class="group block h-full">
+            <div class="group block h-full">
                 <div class="p-8 rounded-2xl border h-full transition-all duration-500 hover:scale-[1.02] relative overflow-hidden"
                      style="background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
                     <div class="flex justify-between items-start mb-6">
@@ -122,9 +121,12 @@
                         View Application <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </div>
                 </div>
-            </a>
-        @elseif($canEnroll && !$isEnrolledInActiveYear)
-        <a href="{{ route('student.enrollment.create') }}" class="group block h-full">
+            </div>
+        @endif
+
+        {{-- Enrollment Card --}}
+        @if($canEnroll && !$isEnrolledInActiveYear)
+        <div class="group block h-full">
             <div class="p-8 rounded-2xl border h-full transition-all duration-500 hover:scale-[1.02] relative overflow-hidden"
                  style="background: rgba(99,179,237,0.06); border-color: rgba(99,179,237,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
                 <div class="flex justify-between items-start mb-6">
@@ -141,7 +143,7 @@
                     Initialize Operation <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </div>
             </div>
-        </a>
+        </div>
         @else
         <div class="p-8 rounded-2xl border h-full opacity-60 relative overflow-hidden"
              style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);">
@@ -159,7 +161,7 @@
         @endif
 
         {{-- Payments Card --}}
-        <a href="{{ route('student.payment') }}" class="group block h-full">
+        <div class="group block h-full">
             <div class="p-8 rounded-2xl border h-full transition-all duration-500 hover:scale-[1.02] relative overflow-hidden"
                  style="background: rgba(167,139,250,0.06); border-color: rgba(167,139,250,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
                 <div class="flex justify-between items-start mb-6">
@@ -176,10 +178,10 @@
                     Initialize Operation <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </div>
             </div>
-        </a>
+        </div>
 
         {{-- Profile Card --}}
-        <a href="{{ route('student.profile') }}" class="group block h-full">
+        <div class="group block h-full">
             <div class="p-8 rounded-2xl border h-full transition-all duration-500 hover:scale-[1.02] relative overflow-hidden"
                  style="background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
                 <div class="flex justify-between items-start mb-6">
@@ -196,7 +198,7 @@
                     Initialize Operation <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </div>
             </div>
-        </a>
+        </div>
     </div>
 
     {{-- Requirements Section --}}
