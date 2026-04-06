@@ -16,8 +16,8 @@ class CashierPaymentController extends Controller
     {
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
-            ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
-            ->with(['user', 'application']); 
+            ->leftJoin('users', 'payments.user_id', '=', 'users.id')
+            ->with(['user', 'application']);
 
         if ($request->has('status') && $request->status != 'All statuses') {
             $query->where('payments.status', $request->status);
@@ -31,7 +31,7 @@ class CashierPaymentController extends Controller
                     $courseCode = $parts[0];
                     $yearDigit = $parts[1];
                     $suffix = match($yearDigit) { '1' => 'st', '2' => 'nd', '3' => 'rd', default => 'th' };
-                    $yearString = $yearDigit . $suffix . ' Year'; 
+                    $yearString = $yearDigit . $suffix . ' Year';
                     $query->where('enrollments.course_code', $courseCode)
                           ->where('enrollments.year_level', 'like', $yearString . '%');
                 }
@@ -44,7 +44,7 @@ class CashierPaymentController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('payments.id', 'like', "%{$search}%")
-                  ->orWhere('payments.transaction_id', 'like', "%{$search}%") 
+                  ->orWhere('payments.transaction_id', 'like', "%{$search}%")
                   ->orWhereHas('user', function($u) use ($search) {
                       $u->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
@@ -54,7 +54,7 @@ class CashierPaymentController extends Controller
 
         // Order by ID Descending to show newest first
         $payments = $query->orderBy('payments.id', 'desc')->paginate(10);
-        
+
         $pendingPaymentsCount = Payment::where('status', 'Pending')->count();
         $students = User::where('role', 'student')->orderBy('name')->get();
 
@@ -77,7 +77,7 @@ class CashierPaymentController extends Controller
             'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
             'amount' => $request->amount,
             'transaction_id' => $request->reference_no ?? 'CASH-' . time(),
-            'status' => 'Paid', 
+            'status' => 'Paid',
             'payment_method' => $request->payment_type,
             'payment_date' => now(),
         ]);
@@ -90,7 +90,7 @@ class CashierPaymentController extends Controller
         // Since store() creates it as 'Paid', we notify immediately
         $staff = User::whereIn('role', ['registrar', 'admin'])->get();
         $student = User::find($payment->user_id);
-        
+
         $recipients = $staff->push($student)->filter(); // Combine staff and student, remove nulls
 
         if($recipients->count() > 0){
@@ -106,7 +106,7 @@ class CashierPaymentController extends Controller
         $payment = Payment::findOrFail($id);
 
         $request->validate([
-            'amount' => 'required|numeric|min:0', 
+            'amount' => 'required|numeric|min:0',
             'payment_type' => 'required|string',
             'reference_no' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
@@ -126,7 +126,7 @@ class CashierPaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
         $request->validate(['status' => 'required|in:Paid,Rejected']);
-        
+
         $payment->update([
             'status' => $request->status,
             'payment_date' => $request->status === 'Paid' ? now() : $payment->payment_date
@@ -141,7 +141,7 @@ class CashierPaymentController extends Controller
 
             $staff = User::whereIn('role', ['registrar', 'admin'])->get();
             $student = User::find($payment->user_id);
-            
+
             $recipients = $staff->push($student)->filter(); // Combine staff and student
 
             if($recipients->count() > 0){

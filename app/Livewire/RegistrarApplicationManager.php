@@ -4,10 +4,12 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 use App\Models\Enrollment;
 use App\Models\Course;
 use App\Models\User;
 
+#[Layout('components.layouts.registrar')]
 class RegistrarApplicationManager extends Component
 {
     use WithPagination;
@@ -17,6 +19,16 @@ class RegistrarApplicationManager extends Component
     public $sortField = 'enrollments.id';
     public $sortDirection = 'desc';
     public $year_level = 'All Years';
+    public $level = null;
+
+    public function mount()
+    {
+        if (request()->routeIs('registrar.applications.college')) {
+            $this->level = 'college';
+        } elseif (request()->routeIs('registrar.applications.shs')) {
+            $this->level = 'shs';
+        }
+    }
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -69,6 +81,19 @@ class RegistrarApplicationManager extends Component
         session()->flash('success', 'Application status updated to Rejected.');
     }
 
+    public function togglePhysicalDocuments($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->physical_documents_received = !$application->physical_documents_received;
+        $application->save();
+
+        $status = $application->physical_documents_received ? 'marked as received' : 'unmarked';
+        session()->flash('success', "Physical documents $status.");
+        
+        // Emit event to reset Alpine state
+        $this->dispatch('modal-reset');
+    }
+
     public function destroy($id)
     {
         $application = Enrollment::findOrFail($id);
@@ -83,6 +108,10 @@ class RegistrarApplicationManager extends Component
             ->select('enrollments.*')
             ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->with(['user']);
+
+        if ($this->level) {
+            $query->where('enrollments.level', $this->level);
+        }
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -124,12 +153,16 @@ class RegistrarApplicationManager extends Component
             }
         }
 
-        // 2. Count pending applications for the header badge
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        // 2. Count pending applications for the header badge (respecting the current level)
+        $pendingCountQuery = Enrollment::where('status', 'Pending');
+        if ($this->level) {
+            $pendingCountQuery->where('level', $this->level);
+        }
+        $pendingCount = $pendingCountQuery->count();
 
         return view('livewire.registrar-application-manager', [
             'applications' => $applications,
             'pendingCount' => $pendingCount
-        ])->layout('components.layouts.registrar', ['title' => 'Enrollment Applications']);
+        ]);
     }
 }

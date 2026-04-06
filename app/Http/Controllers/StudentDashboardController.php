@@ -49,7 +49,8 @@ class StudentDashboardController extends Controller
                 ->exists();
         }
 
-        // 6. Check if an enrollment record already exists for this user in the active year
+
+        // 7. Check if an enrollment record already exists for this user in the active year
         $existingEnrollment = null;
         $hasSubmitted = false;
         if ($activeYear) {

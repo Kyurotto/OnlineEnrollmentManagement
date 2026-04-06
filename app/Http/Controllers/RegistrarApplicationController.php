@@ -90,6 +90,24 @@ class RegistrarApplicationController extends Controller
     }
 
     /**
+     * Toggle the physical documents received status.
+     */
+    public function togglePhysicalDocuments($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        
+        // Toggle the status
+        $application->physical_documents_received = !$application->physical_documents_received;
+        $application->save();
+
+        $message = $application->physical_documents_received 
+            ? 'Physical documents marked as received.' 
+            : 'Physical document receipt cancelled.';
+
+        return back()->with('success', $message);
+    }
+
+    /**
      * Helper to map enrollment fields to user object for view compatibility.
      */
     private function mapEnrollmentDataToUser($application)

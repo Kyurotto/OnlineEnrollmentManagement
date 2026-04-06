@@ -12,6 +12,14 @@
             </div>
             @if (in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
                 <div class="hidden md:flex items-center gap-4">
+                    <form action="{{ route('registrar.applications.toggle-physical', $application->id) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" 
+                            class="px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl {{ $application->physical_documents_received ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-cyan-500 text-black' }}">
+                            {{ $application->physical_documents_received ? 'Cancel Physical Receipt' : 'Received Physical Documents' }}
+                        </button>
+                    </form>
                     <form action="{{ route('registrar.applications.update', $application->id) }}" method="POST">
                         @csrf @method('PATCH')
                         <input type="hidden" name="status" value="Approved">

@@ -16,8 +16,8 @@ class PaymentController extends Controller
     {
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
-            ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
-            ->with(['user', 'application']); 
+            ->leftJoin('users', 'payments.user_id', '=', 'users.id')
+            ->with(['user', 'application']);
 
         if ($request->has('status') && $request->status != 'All statuses') {
             $query->where('payments.status', $request->status);
@@ -31,7 +31,7 @@ class PaymentController extends Controller
                     $courseCode = $parts[0];
                     $yearDigit = $parts[1];
                     $suffix = match($yearDigit) { '1' => 'st', '2' => 'nd', '3' => 'rd', default => 'th' };
-                    $yearString = $yearDigit . $suffix . ' Year'; 
+                    $yearString = $yearDigit . $suffix . ' Year';
                     $query->where('enrollments.course_code', $courseCode)
                         ->where('enrollments.year_level', 'like', $yearString . '%');
                 }
@@ -44,7 +44,7 @@ class PaymentController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('payments.id', 'like', "%{$search}%")
-                ->orWhere('payments.transaction_id', 'like', "%{$search}%") 
+                ->orWhere('payments.transaction_id', 'like', "%{$search}%")
                 ->orWhereHas('user', function($u) use ($search) {
                     $u->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
@@ -54,7 +54,7 @@ class PaymentController extends Controller
 
         // Order by ID Descending to show newest first
         $payments = $query->orderBy('payments.id', 'desc')->paginate(10);
-        
+
         $pendingPaymentsCount = Payment::where('status', 'Pending')->count();
         $students = User::where('role', 'student')->orderBy('name')->get();
 
@@ -77,7 +77,7 @@ class PaymentController extends Controller
             'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
             'amount' => $request->amount,
             'transaction_id' => $request->reference_no ?? 'CASH-' . time(),
-            'status' => 'Paid', 
+            'status' => 'Paid',
             'payment_method' => $request->payment_type,
         ]);
 
@@ -92,7 +92,7 @@ class PaymentController extends Controller
         // Since store() creates it as 'Paid', we notify immediately
         $registrars = User::where('role', 'registrar')->get();
         $student = User::find($payment->user_id, ['*']);
-        
+
         $recipients = $registrars->push($student)->filter(); // Combine staff and student
 
         if($recipients->count() > 0){
@@ -108,7 +108,7 @@ class PaymentController extends Controller
         $payment = Payment::findOrFail($id);
 
         $request->validate([
-            'amount' => 'required|numeric|min:0', 
+            'amount' => 'required|numeric|min:0',
             'payment_type' => 'required|string',
             'reference_no' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
@@ -128,7 +128,7 @@ class PaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
         $request->validate(['status' => 'required|in:Paid,Rejected']);
-        
+
         $payment->update(['status' => $request->status]);
 
         if ($request->status === 'Paid') {
@@ -142,7 +142,7 @@ class PaymentController extends Controller
             // --- NOTIFICATION LOGIC START ---
             $registrars = User::where('role', 'registrar')->get();
             $student = User::find($payment->user_id, ['*']);
-            
+
             $recipients = $registrars->push($student)->filter(); // Combine staff and student
 
             if($recipients->count() > 0){
