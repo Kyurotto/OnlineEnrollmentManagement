@@ -242,4 +242,130 @@ class StudentEnrollmentController extends Controller
 
         return view('student.enrollment_review', compact('enrollment'));
     }
+
+    public function requestEdit()
+    {
+        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+
+        if (!$enrollment) {
+            return back()->with('error', 'No active enrollment record found.');
+        }
+
+        if ($enrollment->edit_request_status === 'Pending') {
+            return back()->with('info', 'Edit request is already pending.');
+        }
+
+        $enrollment->edit_request_status = 'Pending';
+        $enrollment->save();
+
+        // Notify Admins and Registrars about the edit request
+        $staff = User::whereIn('role', ['admin', 'registrar'])->get();
+        if ($staff->count() > 0) {
+            Notification::send($staff, new \App\Notifications\EditEnrollmentRequested($enrollment));
+        }
+
+        return back()->with('success', 'Edit request sent to registrar. Please wait for approval.');
+    }
+
+    public function edit()
+    {
+        $user = Auth::user();
+        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+
+        if (!$enrollment) {
+            return redirect()->route('student.dashboard')->with('error', 'No enrollment found.');
+        }
+
+        if (in_array($enrollment->status, ['Enrolled', 'Paid'])) {
+            return redirect()->route('student.enrollment.review')->with('error', 'You cannot edit an application that has already been finalized/paid.');
+        }
+
+        $programs = Course::where('type', 'program')->orderBy('course_code', 'asc')->get();
+        $strands = Course::where('type', 'shs')->orderBy('course_code', 'asc')->get();
+
+        $semesters = Semester::all();
+        $activeSemester = Semester::where('is_active', true)->first();
+        $academicYears = AcademicYear::all();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+
+        $data = $enrollment->toArray();
+        $data['programs'] = $programs;
+        $data['strands'] = $strands;
+
+        return view('student.enrollment_edit', array_merge($data, [
+            'enrollment' => $enrollment,
+            'semesters' => $semesters,
+            'activeSemester' => $activeSemester,
+            'academicYears' => $academicYears,
+            'activeYear' => $activeYear,
+        ]));
+    }
+
+    public function update(Request $request)
+    {
+        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+
+        if (!$enrollment || $enrollment->edit_request_status !== 'Approved') {
+             return redirect()->route('student.enrollment.review')->with('error', 'Unauthorized edit attempt.');
+        }
+
+        $level = $request->input('level', $enrollment->level);
+        
+        $validationRules = [
+            'level' => 'required|in:shs,college',
+            'course_code' => 'required',
+            'year_level' => 'required',
+            'semester' => 'required',
+            'academic_year' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'birth_date' => 'required|date',
+            'age' => 'required|numeric',
+            'gender' => 'required',
+            'contact' => 'required',
+            'father_name' => 'nullable|string|max:255',
+            'mother_maiden_name' => 'nullable|string|max:255',
+            'guardian_name' => 'nullable|string|max:255',
+            'guardian_contact' => 'nullable|string|max:11',
+        ];
+
+        $request->validate($validationRules);
+
+        $course = Course::where('course_code', $request->course_code)->first();
+
+        if (!$course) {
+            return back()->with('error', 'Selected program is invalid or not registered in the system.')->withInput();
+        }
+
+        $unifiedYearLevel = "{$request->year_level} | {$request->semester} | {$request->academic_year}";
+        
+        $address = $request->address_full;
+        if(empty($address)){
+             $address = implode(', ', array_filter([$request->house_no, $request->street, $request->barangay, $request->city, $request->province, $request->zip]));
+        }
+
+        $enrollment->update([
+            'course_id' => $course->id,
+            'course_code' => $request->course_code,
+            'level' => $level,
+            'year_level' => $unifiedYearLevel,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'birth_date' => $request->birth_date,
+            'age' => $request->age,
+            'gender' => $request->gender,
+            'email' => $request->email,
+            'contact' => $request->contact,
+            'address_full' => $address ?: $enrollment->address_full,
+            'father_name' => $request->father_name,
+            'mother_maiden_name' => $request->mother_maiden_name,
+            'guardian_name' => $request->guardian_name,
+            'guardian_contact' => $request->guardian_contact,
+            // Reset edit request status only — keep the current enrollment status unchanged
+            'edit_request_status' => 'None',
+        ]);
+
+        return redirect()->route('student.enrollment.review')->with('success', 'Your application has been successfully updated and is pending review.');
+    }
 }

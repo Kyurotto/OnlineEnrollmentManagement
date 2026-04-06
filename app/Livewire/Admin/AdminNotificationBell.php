@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Enrollment;
@@ -28,15 +28,11 @@ class AdminNotificationBell extends Component
 
     public function render()
     {
-        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
-            ->with('user')
-            ->orderBy('updated_at', 'desc')
-            ->take(5)
-            ->get();
+        $notifications = Auth::user() ? Auth::user()->unreadNotifications()->take(5)->get() : collect();
 
         $unreadCount = Auth::user() ? Auth::user()->unreadNotifications->count() : 0;
 
-        return view('livewire.admin-notification-bell', [
+        return view('livewire.admin.admin-notification-bell', [
             'notifications' => $notifications,
             'unreadCount' => $unreadCount,
         ]);

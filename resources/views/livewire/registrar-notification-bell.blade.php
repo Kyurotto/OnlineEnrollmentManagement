@@ -1,4 +1,4 @@
-<div class="relative" x-data="{ showDropdown: @entangle('showDropdown') }">
+<div wire:poll.10s class="relative" x-data="{ showDropdown: @entangle('showDropdown') }">
     <button @click="showDropdown = !showDropdown; @this.loadNotifications()" @click.away="showDropdown = false" class="relative p-2 transition focus:outline-none"
         style="color: #8ab4d8;">
         <svg class="w-6 h-6 transition" :style="showDropdown ? 'color: #ffffff' : 'color: #8ab4d8'"
@@ -28,10 +28,11 @@
             <div class="max-h-64 overflow-y-auto p-2 space-y-2" style="background: rgba(6,13,26,0.6);">
                 @if(count($notifications) > 0)
                     @foreach($notifications as $notification)
-                        <div class="block p-3 rounded-lg border transition cursor-pointer hover:bg-white/5"
-                             style="background: rgba(16,185,129,0.05); border-color: rgba(16,185,129,0.2);">
-                            <p class="text-xs text-white/90">New enrollment: {{ $notification['first_name'] ?? '' }} {{ $notification['last_name'] ?? '' }}</p>
-                            <p class="text-[9px] mt-2 text-right text-white/20">{{ \Carbon\Carbon::parse($notification['created_at'])->diffForHumans() }}</p>
+                        <div class="block p-3 rounded-lg border transition cursor-pointer hover:bg-white/5 bg-emerald-500/10 border-emerald-500/30">
+                            <p class="text-xs text-white/90 font-bold">
+                                {{ $notification->data['message'] ?? 'New activity recorded.' }}
+                            </p>
+                            <p class="text-[9px] mt-2 text-right text-white/20">{{ $notification->created_at->diffForHumans() }}</p>
                         </div>
                     @endforeach
                 @else

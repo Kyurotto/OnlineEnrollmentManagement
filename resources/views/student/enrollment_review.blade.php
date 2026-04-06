@@ -32,13 +32,13 @@
         </div>
 
         {{-- Important Notice --}}
-        <div class="p-6 rounded-2xl border flex items-start gap-4 bg-amber-500/5"
+        <div class="p-6 rounded-2xl border flex items-start gap-4 bg-amber-500/5 group relative"
              style="border-color: rgba(251,191,36,0.3);">
             <div class="p-2 rounded-lg bg-amber-500/20 text-amber-400 flex-shrink-0 mt-1">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <div>
-                <h4 class="font-bold text-amber-200 mb-1 text-sm">Important Note</h4>
+                <h4 class="font-bold text-amber-200 mb-1 text-sm">Need a Request at Registrar to Edit Your Enrollment Form</h4>
                 <p class="text-xs text-white/70">If there are any errors or misspellings in your information, please proceed to the <strong>School Registrar</strong> directly for manual correction. Do not attempt to resubmit the form.</p>
             </div>
         </div>
@@ -193,8 +193,11 @@
             </div>
         </div>
 
+        {{-- Edit Request Action (Livewire) --}}
+        @livewire('student-profile-manager', ['context' => 'enrollment-actions'])
+
         {{-- Action Buttons --}}
-        <div class="flex flex-col sm:flex-row gap-4 pt-8">
+        <div class="flex flex-col sm:flex-row gap-4 pt-4">
             <a href="{{ route('student.dashboard') }}" class="flex-1 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold border border-white/20 transition-all text-center">
                 Back to Dashboard
             </a>

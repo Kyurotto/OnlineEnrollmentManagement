@@ -10,6 +10,8 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+        *::-webkit-scrollbar { display: none; }
     </style>
     @livewireStyles
 </head>
@@ -128,7 +130,7 @@
             <div class="w-full px-6 flex justify-end items-center gap-6">
 
                 {{-- Notifications Dropdown --}}
-                @livewire('admin-notification-bell')
+                @livewire('admin.admin-notification-bell')
 
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">

@@ -1,4 +1,16 @@
-<div x-data="{ modalOpen: false, selectedId: null }" @keydown.escape.window="modalOpen = false" class="space-y-6 animate-in fade-in duration-500">
+<style>
+    /* Global scrollbar hide */
+    * { -ms-overflow-style: none; scrollbar-width: none; }
+    *::-webkit-scrollbar { display: none; }
+
+    /* Custom scrollbar exception */
+    .custom-scrollbar { -ms-overflow-style: auto; scrollbar-width: thin; scrollbar-color: rgba(34,211,238,0.3) transparent; }
+    .custom-scrollbar::-webkit-scrollbar { display: block; height: 5px; width: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(34,211,238,0.3); border-radius: 999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(34,211,238,0.6); }
+</style>
+<div x-data="{ modalOpen: false, selectedId: null }" @keydown.escape.window="modalOpen = false" wire:poll.15s class="space-y-6 animate-in fade-in duration-500">
     @if(session('success'))
         <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
@@ -6,7 +18,7 @@
         </div>
     @endif
 
-    <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
+    <div class="glass-card rounded-[32px] border-white/5 shadow-2xl shadow-black/40">
         <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex-shrink-0">
                 <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">Applications</h2>
@@ -43,7 +55,7 @@
         </div>
 
         <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-left border-collapse font-bold">
+            <table class="min-w-max w-full text-left border-collapse font-bold">
                 <thead class="text-[10px] text-white/20 uppercase tracking-[0.2em] border-b border-white/5 bg-white/[0.01]">
                     <tr>
                         <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.id')">
@@ -167,8 +179,9 @@
                             </td>
                             <td class="py-6 px-8">
                                 <div class="flex justify-end items-center gap-4">
+
                                     <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
-                                        class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20">
+                                        class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20 whitespace-nowrap">
                                         View Details
                                     </button>
 

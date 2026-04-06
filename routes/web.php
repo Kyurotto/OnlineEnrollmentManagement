@@ -178,6 +178,12 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::post('/enrollment', [StudentEnrollmentController::class, 'store'])->name('enrollment.store');
     Route::get('/enrollment/upload', [StudentEnrollmentController::class, 'upload'])->name('enrollment.upload');
     Route::post('/enrollment/upload', [StudentEnrollmentController::class, 'storeUpload'])->name('enrollment.upload.store');
+    
+    // Edit workflows
+    Route::post('/enrollment/edit-request', [StudentEnrollmentController::class, 'requestEdit'])->name('enrollment.request_edit');
+    Route::get('/enrollment/edit', [StudentEnrollmentController::class, 'edit'])->name('enrollment.edit');
+    Route::put('/enrollment', [StudentEnrollmentController::class, 'update'])->name('enrollment.update');
+
     Route::get('/payments', StudentPaymentManager::class)->name('payment');
     Route::get('/profile', StudentProfileManager::class)->name('profile');
 });

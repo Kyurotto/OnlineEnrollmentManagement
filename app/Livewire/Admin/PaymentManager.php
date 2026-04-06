@@ -211,7 +211,7 @@ class PaymentManager extends Component
         $payments = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
         $students = User::where('role', 'student')->orderBy('name')->get();
 
-        return view('livewire.admin-payment-manager', [
+        return view('livewire.admin.admin-payment-manager', [
             'payments' => $payments,
             'students' => $students
         ])->layout('components.layouts.admin', ['title' => 'Payment Management']);
