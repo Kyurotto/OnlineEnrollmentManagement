@@ -17,6 +17,7 @@ class RegistrarApplicationManager extends Component
     public $sortField = 'enrollments.id';
     public $sortDirection = 'desc';
     public $year_level = 'All Years';
+    public $level = null; // 'college' or 'shs'
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -29,6 +30,15 @@ class RegistrarApplicationManager extends Component
     public function updatingSearch() { $this->resetPage(); }
     public function updatingStatus() { $this->resetPage(); }
     public function updatingYearLevel() { $this->resetPage(); }
+
+    public function mount()
+    {
+        if (request()->routeIs('registrar.applications.college')) {
+            $this->level = 'college';
+        } elseif (request()->routeIs('registrar.applications.shs')) {
+            $this->level = 'shs';
+        }
+    }
 
     public function sortBy($field)
     {
@@ -84,6 +94,14 @@ class RegistrarApplicationManager extends Component
             ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->with(['user']);
 
+        // Level-based filtering
+        $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+        if ($this->level === 'shs') {
+            $query->whereIn('enrollments.course_code', $shsStrands);
+        } elseif ($this->level === 'college') {
+            $query->whereNotIn('enrollments.course_code', $shsStrands);
+        }
+
         if (!empty($this->search)) {
             $query->where(function ($q) {
                 $q->whereHas('user', function ($sub) {
@@ -127,9 +145,11 @@ class RegistrarApplicationManager extends Component
         // 2. Count pending applications for the header badge
         $pendingCount = Enrollment::where('status', 'Pending')->count();
 
+        $title = $this->level === 'shs' ? 'SHS Applications' : ($this->level === 'college' ? 'College Applications' : 'All Applications');
+
         return view('livewire.registrar-application-manager', [
             'applications' => $applications,
             'pendingCount' => $pendingCount
-        ])->layout('components.layouts.registrar', ['title' => 'Enrollment Applications']);
+        ])->layout('components.layouts.registrar', ['title' => $title]);
     }
 }
