@@ -167,11 +167,10 @@
                             </td>
                             <td class="py-6 px-8">
                                 <div class="flex justify-end items-center gap-4">
-                                    <button type="button" @click="modalOpen = true; openModal({{ json_encode($application) }}); @this.set('selectedId', {{ $application->id }})"
+                                    <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
                                         class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20">
                                         View Details
                                     </button>
-
                                 </div>
                             </td>
                         </tr>
@@ -199,90 +198,92 @@
     <!-- Details Modal -->
     <div x-show="modalOpen" wire:ignore class="fixed inset-0 z-50 p-4 flex items-center justify-center transition-all duration-300" x-cloak>
         <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false"></div>
-        <div class="relative w-full max-w-5xl bg-[#0d1f3c] rounded-[40px] border border-white/10 shadow-[0_32px_120px_rgba(0,0,0,0.6)] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]" id="modalContent">
-            <!-- Modal Header -->
+        
+        <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10" id="modalContent">
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                 <div>
-                    <h2 class="text-2xl font-black text-white italic uppercase tracking-tight" id="modalTitle">Application Details</h2>
-                    <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process</p>
+                    <span class="text-[9px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-1 block italic text-shadow shadow-cyan-500/20">Analysis Protocol</span>
+                    <h2 class="text-2xl font-black text-white uppercase italic tracking-tight" id="modalTitle">Application Details</h2>
                 </div>
-                <button @click="modalOpen = false" class="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button @click="modalOpen = false" class="p-4 rounded-2xl bg-white/5 text-white/20 hover:text-white transition-colors border border-white/10">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <div class="p-8 md:p-12 overflow-y-auto custom-scrollbar flex-grow space-y-12">
+            <div class="p-8 md:px-12 md:py-10 overflow-y-auto custom-scrollbar flex-grow space-y-12">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {{-- Student Information --}}
+                    <!-- Student Profile -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
                             <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Student Profile</h3>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Applicant Profile</h3>
                         </div>
                         <div class="grid grid-cols-1 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
                             <div class="grid grid-cols-2 gap-8">
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
-                                    <span class="text-xs font-bold text-cyan-400 capitalize" id="modalNameValue"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalNameValue"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Email Address</span>
-                                    <span class="text-xs font-bold text-white/60 lowercase" id="modalEmail"></span>
+                                    <span class="text-xs font-bold text-white lowercase" id="modalEmail"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Application ID</span>
-                                    <span class="text-xs font-bold text-white/40 font-mono tracking-tighter" id="modalAppId"></span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Reference ID</span>
+                                    <span class="text-xs font-bold text-cyan-400 uppercase" id="modalAppId"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Submitted On</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalSubmitted"></span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Applied On</span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalSubmitted"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Date of Birth</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalDob"></span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Birth Date</span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalDob"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Age</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalAge"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalAge"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Gender</span>
-                                    <span class="text-xs font-bold text-white/60 capitalize" id="modalGender"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalGender"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Address</span>
-                                    <span class="text-xs font-bold text-white/60" id="modalAddress"></span>
+                                    <span class="text-xs font-bold text-white uppercase" id="modalAddress"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Program & Lifecycle --}}
+                    <!-- Program & Lifecycle -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
-                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                             <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Program Details</h3>
                         </div>
-                        <div class="bg-cyan-500/5 border border-cyan-500/10 rounded-[32px] p-8 space-y-8 h-full flex flex-col justify-center">
-                            <div class="flex flex-col gap-2">
-                                <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest italic">Program</span>
-                                <span class="text-2xl font-black text-white uppercase italic tracking-tighter" id="modalCourse"></span>
-                            </div>
-                            <div class="flex items-center gap-10 pt-6 border-t border-cyan-500/10">
+                        <div class="bg-blue-500/5 border border-blue-500/10 rounded-[32px] p-8 h-full flex flex-col justify-center">
+                            <div class="space-y-4">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Year Level</span>
-                                    <span class="text-sm font-black text-white uppercase" id="modalYear"></span>
+                                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Applied Program</span>
+                                    <span class="text-2xl font-black text-white uppercase italic tracking-tighter" id="modalCourse"></span>
                                 </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
-                                    <span class="text-sm font-black text-cyan-400 uppercase tracking-[0.1em]" id="modalStatus"></span>
+                                <div class="grid grid-cols-2 gap-8 pt-6 border-t border-white/5">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Academic Level</span>
+                                        <span class="text-xs font-bold text-white uppercase" id="modalYear"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status Now</span>
+                                        <span class="text-xs font-black text-cyan-400 uppercase tracking-widest" id="modalStatus"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Guardian Records --}}
+                <!-- Guardian Records -->
                 <div class="space-y-6 pt-6">
                     <div class="flex items-center gap-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
@@ -308,18 +309,18 @@
                     </div>
                 </div>
 
-                {{-- Document Assets --}}
+                <!-- Document Assets -->
                 <div class="space-y-6 pt-6">
                     <div class="flex items-center gap-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
                         <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Required Documents</h3>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="modalDocuments">
-                        {{-- Injected via JS --}}
+                        <!-- Injected via JS -->
                     </div>
                 </div>
 
-                {{-- Promissory Note Asset --}}
+                <!-- Promissory Note Asset -->
                 <div class="space-y-6 pt-6 hidden" id="modalPromissorySection">
                     <div class="flex items-center gap-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
@@ -327,7 +328,7 @@
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8">
                         <div id="modalPromissoryFile" class="lg:col-span-1">
-                            {{-- Injected via JS --}}
+                            <!-- Injected via JS -->
                         </div>
                         <div class="lg:col-span-2 space-y-2">
                             <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
@@ -339,32 +340,28 @@
                 </div>
             </div>
 
-            <!-- Modal Footer -->
-            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-                <div id="actionButtons" class="items-center gap-4 hidden">
+            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
                     <button type="button" 
-                        wire:click="approve(selectedId)" 
-                        @click="modalOpen = false"
-                        class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
-                        Approve
+                        @click="modalOpen = false; @this.approve(selectedId)" 
+                        class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 shrink-0">
+                        Approve Enrollment
                     </button>
                     <button type="button"
-                        wire:click="reject(selectedId)"
-                        wire:confirm="Are you sure you want to reject this application?"
-                        @click="modalOpen = false"
-                        class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95">
+                        @click="if(confirm('Are you sure you want to reject this application?')) { modalOpen = false; @this.reject(selectedId) }"
+                        class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95 shrink-0">
                         Reject Application
                     </button>
                 </div>
                 <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
-                    Close Details
+                    Close Protocol
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-    function openModal(app) {
+    function openModal(app, docMapping) {
         document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
         const middle = app.middle_name ? ' ' + app.middle_name : '';
         const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
@@ -393,30 +390,25 @@
         const docsContainer = document.getElementById('modalDocuments');
         docsContainer.innerHTML = '';
 
-        const documents = [
-            { key: 'form_138_path', label: 'Form 138' },
-            { key: 'good_moral_path', label: 'Good Moral' },
-            { key: 'psa_path', label: 'PSA Birth' },
-            { key: 'id_picture_path', label: 'ID Image' }
-        ];
-
+        const documents = docMapping;
         const storageBase = @json(asset('storage')) + '/';
 
-        documents.forEach(doc => {
-            const hasFile = app[doc.key] ? true : false;
+        Object.keys(documents).forEach(key => {
+            const label = documents[key];
+            const hasFile = app[key] ? true : false;
             let headerHtml = '';
             let boxHtml = '';
 
             if (hasFile) {
-                const fileUrl = storageBase + app[doc.key];
-                const isImage = app[doc.key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
+                const fileUrl = storageBase + app[key];
+                const isImage = app[key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
 
                 headerHtml = `
                     <div class="flex items-center gap-2 mb-3">
                         <div class="flex items-center justify-center w-5 h-5 bg-emerald-500/20 border-2 border-emerald-500 rounded-full shrink-0">
                             <span class="text-emerald-500 font-black text-xs">✓<\/span>
                         <\/div>
-                        <span class="text-[9px] font-black uppercase text-white tracking-widest">${doc.label}<\/span>
+                        <span class="text-[9px] font-black uppercase text-white tracking-widest">${label}<\/span>
                     <\/div>
                 `;
 
@@ -433,7 +425,7 @@
                     boxHtml = `
                         <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] h-32 flex flex-col items-center justify-center">
                             <svg class="w-10 h-10 text-cyan-400 opacity-40 group-hover/asset:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
-                            <span class="text-[8px] font-black text-cyan-400 mt-2 tracking-[0.3em]">VIEW PDF<\/span>
+                            <span class="text-[8px] font-black text-cyan-400 mt-2 tracking-[0.3em]">VIEW FILE<\/span>
                         <\/a>
                     `;
                 }
@@ -443,13 +435,13 @@
                         <div class="flex items-center justify-center w-5 h-5 bg-rose-500/20 border-2 border-rose-500 rounded-full shrink-0">
                             <span class="text-rose-500 font-black text-xs">!<\/span>
                         <\/div>
-                        <span class="text-[9px] font-black uppercase text-rose-500 tracking-widest">${doc.label}<\/span>
+                        <span class="text-[9px] font-black uppercase text-rose-500 tracking-widest">${label}<\/span>
                     <\/div>
                 `;
 
                 boxHtml = `
                     <div class="w-full h-32 rounded-2xl border-2 border-dashed border-rose-500/10 bg-rose-500/5 flex flex-col items-center justify-center opacity-40">
-                        <span class="text-[8px] font-black text-rose-500 tracking-[0.3em]">MISSING FILE<\/span>
+                        <span class="text-[8px] font-black text-rose-500 tracking-[0.3em]">MISSING<\/span>
                     <\/div>
                 `;
             }

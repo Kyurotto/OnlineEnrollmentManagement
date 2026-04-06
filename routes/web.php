@@ -105,8 +105,11 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::delete('/students/{id}', [RegistrarStudentController::class, 'destroy'])->name('students.destroy');
 
     Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
+<<<<<<< HEAD
     Route::patch('/applications/{id}/toggle-physical', [RegistrarApplicationController::class, 'togglePhysicalDocuments'])->name('applications.toggle-physical');
 
+=======
+>>>>>>> origin/main
 
     Route::get('/academic-years', [RegistrarAcademicYearController::class, 'index'])->name('academic_years.index');
     Route::post('/academic-years', [RegistrarAcademicYearController::class, 'store'])->name('academic_years.store');

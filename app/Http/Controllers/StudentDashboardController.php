@@ -49,6 +49,7 @@ class StudentDashboardController extends Controller
                 ->exists();
         }
 
+<<<<<<< HEAD
         // 6. Calculate Progress Steps for the Progress Bar
         $steps = [
             'application' => $latestEnrollment ? 'green' : 'grey',
@@ -102,6 +103,9 @@ class StudentDashboardController extends Controller
         }
 
         // 7. Check if an enrollment record already exists for this user in the active year
+=======
+        // 6. Check if an enrollment record already exists for this user in the active year
+>>>>>>> origin/main
         $existingEnrollment = null;
         $hasSubmitted = false;
         if ($activeYear) {
@@ -120,7 +124,10 @@ class StudentDashboardController extends Controller
             'latestEnrollment',
             'currentYearEnrollment',
             'isEnrolledInActiveYear',
+<<<<<<< HEAD
             'steps',
+=======
+>>>>>>> origin/main
             'hasSubmitted',
             'existingEnrollment'
         ));

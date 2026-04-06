@@ -16,7 +16,7 @@
                 <div class="relative group w-full md:w-72">
                     <input type="text" wire:model.live.debounce.500ms="search"
                         placeholder="Search Name or Program..."
-                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500/40 transition-all shadow-inner tracking-wider">
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all shadow-inner tracking-wider">
                     <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
@@ -87,7 +87,7 @@
                             <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($student->id, 5, '0', STR_PAD_LEFT) }}</td>
                             <td class="py-6 px-8">
                                 <div class="flex flex-col">
-                                    <span class="text-white group-hover:text-purple-400 transition-colors uppercase tracking-wider block">{{ $student->last_name }}, {{ $student->first_name }}</span>
+                                    <span class="text-white group-hover:text-blue-400 transition-colors uppercase tracking-wider block font-bold">{{ $student->last_name }}, {{ $student->first_name }}</span>
                                     <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Verified Profile</span>
                                 </div>
                             </td>
@@ -95,7 +95,7 @@
                                 <span class="text-white/40 lowercase tracking-tight">{{ $student->email }}</span>
                             </td>
                             <td class="py-6 px-8 text-center">
-                                <span class="text-purple-400 uppercase tracking-widest font-black text-[10px]">{{ $student->program }}</span>
+                                <span class="text-blue-400 uppercase tracking-widest font-black text-[10px]">{{ $student->program }}</span>
                             </td>
                             <td class="py-6 px-8 text-center">
                                 <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
@@ -106,7 +106,7 @@
                                         'active', 'approved', 'enrolled' => 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
                                         'pending' => 'text-amber-400 bg-amber-400/10 border-amber-400/20',
                                         'rejected', 'inactive' => 'text-rose-400 bg-rose-400/10 border-rose-400/20',
-                                        default => 'text-purple-400 bg-purple-500/10 border-purple-500/20',
+                                        default => 'text-blue-400 bg-blue-500/10 border-blue-500/20',
                                     };
                                 @endphp
                                 <span class="{{ $statusColor }} text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
@@ -115,7 +115,7 @@
                             </td>
                             <td class="py-6 px-8 text-right">
                                     <a href="{{ route('registrar.students.edit', $student->id) }}"
-                                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-blue-400 hover:border-blue-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
                                         UPDATE
                                         <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                                     </a>

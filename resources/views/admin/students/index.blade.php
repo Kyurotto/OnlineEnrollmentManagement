@@ -88,7 +88,7 @@
 
                 @if ($students->hasPages())
                     <div class="px-6 py-4 border-t border-white/5 bg-white/5">
-                        {{ $students->appends(request()->query())->links('pagination.glass') }}
+                        {{ $students->appends(request()->query())->links('pagination') }}
                     </div>
                 @endif
             </div>
