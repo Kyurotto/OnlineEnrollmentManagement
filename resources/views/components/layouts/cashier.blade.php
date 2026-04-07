@@ -53,23 +53,34 @@
                 {{-- Divider --}}
                 <div class="my-4 mx-2" style="border-top: 1px solid rgba(26,58,110,0.3);"></div>
 
-                {{-- Management Section (Simplified) --}}
-                <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2" style="color: rgba(138,180,216,0.35);">Management</p>
-
+                {{-- Payments Section --}}
+                <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2" style="color: rgba(138,180,216,0.35);">Payments</p>
+                
                 <div class="mt-1 space-y-0.5">
-                    
-                    {{-- Payments --}}
-                    <a href="{{ route('cashier.payments.index') }}"
+                    <a href="{{ route('cashier.payments.shs') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('cashier.payments.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       style="{{ request()->routeIs('cashier.payments.shs') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
                        onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('cashier.payments.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
-                       {{ request()->routeIs('cashier.payments.*') ? 'data-active=1' : '' }}>
-                        @if(request()->routeIs('cashier.payments.*'))
+                       onmouseout="this.style.background='{{ request()->routeIs('cashier.payments.shs') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('cashier.payments.shs') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('cashier.payments.shs'))
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
                         @endif
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        Payments
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        SHS Payments
+                    </a>
+
+                    <a href="{{ route('cashier.payments.college') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('cashier.payments.college') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('cashier.payments.college') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('cashier.payments.college') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('cashier.payments.college'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        College Payments
                     </a>
                 </div>
 
