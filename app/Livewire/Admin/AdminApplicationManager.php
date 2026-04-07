@@ -47,14 +47,16 @@ class AdminApplicationManager extends Component
     public function approve($id)
     {
         $application = Enrollment::findOrFail($id);
-        $application->status = 'Approved';
+        
+        // Finalize enrollment status
+        $application->status = 'Enrolled';
         $application->save();
 
         if ($application->user) {
             $application->user->update(['status' => 'Enrolled']);
         }
 
-        session()->flash('success', 'Application status updated to Approved.');
+        session()->flash('success', 'Application status updated to Enrolled (Paid).');
     }
 
     public function reject($id)

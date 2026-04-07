@@ -174,13 +174,10 @@ class PaymentManager extends Component
 
     private function notifyRecipients($payment)
     {
-        $staff = User::whereIn('role', ['registrar', 'admin'])->get();
         $student = User::find($payment->user_id);
         
-        $recipients = $staff->push($student)->filter();
-
-        if($recipients->count() > 0){
-            Notification::send($recipients, new StudentPaymentConfirmed($payment));
+        if($student){
+            $student->notify(new StudentPaymentConfirmed($payment));
         }
     }
 

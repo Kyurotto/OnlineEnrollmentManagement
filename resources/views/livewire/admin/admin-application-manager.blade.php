@@ -1,16 +1,16 @@
-<style>
-    /* Global scrollbar hide */
-    * { -ms-overflow-style: none; scrollbar-width: none; }
-    *::-webkit-scrollbar { display: none; }
-
-    /* Custom scrollbar exception */
-    .custom-scrollbar { -ms-overflow-style: auto; scrollbar-width: thin; scrollbar-color: rgba(34,211,238,0.3) transparent; }
-    .custom-scrollbar::-webkit-scrollbar { display: block; height: 5px; width: 5px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(34,211,238,0.3); border-radius: 999px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(34,211,238,0.6); }
-</style>
 <div class="space-y-6 animate-in fade-in duration-500" x-data="{ modalOpen: false }">
+    <style>
+        /* Global scrollbar hide */
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+        *::-webkit-scrollbar { display: none; }
+
+        /* Custom scrollbar exception */
+        .custom-scrollbar { -ms-overflow-style: auto; scrollbar-width: thin; scrollbar-color: rgba(34,211,238,0.3) transparent; }
+        .custom-scrollbar::-webkit-scrollbar { display: block; height: 5px; width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(34,211,238,0.3); border-radius: 999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(34,211,238,0.6); }
+    </style>
     @if(session('success'))
         <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
@@ -162,14 +162,18 @@
                             <td class="py-6 px-8">
                                 @php
                                     $badgeColor = match(ucfirst($application->status)) {
+                                        'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        'Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                                         'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        'Enrolled','Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                                         'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
                                         'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
                                         default => 'bg-white/5 text-white/40 border-white/10',
                                     };
                                     $displayText = match($application->status) {
-                                        'Enrolled' => 'Paid',
+                                        'Enrolled' => 'Enrolled',
+                                        'Paid' => 'Paid',
+                                        'Approved' => 'Approved',
+                                        'Pending' => 'Pending',
                                         default => $application->status
                                     };
                                 @endphp

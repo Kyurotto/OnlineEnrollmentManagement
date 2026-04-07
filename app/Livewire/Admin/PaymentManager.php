@@ -109,12 +109,9 @@ class PaymentManager extends Component
         }
 
         // Notifications
-        $registrars = User::where('role', 'registrar')->get();
         $student = User::find($this->user_id);
-        $recipients = $registrars->push($student)->filter();
-
-        if($recipients->count() > 0){
-            Notification::send($recipients, new StudentPaymentConfirmed($payment));
+        if($student){
+            $student->notify(new StudentPaymentConfirmed($payment));
         }
 
         $this->closeModal();
@@ -150,12 +147,9 @@ class PaymentManager extends Component
                 ]);
             }
 
-            $registrars = User::where('role', 'registrar')->get();
             $student = User::find($payment->user_id);
-            $recipients = $registrars->push($student)->filter();
-
-            if($recipients->count() > 0){
-                Notification::send($recipients, new StudentPaymentConfirmed($payment));
+            if($student){
+                $student->notify(new StudentPaymentConfirmed($payment));
             }
         }
 

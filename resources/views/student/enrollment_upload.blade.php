@@ -133,6 +133,23 @@
                                 Promissory Note (Alternative)
                             </h4>
                             <p class="text-[10px] text-white/30 leading-relaxed uppercase tracking-wider">If you cannot provide all documents right now, please upload a promissory note explaining your situation.</p>
+
+                            {{-- Sample Promissory Note Image Preview --}}
+                            <div class="mt-3 space-y-2">
+                                <p class="text-[9px] font-black uppercase tracking-widest text-amber-400/50">Sample Template</p>
+                                <a href="{{ asset('sample_promissory_note.png') }}" target="_blank"
+                                   class="block relative group overflow-hidden rounded-xl border border-amber-500/20 hover:border-amber-400/50 transition-all shadow-lg shadow-black/30">
+                                    <img src="{{ asset('sample_promissory_note.png') }}"
+                                         alt="Sample Promissory Note"
+                                         class="w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                                        <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        <span class="text-[9px] font-black uppercase tracking-widest text-amber-400">View Full Size</span>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                         
                         <div class="md:col-span-2 space-y-6">
