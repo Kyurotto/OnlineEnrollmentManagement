@@ -87,14 +87,9 @@ class CashierPaymentController extends Controller
         }
 
         // --- NOTIFICATION LOGIC START ---
-        // Since store() creates it as 'Paid', we notify immediately
-        $staff = User::whereIn('role', ['registrar', 'admin'])->get();
         $student = User::find($payment->user_id);
-
-        $recipients = $staff->push($student)->filter(); // Combine staff and student, remove nulls
-
-        if($recipients->count() > 0){
-            Notification::send($recipients, new StudentPaymentConfirmed($payment));
+        if($student){
+            $student->notify(new StudentPaymentConfirmed($payment));
         }
         // --- NOTIFICATION LOGIC END ---
 
@@ -133,19 +128,14 @@ class CashierPaymentController extends Controller
         ]);
 
         // --- NOTIFICATION LOGIC START ---
-        // Only notify if the status was changed to 'Paid'
         if ($request->status === 'Paid') {
             if ($payment->application_id) {
                 Enrollment::where('id', $payment->application_id)->update(['status' => 'Paid']);
             }
 
-            $staff = User::whereIn('role', ['registrar', 'admin'])->get();
             $student = User::find($payment->user_id);
-
-            $recipients = $staff->push($student)->filter(); // Combine staff and student
-
-            if($recipients->count() > 0){
-                Notification::send($recipients, new StudentPaymentConfirmed($payment));
+            if($student){
+                $student->notify(new StudentPaymentConfirmed($payment));
             }
         }
         // --- NOTIFICATION LOGIC END ---

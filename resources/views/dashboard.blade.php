@@ -53,9 +53,9 @@
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <p class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1">Enrollment Status</p>
-                    @if($currentStatus === 'Enrolled' || $currentStatus === 'Approved')
+                    @if($currentStatus === 'Enrolled')
                         <span class="bg-[#10B981]/20 text-[#10B981] px-4 py-1.5 rounded-full font-black text-xs border border-[#10B981]/30 tracking-widest uppercase">ENROLLED</span>
-                    @elseif($currentStatus === 'Pending')
+                    @elseif($currentStatus === 'Pending' || $currentStatus === 'Approved' || $currentStatus === 'Paid')
                         <span class="bg-amber-500/20 text-amber-400 px-4 py-1.5 rounded-full font-black text-xs border border-amber-500/30 tracking-widest uppercase">PENDING</span>
                     @elseif($currentStatus === 'Rejected')
                         <span class="bg-rose-500/20 text-rose-400 px-4 py-1.5 rounded-full font-black text-xs border border-rose-500/30 tracking-widest uppercase">REJECTED</span>

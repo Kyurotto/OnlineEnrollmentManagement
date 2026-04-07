@@ -1,15 +1,3 @@
-<style>
-    /* Global scrollbar hide */
-    * { -ms-overflow-style: none; scrollbar-width: none; }
-    *::-webkit-scrollbar { display: none; }
-
-    /* Custom scrollbar exception */
-    .custom-scrollbar { -ms-overflow-style: auto; scrollbar-width: thin; scrollbar-color: rgba(34,211,238,0.3) transparent; }
-    .custom-scrollbar::-webkit-scrollbar { display: block; height: 5px; width: 5px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(34,211,238,0.3); border-radius: 999px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(34,211,238,0.6); }
-</style>
 <div x-data="{ modalOpen: false, selectedId: null }"
      x-init="
         $watch('modalOpen', value => {
@@ -22,6 +10,20 @@
      @modal-reset.window="modalOpen = false; selectedId = null"
      wire:poll.15s
      class="space-y-6 animate-in fade-in duration-500">
+
+    <style>
+        /* Global scrollbar hide */
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+        *::-webkit-scrollbar { display: none; }
+
+        /* Custom scrollbar exception */
+        .custom-scrollbar { -ms-overflow-style: auto; scrollbar-width: thin; scrollbar-color: rgba(34,211,238,0.3) transparent; }
+        .custom-scrollbar::-webkit-scrollbar { display: block; height: 5px; width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(34,211,238,0.3); border-radius: 999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(34,211,238,0.6); }
+    </style>
+
     @if(session('success'))
         <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
@@ -181,14 +183,18 @@
                             <td class="py-6 px-8">
                                 @php
                                     $badgeColor = match(ucfirst($application->status)) {
+                                        'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        'Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                                         'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        'Enrolled','Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                                         'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
                                         'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
                                         default => 'bg-white/5 text-white/40 border-white/10',
                                     };
                                     $displayText = match($application->status) {
-                                        'Enrolled' => 'Paid',
+                                        'Enrolled' => 'Enrolled',
+                                        'Paid' => 'Paid',
+                                        'Approved' => 'Approved',
+                                        'Pending' => 'Pending',
                                         default => $application->status
                                     };
                                 @endphp
@@ -387,12 +393,12 @@
                         class="text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0">
                         Done Hard Docs
                     </button>
-                    <button type="button"
+                    <button type="button" id="approveBtn"
                         @click="@this.approve(selectedId); setTimeout(() => { location.reload(); }, 800);"
                         class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 shrink-0">
                         Approve Enrollment
                     </button>
-                    <button type="button"
+                    <button type="button" id="rejectBtn"
                         @click="if(confirm('Are you sure you want to reject this application?')) { @this.reject(selectedId); setTimeout(() => { location.reload(); }, 800); }"
                         class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95 shrink-0">
                         Reject Application
@@ -549,7 +555,9 @@
         // Action Buttons visibility
         const actionButtons = document.getElementById('actionButtons');
         const status = (app.status || '').toLowerCase();
-        if (['pending'].includes(status)) {
+        
+        // Show buttons for Pending, Approved, and Paid (Enrolled) statuses
+        if (['pending', 'approved', 'enrolled', 'paid'].includes(status)) {
             actionButtons.classList.remove('hidden');
             actionButtons.classList.add('flex');
         } else {

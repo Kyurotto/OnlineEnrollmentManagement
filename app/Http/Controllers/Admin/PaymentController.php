@@ -89,14 +89,9 @@ class PaymentController extends Controller
         }
 
         // --- NOTIFICATION LOGIC START ---
-        // Since store() creates it as 'Paid', we notify immediately
-        $registrars = User::where('role', 'registrar')->get();
-        $student = User::find($payment->user_id, ['*']);
-
-        $recipients = $registrars->push($student)->filter(); // Combine staff and student
-
-        if($recipients->count() > 0){
-            Notification::send($recipients, new StudentPaymentConfirmed($payment));
+        $student = User::find($payment->user_id);
+        if($student){
+            $student->notify(new StudentPaymentConfirmed($payment));
         }
         // --- NOTIFICATION LOGIC END ---
 
@@ -140,13 +135,9 @@ class PaymentController extends Controller
             }
 
             // --- NOTIFICATION LOGIC START ---
-            $registrars = User::where('role', 'registrar')->get();
-            $student = User::find($payment->user_id, ['*']);
-
-            $recipients = $registrars->push($student)->filter(); // Combine staff and student
-
-            if($recipients->count() > 0){
-                Notification::send($recipients, new StudentPaymentConfirmed($payment));
+            $student = User::find($payment->user_id);
+            if($student){
+                $student->notify(new StudentPaymentConfirmed($payment));
             }
             // --- NOTIFICATION LOGIC END ---
         }

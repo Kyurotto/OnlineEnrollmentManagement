@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Promissory Note - Enrollment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            color: #000;
+            background: #fff;
+            padding: 0;
+        }
+        .page {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            padding: 1in 1in 1in 1.25in;
+            background: #fff;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 16px;
+        }
+        .school-name {
+            font-size: 16pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .school-address {
+            font-size: 10pt;
+            color: #444;
+            margin-top: 4px;
+        }
+        .doc-title {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 12px;
+        }
+        .doc-subtitle {
+            font-size: 10pt;
+            font-style: italic;
+            color: #555;
+            margin-top: 4px;
+        }
+        .date-line {
+            text-align: right;
+            margin-bottom: 24px;
+            font-size: 11pt;
+        }
+        .salutation {
+            margin-bottom: 16px;
+            font-size: 11pt;
+        }
+        .body-text {
+            font-size: 11pt;
+            line-height: 1.9;
+            text-align: justify;
+            margin-bottom: 16px;
+        }
+        .blank {
+            display: inline-block;
+            min-width: 180px;
+            border-bottom: 1px solid #000;
+            margin: 0 4px;
+        }
+        .blank-sm {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 1px solid #000;
+            margin: 0 4px;
+        }
+        .commitment-box {
+            border: 1px solid #999;
+            padding: 14px 18px;
+            margin: 20px 0;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        .commitment-box p {
+            font-size: 11pt;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+        }
+        .sig-block {
+            flex: 1;
+            text-align: center;
+        }
+        .sig-line {
+            border-top: 1px solid #000;
+            margin-top: 48px;
+            padding-top: 6px;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .sig-label {
+            font-size: 9pt;
+            color: #555;
+            margin-top: 2px;
+        }
+        .notary-section {
+            margin-top: 40px;
+            border-top: 1px dashed #999;
+            padding-top: 20px;
+        }
+        .notary-title {
+            font-weight: bold;
+            font-size: 11pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        .notary-text {
+            font-size: 10pt;
+            line-height: 1.8;
+        }
+        .sample-watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 80pt;
+            font-weight: bold;
+            color: rgba(200, 200, 200, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+        .content { position: relative; z-index: 1; }
+        .note-instruction {
+            background: #fff8e6;
+            border: 1px solid #f0d080;
+            border-left: 4px solid #f0a000;
+            padding: 10px 14px;
+            margin-bottom: 24px;
+            font-size: 10pt;
+            color: #6b4c00;
+            border-radius: 4px;
+        }
+        .note-instruction strong { font-weight: bold; }
+        @media print {
+            .note-instruction { display: none; }
+            .sample-watermark { color: rgba(200, 200, 200, 0.15); }
+            body { padding: 0; }
+            .page { padding: 1in 1in 1in 1.25in; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sample-watermark">SAMPLE</div>
+
+<div class="page">
+    <div class="content">
+
+        <div class="note-instruction">
+            <strong>📋 How to use this sample:</strong> Fill in all the blank lines (___________) with your actual information. Print this document, sign it, then scan or photograph it and upload as your Promissory Note.
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="school-name">University / College Name</div>
+            <div class="school-address">123 Sample Street, City, Province · registrar@school.edu.ph · (012) 345-6789</div>
+            <div class="doc-title">Promissory Note</div>
+            <div class="doc-subtitle">Enrollment Document Compliance Commitment</div>
+        </div>
+
+        <!-- Date -->
+        <div class="date-line">
+            Date: <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+
+        <!-- Salutation -->
+        <div class="salutation">
+            To the Office of the Registrar,<br>
+            <span class="blank" style="min-width:260px;">&nbsp;</span> <em>(Name of School)</em>
+        </div>
+
+        <!-- Body -->
+        <p class="body-text">
+            I, <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 
+            of legal age, a <span class="blank-sm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>-year 
+            <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> student 
+            at <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 
+            with Student ID No. <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 
+            residing at <span class="blank" style="min-width: 260px;">&nbsp;</span>, 
+            do hereby solemnly commit and promise the following:
+        </p>
+
+        <div class="commitment-box">
+            <p>
+                I am currently <strong>unable to submit the following required enrollment documents</strong> on or before the enrollment deadline due to the reason stated below:
+            </p>
+            <br>
+            <p>
+                <strong>Missing Document(s):</strong><br>
+                ☐ &nbsp;Form 137 / Report Card &nbsp;&nbsp;&nbsp;&nbsp;
+                ☐ &nbsp;Certificate of Good Moral<br>
+                ☐ &nbsp;PSA Birth Certificate &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                ☐ &nbsp;2x2 ID Portrait<br>
+                ☐ &nbsp;SF10 (SHS) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                ☐ &nbsp;Other: <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            </p>
+        </div>
+
+        <p class="body-text">
+            <strong>Reason for Non-Submission:</strong><br>
+            <span class="blank" style="min-width: 100%; display: block; border-bottom: 1px solid #000; margin-bottom: 6px;">&nbsp;</span>
+            <span class="blank" style="min-width: 100%; display: block; border-bottom: 1px solid #000; margin-bottom: 6px;">&nbsp;</span>
+            <span class="blank" style="min-width: 70%; display: block; border-bottom: 1px solid #000;">&nbsp;</span>
+        </p>
+
+        <p class="body-text">
+            I hereby <strong>solemnly commit</strong> to submit the above-mentioned missing documents to the Office of the Registrar no later than 
+            <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> 
+            (specify date), during the 
+            <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Semester, 
+            Academic Year <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.
+        </p>
+
+        <p class="body-text">
+            I understand that failure to submit the required documents by the committed date may result in the <strong>cancellation or suspension of my enrollment</strong> for the current academic term. I accept full responsibility for any academic consequences arising from my non-compliance.
+        </p>
+
+        <p class="body-text">
+            I make this promise in good faith and with full understanding of its implications.
+        </p>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="sig-block">
+                <div class="sig-line">
+                    <span class="blank" style="min-width: 200px;">&nbsp;</span>
+                </div>
+                <div style="font-weight: bold; font-size: 11pt; margin-top: 6px;">
+                    <span class="blank" style="min-width: 200px;">&nbsp;</span>
+                </div>
+                <div class="sig-label">Student's Signature over Printed Name</div>
+            </div>
+
+            <div class="sig-block">
+                <div class="sig-line">
+                    <span class="blank" style="min-width: 200px;">&nbsp;</span>
+                </div>
+                <div style="font-weight: bold; font-size: 11pt; margin-top: 6px;">
+                    <span class="blank" style="min-width: 200px;">&nbsp;</span>
+                </div>
+                <div class="sig-label">Parent / Guardian's Signature over Printed Name</div>
+            </div>
+        </div>
+
+        <!-- Witnessed by -->
+        <div class="notary-section">
+            <div class="notary-title">Received and Noted by:</div>
+            <div class="notary-text">
+                <div style="display: flex; gap: 60px; margin-top: 40px;">
+                    <div style="flex:1; text-align:center;">
+                        <div style="border-top: 1px solid #000; padding-top: 6px;">
+                            <strong>Registrar / Authorized Representative</strong><br>
+                            <span style="font-size:9pt; color:#555;">Signature over Printed Name &amp; Date</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end content -->
+</div><!-- end page -->
+
+</body>
+</html>
