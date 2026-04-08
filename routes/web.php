@@ -167,6 +167,8 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
 Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')->group(function () {
     Route::get('/dashboard', CashierDashboardManager::class)->name('dashboard');
     Route::get('/payments', CashierPaymentManager::class)->name('payments.index');
+    Route::get('/payments/college', CashierPaymentManager::class)->name('payments.college');
+    Route::get('/payments/shs', CashierPaymentManager::class)->name('payments.shs');
 });
 
 /*

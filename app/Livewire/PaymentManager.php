@@ -17,6 +17,7 @@ class PaymentManager extends Component
     public $search = '';
     public $filterCourse = 'ALL';
     public $statusFilter = 'All statuses';
+    public $level = null;
     
     public $showModal = false;
     public $isEditMode = false;
@@ -38,6 +39,12 @@ class PaymentManager extends Component
 
     public function mount()
     {
+        if (request()->routeIs('cashier.payments.college')) {
+            $this->level = 'college';
+        } elseif (request()->routeIs('cashier.payments.shs')) {
+            $this->level = 'shs';
+        }
+
         if (request()->has('showModal') && request('showModal') === 'true') {
             $this->openCreateModal();
         }
@@ -190,6 +197,10 @@ class PaymentManager extends Component
 
         if ($this->statusFilter != 'All statuses') {
             $query->where('payments.status', $this->statusFilter);
+        }
+
+        if ($this->level) {
+            $query->where('enrollments.level', $this->level);
         }
 
         if ($this->filterCourse != 'ALL') {
