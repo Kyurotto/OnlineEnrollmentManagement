@@ -176,14 +176,14 @@ Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')-
 | STUDENT ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
+Route::middleware(['auth', 'can:student'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
     Route::get('/enrollment/create', [StudentEnrollmentController::class, 'create'])->name('enrollment.create');
     Route::get('/enrollment/review', [StudentEnrollmentController::class, 'review'])->name('enrollment.review');
     Route::post('/enrollment', [StudentEnrollmentController::class, 'store'])->name('enrollment.store');
     Route::get('/enrollment/upload', [StudentEnrollmentController::class, 'upload'])->name('enrollment.upload');
     Route::post('/enrollment/upload', [StudentEnrollmentController::class, 'storeUpload'])->name('enrollment.upload.store');
-    
+
     // Edit workflows
     Route::post('/enrollment/edit-request', [StudentEnrollmentController::class, 'requestEdit'])->name('enrollment.request_edit');
     Route::get('/enrollment/edit', [StudentEnrollmentController::class, 'edit'])->name('enrollment.edit');
