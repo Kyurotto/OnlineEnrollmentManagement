@@ -12,17 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('application_id')->nullable(); // Foreign key is added in a later migration
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->decimal('amount', 10, 2);
-        $table->enum('payment_status', ['pending', 'completed', 'failed'])->default('pending');
-        $table->dateTime('payment_date')->useCurrent();
-        $table->string('transaction_id')->nullable();
-        $table->string('proof')->nullable(); // File path
-        $table->text('notes')->nullable();
-        $table->timestamps();
-    });
+            $table->id();
+            $table->foreignId('application_id')->nullable(); // Foreign key is added in a later migration
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->decimal('amount', 10, 2);
+
+            // FIX: Use a single 'status' string column to align with application logic ('Pending', 'Paid', 'Rejected')
+            $table->string('status')->default('Pending');
+
+            $table->dateTime('payment_date')->useCurrent();
+            $table->string('transaction_id')->nullable();
+            $table->string('proof')->nullable(); // File path
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
