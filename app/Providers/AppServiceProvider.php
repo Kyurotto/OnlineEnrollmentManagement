@@ -84,7 +84,9 @@ class AppServiceProvider extends ServiceProvider
             return $employee && $employee->role === 'registrar';
         });
 
-
+        Gate::define('student', function (User $user) {
+            return $user->role === 'student';
+        });
 
         // Admin Navbar Data
         // Admin Layout Data
