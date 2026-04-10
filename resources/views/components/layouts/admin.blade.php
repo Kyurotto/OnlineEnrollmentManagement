@@ -59,7 +59,7 @@
                 <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2" style="color: rgba(138,180,216,0.35);">Management</p>
 
                 <div class="mt-1 space-y-0.5">
-                    
+
                     {{-- Manage Courses --}}
                     <a href="{{ route('admin.courses.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
@@ -102,19 +102,34 @@
                         Payments
                     </a>
 
-                    {{-- Manage Applications --}}
-                    <a href="{{ route('admin.applications.index') }}"
+                    {{-- Applications for College --}}
+                    <a href="{{ route('admin.applications.index', ['level' => 'college']) }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('admin.applications.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       style="{{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
                        onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('admin.applications.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
-                       {{ request()->routeIs('admin.applications.*') ? 'data-active=1' : '' }}>
-                        @if(request()->routeIs('admin.applications.*'))
+                       onmouseout="this.style.background='{{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('admin.applications.*') && request('level') === 'college')
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
                         @endif
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                        Applications
+                        Applications for College
                     </a>
+
+                    {{-- Applications for SHS --}}
+                    <a href="{{ route('admin.applications.index', ['level' => 'shs']) }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('admin.applications.*') && request('level') === 'shs')
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        Applications for SHS
+                    </a>
+
                 </div>
 
             </nav>
