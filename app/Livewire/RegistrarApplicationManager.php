@@ -141,7 +141,8 @@ class RegistrarApplicationManager extends Component
         $courseCodes = $applications->pluck('course_code')->unique();
         $courses = Course::whereIn('course_code', $courseCodes)->get()->keyBy('course_code');
 
-        foreach ($applications as $application) {
+        // Transform each item in the collection
+        $applications->getCollection()->transform(function ($application) use ($courses) {
             if (isset($courses[$application->course_code])) {
                 $application->setRelation('course', $courses[$application->course_code]);
             }
@@ -153,7 +154,8 @@ class RegistrarApplicationManager extends Component
             } else {
                 $application->year_display = 'N/A';
             }
-        }
+            return $application;
+        });
 
         // 2. Count pending applications for the header badge (respecting the current level)
         $pendingCountQuery = Enrollment::where('status', 'Pending');

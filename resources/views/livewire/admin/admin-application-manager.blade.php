@@ -214,7 +214,7 @@
     <!-- Details Modal -->
     <div x-show="modalOpen" wire:ignore class="fixed inset-0 z-50 p-4 flex items-center justify-center transition-all duration-300" x-cloak>
         <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false"></div>
-        
+
         <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10" id="modalContent">
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                 <div>
@@ -358,8 +358,8 @@
 
             <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
-                    <button type="button" 
-                        @click="modalOpen = false; @this.approve(selectedId)" 
+                    <button type="button"
+                        @click="modalOpen = false; @this.approve(selectedId)"
                         class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 shrink-0">
                         Approve Enrollment
                     </button>
@@ -473,11 +473,11 @@
         if (app.promissory_note_path || app.promissory_reason) {
             promissorySection.classList.remove('hidden');
             promissoryReason.innerText = app.promissory_reason || 'No explanation provided.';
-            
+
             if (app.promissory_note_path) {
                 const noteUrl = storageBase + app.promissory_note_path;
                 const isPdf = app.promissory_note_path.toLowerCase().endsWith('.pdf');
-                
+
                 promissoryFile.innerHTML = `
                     <div class="space-y-3">
                         <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment<\/span>
