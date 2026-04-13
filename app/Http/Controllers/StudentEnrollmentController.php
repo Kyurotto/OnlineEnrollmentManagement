@@ -342,4 +342,31 @@ class StudentEnrollmentController extends Controller
 
         return redirect()->route('student.enrollment.review')->with('success', 'Your application has been successfully updated and is pending review.');
     }
+
+    /**
+     * Request edit access for enrollment application
+     */
+    public function requestEdit(Request $request)
+    {
+        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+
+        if (!$enrollment) {
+            return back()->with('error', 'No enrollment found.');
+        }
+
+        if (in_array($enrollment->status, ['Enrolled', 'Paid'])) {
+            return back()->with('error', 'You cannot edit a finalized enrollment.');
+        }
+
+        if ($enrollment->edit_request_status === 'Pending') {
+            return back()->with('info', 'Your edit request is already pending approval.');
+        }
+
+        $enrollment->update([
+            'edit_request_status' => 'Pending',
+            'edit_requested_at' => now(),
+        ]);
+
+        return back()->with('success', 'Edit request submitted. Please wait for registrar approval.');
+    }
 }

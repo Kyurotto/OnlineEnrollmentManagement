@@ -35,8 +35,8 @@
         <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex-shrink-0">
                 <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">
-                    @if($level === 'college') College Applications
-                    @elseif($level === 'shs') SHS Applications
+                    @if($level === 'college') Applications
+                    @elseif($level === 'shs') Applications
                     @else Applications @endif
                 </h2>
                 <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">
@@ -555,7 +555,7 @@
         // Action Buttons visibility
         const actionButtons = document.getElementById('actionButtons');
         const status = (app.status || '').toLowerCase();
-        
+
         // Show buttons for Pending, Approved, and Paid (Enrolled) statuses
         if (['pending', 'approved', 'enrolled', 'paid'].includes(status)) {
             actionButtons.classList.remove('hidden');

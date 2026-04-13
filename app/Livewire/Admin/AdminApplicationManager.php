@@ -104,7 +104,8 @@ class AdminApplicationManager extends Component
 
         $applications = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
-        foreach ($applications as $application) {
+        // Simplify year level display for each item
+        $applications->getCollection()->transform(function ($application) {
             // Simplify year level display (e.g., "1st Year | 2nd Semester" -> "1st Year")
             if (!empty($application->year_level)) {
                 $parts = explode('|', $application->year_level);
@@ -112,7 +113,8 @@ class AdminApplicationManager extends Component
             } else {
                 $application->year_display = 'N/A';
             }
-        }
+            return $application;
+        });
 
         return view('livewire.admin.admin-application-manager', [
             'applications' => $applications

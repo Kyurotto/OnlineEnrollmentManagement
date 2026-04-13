@@ -45,7 +45,7 @@ class User extends Authenticatable
         if (in_array($this->role, ['admin', 'registrar', 'cashier'])) {
             return 'Active';
         }
-        return $this->application->status ?? 'Not Enrolled';
+        return $this->application?->status ?? 'Not Enrolled';
     }
 
     protected $hidden = [
