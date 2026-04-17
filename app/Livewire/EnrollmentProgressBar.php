@@ -45,35 +45,40 @@ class EnrollmentProgressBar extends Component
             // Sequential gate flags
             // Each flag must be true before the NEXT step can become yellow/green
             // ------------------------------------------------------------------
-            $onlineComplete   = $allDocsUploaded || $hasPromissory;
-            $physicalComplete = $latestEnrollment->physical_documents_received || $hasPromissory;
+            $onlineComplete   = $allDocsUploaded;
+            $physicalComplete = $latestEnrollment->physical_documents_received == 1;
             $hasPaid          = $latestEnrollment->payments()->where('status', 'Paid')->exists();
 
             // Step 2 — Upload Online Documents
             // yellow = student has not yet uploaded all required documents (PENDING)
-            // green  = all required docs uploaded OR promissory note submitted
-            $steps['online_docs'] = $onlineComplete ? 'green' : 'yellow';
+            // green  = all required docs uploaded
+            // Note: If they have a promissory note, it allows them to proceed to Step 3, but Step 2 remains pending.
+            if ($onlineComplete) {
+                $steps['online_docs'] = 'green';
+            } else {
+                $steps['online_docs'] = 'yellow';
+            }
 
             // Step 3 — Pass Physical Documents
-            // grey   = online docs NOT yet complete → step is locked
-            // yellow = online docs done, waiting for registrar to confirm hard docs (PENDING)
-            // green  = registrar clicked "Done Hard Docs" OR promissory bypasses this step
+            // grey   = online docs NOT yet complete (unless promissory note is uploaded)
+            // yellow = online docs done (or promissory), waiting for registrar to confirm hard docs (PENDING)
+            // green  = registrar clicked "Done Hard Docs"
             if ($physicalComplete) {
                 $steps['physical_docs'] = 'green';
-            } elseif ($onlineComplete) {
+            } elseif ($onlineComplete || $hasPromissory) {
                 $steps['physical_docs'] = 'yellow';
             } else {
                 $steps['physical_docs'] = 'grey'; // locked — upload online docs first
             }
 
             // Step 4 — Pay in Cashier
-            // STRICT GATE: physical docs must be green before this step can activate
-            // grey   = physical docs not yet confirmed → step is locked
-            // yellow = physical docs confirmed AND status is Approved → go pay at cashier
+            // STRICT GATE: physical docs must be green before this step can activate (or bypassed via promissory)
+            // grey   = physical docs not yet confirmed and no promissory note → step is locked
+            // yellow = physical docs confirmed (or promissory) AND status is Approved → go pay at cashier
             // green  = cashier has marked the payment as Paid
             if ($hasPaid) {
                 $steps['payment'] = 'green';
-            } elseif ($physicalComplete && $latestEnrollment->status === 'Approved') {
+            } elseif (($physicalComplete || $hasPromissory) && $latestEnrollment->status === 'Approved') {
                 $steps['payment'] = 'yellow';
             } else {
                 $steps['payment'] = 'grey'; // locked — complete physical docs & get approved first
