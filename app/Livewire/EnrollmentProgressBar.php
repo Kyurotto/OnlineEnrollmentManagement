@@ -23,7 +23,7 @@ class EnrollmentProgressBar extends Component
 
         if ($latestEnrollment) {
             // Build the required document list based on enrollment level
-            $level = $latestEnrollment->level;
+            $level = $latestEnrollment->getLevel();
 
             if ($level === 'shs') {
                 $requiredDocs = ['form_137_path', 'sf10_path', 'good_moral_path', 'psa_path', 'id_picture_path'];
@@ -60,41 +60,36 @@ class EnrollmentProgressBar extends Component
             }
 
             // Step 3 — Pass Physical Documents
-            // grey   = online docs NOT yet complete (unless promissory note is uploaded)
-            // yellow = online docs done (or promissory), waiting for registrar to confirm hard docs (PENDING)
-            // green  = registrar clicked "Done Hard Docs"
+            // This is parallel to Step 2, so it always shows pending until registrar confirms
             if ($physicalComplete) {
                 $steps['physical_docs'] = 'green';
-            } elseif ($onlineComplete || $hasPromissory) {
-                $steps['physical_docs'] = 'yellow';
             } else {
-                $steps['physical_docs'] = 'grey'; // locked — upload online docs first
+                $steps['physical_docs'] = 'yellow'; // pending until registrar confirms
             }
 
             // Step 4 — Pay in Cashier
-            // STRICT GATE: physical docs must be green before this step can activate (or bypassed via promissory)
-            // grey   = physical docs not yet confirmed and no promissory note → step is locked
-            // yellow = physical docs confirmed (or promissory) AND status is Approved → go pay at cashier
-            // green  = cashier has marked the payment as Paid
-            if ($hasPaid) {
-                $steps['payment'] = 'green';
-            } elseif (($physicalComplete || $hasPromissory) && $latestEnrollment->status === 'Approved') {
-                $steps['payment'] = 'yellow';
+            // STRICT GATE: physical docs must be GREEN before this step can turn yellow/green
+            // Note: physical docs being green overrides the need for online docs to be green
+            if ($steps['physical_docs'] === 'green') {
+                if ($hasPaid) {
+                    $steps['payment'] = 'green';
+                } else {
+                    $steps['payment'] = 'yellow'; // pending until cashier marks as paid
+                }
             } else {
-                $steps['payment'] = 'grey'; // locked — complete physical docs & get approved first
+                $steps['payment'] = 'grey'; // locked until both online & physical docs are explicitly done
             }
 
             // Step 5 — Enroll
-            // STRICT GATE: payment must be green before this step can activate
-            // grey   = payment not yet completed → step is locked
-            // yellow = payment done, waiting for registrar to finalize enrollment
-            // green  = enrollent finalized by registrar
-            if ($latestEnrollment->status === 'Enrolled') {
-                $steps['enroll'] = 'green';
-            } elseif ($hasPaid) {
-                $steps['enroll'] = 'yellow';
+            // STRICT GATE: payment must be GREEN before this step can turn yellow/green
+            if ($steps['payment'] === 'green') {
+                if ($latestEnrollment->status === 'Enrolled') {
+                    $steps['enroll'] = 'green';
+                } else {
+                    $steps['enroll'] = 'yellow';
+                }
             } else {
-                $steps['enroll'] = 'grey'; // locked — complete payment first
+                $steps['enroll'] = 'grey'; // locked until payment is complete
             }
         }
 

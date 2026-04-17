@@ -38,6 +38,11 @@
                     <span class="mt-4 text-[9px] font-black uppercase tracking-widest text-center px-2 {{ $color !== 'grey' ? 'text-white' : 'text-white/20' }}">
                         {{ $step['label'] }}
                     </span>
+                    @if($color === 'yellow')
+                        <span class="mt-2 text-[7px] font-black uppercase text-amber-500 tracking-[0.2em] bg-amber-500/10 px-2 py-1 rounded shadow-lg shadow-amber-500/20 border border-amber-500/20">Pending</span>
+                    @elseif($color === 'green')
+                        <span class="mt-2 text-[7px] font-black uppercase text-emerald-400 tracking-[0.2em] bg-emerald-500/10 px-2 py-1 rounded shadow-lg shadow-emerald-500/20 border border-emerald-500/20">Done</span>
+                    @endif
                 </div>
             @endforeach
         </div>
