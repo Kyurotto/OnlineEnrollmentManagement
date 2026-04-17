@@ -13,11 +13,21 @@ class CourseSeeder extends Seeder
     {
         // Create courses
         $courses = [
+            // College Programs
             ['course_code' => 'ACT', 'course_name' => 'ASSOCIATE IN COMPUTER TECH', 'credits' => 3, 'type' => 'program'],
             ['course_code' => 'BSIS', 'course_name' => 'BS INFORMATION SYSTEMS', 'credits' => 3, 'type' => 'program'],
             ['course_code' => 'BTVTED', 'course_name' => 'BTV Teacher Education', 'credits' => 3, 'type' => 'program'],
             ['course_code' => 'DHRT', 'course_name' => 'HOTEL & RESTAURANT TECH', 'credits' => 3, 'type' => 'program'],
             ['course_code' => 'DIT', 'course_name' => 'DIPLOMA INFO TECH', 'credits' => 3, 'type' => 'program'],
+
+            // Senior High Strands
+            ['course_code' => 'ABM', 'course_name' => 'Accountancy, Business and Management', 'credits' => 3, 'type' => 'strand'],
+            ['course_code' => 'STEM', 'course_name' => 'Science, Technology, Engineering, and Mathematics', 'credits' => 3, 'type' => 'strand'],
+            ['course_code' => 'HUMSS', 'course_name' => 'Humanities and Social Sciences', 'credits' => 3, 'type' => 'strand'],
+            ['course_code' => 'GAS', 'course_name' => 'General Academic Strand', 'credits' => 3, 'type' => 'strand'],
+            ['course_code' => 'HE', 'course_name' => 'Home Economics', 'credits' => 3, 'type' => 'strand'],
+            ['course_code' => 'ICT', 'course_name' => 'Information and Communications Technology', 'credits' => 3, 'type' => 'strand'],
+
         ];
 
         foreach ($courses as $course) {
