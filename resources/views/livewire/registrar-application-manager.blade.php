@@ -238,7 +238,7 @@
     <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false; selectedId = null"></div>
 
-        <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent">
+        <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent" wire:ignore>
 
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                 <div>
@@ -413,19 +413,19 @@
 
     <script>
     function openModal(app, docMapping) {
-        document.getElementById('modalTitle').innerText = (app.user.first_name || '') + ' ' + (app.user.last_name || '');
-        const middle = app.user.middle_name ? ' ' + app.user.middle_name : '';
-        const fullName = (app.user.first_name || '') + middle + ' ' + (app.user.last_name || '');
+        document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
+        const middle = app.middle_name ? ' ' + app.middle_name : '';
+        const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
 
         // Student Profile section
         document.getElementById('modalNameValue').innerText = fullName;
-        document.getElementById('modalEmail').innerText = app.user.email || 'N/A';
+        document.getElementById('modalEmail').innerText = app.email || 'N/A';
         document.getElementById('modalAppId').innerText = 'REF-' + String(app.id).padStart(5, '0');
         document.getElementById('modalSubmitted').innerText = new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('modalDob').innerText = app.user.birth_date || 'N/A';
-        document.getElementById('modalAge').innerText = app.user.age || 'N/A';
-        document.getElementById('modalGender').innerText = app.user.gender || 'N/A';
-        document.getElementById('modalAddress').innerText = app.user.address_full || 'N/A';
+        document.getElementById('modalDob').innerText = app.birth_date || 'N/A';
+        document.getElementById('modalAge').innerText = app.age || 'N/A';
+        document.getElementById('modalGender').innerText = app.gender || 'N/A';
+        document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
 
         // Program details
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
@@ -443,10 +443,10 @@
         }
 
         // Guardian info
-        document.getElementById('modalFather').innerText = app.user.father_name || 'N/A';
-        document.getElementById('modalMother').innerText = app.user.mother_maiden_name || 'N/A';
-        document.getElementById('modalGuardian').innerText = app.user.guardian_name || 'N/A';
-        document.getElementById('modalContact').innerText = app.user.guardian_contact || 'N/A';
+        document.getElementById('modalFather').innerText = app.father_name || 'N/A';
+        document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
+        document.getElementById('modalGuardian').innerText = app.guardian_name || 'N/A';
+        document.getElementById('modalContact').innerText = app.guardian_contact || 'N/A';
 
         const docsContainer = document.getElementById('modalDocuments');
         docsContainer.innerHTML = '';
