@@ -95,13 +95,13 @@ class RegistrarApplicationController extends Controller
     public function togglePhysicalDocuments($id)
     {
         $application = Enrollment::findOrFail($id);
-        
+
         // Toggle the status
         $application->physical_documents_received = !$application->physical_documents_received;
         $application->save();
 
-        $message = $application->physical_documents_received 
-            ? 'Physical documents marked as received.' 
+        $message = $application->physical_documents_received
+            ? 'Physical documents marked as received.'
             : 'Physical document receipt cancelled.';
 
         return back()->with('success', $message);

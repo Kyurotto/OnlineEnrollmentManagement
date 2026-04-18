@@ -89,8 +89,17 @@
                                         class="bg-rose-500/20 text-rose-400 px-4 py-1.5 rounded-full font-black text-xs border border-rose-500/30 tracking-widest uppercase">REJECTED</span>
                                 @else
                                     <span
-                                        class="bg-white/5 text-white/30 px-4 py-1.5 rounded-full font-black text-xs border border-white/10 tracking-widest uppercase">NOT
-                                        ENROLLED</span>
+                                        class="bg-white/5 text-white/30 px-4 py-1.5 rounded-full font-black text-xs border border-white/10 tracking-widest uppercase">NOT ENROLLED</span>
+                                @endif
+                                @if(isset($currentYearEnrollment) && $currentYearEnrollment)
+                                    @php
+                                        $level = strtolower($currentYearEnrollment->level);
+                                        $bgClass = $level === 'college' ? 'bg-blue-500/20' : ($level === 'shs' ? 'bg-emerald-500/20' : 'bg-gray-500/20');
+                                        $textClass = $level === 'college' ? 'text-blue-500' : ($level === 'shs' ? 'text-emerald-500' : 'text-white');
+                                    @endphp
+                                    <span class="ml-2 text-xs font-black uppercase tracking-widest {{ $bgClass }} {{ $textClass }} px-2 py-0.5 rounded">
+                                        Level: {{ ucfirst($currentYearEnrollment->level) }}
+                                    </span>
                                 @endif
                             </div>
                         </div>
