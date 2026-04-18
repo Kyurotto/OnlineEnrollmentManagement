@@ -1131,7 +1131,7 @@
             </div>
         </x-layouts.registrar>
     @elseif($role === 'admin')
-        <div class="w-full space-y-6" wire:poll.5s="refreshStats">
+        <div class="w-full space-y-6">
 
             {{-- Stats & Calendar Section --}}
             <div class="p-6 rounded-2xl border"
