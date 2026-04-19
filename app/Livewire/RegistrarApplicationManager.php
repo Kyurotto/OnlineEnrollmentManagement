@@ -19,6 +19,8 @@ class RegistrarApplicationManager extends Component
     public $sortField = 'enrollments.id';
     public $sortDirection = 'desc';
     public $year_level = 'All Years';
+    public $course_filter = 'All Programs';
+    public $section_filter = 'All Sections';
     public $level = null;
 
     public function mount()
@@ -34,6 +36,8 @@ class RegistrarApplicationManager extends Component
         'search' => ['except' => ''],
         'status' => ['except' => 'All statuses'],
         'year_level' => ['except' => 'All Years'],
+        'course_filter' => ['except' => 'All Programs'],
+        'section_filter' => ['except' => 'All Sections'],
         'sortField' => ['except' => 'enrollments.id'],
         'sortDirection' => ['except' => 'desc']
     ];
@@ -41,6 +45,8 @@ class RegistrarApplicationManager extends Component
     public function updatingSearch() { $this->resetPage(); }
     public function updatingStatus() { $this->resetPage(); }
     public function updatingYearLevel() { $this->resetPage(); }
+    public function updatingCourseFilter() { $this->resetPage(); $this->section_filter = 'All Sections'; }
+    public function updatingSectionFilter() { $this->resetPage(); }
 
     public function sortBy($field)
     {
@@ -135,6 +141,19 @@ class RegistrarApplicationManager extends Component
             $query->where('enrollments.year_level', 'like', "{$this->year_level}%");
         }
 
+        if ($this->course_filter !== 'All Programs') {
+            $query->where('enrollments.course_code', $this->course_filter);
+        }
+
+        if ($this->section_filter !== 'All Sections') {
+            // Find the numeric year from section name (e.g. "1A" -> "1")
+            preg_match('/\d+/', $this->section_filter, $matches);
+            if (!empty($matches)) {
+                $yearNum = $matches[0];
+                $query->where('enrollments.year_level', 'like', "{$yearNum}%");
+            }
+        }
+
         $applications = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
         // Manual Eager Load for 'course' based on course_code
@@ -164,9 +183,29 @@ class RegistrarApplicationManager extends Component
         }
         $pendingCount = $pendingCountQuery->count();
 
+        // 3. Fetch courses based on level
+        $coursesQuery = Course::query();
+        if ($this->level === 'shs') {
+            $coursesQuery->where('type', 'strand');
+        } elseif ($this->level === 'college') {
+            $coursesQuery->where('type', 'program');
+        }
+        $availableCourses = $coursesQuery->get();
+
+        // Fetch Sections for the selected course
+        $sections = collect();
+        if ($this->course_filter !== 'All Programs') {
+            $course = Course::where('course_code', $this->course_filter)->first();
+            if ($course) {
+                $sections = \App\Models\Section::where('course_id', $course->id)->get();
+            }
+        }
+
         return view('livewire.registrar-application-manager', [
             'applications' => $applications,
-            'pendingCount' => $pendingCount
+            'pendingCount' => $pendingCount,
+            'courses' => $availableCourses,
+            'sections' => $sections
         ]);
     }
 }

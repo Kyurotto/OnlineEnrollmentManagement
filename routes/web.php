@@ -30,6 +30,7 @@ use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\StudentEnrollmentController;
 use App\Http\Controllers\StudentPaymentController;
 use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\DocumentController;
 
 // Student Livewire Components
 use App\Livewire\StudentPaymentManager;
@@ -205,6 +206,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
+    // Secure Document Route
+    Route::get('/documents/{path}', [DocumentController::class, 'show'])->where('path', '.*')->name('document.show');
 });
 
 // Logout

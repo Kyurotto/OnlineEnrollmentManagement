@@ -23,12 +23,14 @@
                             <label class="block text-[10px] font-black text-blue-300 uppercase tracking-widest px-1">Program Code</label>
                             <input type="text" name="course_code" value="{{ old('course_code', $course->course_code) }}" 
                                 class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold tracking-tight shadow-inner">
+                            @error('course_code') <span class="text-rose-500 text-[10px] font-bold uppercase tracking-widest mt-1 block px-1">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="space-y-2">
                             <label class="block text-[10px] font-black text-blue-300 uppercase tracking-widest px-1">Credit Units</label>
                             <input type="number" name="credits" value="{{ old('credits', $course->credits) }}" 
                                 class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-black shadow-inner">
+                            @error('credits') <span class="text-rose-500 text-[10px] font-bold uppercase tracking-widest mt-1 block px-1">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
@@ -36,6 +38,7 @@
                         <label class="block text-[10px] font-black text-blue-300 uppercase tracking-widest px-1">Full Nomenclature</label>
                         <input type="text" name="course_name" value="{{ old('course_name', $course->course_name) }}" 
                             class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold tracking-tight shadow-inner">
+                        @error('course_name') <span class="text-rose-500 text-[10px] font-bold uppercase tracking-widest mt-1 block px-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="space-y-2">
