@@ -33,7 +33,7 @@ class StudentEnrollmentController extends Controller
 
         // Fetch programs and strands from the database
         $programs = Course::where('type', 'program')->orderBy('course_code', 'asc')->get();
-        $strands = Course::where('type', 'strand')->orderBy('course_code', 'asc')->get();
+        $strands = Course::where('type', 'shs')->orderBy('course_code', 'asc')->get();
 
         // Initial data for the form
         $data = [
@@ -257,7 +257,7 @@ class StudentEnrollmentController extends Controller
         }
 
         $programs = Course::where('type', 'program')->orderBy('course_code', 'asc')->get();
-        $strands = Course::where('type', 'strand')->orderBy('course_code', 'asc')->get();
+        $strands = Course::where('type', 'shs')->orderBy('course_code', 'asc')->get();
 
         $semesters = Semester::all();
         $activeSemester = Semester::where('is_active', true)->first();

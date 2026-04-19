@@ -112,12 +112,14 @@
                                 <input type="file" id="file-{{ $doc['model'] }}" name="{{ $doc['model'] }}" class="sr-only" accept="image/*,application/pdf" onchange="previewFile(this, '{{ $doc['model'] }}')" />
                             </label>
                             
+                            @if($doc['path'])
                                 <div class="mt-4 flex justify-end">
                                     <a href="{{ route('document.show', ['path' => $doc['path']]) }}" target="_blank" class="text-[10px] font-bold text-emerald-400/60 hover:text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 transition-colors">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                         View Current
                                     </a>
                                 </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>

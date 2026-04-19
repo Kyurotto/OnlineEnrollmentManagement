@@ -186,7 +186,7 @@ class RegistrarApplicationManager extends Component
         // 3. Fetch courses based on level
         $coursesQuery = Course::query();
         if ($this->level === 'shs') {
-            $coursesQuery->where('type', 'strand');
+            $coursesQuery->where('type', 'shs');
         } elseif ($this->level === 'college') {
             $coursesQuery->where('type', 'program');
         }
