@@ -136,7 +136,7 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-right">Actions</th>
+
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">
@@ -193,14 +193,7 @@
                                     {{ $displayText }}
                                 </span>
                             </td>
-                            <td class="py-6 px-8">
-                                <div class="flex justify-end items-center gap-4">
-                                    <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
-                                        class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20">
-                                        View Details
-                                    </button>
-                                </div>
-                            </td>
+
                         </tr>
                     @empty
                     <tr>
