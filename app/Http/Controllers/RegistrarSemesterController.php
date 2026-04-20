@@ -32,6 +32,13 @@ class RegistrarSemesterController extends Controller
             'end_date' => 'required|date|after:start_date',
         ]);
 
+        // Prevention of duplicates with Forbidden Error
+        if (Semester::where('academic_year', $request->academic_year)
+                   ->where('name', $request->name)
+                   ->exists()) {
+            abort(403, 'Forbidden: This Semester already exists for the selected Academic Year.');
+        }
+
         $isActive = $request->has('is_active');
 
         // Logic: If setting to Active, auto-update Academic Year

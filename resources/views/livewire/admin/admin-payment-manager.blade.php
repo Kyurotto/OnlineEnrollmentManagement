@@ -19,10 +19,6 @@
                     <p class="text-xs text-white/30 font-bold uppercase tracking-widest mt-2">Manage and Verify Student Collections</p>
                 </div>
             </div>
-            <button wire:click="openCreateModal" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center gap-3">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                New Payment
-            </button>
         </div>
 
         <div class="bg-white/[0.02] px-8 py-5 border-b border-white/5">
