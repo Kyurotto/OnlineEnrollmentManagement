@@ -113,6 +113,8 @@
                                 </span>
                             </div>
                         </th>
+                        <th class="py-6 px-8 text-center">TYPE</th>
+                        <th class="py-6 px-8 text-center">CLASSIFICATION</th>
                         <th class="py-6 px-8 text-right">ACTIONS</th>
                     </tr>
                 </thead>
@@ -156,6 +158,36 @@
                                 <span class="{{ $statusColor }} text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
                                     {{ $student->status ?: 'Enrolled' }}
                                 </span>
+                            </td>
+                            {{-- Type --}}
+                            <td class="py-6 px-8 text-center whitespace-nowrap">
+                                <span class="text-[10px] font-black px-3 py-1.5 rounded-full border uppercase tracking-widest
+                                    {{ $student->student_type_display === 'Transferee' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' :
+                                       ($student->student_type_display === 'Shifter' ? 'text-sky-400 bg-sky-400/10 border-sky-400/20' :
+                                       'text-white/40 bg-white/5 border-white/10') }}">
+                                    {{ $student->student_type_display }}
+                                </span>
+                            </td>
+                            {{-- Classification --}}
+                            <td class="py-6 px-8 text-center whitespace-nowrap">
+                                @if($student->is_regular === null)
+                                    <span class="text-white/20 text-[10px] font-black px-3 py-1.5 rounded-full border border-white/10 uppercase tracking-widest">
+                                        Not Audited
+                                    </span>
+                                @elseif($student->is_regular)
+                                    <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+                                        Regular
+                                    </span>
+                                @else
+                                    <div class="flex flex-col items-center gap-1">
+                                        <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+                                            Irregular
+                                        </span>
+                                        @if($student->classification_reason)
+                                            <span class="text-[8px] text-rose-300/50 uppercase tracking-wider">{{ $student->classification_reason }}</span>
+                                        @endif
+                                    </div>
+                                @endif
                             </td>
                             <td class="py-6 px-8 text-right">
                                 <div class="flex justify-end gap-3">

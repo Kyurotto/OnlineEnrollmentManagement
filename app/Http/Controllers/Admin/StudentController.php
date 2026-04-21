@@ -58,6 +58,11 @@ class StudentController extends Controller
         
         // USER ACCOUNT column gets the short username
         $student->display_account = $student->username ?: 'N/A';
+
+        // Classification data
+        $student->is_regular            = $enrollment ? $enrollment->is_regular : null;
+        $student->classification_reason = $enrollment ? $enrollment->classification_reason : null;
+        $student->student_type          = $enrollment ? ucfirst(strtolower($enrollment->student_type ?? 'New')) : 'N/A';
     }
 
     $pendingCount = Enrollment::where('status', 'Pending')->count();
