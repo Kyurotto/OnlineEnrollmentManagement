@@ -14,6 +14,12 @@
     @livewireStyles
 </head>
 <body class="text-gray-600 flex flex-row min-h-screen" style="background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 40%, #1a3a6e 100%); background-attachment: fixed; min-height: 100vh;">
+    <!-- Fixed dark background with premium blurry glows -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
+        <div class="absolute top-[20%] left-[10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-emerald-500/10 blur-[120px] rounded-full"></div>
+        <div class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-purple-500/5 blur-[150px] rounded-full"></div>
+    </div>
 
     {{-- Sidebar --}}
     <aside class="hidden sm:flex flex-col w-16 hover:w-64 transition-[width] duration-300 ease-in-out flex-shrink-0 sticky top-0 h-screen overflow-y-auto overflow-x-hidden z-30 group/side"
@@ -90,7 +96,7 @@
 
                     {{-- Edit Payment Assessment Section --}}
                     <div class="space-y-1">
-                        <div class="px-3 py-2 text-xs font-semibold uppercase" style="color: rgba(139,180,216,0.6);">Assessment</div>
+                        <div class="px-3 py-2 text-xs font-semibold uppercase hidden group-hover/side:block whitespace-nowrap" style="color: rgba(139,180,216,0.6);">Assessment</div>
                         <a href="{{ route('cashier.assessment.shs') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
                            style="{{ request()->routeIs('cashier.assessment.shs') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
@@ -100,8 +106,10 @@
                             @if(request()->routeIs('cashier.assessment.shs'))
                                 <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
                             @endif
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            Edit SHS Assessment
+                            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg" style="background: rgba(99,179,237,0.12);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </span>
+                            <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Edit SHS Assessment</span>
                         </a>
                         <a href="{{ route('cashier.assessment.college') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
@@ -112,8 +120,10 @@
                             @if(request()->routeIs('cashier.assessment.college'))
                                 <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
                             @endif
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            Edit College Assessment
+                            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg" style="background: rgba(99,179,237,0.12);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </span>
+                            <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Edit College Assessment</span>
                         </a>
                     </div>
                 </div>

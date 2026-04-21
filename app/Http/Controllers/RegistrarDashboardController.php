@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Enrollment;
 use App\Models\Course;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class RegistrarDashboardController extends Controller
 {
@@ -28,6 +30,35 @@ class RegistrarDashboardController extends Controller
 
         // 2. CALCULATE EXTRA STATS
         $sectionsCount = \App\Models\Section::count();
+
+        // Student classification stats (aligned with registrar student registry logic)
+        $hasIsRegular = Schema::hasColumn('enrollments', 'is_regular');
+        $baseStudentClassStats = User::query()
+            ->joinSub(
+                Enrollment::select(
+                    'user_id',
+                    'id',
+                    'status',
+                    $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular')
+                )
+                    ->whereIn('id', function ($q) {
+                        $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
+                    }),
+                'latest_enrollments',
+                'users.id',
+                '=',
+                'latest_enrollments.user_id'
+            )
+            ->where('users.role', 'student')
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved']);
+
+        $registryTotalStudents = (clone $baseStudentClassStats)->count();
+        $registryRegularCount = $hasIsRegular
+            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 1')->count()
+            : 0;
+        $registryIrregularCount = $hasIsRegular
+            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 0')->count()
+            : 0;
 
         // 3. MAP THE STATS EXACTLY FOR THE HTML VIEW
         $stats = [
@@ -91,7 +122,8 @@ class RegistrarDashboardController extends Controller
         return view('dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications',
             'appsByDate', 'weekDates', 'weekRange', 'selectedApp',
-            'shs_count', 'college_count', 'total_count'
+            'shs_count', 'college_count', 'total_count',
+            'registryTotalStudents', 'registryRegularCount', 'registryIrregularCount'
         ));
     }
 
