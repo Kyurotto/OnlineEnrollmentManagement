@@ -68,7 +68,7 @@ class RegistrarApplicationManager extends Component
     public function approve($id)
     {
         $application = Enrollment::findOrFail($id);
-        
+
         // Finalize enrollment status
         $application->status = 'Enrolled';
         $application->save();
@@ -97,7 +97,7 @@ class RegistrarApplicationManager extends Component
 
         $status = $application->physical_documents_received ? 'marked as received' : 'unmarked';
         session()->flash('success', "Physical documents $status.");
-        
+
         // Emit event to reset Alpine state
         $this->dispatch('modal-reset');
     }
@@ -108,6 +108,31 @@ class RegistrarApplicationManager extends Component
         $application->delete();
 
         session()->flash('success', 'Application record deleted.');
+    }
+
+    public function applyVoucher($id, $voucherType)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->voucher_type = $voucherType;
+        $application->voucher_applied_at = now();
+        $application->save();
+
+        $voucherLabel = $voucherType === 'free_tuition' ? 'Free Tuition' : 'Discounted';
+        session()->flash('success', "Voucher ($voucherLabel) applied successfully.");
+
+        $this->dispatch('modal-reset');
+    }
+
+    public function removeVoucher($id)
+    {
+        $application = Enrollment::findOrFail($id);
+        $application->voucher_type = null;
+        $application->voucher_applied_at = null;
+        $application->save();
+
+        session()->flash('success', 'Voucher removed successfully.');
+
+        $this->dispatch('modal-reset');
     }
 
     public function render()

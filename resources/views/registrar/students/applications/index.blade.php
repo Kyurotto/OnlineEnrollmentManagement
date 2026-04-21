@@ -66,7 +66,32 @@
                                 </span>
                             </td>
                             <td class="py-6 px-8 text-right">
-                                <div class="flex justify-end items-center gap-3">
+                                <div class="flex justify-end items-center gap-2">
+                                    <!-- Test Button -->
+                                    <button style="background-color: #9333ea; color: white; padding: 10px 16px; border-radius: 8px; border: 1px solid #a855f7; font-weight: bold; font-size: 11px;">
+                                        ★ VOUCHER TEST
+                                    </button>
+
+                                    <!-- Voucher Dropdown Button -->
+                                    <div class="relative group/voucherTable">
+                                        <button type="button" class="px-4 py-2.5 rounded-lg bg-purple-600 text-white hover:bg-purple-500 transition-all text-[9px] font-black uppercase tracking-widest shadow-lg border border-purple-400">
+                                            ★ Voucher
+                                        </button>
+                                        <div class="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl opacity-0 invisible group-hover/voucherTable:opacity-100 group-hover/voucherTable:visible transition-all z-50">
+                                            @if($application->voucher_type)
+                                                <div class="p-2 border-b border-gray-700">
+                                                    <p class="text-[8px] text-gray-400 uppercase mb-1 font-bold">Current:</p>
+                                                    <span class="text-[9px] font-black {{ $application->voucher_type === 'free_tuition' ? 'text-green-400' : 'text-yellow-400' }}">
+                                                        {{ $application->voucher_type === 'free_tuition' ? '🟢 Free Tuition' : '🟡 Discounted' }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            <button onclick="applyVoucherDirect({{ $application->id }}, 'free_tuition')" class="w-full text-left px-3 py-2 text-[9px] font-bold text-green-400 hover:bg-green-900/30">🟢 Free Tuition</button>
+                                            <button onclick="applyVoucherDirect({{ $application->id }}, 'discounted')" class="w-full text-left px-3 py-2 text-[9px] font-bold text-yellow-400 hover:bg-yellow-900/30 border-t border-gray-700">🟡 Discounted</button>
+                                            <button onclick="removeVoucherDirect({{ $application->id }})" class="w-full text-left px-3 py-2 text-[9px] font-bold text-red-400 hover:bg-red-900/30 border-t border-gray-700">✕ Remove</button>
+                                        </div>
+                                    </div>
+
                                     <button type="button" data-application="{{ json_encode($application) }}"
                                         data-user="{{ json_encode($application->user) }}"
                                         onclick="openModal(JSON.parse(this.dataset.application), JSON.parse(this.dataset.user), null)"
@@ -104,12 +129,36 @@
         <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform scale-95 transition-all duration-300" id="modalContent">
 
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
-                <div>
-                    <h2 class="text-2xl font-black text-white italic uppercase tracking-tight" id="modalTitle">Application Details</h2>
-                    <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process</p>
+                <div class="flex items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white italic uppercase tracking-tight" id="modalTitle">Application Details</h2>
+                        <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process</p>
+                    </div>
+
+                    <!-- VOUCHER BUTTON HERE -->
+                    <div class="relative group/voucher">
+                        <button class="px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-black text-[11px] uppercase rounded-lg flex items-center gap-2 transition-all shadow-lg">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                            Voucher
+                        </button>
+
+                        <!-- Dropdown -->
+                        <div class="absolute left-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl opacity-0 invisible group-hover/voucher:opacity-100 group-hover/voucher:visible transition-all z-50">
+                            <div id="voucherStatus" class="p-3 border-b border-gray-700 hidden">
+                                <p class="text-[8px] font-bold text-gray-400 uppercase mb-2">Current</p>
+                                <div id="voucherBadge" class="flex gap-1 items-center p-2 rounded">
+                                    <span id="voucherLabel" class="text-[9px] font-bold uppercase"></span>
+                                </div>
+                            </div>
+                            <button onclick="removeVoucher()" class="w-full text-left px-4 py-2 text-[9px] font-bold text-red-400 hover:bg-red-900/30">Remove</button>
+                            <button onclick="applyVoucher('free_tuition')" class="w-full text-left px-4 py-2 text-[9px] font-bold text-green-400 hover:bg-green-900/30">🟢 Free Tuition</button>
+                            <button onclick="applyVoucher('discounted')" class="w-full text-left px-4 py-2 text-[9px] font-bold text-yellow-400 hover:bg-yellow-900/30 border-t border-gray-700">🟡 Discounted</button>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="closeModal()" class="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+
+                <button onclick="closeModal()" class="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
@@ -242,6 +291,7 @@
 
     <script>
     function openModal(app, user, course) {
+        currentApplicationId = app.id;
         document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
         const updateRoute = "{{ route('registrar.applications.index') }}/" + app.id;
         const middle = app.middle_name ? ' ' + app.middle_name : '';
@@ -258,7 +308,7 @@
         document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
         // Document Assets
         // ... (existing doc logic)
-        
+
         // Action Buttons
         const actionButtons = document.getElementById('actionButtons');
         if (app.status === 'Pending') {
@@ -290,6 +340,13 @@
         let statusText = app.status;
         if (statusText === 'Enrolled' || statusText === 'Paid') { statusText = 'Paid / Finalized'; }
         document.getElementById('modalStatus').innerText = statusText;
+
+        // Display voucher status
+        if (app.voucher_type) {
+            updateVoucherDisplay(app.voucher_type);
+        } else {
+            updateVoucherDisplay(null);
+        }
 
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
         document.getElementById('modalMother').innerText = app.mother_maiden_name || 'N/A';
@@ -398,6 +455,140 @@
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }, 300);
+    }
+
+    let currentApplicationId = null;
+
+    function applyVoucher(voucherType) {
+        if (!currentApplicationId) return;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        fetch(`{{ url('registrar/applications') }}/${currentApplicationId}/apply-voucher`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ voucher_type: voucherType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateVoucherDisplay(voucherType);
+                alert('✓ Voucher applied successfully!');
+            } else {
+                alert('Error: ' + (data.message || 'Failed to apply voucher'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error applying voucher');
+        });
+    }
+
+    function removeVoucher() {
+        if (!currentApplicationId) return;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        fetch(`{{ url('registrar/applications') }}/${currentApplicationId}/remove-voucher`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateVoucherDisplay(null);
+                alert('✓ Voucher removed successfully!');
+            } else {
+                alert('Error: ' + (data.message || 'Failed to remove voucher'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error removing voucher');
+        });
+    }
+
+    function updateVoucherDisplay(voucherType) {
+        const statusDiv = document.getElementById('voucherStatus');
+        const badge = document.getElementById('voucherBadge');
+        const label = document.getElementById('voucherLabel');
+
+        if (voucherType) {
+            statusDiv.classList.remove('hidden');
+            if (voucherType === 'free_tuition') {
+                badge.className = 'flex items-center gap-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20';
+                label.className = 'text-[9px] font-bold text-green-400 uppercase tracking-wider';
+                label.textContent = 'Free Tuition';
+            } else {
+                badge.className = 'flex items-center gap-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20';
+                label.className = 'text-[9px] font-bold text-yellow-400 uppercase tracking-wider';
+                label.textContent = 'Discounted';
+            }
+        } else {
+            statusDiv.classList.add('hidden');
+        }
+    }
+
+    // Direct voucher functions for table actions
+    function applyVoucherDirect(applicationId, voucherType) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        fetch(`{{ url('registrar/applications') }}/${applicationId}/apply-voucher`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ voucher_type: voucherType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✓ Voucher applied successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to apply voucher'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error applying voucher');
+        });
+    }
+
+    function removeVoucherDirect(applicationId) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        fetch(`{{ url('registrar/applications') }}/${applicationId}/remove-voucher`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✓ Voucher removed successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to remove voucher'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error removing voucher');
+        });
     }
 
     window.onclick = function(event) {

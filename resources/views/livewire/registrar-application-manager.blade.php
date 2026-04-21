@@ -134,7 +134,7 @@
                         </th>
                         <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('status')">
                             <div class="flex items-center gap-2 justify-center pl-5">
-                                Status
+                                Payment
                                 <span class="transition-opacity {{ $sortField === 'status' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
                                     @if($sortField === 'status' && $sortDirection === 'asc')
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
@@ -203,12 +203,10 @@
                             </td>
                             <td class="py-6 px-8">
                                 <div class="flex justify-end items-center gap-4">
-
                                     <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
                                         class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20 whitespace-nowrap">
                                         View Details
                                     </button>
-
                                 </div>
                             </td>
                         </tr>
@@ -239,11 +237,33 @@
 
         <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent" wire:ignore>
 
-            <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
+            <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center gap-6 bg-white/[0.01]">
                 <div>
                     <span class="text-[9px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-1 block italic text-shadow shadow-cyan-500/20">Analysis Protocol</span>
                     <h2 class="text-2xl font-black text-white uppercase italic tracking-tight" id="modalTitle">Application Details</h2>
                 </div>
+
+                <!-- Voucher Dropdown Button in Modal Header -->
+                <div class="relative group/voucherModal">
+                    <button type="button" class="px-5 py-3 rounded-lg bg-purple-600 text-white hover:bg-purple-500 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg border border-purple-400 flex items-center gap-2 whitespace-nowrap">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" height="24" width="24">
+                          <g id="percent-coupon-fill">
+                            <path id="Union" fill="currentColor" d="M20 4c1.1046 0 2 0.89543 2 2v3.1709c-0.0001 0.42374 -0.2675 0.80117 -0.667 0.9424C20.5549 10.3884 20 11.1308 20 12s0.5549 1.6116 1.333 1.8867c0.3995 0.1412 0.6669 0.5187 0.667 0.9424V18c0 1.1046 -0.8954 2 -2 2H4c-1.10457 0 -2 -0.8954 -2 -2v-3.1709c0.00008 -0.4237 0.26746 -0.8012 0.66699 -0.9424C3.44507 13.6116 4 12.8692 4 12s-0.55493 -1.6116 -1.33301 -1.8867C2.26746 9.97207 2.00008 9.59464 2 9.1709V6c0 -1.10457 0.89543 -2 2 -2zm-5.5 9c-0.8284 0 -1.5 0.6716 -1.5 1.5s0.6716 1.5 1.5 1.5 1.5 -0.6716 1.5 -1.5 -0.6716 -1.5 -1.5 -1.5m0.707 -4.20703c-0.3905 -0.39053 -1.0235 -0.39053 -1.414 0L8.79297 13.793c-0.39053 0.3905 -0.39053 1.0235 0 1.414 0.39052 0.3906 1.02354 0.3906 1.41403 0l5 -5c0.3906 -0.39049 0.3906 -1.02351 0 -1.41403M9.5 8C8.67157 8 8 8.67157 8 9.5c0 0.8284 0.67157 1.5 1.5 1.5 0.8284 0 1.5 -0.6716 1.5 -1.5 0 -0.82843 -0.6716 -1.5 -1.5 -1.5" stroke-width="1"></path>
+                          </g>
+                        </svg>
+                        Voucher
+                    </button>
+                    <div class="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl opacity-0 invisible group-hover/voucherModal:opacity-100 group-hover/voucherModal:visible transition-all z-50">
+                        <div id="voucherStatusModal" class="p-3 border-b border-gray-700 hidden">
+                            <p class="text-[8px] font-bold text-gray-400 uppercase mb-2">Current Voucher:</p>
+                            <div id="voucherBadgeModal" class="flex gap-1 items-center p-2 rounded text-[9px] font-black"></div>
+                        </div>
+                        <button onclick="applyVoucher('free_tuition')" class="w-full text-left px-4 py-3 text-[9px] font-bold text-green-400 hover:bg-green-900/30">🟢 Free Tuition</button>
+                        <button onclick="applyVoucher('discounted')" class="w-full text-left px-4 py-3 text-[9px] font-bold text-yellow-400 hover:bg-yellow-900/30 border-t border-gray-700">🟡 Discounted</button>
+                        <button onclick="removeVoucher()" class="w-full text-left px-4 py-3 text-[9px] font-bold text-red-400 hover:bg-red-900/30 border-t border-gray-700">✕ Remove</button>
+                    </div>
+                </div>
+
                 <button @click="modalOpen = false; selectedId = null" class="p-4 rounded-2xl bg-white/5 text-white/20 hover:text-white transition-colors border border-white/10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18"></path></svg>
                 </button>
@@ -411,7 +431,10 @@
     </div>
 
     <script>
+    let currentApplicationId = null;
+
     function openModal(app, docMapping) {
+        currentApplicationId = app.id;
         document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
         const middle = app.middle_name ? ' ' + app.middle_name : '';
         const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
@@ -563,6 +586,88 @@
             actionButtons.classList.add('hidden');
             actionButtons.classList.remove('flex');
         }
+
+        // Display voucher status
+        if (app.voucher_type) {
+            updateVoucherDisplay(app.voucher_type);
+        } else {
+            updateVoucherDisplay(null);
+        }
+    }
+
+    function updateVoucherDisplay(voucherType) {
+        const statusDiv = document.getElementById('voucherStatusModal');
+        const badge = document.getElementById('voucherBadgeModal');
+
+        if (voucherType) {
+            statusDiv.classList.remove('hidden');
+            if (voucherType === 'free_tuition') {
+                badge.className = 'flex items-center gap-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400';
+                badge.textContent = '🟢 Free Tuition';
+            } else {
+                badge.className = 'flex items-center gap-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400';
+                badge.textContent = '🟡 Discounted';
+            }
+        } else {
+            statusDiv.classList.add('hidden');
+        }
+    }
+
+    function applyVoucher(voucherType) {
+        if (!currentApplicationId) return;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        fetch(`{{ url('registrar/applications') }}/${currentApplicationId}/apply-voucher`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ voucher_type: voucherType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateVoucherDisplay(voucherType);
+                alert('✓ Voucher applied successfully!');
+            } else {
+                alert('Error: ' + (data.message || 'Failed to apply voucher'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error applying voucher');
+        });
+    }
+
+    function removeVoucher() {
+        if (!currentApplicationId) return;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        fetch(`{{ url('registrar/applications') }}/${currentApplicationId}/remove-voucher`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateVoucherDisplay(null);
+                alert('✓ Voucher removed successfully!');
+            } else {
+                alert('Error: ' + (data.message || 'Failed to remove voucher'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error removing voucher');
+        });
     }
 
     // Listen for Livewire modal-reset event

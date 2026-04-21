@@ -108,6 +108,41 @@ class RegistrarApplicationController extends Controller
     }
 
     /**
+     * Apply voucher to application.
+     */
+    public function applyVoucher($id)
+    {
+        $application = Enrollment::findOrFail($id);
+
+        $voucherType = request()->input('voucher_type');
+
+        if (!in_array($voucherType, ['free_tuition', 'discounted'])) {
+            return response()->json(['success' => false, 'message' => 'Invalid voucher type'], 400);
+        }
+
+        $application->voucher_type = $voucherType;
+        $application->voucher_applied_at = now();
+        $application->save();
+
+        $label = $voucherType === 'free_tuition' ? 'Free Tuition' : 'Discounted';
+        return response()->json(['success' => true, 'message' => "Voucher ($label) applied successfully."], 200);
+    }
+
+    /**
+     * Remove voucher from application.
+     */
+    public function removeVoucher($id)
+    {
+        $application = Enrollment::findOrFail($id);
+
+        $application->voucher_type = null;
+        $application->voucher_applied_at = null;
+        $application->save();
+
+        return response()->json(['success' => true, 'message' => 'Voucher removed successfully.'], 200);
+    }
+
+    /**
      * Helper to map enrollment fields to user object for view compatibility.
      */
     private function mapEnrollmentDataToUser($application)

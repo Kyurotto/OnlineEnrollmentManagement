@@ -125,20 +125,10 @@ class StudentEnrollmentController extends Controller
             'status' => 'Pending',
         ]);
 
-        // Auto-create 1,000 PHP Downpayment for the Cashier/Student History
-        \App\Models\Payment::create([
-            'user_id' => Auth::id(),
-            'application_id' => $enrollment->id,
-            'amount' => 1000,
-            'status' => 'Pending',
-            'payment_date' => now(),
-            'payment_method' => 'Cash',
-        ]);
-
         // Clear draft on successful submission
         session()->forget('enrollment_draft_' . Auth::id());
 
-        // 6. Notify Admins and Registrars
+        // 5. Notify Admins and Registrars
         $staff = User::whereIn('role', ['admin', 'registrar'])->get();
         if ($staff->count() > 0) {
             Notification::send($staff, new NewEnrollmentSubmitted($enrollment));

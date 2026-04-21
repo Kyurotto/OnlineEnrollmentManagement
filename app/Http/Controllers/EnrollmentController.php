@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Enrollment;
-use App\Models\Payment; 
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Semester;
@@ -20,7 +20,7 @@ class EnrollmentController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         $activeSemester = Semester::where('is_active', true)->first();
         $activeYear = AcademicYear::where('is_active', true)->first();
 
@@ -30,7 +30,7 @@ class EnrollmentController extends Controller
                 ->whereIn('status', ['Enrolled', 'Approved', 'Pending'])
                 ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
                 ->exists();
-            
+
             if ($isEnrolled) {
                 return redirect()->route('student.dashboard')->with('error', 'You are already enrolled for this academic year.');
             }
@@ -78,8 +78,8 @@ class EnrollmentController extends Controller
             ['user_id' => $user->id],
             [
                 'status'      => 'Pending',
-                'course_id'   => $course->id, 
-                'course_code' => $request->course_code, 
+                'course_id'   => $course->id,
+                'course_code' => $request->course_code,
                 'year_level'  => $request->year_level . ' | ' . $semesterToSave . ' | ' . $academicYearToSave,
                 'first_name'  => $request->first_name,
                 'middle_name' => $request->middle_name,
@@ -99,16 +99,10 @@ class EnrollmentController extends Controller
             ]
         );
 
-        // 5. CREATE PAYMENT RECORD
-        Payment::updateOrCreate(
-            ['user_id' => $user->id, 'application_id' => $enrollment->id],
-            ['amount' => 1000.00, 'status' => 'Pending', 'payment_date' => now()]
-        );
-
-        // 6. UPDATE USER STATUS
+        // 5. UPDATE USER STATUS
         User::where('id', $user->id)->update(['status' => 'Pending']);
 
-        // 7. NOTIFY ADMINS AND REGISTRARS
+        // 6. NOTIFY ADMINS AND REGISTRARS
         $staff = User::whereIn('role', ['admin', 'registrar'])->get();
         if ($staff->count() > 0) {
             Notification::send($staff, new NewEnrollmentSubmitted($enrollment));

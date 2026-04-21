@@ -24,11 +24,13 @@ use App\Http\Controllers\RegistrarSectionController;
 use App\Http\Controllers\CashierPaymentController;
 use App\Livewire\CashierDashboardManager;
 use App\Livewire\PaymentManager as CashierPaymentManager;
+use App\Livewire\PaymentAssessmentManager;
 
 // Student Controllers
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\StudentEnrollmentController;
 use App\Http\Controllers\StudentPaymentController;
+use App\Http\Controllers\StudentPaymentRedirectController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\DocumentController;
 
@@ -109,6 +111,8 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::get('/applications/college', RegistrarApplicationManager::class)->name('applications.college');
     Route::get('/applications/shs', RegistrarApplicationManager::class)->name('applications.shs');
     Route::patch('/applications/{id}/toggle-physical', [RegistrarApplicationController::class, 'togglePhysicalDocuments'])->name('applications.toggle-physical');
+    Route::post('/applications/{id}/apply-voucher', [RegistrarApplicationController::class, 'applyVoucher'])->name('applications.apply-voucher');
+    Route::post('/applications/{id}/remove-voucher', [RegistrarApplicationController::class, 'removeVoucher'])->name('applications.remove-voucher');
 
     Route::get('/academic-years', [RegistrarAcademicYearController::class, 'index'])->name('academic_years.index');
     Route::post('/academic-years', [RegistrarAcademicYearController::class, 'store'])->name('academic_years.store');
@@ -170,6 +174,8 @@ Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')-
     Route::get('/payments', CashierPaymentManager::class)->name('payments.index');
     Route::get('/payments/college', CashierPaymentManager::class)->name('payments.college');
     Route::get('/payments/shs', CashierPaymentManager::class)->name('payments.shs');
+    Route::get('/assessment/shs', PaymentAssessmentManager::class)->name('assessment.shs');
+    Route::get('/assessment/college', PaymentAssessmentManager::class)->name('assessment.college');
 });
 
 /*
@@ -190,7 +196,9 @@ Route::middleware(['auth', 'can:student'])->prefix('student')->name('student.')-
     Route::get('/enrollment/edit', [StudentEnrollmentController::class, 'edit'])->name('enrollment.edit');
     Route::put('/enrollment', [StudentEnrollmentController::class, 'update'])->name('enrollment.update');
 
-    Route::get('/payments', StudentPaymentManager::class)->name('payment');
+    Route::get('/payments', [StudentPaymentRedirectController::class, 'redirect'])->name('payment');
+    Route::get('/payments/shs', StudentPaymentManager::class)->name('payment.shs');
+    Route::get('/payments/college', StudentPaymentManager::class)->name('payment.college');
     Route::get('/profile', StudentProfileManager::class)->name('profile');
 });
 
