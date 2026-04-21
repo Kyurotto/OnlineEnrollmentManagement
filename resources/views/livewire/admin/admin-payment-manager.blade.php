@@ -19,10 +19,6 @@
                     <p class="text-xs text-white/30 font-bold uppercase tracking-widest mt-2">Manage and Verify Student Collections</p>
                 </div>
             </div>
-            <button wire:click="openCreateModal" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center gap-3">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                New Payment
-            </button>
         </div>
 
         <div class="bg-white/[0.02] px-8 py-5 border-b border-white/5">
@@ -117,7 +113,7 @@
                             </div>
                         </th>
                         <th class="py-5 px-5 text-center font-black">Status</th>
-                        <th class="py-5 px-5 text-right font-black">Actions</th>
+
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -152,21 +148,7 @@
                                 <span class="bg-amber-500/10 text-amber-400 text-[10px] font-black px-3 py-1 rounded-full border border-amber-500/20 shadow-sm uppercase tracking-[0.1em]">Pending</span>
                             @endif
                         </td>
-                        <td class="py-5 px-5 text-right whitespace-nowrap">
-                            <div class="flex justify-end gap-2 text-right">
-                                <button wire:click="openEditModal({{ $payment->id }})" class="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-white/30 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all active:scale-95 shadow-lg group/btn text-[10px] font-black uppercase tracking-widest">
-                                    EDIT
-                                </button>
-                                @if($payment->status !== 'Paid' && $payment->status !== 'Rejected')
-                                    <button wire:click="updateStatus({{ $payment->id }}, 'Paid')" class="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all active:scale-95 shadow-lg shadow-emerald-500/10 group/paid text-[10px] font-black uppercase tracking-widest" title="Mark as Paid">
-                                        APPROVED
-                                    </button>
-                                    <button wire:click="updateStatus({{ $payment->id }}, 'Rejected')" class="px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-lg shadow-rose-500/10 group/reject text-[10px] font-black uppercase tracking-widest" title="Reject Payment">
-                                        REJECT
-                                    </button>
-                                @endif
-                            </div>
-                        </td>
+
                     </tr>
                     @empty
                     <tr>

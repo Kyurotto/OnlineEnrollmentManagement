@@ -9,7 +9,7 @@
 
         <div class="rounded-2xl border overflow-hidden relative"
              style="background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
-            
+
             <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                 <div class="flex items-center gap-3">
                     <div class="p-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
@@ -63,7 +63,7 @@
                             </td>
                             <td class="py-5 px-8 text-right whitespace-nowrap">
                                 <div class="flex justify-end gap-2">
-                                    <a href="{{ route('registrar.semesters.index', ['edit_id' => $semester->id]) }}" 
+                                    <a href="{{ route('registrar.semesters.index', ['edit_id' => $semester->id]) }}"
                                        class="px-4 py-1.5 rounded-lg bg-teal-500/10 border border-teal-500/20 text-[10px] font-black uppercase tracking-widest text-teal-400 hover:bg-teal-500 hover:text-white transition-all shadow-lg shadow-teal-500/5">
                                         EDIT
                                     </a>
@@ -98,7 +98,7 @@
         @if($showModal)
         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
             <a href="{{ route('registrar.semesters.index') }}" class="absolute inset-0 bg-[#060d1a]/95 backdrop-blur-2xl"></a>
-            
+
             <div class="bg-[#0d1f3c] border border-white/10 w-full max-w-2xl rounded-[32px] overflow-hidden shadow-[0_32px_120px_rgba(0,0,0,0.6)] relative z-10 transform animate-in zoom-in-95 duration-300">
                 <div class="p-10">
                     <div class="mb-10 text-center">
@@ -124,8 +124,8 @@
                             <div class="space-y-2">
                                 <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Term Label</label>
                                 <select name="name" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-teal-500/50 appearance-none transition-all cursor-pointer" required>
-                                    <option value="First Semester" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === 'First Semester' ? 'selected' : '' }}>First Semester</option>
-                                    <option value="Second Semester" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === 'Second Semester' ? 'selected' : '' }}>Second Semester</option>
+                                    <option value="1ST SEMESTER" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === '1ST SEMESTER' ? 'selected' : '' }}>1ST SEMESTER</option>
+                                    <option value="2ND SEMESTER" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === '2ND SEMESTER' ? 'selected' : '' }}>2ND SEMESTER</option>
                                     <option value="Summer" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === 'Summer' ? 'selected' : '' }}>Summer Session</option>
                                 </select>
                                 @error('name') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
@@ -157,11 +157,11 @@
                         </div>
 
                         <div class="flex gap-4 pt-6">
-                            <a href="{{ route('registrar.semesters.index') }}" 
+                            <a href="{{ route('registrar.semesters.index') }}"
                                 class="flex-1 px-8 py-4 text-center text-xs font-bold text-white/40 uppercase tracking-widest border border-white/10 rounded-xl hover:bg-white/5 hover:text-white transition-all">
                                 Back
                             </a>
-                            <button type="submit" 
+                            <button type="submit"
                                 class="flex-1 bg-teal-500 hover:bg-teal-400 text-white text-xs font-black py-4 px-8 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-teal-500/20 active:scale-95">
                                 {{ $isEditMode ? 'Update' : 'Save' }}
                             </button>

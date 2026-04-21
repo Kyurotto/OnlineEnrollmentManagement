@@ -64,12 +64,11 @@
                     </select>
                 </div>
                 <div class="w-full sm:w-44">
-                    <select wire:model.live="year_level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
-                        <option value="All Years" class="bg-[#0a0f1d]">All Years</option>
-                        <option value="1st Year" class="bg-[#0a0f1d]">BSIS 1</option>
-                        <option value="2nd Year" class="bg-[#0a0f1d]">BSIS 2</option>
-                        <option value="3rd Year" class="bg-[#0a0f1d]">BSIS 3</option>
-                        <option value="4th Year" class="bg-[#0a0f1d]">BSIS 4</option>
+                    <select wire:model.live="course_filter" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                        <option value="All Programs" class="bg-[#0a0f1d]">{{ $level === 'shs' ? 'ALL STRANDS' : 'ALL PROGRAMS' }}</option>
+                        @foreach($courses as $course)
+                            <option value="{{ $course->course_code }}" class="bg-[#0a0f1d]">{{ $course->course_code }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -476,7 +475,7 @@
 
         const documents = docMapping;
 
-        const storageBase = @json(asset('storage')) + '/';
+        const storageBase = @json(url('/documents')) + '/';
 
         Object.keys(documents).forEach(key => {
             const label = documents[key];

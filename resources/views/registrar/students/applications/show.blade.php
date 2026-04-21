@@ -302,7 +302,7 @@
 
                                 @if (!empty($application->$path))
                                     @php
-                                        $fileUrl = \Storage::disk('public')->url($application->$path);
+                                        $fileUrl = route('document.show', ['path' => $application->$path]);
                                         $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $application->$path);
                                     @endphp
                                     <a href="{{ $fileUrl }}" target="_blank" class="group/asset block relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] shadow-xl">
@@ -341,7 +341,7 @@
                             <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment</span>
                             @if($application->promissory_note_path)
                                 @php
-                                    $noteUrl = \Storage::disk('public')->url($application->promissory_note_path);
+                                    $noteUrl = route('document.show', ['path' => $application->promissory_note_path]);
                                     $isPdf = Str::endsWith($application->promissory_note_path, '.pdf');
                                 @endphp
                                 <a href="{{ $noteUrl }}" target="_blank" class="group/note block p-6 rounded-3xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">

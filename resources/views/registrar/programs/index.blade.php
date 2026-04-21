@@ -58,8 +58,8 @@
                 <table class="w-full text-left font-medium text-sm">
                     <thead class="text-xs text-white/20 uppercase tracking-widest border-b border-white/5" style="background: rgba(255,255,255,0.03);">
                         <tr>
-                            <th class="py-5 px-8 font-black">Code</th>
-                            <th class="py-5 px-8 font-black">Program Title</th>
+                            <th class="py-5 px-8 font-black">Course Code</th>
+                            <th class="py-5 px-8 font-black">Course Name</th>
                             <th class="py-5 px-8 font-black">Description</th>
                             <th class="py-5 px-8 text-right font-black">Actions</th>
                         </tr>
