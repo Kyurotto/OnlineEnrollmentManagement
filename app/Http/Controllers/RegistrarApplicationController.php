@@ -95,16 +95,51 @@ class RegistrarApplicationController extends Controller
     public function togglePhysicalDocuments($id)
     {
         $application = Enrollment::findOrFail($id);
-        
+
         // Toggle the status
         $application->physical_documents_received = !$application->physical_documents_received;
         $application->save();
 
-        $message = $application->physical_documents_received 
-            ? 'Physical documents marked as received.' 
+        $message = $application->physical_documents_received
+            ? 'Physical documents marked as received.'
             : 'Physical document receipt cancelled.';
 
         return back()->with('success', $message);
+    }
+
+    /**
+     * Apply voucher to application.
+     */
+    public function applyVoucher($id)
+    {
+        $application = Enrollment::findOrFail($id);
+
+        $voucherType = request()->input('voucher_type');
+
+        if (!in_array($voucherType, ['free_tuition', 'discounted'])) {
+            return response()->json(['success' => false, 'message' => 'Invalid voucher type'], 400);
+        }
+
+        $application->voucher_type = $voucherType;
+        $application->voucher_applied_at = now();
+        $application->save();
+
+        $label = $voucherType === 'free_tuition' ? 'Free Tuition' : 'Discounted';
+        return response()->json(['success' => true, 'message' => "Voucher ($label) applied successfully."], 200);
+    }
+
+    /**
+     * Remove voucher from application.
+     */
+    public function removeVoucher($id)
+    {
+        $application = Enrollment::findOrFail($id);
+
+        $application->voucher_type = null;
+        $application->voucher_applied_at = null;
+        $application->save();
+
+        return response()->json(['success' => true, 'message' => 'Voucher removed successfully.'], 200);
     }
 
     /**

@@ -55,7 +55,7 @@
 
                 {{-- Payments Section --}}
                 <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2" style="color: rgba(138,180,216,0.35);">Payments</p>
-                
+
                 <div class="mt-1 space-y-0.5">
                     <a href="{{ route('cashier.payments.shs') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
@@ -82,6 +82,38 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         College Payments
                     </a>
+
+                    {{-- Divider --}}
+                    <div class="my-2 mx-2" style="border-top: 1px solid rgba(26,58,110,0.3);"></div>
+
+                    {{-- Edit Payment Assessment Section --}}
+                    <div class="space-y-1">
+                        <div class="px-3 py-2 text-xs font-semibold uppercase" style="color: rgba(139,180,216,0.6);">Assessment</div>
+                        <a href="{{ route('cashier.assessment.shs') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                           style="{{ request()->routeIs('cashier.assessment.shs') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                           onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                           onmouseout="this.style.background='{{ request()->routeIs('cashier.assessment.shs') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                           {{ request()->routeIs('cashier.assessment.shs') ? 'data-active=1' : '' }}>
+                            @if(request()->routeIs('cashier.assessment.shs'))
+                                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                            @endif
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Edit SHS Assessment
+                        </a>
+                        <a href="{{ route('cashier.assessment.college') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
+                           style="{{ request()->routeIs('cashier.assessment.college') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                           onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                           onmouseout="this.style.background='{{ request()->routeIs('cashier.assessment.college') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                           {{ request()->routeIs('cashier.assessment.college') ? 'data-active=1' : '' }}>
+                            @if(request()->routeIs('cashier.assessment.college'))
+                                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                            @endif
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Edit College Assessment
+                        </a>
+                    </div>
                 </div>
 
             </nav>

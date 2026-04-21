@@ -125,20 +125,10 @@ class StudentEnrollmentController extends Controller
             'status' => 'Pending',
         ]);
 
-        // Auto-create 1,000 PHP Downpayment for the Cashier/Student History
-        \App\Models\Payment::create([
-            'user_id' => Auth::id(),
-            'application_id' => $enrollment->id,
-            'amount' => 1000,
-            'status' => 'Pending',
-            'payment_date' => now(),
-            'payment_method' => 'Cash',
-        ]);
-
         // Clear draft on successful submission
         session()->forget('enrollment_draft_' . Auth::id());
 
-        // 6. Notify Admins and Registrars
+        // 5. Notify Admins and Registrars
         $staff = User::whereIn('role', ['admin', 'registrar'])->get();
         if ($staff->count() > 0) {
             Notification::send($staff, new NewEnrollmentSubmitted($enrollment));
@@ -167,7 +157,7 @@ class StudentEnrollmentController extends Controller
         }
 
         $level = $enrollment->level;
-        
+
         $validationRules = [
             'id_picture' => 'nullable|image|max:2048',
             'promissory_note' => 'nullable|file|mimes:doc,docx,pdf|max:5120',
@@ -286,7 +276,7 @@ class StudentEnrollmentController extends Controller
         }
 
         $level = $request->input('level', $enrollment->level);
-        
+
         $validationRules = [
             'level' => 'required|in:shs,college',
             'course_code' => 'required',
@@ -314,7 +304,7 @@ class StudentEnrollmentController extends Controller
         }
 
         $unifiedYearLevel = "{$request->year_level} | {$request->semester} | {$request->academic_year}";
-        
+
         $address = $request->address_full;
         if(empty($address)){
              $address = implode(', ', array_filter([$request->house_no, $request->street, $request->barangay, $request->city, $request->province, $request->zip]));

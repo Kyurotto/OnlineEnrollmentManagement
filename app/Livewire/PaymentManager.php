@@ -9,10 +9,13 @@ use App\Models\User;
 use App\Models\Enrollment;
 use App\Notifications\StudentPaymentConfirmed;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Cache;
 
 class PaymentManager extends Component
 {
     use WithPagination;
+
+    protected $listeners = ['assessmentUpdated' => 'refreshStudentData'];
 
     public $search = '';
     public $filterCourse = 'ALL';
@@ -22,6 +25,21 @@ class PaymentManager extends Component
     public $showModal = false;
     public $isEditMode = false;
     public $editingPaymentId = null;
+
+    // New properties for sidebar layout
+    public $activeTab = 'assessment';
+    public $selectedStudentId = null;
+    public $selectedStudent = null;
+    public $enrollment = null;
+    public $selectedVoucherType = null;
+    public $paymentHistory = [];
+    public $tuitionFees = 0;
+    public $miscellaneousFees = 0;
+    public $appliedDiscount = 0;
+    public $totalAssessment = 0;
+    public $currentBalance = 0;
+    public $discountAmount = 0;
+    public $totalPaymentsMade = 0;
 
     // Form fields
     public $user_id;
@@ -100,6 +118,99 @@ class PaymentManager extends Component
         $this->reset(['user_id', 'amount', 'payment_type', 'reference_no', 'isEditMode', 'editingPaymentId']);
     }
 
+    public function selectStudent($studentId, $enrollmentId = null)
+    {
+        $this->selectedStudentId = $studentId;
+        $this->selectedStudent = User::findOrFail($studentId);
+        
+        // Use provided enrollment ID or get the latest enrollment
+        if ($enrollmentId) {
+            $this->enrollment = Enrollment::findOrFail($enrollmentId);
+        } else {
+            $this->enrollment = Enrollment::where('user_id', $studentId)->latest()->first();
+        }
+        
+        if ($this->enrollment) {
+            // Extract and store voucher type for easy access
+            $this->selectedVoucherType = $this->enrollment->voucher_type;
+            
+            // Get payment assessment details from cache (base fees)
+            // Use the getLevel() method to determine if SHS or college
+            $level = $this->enrollment->getLevel();
+            $cacheKey = 'payment_assessment_' . $level;
+            $assessment = Cache::get($cacheKey, [
+                'tuitionFee' => 0,
+                'miscellaneousFees' => 0,
+            ]);
+
+            $this->tuitionFees = $assessment['tuitionFee'] ?? 0;
+            $this->miscellaneousFees = $assessment['miscellaneousFees'] ?? 0;
+            $this->totalAssessment = $this->tuitionFees + $this->miscellaneousFees;
+            
+            // Handle voucher discount
+            if ($this->enrollment->voucher_type === 'free_tuition') {
+                $this->appliedDiscount = $this->tuitionFees;
+            } elseif ($this->enrollment->voucher_type === 'discounted') {
+                $this->appliedDiscount = ($this->totalAssessment * 0.15); // 15% discount
+            } else {
+                $this->appliedDiscount = 0; // Reset discount if no voucher
+            }
+            
+            // Get payment history
+            $this->paymentHistory = Payment::where('user_id', $studentId)->orderBy('created_at', 'desc')->get();
+            
+            // Calculate balance
+            $totalPaid = Payment::where('user_id', $studentId)->where('status', 'Paid')->sum('amount');
+            $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
+        } else {
+            // No enrollment found, reset all fields
+            $this->tuitionFees = 0;
+            $this->miscellaneousFees = 0;
+            $this->totalAssessment = 0;
+            $this->appliedDiscount = 0;
+            $this->currentBalance = 0;
+            $this->paymentHistory = [];
+        }
+        
+        $this->activeTab = 'assessment';
+    }
+
+    public function applyDiscount()
+    {
+        if (!$this->discountAmount || $this->discountAmount < 0) {
+            session()->flash('error', 'Please enter a valid discount amount.');
+            return;
+        }
+
+        if ($this->discountAmount > $this->totalAssessment) {
+            session()->flash('error', 'Discount cannot exceed the total assessment.');
+            return;
+        }
+
+        $this->appliedDiscount = $this->discountAmount;
+        $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
+        $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
+        $this->discountAmount = 0;
+        session()->flash('success', 'Discount applied successfully.');
+    }
+
+    public function removeDiscount()
+    {
+        $this->appliedDiscount = 0;
+        $this->discountAmount = 0;
+        $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
+        $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
+        session()->flash('success', 'Discount removed successfully.');
+    }
+
+    public function refreshStudentData()
+    {
+        // Refresh the currently selected student's data when assessment is updated
+        if ($this->selectedStudentId) {
+            $this->selectStudent($this->selectedStudentId);
+        }
+    }
+
     public function store()
     {
         $this->validate([
@@ -152,6 +263,47 @@ class PaymentManager extends Component
         session()->flash('success', 'Payment details updated successfully.');
     }
 
+    public function submitPayment()
+    {
+        // Validate amount is provided
+        if (!$this->amount || $this->amount <= 0) {
+            session()->flash('error', 'Please enter a valid amount paid.');
+            return;
+        }
+
+        if (!$this->selectedStudentId) {
+            session()->flash('error', 'Please select a student.');
+            return;
+        }
+
+        // Create payment record
+        $latestEnrollment = Enrollment::where('user_id', $this->selectedStudentId)->latest()->first();
+
+        $payment = Payment::create([
+            'user_id' => $this->selectedStudentId,
+            'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
+            'amount' => $this->amount,
+            'transaction_id' => $this->reference_no ?? 'CASH-' . time(),
+            'status' => 'Paid',
+            'payment_method' => $this->payment_type,
+            'payment_date' => now(),
+        ]);
+
+        if ($payment->application_id) {
+            Enrollment::where('id', $payment->application_id)->update(['status' => 'Paid']);
+        }
+
+        $this->notifyRecipients($payment);
+
+        // Refresh the selected student's data to update balance
+        $this->selectStudent($this->selectedStudentId);
+        
+        // Reset form
+        $this->amount = '';
+        $this->reference_no = '';
+        session()->flash('success', 'Payment of ₱' . number_format($payment->amount, 2) . ' processed successfully.');
+    }
+
     public function updateStatus($id, $status)
     {
         if (!in_array($status, ['Paid', 'Rejected'])) return;
@@ -199,10 +351,6 @@ class PaymentManager extends Component
             $query->where('payments.status', $this->statusFilter);
         }
 
-        if ($this->level) {
-            $query->where('enrollments.level', $this->level);
-        }
-
         if ($this->filterCourse != 'ALL') {
             $filter = $this->filterCourse;
             if (str_contains($filter, '-')) {
@@ -232,12 +380,52 @@ class PaymentManager extends Component
             });
         }
 
-        $payments = $query->orderBy('payments.id', 'desc')->paginate(10);
+        $payments = $query->orderBy('payments.id', 'desc')->paginate(15);
+
+        // Fetch all enrolled students based on level (SHS or College)
+        $enrollmentQuery = Enrollment::query();
+        
+        if ($this->level === 'shs') {
+            // Filter for SHS students
+            $enrollmentQuery->whereIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
+        } elseif ($this->level === 'college') {
+            // Filter for College students (exclude SHS)
+            $enrollmentQuery->whereNotIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
+        }
+
+        // Get the latest enrollment for each student, prioritizing those with vouchers set by registrar
+        $allEnrollments = $enrollmentQuery
+            ->with(['user', 'payments'])
+            ->orderBy('voucher_applied_at', 'desc')  // Prioritize those with vouchers (most recent)
+            ->orderBy('updated_at', 'desc')  // Then by last update
+            ->get();
+        
+        // Keep only the latest enrollment per student
+        $enrolledStudents = $allEnrollments
+            ->unique('user_id')
+            ->values()
+            ->sortBy(function($enrollment) {
+                // Sort alphabetically by user's last name then first name
+                return strtolower($enrollment->user->last_name . ' ' . $enrollment->user->first_name);
+            })
+            ->values();
+
         $students = User::where('role', 'student')->orderBy('name')->get();
 
-        return view('livewire.cashier-payment-manager', [
-            'payments' => $payments,
+        return view('livewire.cashier-payment-manager-new', [
+            'payments' => $enrolledStudents,
             'students' => $students,
+            'activeTab' => $this->activeTab,
+            'selectedStudentId' => $this->selectedStudentId,
+            'selectedStudent' => $this->selectedStudent,
+            'enrollment' => $this->enrollment,
+            'selectedVoucherType' => $this->selectedVoucherType,
+            'paymentHistory' => $this->paymentHistory,
+            'tuitionFees' => $this->tuitionFees,
+            'miscellaneousFees' => $this->miscellaneousFees,
+            'appliedDiscount' => $this->appliedDiscount,
+            'totalAssessment' => $this->totalAssessment,
+            'currentBalance' => $this->currentBalance,
         ])->layout('components.layouts.cashier', ['title' => 'Manage Payments']);
     }
 }
