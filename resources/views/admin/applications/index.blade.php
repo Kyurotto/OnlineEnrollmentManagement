@@ -257,7 +257,7 @@ function openModal(app) {
                         {key: 'id_picture_path', label: 'ID Image'}
                     ].map(doc => {
                         const hasFile = app[doc.key] ? true : false;
-                        const storageBase = "{{ asset('storage') }}/";
+                        const storageBase = "{{ url('/documents') }}/";
                         const fileUrl = hasFile ? storageBase + app[doc.key] : '#';
                         const isImage = hasFile && app[doc.key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
 

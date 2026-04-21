@@ -173,14 +173,6 @@
                                 </div>
                                 <p class="text-xs text-white/40 leading-relaxed mb-6">View and review your submitted
                                     enrollment application details.</p>
-                                <div
-                                    class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                                    View Application <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </div>
                             </div>
                         </div>
                     @endif
@@ -209,12 +201,6 @@
                                     pending applications in real-time.</p>
                                 <div
                                     class="text-xs font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
-                                    Initialize Operation <svg
-                                        class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
-                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -262,11 +248,6 @@
                                 secure financial transactions.</p>
                             <div
                                 class="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
-                                Initialize Operation <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
                             </div>
                         </div>
                     </div>
@@ -293,11 +274,6 @@
                                 view academic history logs.</p>
                             <div
                                 class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                                Initialize Operation <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
                             </div>
                         </div>
                     </div>

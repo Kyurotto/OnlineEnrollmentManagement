@@ -167,7 +167,7 @@ class StudentEnrollmentController extends Controller
         }
 
         $level = $enrollment->level;
-        
+
         $validationRules = [
             'id_picture' => 'nullable|image|max:2048',
             'promissory_note' => 'nullable|file|mimes:doc,docx,pdf|max:5120',
@@ -198,13 +198,13 @@ class StudentEnrollmentController extends Controller
         $updatedData = [];
         foreach ($fileMap as $field => $dbField) {
             if ($request->hasFile($field)) {
-                $updatedData[$dbField] = $request->file($field)->store('enrollments/docs', 'public');
+                $updatedData[$dbField] = $request->file($field)->store('enrollments/docs', 'local');
             }
         }
 
         // Handle Promissory Note
         if ($request->hasFile('promissory_note')) {
-            $updatedData['promissory_note_path'] = $request->file('promissory_note')->store('enrollments/promissory', 'public');
+            $updatedData['promissory_note_path'] = $request->file('promissory_note')->store('enrollments/promissory', 'local');
         }
 
         if ($request->has('promissory_reason')) {
@@ -286,7 +286,7 @@ class StudentEnrollmentController extends Controller
         }
 
         $level = $request->input('level', $enrollment->level);
-        
+
         $validationRules = [
             'level' => 'required|in:shs,college',
             'course_code' => 'required',
@@ -314,7 +314,7 @@ class StudentEnrollmentController extends Controller
         }
 
         $unifiedYearLevel = "{$request->year_level} | {$request->semester} | {$request->academic_year}";
-        
+
         $address = $request->address_full;
         if(empty($address)){
              $address = implode(', ', array_filter([$request->house_no, $request->street, $request->barangay, $request->city, $request->province, $request->zip]));

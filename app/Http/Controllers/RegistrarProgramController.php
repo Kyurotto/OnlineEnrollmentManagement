@@ -22,7 +22,7 @@ class RegistrarProgramController extends Controller
     {
         $rules = [
             'course_code' => 'required|string|unique:courses,course_code',
-            'course_name' => 'required|string',
+            'course_name' => 'required|string|unique:courses,course_name',
             'description' => 'nullable|string',
             'type' => 'required|in:program,shs',
         ];
@@ -58,7 +58,7 @@ class RegistrarProgramController extends Controller
 
         $rules = [
             'course_code' => 'required|string|unique:courses,course_code,' . $id,
-            'course_name' => 'required|string',
+            'course_name' => 'required|string|unique:courses,course_name,' . $id,
             'description' => 'nullable|string',
         ];
 
