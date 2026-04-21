@@ -82,30 +82,66 @@ class RegistrarStudentController extends Controller
         $student = User::findOrFail($id);
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-            'first_name'  => ['required', 'string', 'max:255'],
-            'middle_name' => ['nullable', 'string', 'max:255'],
-            'last_name'   => ['required', 'string', 'max:255'],
-            'email'       => ['required', 'email', 'max:255', Rule::unique('users')->ignore($student->id)],
-            'status'      => ['nullable', 'string'],
+            'first_name'             => ['required', 'string', 'max:255'],
+            'middle_name'            => ['nullable', 'string', 'max:255'],
+            'last_name'              => ['required', 'string', 'max:255'],
+            'email'                  => ['required', 'email', 'max:255', Rule::unique('users')->ignore($student->id)],
+            'status'                 => ['nullable', 'string'],
+            'student_type'           => ['nullable', 'string', 'in:New,Old,Transferee,Returnee,Shifter'],
+            'is_regular'             => ['nullable', 'in:0,1,'],
+            'classification_reason'  => ['nullable', 'string'],
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
-        // Update Fields
+        // Update user fields
         $student->first_name  = $request->first_name;
         $student->middle_name = $request->middle_name;
         $student->last_name   = $request->last_name;
-        $student->name        = $request->first_name . ' ' . $request->last_name; // Sync 'name'
+        $student->name        = $request->first_name . ' ' . $request->last_name;
         $student->email       = $request->email;
 
-        // Registrar can manually fix status
         if ($request->has('status') && $request->status !== null) {
             $student->status = $request->status;
         }
 
         $student->save();
+
+        // Update enrollment classification fields if present
+        $enrollment = \App\Models\Enrollment::where('user_id', $id)
+            ->whereIn('status', ['Enrolled', 'Approved'])
+            ->latest()
+            ->first();
+
+        if ($enrollment) {
+            if ($request->filled('student_type')) {
+                $enrollment->student_type = $request->student_type;
+            }
+
+            if ($request->has('is_regular') && $request->is_regular !== '') {
+                $isRegular = (bool) $request->is_regular;
+                $enrollment->is_regular = $isRegular;
+
+                // Require classification reason when marking Irregular
+                if (!$isRegular) {
+                    if (!$request->filled('classification_reason')) {
+                        return back()->withErrors(['classification_reason' => 'A classification reason is required when marking a student as Irregular.'])->withInput();
+                    }
+                    $enrollment->classification_reason = $request->classification_reason;
+                } else {
+                    // Clearing reason when marking Regular
+                    $enrollment->classification_reason = null;
+                }
+            } elseif ($request->has('is_regular') && $request->is_regular === '') {
+                $enrollment->is_regular = null;
+                $enrollment->classification_reason = null;
+            }
+
+            $enrollment->last_audited_at = now();
+            $enrollment->save();
+        }
 
         return redirect()->route('registrar.students.index')->with('success', 'Student updated successfully.');
     }

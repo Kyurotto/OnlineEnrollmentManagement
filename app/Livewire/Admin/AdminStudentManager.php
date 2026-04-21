@@ -40,9 +40,17 @@ class AdminStudentManager extends Component
     public function render()
     {
         $query = User::query()
+->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level',
+         'latest_enrollments.is_regular', 'latest_enrollments.classification_reason',
+         'latest_enrollments.student_type', 'courses.course_name')
+->joinSub(
+    Enrollment::select('user_id', 'course_code', 'year_level', 'status', 'promissory_reason',
+                       'is_regular', 'classification_reason', 'student_type')
+
             ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level', 'latest_enrollments.level', 'courses.course_name')
             ->joinSub(
                 Enrollment::select('user_id', 'course_code', 'year_level', 'level', 'status', 'promissory_reason')
+
                     ->whereIn('id', function($q) {
                         $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
                     }),
@@ -88,16 +96,16 @@ class AdminStudentManager extends Component
         $students = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
         foreach ($students as $student) {
-            // Program sync: Displays only the Course Code (e.g., BSIS)
             $student->program = $student->course_code ?: 'N/A';
 
-            // Section: Displays the Year Level (e.g., "1st Year")
             if (!empty($student->year_level)) {
                 $parts = explode('|', $student->year_level);
                 $student->year_display = trim($parts[0]);
             } else {
                 $student->year_display = 'N/A';
             }
+
+            $student->student_type_display = ucfirst(strtolower($student->student_type ?? 'New'));
         }
 
         // Fetch College Programs and SHS Strands separately for grouping
