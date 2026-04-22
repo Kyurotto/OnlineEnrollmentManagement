@@ -781,6 +781,22 @@
                     </div>
                 </div>
 
+                {{-- Student Classification Stats --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-card rounded-2xl p-6 border border-white/5">
+                        <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Total Students</p>
+                        <p class="text-4xl font-black text-white mt-2">{{ $registryTotalStudents ?? 0 }}</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border border-white/5">
+                        <p class="text-[9px] font-black text-emerald-400/60 uppercase tracking-[0.3em]">Regular</p>
+                        <p class="text-4xl font-black text-emerald-400 mt-2">{{ $registryRegularCount ?? 0 }}</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border border-white/5">
+                        <p class="text-[9px] font-black text-rose-400/60 uppercase tracking-[0.3em]">Irregular</p>
+                        <p class="text-4xl font-black text-rose-400 mt-2">{{ $registryIrregularCount ?? 0 }}</p>
+                    </div>
+                </div>
+
                 {{-- Enrollment Overview Cards (SHS vs College) --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
@@ -1203,6 +1219,22 @@
                             </div>
                         </div>
                     @endforeach
+                </div>
+            </div>
+
+            {{-- Student Classification Stats --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card rounded-2xl p-6 border border-white/5">
+                    <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Total Students</p>
+                    <p class="text-4xl font-black text-white mt-2">{{ $registryTotalStudents ?? 0 }}</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 border border-white/5">
+                    <p class="text-[9px] font-black text-emerald-400/60 uppercase tracking-[0.3em]">Regular</p>
+                    <p class="text-4xl font-black text-emerald-400 mt-2">{{ $registryRegularCount ?? 0 }}</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 border border-white/5">
+                    <p class="text-[9px] font-black text-rose-400/60 uppercase tracking-[0.3em]">Irregular</p>
+                    <p class="text-4xl font-black text-rose-400 mt-2">{{ $registryIrregularCount ?? 0 }}</p>
                 </div>
             </div>
 

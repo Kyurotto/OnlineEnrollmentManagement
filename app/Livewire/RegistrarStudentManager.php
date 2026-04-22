@@ -6,6 +6,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
 use App\Models\Enrollment;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class RegistrarStudentManager extends Component
 {
@@ -23,10 +25,24 @@ class RegistrarStudentManager extends Component
     public $showClassificationModal = false;
 
     protected $queryString = ['search', 'sortField', 'sortDirection', 'filter'];
+    private const ALLOWED_FILTERS = ['all', 'regular', 'irregular'];
+
+    public function mount(): void
+    {
+        $this->filter = $this->normalizeFilter($this->filter);
+    }
+
+
 
     public function setFilter($value) {
-        $this->filter = $value;
+        $this->filter = $this->normalizeFilter($value);
         $this->resetPage();
+    }
+
+    private function normalizeFilter($value): string
+    {
+        $value = strtolower((string) $value);
+        return in_array($value, self::ALLOWED_FILTERS, true) ? $value : 'all';
     }
 
     public function updatingSearch() { $this->resetPage(); }
@@ -156,6 +172,32 @@ class RegistrarStudentManager extends Component
 
     public function render()
     {
+
+
+        $optionalEnrollmentColumns = [
+            'promissory_reason',
+            'is_regular',
+            'classification_reason',
+            'credentials_verified',
+            'student_type',
+            'physical_documents_received',
+        ];
+
+        $availableColumns = collect($optionalEnrollmentColumns)
+            ->mapWithKeys(fn($column) => [$column => Schema::hasColumn('enrollments', $column)])
+            ->all();
+
+        $enrollmentSelect = ['user_id', 'course_code', 'year_level', 'status', 'id'];
+        foreach ($optionalEnrollmentColumns as $column) {
+            $enrollmentSelect[] = $availableColumns[$column]
+                ? $column
+                : DB::raw("NULL as {$column}");
+        }
+
+        $hasIsRegular = $availableColumns['is_regular'] ?? false;
+
+
+
         $query = User::query()
             ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level',
                      'latest_enrollments.id as enrollment_id',
@@ -164,11 +206,7 @@ class RegistrarStudentManager extends Component
                      'latest_enrollments.physical_documents_received',
                      'courses.course_name')
             ->joinSub(
-                Enrollment::select(
-                    'user_id', 'course_code', 'year_level', 'status', 'promissory_reason',
-                    'id', 'is_regular', 'classification_reason', 'credentials_verified',
-                    'student_type', 'physical_documents_received'
-                )
+                Enrollment::select($enrollmentSelect)
                     ->whereIn('id', function($q) {
                         $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
                     }),
@@ -191,18 +229,25 @@ class RegistrarStudentManager extends Component
         }
 
         // Filter by classification
-        if ($this->filter === 'regular') {
+        if ($this->filter === 'regular' && $hasIsRegular) {
             $query->whereRaw('latest_enrollments.is_regular = 1');
-        } elseif ($this->filter === 'irregular') {
+        } elseif ($this->filter === 'irregular' && $hasIsRegular) {
             $query->whereRaw('latest_enrollments.is_regular = 0');
         }
 
         $students = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
         // Stats
+
+
         $baseStats = User::query()
             ->joinSub(
-                Enrollment::select('user_id', 'id', 'is_regular', 'status')
+                Enrollment::select(
+                    'user_id',
+                    'id',
+                    'status',
+                    $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular')
+                )
                     ->whereIn('id', function($q) {
                         $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
                     }),
@@ -213,8 +258,8 @@ class RegistrarStudentManager extends Component
             ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved']);
 
         $totalStudents   = (clone $baseStats)->count();
-        $regularCount    = (clone $baseStats)->whereRaw('latest_enrollments.is_regular = 1')->count();
-        $irregularCount  = (clone $baseStats)->whereRaw('latest_enrollments.is_regular = 0')->count();
+        $regularCount    = $hasIsRegular ? (clone $baseStats)->whereRaw('latest_enrollments.is_regular = 1')->count() : 0;
+        $irregularCount  = $hasIsRegular ? (clone $baseStats)->whereRaw('latest_enrollments.is_regular = 0')->count() : 0;
 
         foreach ($students as $student) {
             $student->program = $student->course_code ?: 'N/A';

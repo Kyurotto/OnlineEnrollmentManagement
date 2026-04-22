@@ -15,6 +15,12 @@
     @livewireStyles
 </head>
 <body class="text-gray-600 flex flex-row min-h-screen" style="background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 40%, #1a3a6e 100%); background-attachment: fixed; min-height: 100vh;">
+    <!-- Fixed dark background with premium blurry glows -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
+        <div class="absolute top-[20%] left-[10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-emerald-500/10 blur-[120px] rounded-full"></div>
+        <div class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-purple-500/5 blur-[150px] rounded-full"></div>
+    </div>
 
     {{-- Sidebar --}}
     <aside class="hidden sm:flex flex-col w-16 hover:w-64 transition-[width] duration-300 ease-in-out flex-shrink-0 sticky top-0 h-screen overflow-y-auto overflow-x-hidden z-30 group/side"

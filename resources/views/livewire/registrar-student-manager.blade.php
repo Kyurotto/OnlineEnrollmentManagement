@@ -7,22 +7,6 @@
         </div>
     @endif
 
-    {{-- Stats Row --}}
-    <div class="grid grid-cols-3 gap-4">
-        <div class="glass-card rounded-2xl p-6 border border-white/5">
-            <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Total Students</p>
-            <p class="text-4xl font-black text-white mt-2">{{ $totalStudents }}</p>
-        </div>
-        <div class="glass-card rounded-2xl p-6 border border-white/5">
-            <p class="text-[9px] font-black text-emerald-400/60 uppercase tracking-[0.3em]">Regular</p>
-            <p class="text-4xl font-black text-emerald-400 mt-2">{{ $regularCount }}</p>
-        </div>
-        <div class="glass-card rounded-2xl p-6 border border-white/5">
-            <p class="text-[9px] font-black text-rose-400/60 uppercase tracking-[0.3em]">Irregular</p>
-            <p class="text-4xl font-black text-rose-400 mt-2">{{ $irregularCount }}</p>
-        </div>
-    </div>
-
     {{-- Table Card --}}
     <div class="glass-card rounded-[32px] overflow-hidden border border-white/5 shadow-2xl shadow-black/40">
 
@@ -45,15 +29,15 @@
 
                 {{-- Filter Tabs --}}
                 <div class="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1">
-                    <button wire:click="setFilter('all')"
+                    <button type="button" wire:click="setFilter('all')"
                         class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all {{ $filter === 'all' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white' }}">
                         All
                     </button>
-                    <button wire:click="setFilter('regular')"
+                    <button type="button" wire:click="setFilter('regular')"
                         class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all {{ $filter === 'regular' ? 'bg-emerald-500/20 text-emerald-400' : 'text-white/30 hover:text-white' }}">
                         Regular
                     </button>
-                    <button wire:click="setFilter('irregular')"
+                    <button type="button" wire:click="setFilter('irregular')"
                         class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all {{ $filter === 'irregular' ? 'bg-rose-500/20 text-rose-400' : 'text-white/30 hover:text-white' }}">
                         Irregular
                     </button>

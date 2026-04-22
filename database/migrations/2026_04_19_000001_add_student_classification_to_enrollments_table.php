@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('enrollments', function (Blueprint $table) {
             // Add classification_reason (maps to existing irregular_reason) if not present
             if (!Schema::hasColumn('enrollments', 'classification_reason')) {
-                $table->string('classification_reason')->nullable()->after('is_regular');
+                $table->string('classification_reason')->nullable();
             }
 
             // Add last_audited_at if not present

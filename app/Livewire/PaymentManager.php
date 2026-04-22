@@ -55,13 +55,19 @@ class PaymentManager extends Component
         'editingPaymentId' => ['except' => null, 'as' => 'edit_id'],
     ];
 
+
+
     public function mount()
     {
+
+
         if (request()->routeIs('cashier.payments.college')) {
             $this->level = 'college';
         } elseif (request()->routeIs('cashier.payments.shs')) {
             $this->level = 'shs';
         }
+
+
 
         if (request()->has('showModal') && request('showModal') === 'true') {
             $this->openCreateModal();
@@ -342,6 +348,8 @@ class PaymentManager extends Component
 
     public function render()
     {
+
+
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
             ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
@@ -384,14 +392,19 @@ class PaymentManager extends Component
 
         // Fetch all enrolled students based on level (SHS or College)
         $enrollmentQuery = Enrollment::query();
+        $branch = 'all';
         
         if ($this->level === 'shs') {
             // Filter for SHS students
+            $branch = 'shs';
             $enrollmentQuery->whereIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
         } elseif ($this->level === 'college') {
             // Filter for College students (exclude SHS)
+            $branch = 'college';
             $enrollmentQuery->whereNotIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
         }
+
+
 
         // Get the latest enrollment for each student, prioritizing those with vouchers set by registrar
         $allEnrollments = $enrollmentQuery
@@ -409,6 +422,8 @@ class PaymentManager extends Component
                 return strtolower($enrollment->user->last_name . ' ' . $enrollment->user->first_name);
             })
             ->values();
+
+
 
         $students = User::where('role', 'student')->orderBy('name')->get();
 
