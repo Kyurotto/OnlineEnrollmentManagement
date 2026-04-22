@@ -368,12 +368,10 @@
                                             <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Religion / Church</span>
                                             <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalReligionChurch"></span>
                                     </div>
-                                    @if($app->level === 'shs')
                                     <div class="flex flex-col gap-1">
                                             <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Junior High School</span>
                                             <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalJuniorHigh"></span>
                                     </div>
-                                    @endif
                                     <div class="flex flex-col gap-1 sm:col-span-2">
                                             <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Address</span>
                                             <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalAddress"></span>
