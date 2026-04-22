@@ -28,7 +28,7 @@ class CourseController extends Controller
         // 1. Validate (Check 'course_code' column in DB)
         $request->validate([
             'course_code' => 'required|string|unique:courses,course_code',
-            'course_name' => 'required|string',
+            'course_name' => 'required|string|unique:courses,course_name',
             'credits'     => 'required|integer',
             'description' => 'nullable|string',
         ]);
@@ -67,7 +67,7 @@ class CourseController extends Controller
         // 1. Validate
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'course_code' => ['required', 'string', 'max:50', Rule::unique('courses', 'course_code')->ignore($course->id)],
-            'course_name' => ['required', 'string', 'max:255'],
+            'course_name' => ['required', 'string', 'max:255', Rule::unique('courses', 'course_name')->ignore($course->id)],
             'credits'     => ['required', 'integer', 'min:1'],
             'description' => ['nullable', 'string'],
         ]);

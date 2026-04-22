@@ -14,7 +14,7 @@
                 <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">Student Population Registry</h2>
                 <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">Management of Verified Academic Personas & Operational Status</p>
             </div>
-            <div class="flex items-center gap-4 w-full md:w-auto">
+            <div class="flex items-center gap-4 w-full md:w-auto flex-wrap">
                 <div class="relative group w-full md:w-72">
                     <input type="text" wire:model.live.debounce.500ms="search"
                         placeholder="Search Students or Credentials..."
@@ -22,6 +22,20 @@
                     <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
+                </div>
+                <div class="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1">
+                    <button type="button" wire:click="setFilter('all')"
+                        class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all {{ $filter === 'all' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white' }}">
+                        All
+                    </button>
+                    <button type="button" wire:click="setFilter('regular')"
+                        class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all {{ $filter === 'regular' ? 'bg-emerald-500/20 text-emerald-400' : 'text-white/30 hover:text-white' }}">
+                        Regular
+                    </button>
+                    <button type="button" wire:click="setFilter('irregular')"
+                        class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all {{ $filter === 'irregular' ? 'bg-rose-500/20 text-rose-400' : 'text-white/30 hover:text-white' }}">
+                        Irregular
+                    </button>
                 </div>
             </div>
         </div>
@@ -113,7 +127,9 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-right">ACTIONS</th>
+                     <th class="py-6 px-8 text-center">TYPE</th>
+                     <th class="py-6 px-8 text-center">CLASSIFICATION</th>
+                     <th class="py-6 px-8 text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">
@@ -157,19 +173,54 @@
                                     {{ $student->status ?: 'Enrolled' }}
                                 </span>
                             </td>
-                            <td class="py-6 px-8 text-right">
-                                <div class="flex justify-end gap-3">
-                                    <a href="{{ route('admin.students.edit', $student->id) }}"
-                                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-blue-400 hover:border-blue-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
-                                        UPDATE
-                                        <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                                d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </td>
+{{-- Type --}}
+<td class="py-6 px-8 text-center whitespace-nowrap">
+    <span class="text-[10px] font-black px-3 py-1.5 rounded-full border uppercase tracking-widest
+        {{ $student->student_type_display === 'Transferee' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' :
+           ($student->student_type_display === 'Shifter' ? 'text-sky-400 bg-sky-400/10 border-sky-400/20' :
+           'text-white/40 bg-white/5 border-white/10') }}">
+        {{ $student->student_type_display }}
+    </span>
+</td>
+{{-- Classification --}}
+<td class="py-6 px-8 text-center whitespace-nowrap">
+    @if($student->is_regular === null)
+        <span class="text-white/20 text-[10px] font-black px-3 py-1.5 rounded-full border border-white/10 uppercase tracking-widest">
+            Not Audited
+        </span>
+    @elseif($student->is_regular)
+        <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+            Regular
+        </span>
+    @else
+        <div class="flex flex-col items-center gap-1">
+            <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+                Irregular
+            </span>
+            @if($student->classification_reason)
+                <span class="text-[8px] text-rose-300/50 uppercase tracking-wider">{{ $student->classification_reason }}</span>
+            @endif
+        </div>
+    @endif
+</td>
+<td class="py-6 px-8 text-right">
+    <div class="flex justify-end gap-3">
+        <button type="button" wire:click="openClassificationModal({{ $student->enrollment_id }})"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
+            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            Classify
+        </button>
+        <a href="{{ route('admin.students.edit', $student->id) }}"
+            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-blue-400 hover:border-blue-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
+            UPDATE
+            <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                    d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+    </div>
+</td>
                         </tr>
                     @empty
                         <tr>
@@ -195,4 +246,76 @@
             {{ $students->links('pagination') }}
         </div>
     </div>
+
+    {{-- Classification Modal (Set Classification) --}}
+    @if($showClassificationModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" wire:click="closeClassificationModal"></div>
+
+            <div class="relative z-10 w-full max-w-sm bg-[#0f0f1a] border border-white/10 rounded-[28px] shadow-2xl p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Admin Control</p>
+                        <h3 class="text-xl font-black text-white uppercase tracking-tight italic mt-0.5">Set Classification</h3>
+                    </div>
+                    <button type="button" wire:click="closeClassificationModal" class="text-white/20 hover:text-white transition-colors mt-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Classification</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button"
+                            wire:click="$set('classificationIsRegular', true)"
+                            class="py-3 px-4 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all
+                                {{ $classificationIsRegular
+                                    ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
+                                    : 'bg-white/5 border-white/10 text-white/40 hover:bg-emerald-500/10 hover:border-emerald-500/20 hover:text-emerald-400' }}">
+                            ✓ Regular
+                        </button>
+                        <button type="button"
+                            wire:click="$set('classificationIsRegular', false)"
+                            class="py-3 px-4 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all
+                                {{ !$classificationIsRegular
+                                    ? 'bg-rose-500/20 border-rose-500/40 text-rose-400'
+                                    : 'bg-white/5 border-white/10 text-white/40 hover:bg-rose-500/10 hover:border-rose-500/20 hover:text-rose-400' }}">
+                            ✗ Irregular
+                        </button>
+                    </div>
+                </div>
+
+                @if(!$classificationIsRegular)
+                <div class="space-y-2">
+                    <label class="block text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">
+                        Classification Reason <span class="text-rose-400">*</span>
+                    </label>
+                    <select wire:model="classificationReason"
+                        class="w-full bg-white/[0.03] text-white border border-white/10 py-4 px-5 rounded-2xl outline-none text-sm font-bold tracking-wide focus:border-purple-500/50 focus:bg-white/[0.05] transition-all cursor-pointer">
+                        <option value="" style="background-color:#0d1b2e;color:#ffffff;">— Select a reason —</option>
+                        @foreach($classificationReasons as $key => $label)
+                            <option value="{{ $key }}" style="background-color:#0d1b2e;color:#ffffff;">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @error('classificationReason')
+                        <span class="text-rose-500 text-[9px] font-black uppercase tracking-tighter ml-1">{{ $message }}</span>
+                    @enderror
+                </div>
+                @endif
+
+                <div class="flex gap-3 pt-1">
+                    <button type="button" wire:click="closeClassificationModal"
+                        class="flex-1 px-5 py-3.5 text-[9px] font-black text-white/40 uppercase tracking-[0.3em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all">
+                        Cancel
+                    </button>
+                    <button type="button" wire:click="saveClassification"
+                        wire:loading.attr="disabled"
+                        class="flex-[2] bg-purple-500 hover:bg-purple-400 text-white text-[9px] font-black py-3.5 px-5 rounded-2xl uppercase tracking-[0.3em] transition-all shadow-[0_10px_30px_rgba(167,139,250,0.3)] active:scale-[0.98] italic disabled:opacity-50">
+                        <span wire:loading.remove wire:target="saveClassification">Save Classification</span>
+                        <span wire:loading wire:target="saveClassification">Saving...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

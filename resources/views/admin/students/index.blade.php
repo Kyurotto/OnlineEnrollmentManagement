@@ -42,6 +42,8 @@
                                 <th scope="col" class="px-6 py-5 font-black">Email Address</th>
                                 <th scope="col" class="px-6 py-5 font-black text-center">Program</th>
                                 <th scope="col" class="px-6 py-5 font-black text-center">Section</th>
+                                <th scope="col" class="px-6 py-5 font-black text-center">Type</th>
+                                <th scope="col" class="px-6 py-5 font-black text-center">Classification</th>
                                 <th scope="col" class="px-6 py-5 font-black text-center">Status</th>
                             </tr>
                         </thead>
@@ -50,11 +52,8 @@
                                 <tr class="hover:bg-white/5 transition-all group">
                                     <td class="px-6 py-5">
                                         <span class="font-bold text-white uppercase tracking-tight group-hover:text-purple-200 transition-colors">
-                                            {{ $student->last_name ?? 'N/A' }}
+                                            {{ $student->last_name }}, {{ $student->first_name }}
                                         </span>
-                                    </td>
-                                    <td class="px-6 py-5 font-bold text-white/90 uppercase tracking-tight">
-                                        {{ $student->first_name ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-5 text-white/40 lowercase italic text-xs">
                                         {{ $student->email }}
@@ -65,7 +64,36 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-5 font-bold text-white/60 text-center whitespace-nowrap text-xs">
-                                        {{ $student->year_display }}</td>
+                                        {{ $student->year_display }}
+                                    </td>
+                                    <td class="px-6 py-5 text-center whitespace-nowrap">
+                                        <span class="text-[10px] font-black px-3 py-1 rounded-full border uppercase tracking-widest
+                                            {{ $student->student_type === 'Transferee' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' :
+                                               ($student->student_type === 'Shifter' ? 'text-sky-400 bg-sky-400/10 border-sky-400/20' :
+                                               'text-white/40 bg-white/5 border-white/10') }}">
+                                            {{ $student->student_type }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center whitespace-nowrap">
+                                        @if($student->is_regular === null)
+                                            <span class="text-white/20 text-[10px] font-black px-3 py-1 rounded-full border border-white/10 uppercase tracking-widest">
+                                                Not Audited
+                                            </span>
+                                        @elseif($student->is_regular)
+                                            <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                                                Regular
+                                            </span>
+                                        @else
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                                                    Irregular
+                                                </span>
+                                                @if($student->classification_reason)
+                                                    <span class="text-[8px] text-rose-300/50 uppercase tracking-wider">{{ $student->classification_reason }}</span>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-5 text-center">
                                         <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full border border-emerald-500/20 shadow-sm uppercase tracking-widest">
                                             {{ $student->status ?? 'Active' }}

@@ -89,8 +89,17 @@
                                         class="bg-rose-500/20 text-rose-400 px-4 py-1.5 rounded-full font-black text-xs border border-rose-500/30 tracking-widest uppercase">REJECTED</span>
                                 @else
                                     <span
-                                        class="bg-white/5 text-white/30 px-4 py-1.5 rounded-full font-black text-xs border border-white/10 tracking-widest uppercase">NOT
-                                        ENROLLED</span>
+                                        class="bg-white/5 text-white/30 px-4 py-1.5 rounded-full font-black text-xs border border-white/10 tracking-widest uppercase">NOT ENROLLED</span>
+                                @endif
+                                @if(isset($currentYearEnrollment) && $currentYearEnrollment)
+                                    @php
+                                        $level = strtolower($currentYearEnrollment->level);
+                                        $bgClass = $level === 'college' ? 'bg-blue-500/20' : ($level === 'shs' ? 'bg-emerald-500/20' : 'bg-gray-500/20');
+                                        $textClass = $level === 'college' ? 'text-blue-500' : ($level === 'shs' ? 'text-emerald-500' : 'text-white');
+                                    @endphp
+                                    <span class="ml-2 text-xs font-black uppercase tracking-widest {{ $bgClass }} {{ $textClass }} px-2 py-0.5 rounded">
+                                        Level: {{ ucfirst($currentYearEnrollment->level) }}
+                                    </span>
                                 @endif
                             </div>
                         </div>
@@ -164,14 +173,6 @@
                                 </div>
                                 <p class="text-xs text-white/40 leading-relaxed mb-6">View and review your submitted
                                     enrollment application details.</p>
-                                <div
-                                    class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                                    View Application <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </div>
                             </div>
                         </div>
                     @endif
@@ -200,12 +201,6 @@
                                     pending applications in real-time.</p>
                                 <div
                                     class="text-xs font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
-                                    Initialize Operation <svg
-                                        class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
-                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -253,11 +248,6 @@
                                 secure financial transactions.</p>
                             <div
                                 class="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
-                                Initialize Operation <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
                             </div>
                         </div>
                     </div>
@@ -284,11 +274,6 @@
                                 view academic history logs.</p>
                             <div
                                 class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                                Initialize Operation <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
                             </div>
                         </div>
                     </div>
@@ -796,6 +781,22 @@
                     </div>
                 </div>
 
+                {{-- Student Classification Stats --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-card rounded-2xl p-6 border border-white/5">
+                        <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Total Students</p>
+                        <p class="text-4xl font-black text-white mt-2">{{ $registryTotalStudents ?? 0 }}</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border border-white/5">
+                        <p class="text-[9px] font-black text-emerald-400/60 uppercase tracking-[0.3em]">Regular</p>
+                        <p class="text-4xl font-black text-emerald-400 mt-2">{{ $registryRegularCount ?? 0 }}</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border border-white/5">
+                        <p class="text-[9px] font-black text-rose-400/60 uppercase tracking-[0.3em]">Irregular</p>
+                        <p class="text-4xl font-black text-rose-400 mt-2">{{ $registryIrregularCount ?? 0 }}</p>
+                    </div>
+                </div>
+
                 {{-- Enrollment Overview Cards (SHS vs College) --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
@@ -1122,7 +1123,7 @@
             </div>
         </x-layouts.registrar>
     @elseif($role === 'admin')
-        <div class="w-full space-y-6" wire:poll.5s="refreshStats">
+        <div class="w-full space-y-6">
 
             {{-- Stats & Calendar Section --}}
             <div class="p-6 rounded-2xl border"
@@ -1218,6 +1219,22 @@
                             </div>
                         </div>
                     @endforeach
+                </div>
+            </div>
+
+            {{-- Student Classification Stats --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card rounded-2xl p-6 border border-white/5">
+                    <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Total Students</p>
+                    <p class="text-4xl font-black text-white mt-2">{{ $registryTotalStudents ?? 0 }}</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 border border-white/5">
+                    <p class="text-[9px] font-black text-emerald-400/60 uppercase tracking-[0.3em]">Regular</p>
+                    <p class="text-4xl font-black text-emerald-400 mt-2">{{ $registryRegularCount ?? 0 }}</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 border border-white/5">
+                    <p class="text-[9px] font-black text-rose-400/60 uppercase tracking-[0.3em]">Irregular</p>
+                    <p class="text-4xl font-black text-rose-400 mt-2">{{ $registryIrregularCount ?? 0 }}</p>
                 </div>
             </div>
 

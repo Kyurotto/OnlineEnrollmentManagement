@@ -43,12 +43,24 @@
                     </select>
                 </div>
                 <div class="w-full sm:w-44">
-                    <select wire:model.live="year_level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
-                        <option value="All Years" class="bg-[#0a0f1d]">All Years</option>
-                        <option value="1st Year" class="bg-[#0a0f1d]">BSIS 1</option>
-                        <option value="2nd Year" class="bg-[#0a0f1d]">BSIS 2</option>
-                        <option value="3rd Year" class="bg-[#0a0f1d]">BSIS 3</option>
-                        <option value="4th Year" class="bg-[#0a0f1d]">BSIS 4</option>
+                    <select wire:model.live="course_filter" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                        @php
+                            $courseLabel = 'ALL PROGRAMS/STRANDS';
+                            if ($level === 'college') $courseLabel = 'ALL PROGRAMS';
+                            if ($level === 'shs') $courseLabel = 'ALL STRANDS';
+                        @endphp
+                        <option value="All Programs" class="bg-[#0a0f1d]">{{ $courseLabel }}</option>
+                        @if($level === 'All Levels' || $level === 'college')
+                            @foreach($collegePrograms as $course)
+                                <option value="{{ $course->course_code }}" class="bg-[#0a0f1d] text-white">{{ $course->course_code }}</option>
+                            @endforeach
+                        @endif
+                        @if($level === 'All Levels' || $level === 'shs')
+                            @foreach($shsStrands as $course)
+                                <option value="{{ $course->course_code }}" class="bg-[#0a0f1d] text-white">{{ $course->course_code }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endif
                     </select>
                 </div>
             </div>
@@ -124,7 +136,7 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-right">Actions</th>
+
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">
@@ -186,14 +198,7 @@
                                     {{ $displayText }}
                                 </span>
                             </td>
-                            <td class="py-6 px-8">
-                                <div class="flex justify-end items-center gap-4">
-                                    <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
-                                        class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20">
-                                        View Details
-                                    </button>
-                                </div>
-                            </td>
+
                         </tr>
                     @empty
                     <tr>
@@ -412,7 +417,7 @@
         docsContainer.innerHTML = '';
 
         const documents = docMapping;
-        const storageBase = @json(asset('storage')) + '/';
+        const storageBase = @json(url('/documents')) + '/';
 
         Object.keys(documents).forEach(key => {
             const label = documents[key];

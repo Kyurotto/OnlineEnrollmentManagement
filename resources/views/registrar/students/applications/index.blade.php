@@ -368,7 +368,7 @@
             { key: 'id_picture_path', label: 'ID Image' }
         ];
 
-        const storageBase = @json(asset('storage')) + '/';
+        const storageBase = @json(url('/documents')) + '/';
 
         documents.forEach(doc => {
             const hasFile = app[doc.key] ? true : false;

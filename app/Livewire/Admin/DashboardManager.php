@@ -14,7 +14,6 @@ use Livewire\Attributes\On;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.admin')]
-#[Poll('5s')]
 class DashboardManager extends Component
 {
     use WithPagination;

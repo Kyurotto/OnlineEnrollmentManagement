@@ -166,7 +166,7 @@
 
                                         @if (!empty($application->$path))
                                             @php
-                                                $fileUrl = \Storage::disk('public')->url($application->$path);
+                                                $fileUrl = route('document.show', ['path' => $application->$path]);
                                                 $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $application->$path);
                                             @endphp
 

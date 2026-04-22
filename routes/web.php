@@ -32,6 +32,7 @@ use App\Http\Controllers\StudentEnrollmentController;
 use App\Http\Controllers\StudentPaymentController;
 use App\Http\Controllers\StudentPaymentRedirectController;
 use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\DocumentController;
 
 // Student Livewire Components
 use App\Livewire\StudentPaymentManager;
@@ -152,6 +153,8 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::patch('/courses/{id}', [AdminCourseController::class, 'update'])->name('courses.update');
     Route::delete('/courses/{id}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
     Route::get('/payments', PaymentManager::class)->name('payments.index');
+    Route::get('/payments/college', PaymentManager::class)->name('payments.college');
+    Route::get('/payments/shs', PaymentManager::class)->name('payments.shs');
     Route::get('/students', AdminStudentManager::class)->name('students.index');
     Route::get('/students/{id}/edit', [AdminStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [AdminStudentController::class, 'update'])->name('students.update');
@@ -215,6 +218,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
+    // Secure Document Route
+    Route::get('/documents/{path}', [DocumentController::class, 'show'])->where('path', '.*')->name('document.show');
 });
 
 // Logout

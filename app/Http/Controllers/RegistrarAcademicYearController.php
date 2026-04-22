@@ -21,8 +21,13 @@ class RegistrarAcademicYearController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'year_name' => 'required|string|unique:academic_years,year_name',
+            'year_name' => 'required|string',
         ]);
+
+        // Prevention of duplicates with Forbidden Error
+        if (AcademicYear::where('year_name', $request->year_name)->exists()) {
+            abort(403, 'Forbidden: This Academic Year already exists.');
+        }
 
         // If setting this to Active, deactivate all others
         if ($request->has('is_active')) {

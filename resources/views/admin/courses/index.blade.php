@@ -26,13 +26,15 @@
                         @csrf
                         <div>
                             <label class="block text-[10px] font-black text-blue-300 uppercase tracking-widest mb-2 px-1">Code</label>
-                            <input type="text" name="course_code" placeholder="BSIT" 
+                            <input type="text" name="course_code" value="{{ old('course_code') }}" placeholder="BSIT" 
                                 class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder-white/20 shadow-inner">
+                            @error('course_code') <span class="text-rose-500 text-[10px] font-bold uppercase tracking-widest mt-1 block">{{ $message }}</span> @enderror
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-blue-300 uppercase tracking-widest mb-2 px-1">Full Name</label>
-                            <input type="text" name="course_name" placeholder="Bachelor of Science in IT" 
+                            <input type="text" name="course_name" value="{{ old('course_name') }}" placeholder="Bachelor of Science in IT" 
                                 class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder-white/20 shadow-inner">
+                            @error('course_name') <span class="text-rose-500 text-[10px] font-bold uppercase tracking-widest mt-1 block">{{ $message }}</span> @enderror
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-blue-300 uppercase tracking-widest mb-2 px-1">Credits</label>

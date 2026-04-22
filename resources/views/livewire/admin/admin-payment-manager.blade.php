@@ -15,14 +15,10 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                 </div>
                 <div>
-                    <h3 class="font-black text-white text-xl leading-none uppercase tracking-tight">Payments Management</h3>
+                    <h3 class="font-black text-white text-xl leading-none uppercase tracking-tight">{{ $pageTitle }}</h3>
                     <p class="text-xs text-white/30 font-bold uppercase tracking-widest mt-2">Manage and Verify Student Collections</p>
                 </div>
             </div>
-            <button wire:click="openCreateModal" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center gap-3">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                New Payment
-            </button>
         </div>
 
         <div class="bg-white/[0.02] px-8 py-5 border-b border-white/5">
@@ -39,8 +35,8 @@
                     <div class="w-full sm:w-48 relative">
                         <select wire:model.live="filter_course" class="w-full bg-white/5 bg-none border border-white/10 rounded-xl py-3 px-5 text-xs text-white/60 font-black uppercase tracking-widest focus:border-emerald-500/50 outline-none cursor-pointer appearance-none transition-all shadow-inner">
                             <option value="ALL" class="bg-[#0d1f3c]">All Programs</option>
-                            @foreach(['BSIS-1', 'BSIS-2', 'BSIS-3', 'BSIS-4', 'DIT-1', 'DIT-2', 'DIT-3', 'DIT-4'] as $course)
-                                <option value="{{ $course }}" class="bg-[#0d1f3c]">{{ str_replace('-', ' ', $course) }}</option>
+                            @foreach($programOptions as $program)
+                                <option value="{{ $program->course_code }}" class="bg-[#0d1f3c]">{{ $program->course_code }} — {{ $program->course_name }}</option>
                             @endforeach
                         </select>
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
@@ -117,7 +113,6 @@
                             </div>
                         </th>
                         <th class="py-5 px-5 text-center font-black">Status</th>
-                        <th class="py-5 px-5 text-right font-black">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -151,21 +146,6 @@
                             @else
                                 <span class="bg-amber-500/10 text-amber-400 text-[10px] font-black px-3 py-1 rounded-full border border-amber-500/20 shadow-sm uppercase tracking-[0.1em]">Pending</span>
                             @endif
-                        </td>
-                        <td class="py-5 px-5 text-right whitespace-nowrap">
-                            <div class="flex justify-end gap-2 text-right">
-                                <button wire:click="openEditModal({{ $payment->id }})" class="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-white/30 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all active:scale-95 shadow-lg group/btn text-[10px] font-black uppercase tracking-widest">
-                                    EDIT
-                                </button>
-                                @if($payment->status !== 'Paid' && $payment->status !== 'Rejected')
-                                    <button wire:click="updateStatus({{ $payment->id }}, 'Paid')" class="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all active:scale-95 shadow-lg shadow-emerald-500/10 group/paid text-[10px] font-black uppercase tracking-widest" title="Mark as Paid">
-                                        APPROVED
-                                    </button>
-                                    <button wire:click="updateStatus({{ $payment->id }}, 'Rejected')" class="px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-lg shadow-rose-500/10 group/reject text-[10px] font-black uppercase tracking-widest" title="Reject Payment">
-                                        REJECT
-                                    </button>
-                                @endif
-                            </div>
                         </td>
                     </tr>
                     @empty

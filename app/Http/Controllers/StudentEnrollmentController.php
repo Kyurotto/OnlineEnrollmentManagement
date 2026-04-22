@@ -207,13 +207,13 @@ class StudentEnrollmentController extends Controller
         $updatedData = [];
         foreach ($fileMap as $field => $dbField) {
             if ($request->hasFile($field)) {
-                $updatedData[$dbField] = $request->file($field)->store('enrollments/docs', 'public');
+                $updatedData[$dbField] = $request->file($field)->store('enrollments/docs', 'local');
             }
         }
 
         // Handle Promissory Note
         if ($request->hasFile('promissory_note')) {
-            $updatedData['promissory_note_path'] = $request->file('promissory_note')->store('enrollments/promissory', 'public');
+            $updatedData['promissory_note_path'] = $request->file('promissory_note')->store('enrollments/promissory', 'local');
         }
 
         if ($request->has('promissory_reason')) {
