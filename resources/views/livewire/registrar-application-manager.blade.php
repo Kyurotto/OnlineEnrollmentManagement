@@ -35,9 +35,9 @@
         <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex-shrink-0">
                 <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">
-                    @if($level === 'college') Applications
-                    @elseif($level === 'shs') Applications
-                    @else Applications @endif
+                    @if($level === 'college') Application Request
+                    @elseif($level === 'shs') Application Request
+                    @else Application Request @endif
                 </h2>
                 <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">
                     @if($level === 'college') College Enrollment Lifecycle & Review Pipeline
@@ -271,112 +271,161 @@
             </div>
 
             <div class="p-8 md:p-12 overflow-y-auto custom-scrollbar flex-grow space-y-12">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {{-- Student Profile --}}
-                    <div class="space-y-6">
-                        <div class="flex items-center gap-3">
-                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Applicant Profile</h3>
-                        </div>
-                        <div class="grid grid-cols-1 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
-                            <div class="grid grid-cols-2 gap-8">
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalNameValue"></span>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Email Address</span>
-                                    <span class="text-xs font-bold text-white lowercase" id="modalEmail"></span>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Reference ID</span>
-                                    <span class="text-xs font-bold text-cyan-400 uppercase" id="modalAppId"></span>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Applied On</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalSubmitted"></span>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Birth Date</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalDob"></span>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Age</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalAge"></span>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Gender</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalGender"></span>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Address</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalAddress"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Program & Lifecycle --}}
+                <div class="space-y-10">
+                    {{-- Row 1: Program & Lifecycle --}}
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
                             <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Program Details</h3>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em] drop-shadow-sm">Program Details</h3>
                         </div>
-                        <div class="bg-blue-500/5 border border-blue-500/10 rounded-[32px] p-8 h-full flex flex-col justify-center">
+                            <div class="bg-blue-500/10 border border-blue-400/20 rounded-[32px] p-8">
                             <div class="space-y-4">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Applied Program</span>
-                                    <span class="text-2xl font-black text-white uppercase italic tracking-tighter" id="modalCourse"></span>
+                                    <span class="text-[10px] font-black text-blue-300 uppercase tracking-widest italic">Applied Program</span>
+                                    <span class="text-3xl font-black text-white uppercase italic tracking-tighter drop-shadow-sm" id="modalCourse"></span>
                                 </div>
-                                <div class="grid grid-cols-2 gap-8 pt-6 border-t border-white/5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6 border-t border-white/5">
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Academic Level</span>
-                                        <span class="text-xs font-bold text-white uppercase" id="modalYear"></span>
+                                        <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Academic Level</span>
+                                        <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalYear"></span>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
-                                        <span class="text-xs font-black text-cyan-400 uppercase tracking-widest" id="modalStatus"></span>
+                                        <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Status</span>
+                                        <span class="text-sm font-black text-cyan-300 uppercase tracking-widest drop-shadow-sm" id="modalStatus"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Guardian Records --}}
-                <div class="space-y-6 pt-6">
-                    <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Guardian Information</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Father's Name</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalFather"></span>
+                    {{-- Row 2: Applicant Profile --}}
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em] drop-shadow-sm">Applicant Profile</h3>
                         </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Mother's Name</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalMother"></span>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Guardian Name</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalGuardian"></span>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Emergency Contact</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalContact"></span>
-                        </div>
-                    </div>
-                </div>
+                        <div class="bg-white/[0.04] border border-white/10 rounded-[32px] p-8 space-y-6 shadow-[0_12px_40px_rgba(0,0,0,0.18)]">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-1 md:col-span-2">
+                                    <span class="text-[10px] font-black text-white/50 uppercase tracking-widest italic">Full Name</span>
+                                    <span class="text-lg font-black text-white uppercase tracking-wide drop-shadow-sm" id="modalNameValue"></span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[10px] font-black text-white/50 uppercase tracking-widest italic">Extension</span>
+                                    <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalExtension"></span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[10px] font-black text-white/50 uppercase tracking-widest italic">LRN</span>
+                                    <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalLrn"></span>
+                                </div>
+                            </div>
 
-                {{-- Document Assets --}}
-                <div class="space-y-6 pt-6">
-                    <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Required Documents</h3>
+                            <div class="pt-5 border-t border-white/5">
+                                <h4 class="text-[10px] font-black text-cyan-300 uppercase tracking-[0.2em] italic mb-4">Identity Details</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Reference ID</span>
+                                            <span class="text-sm font-extrabold text-cyan-300 uppercase drop-shadow-sm" id="modalAppId"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Applied On</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalSubmitted"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Gender</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalGender"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Birth Date</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalDob"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Age</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalAge"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Birthplace</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalBirthplace"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-5 border-t border-white/5">
+                                <h4 class="text-[10px] font-black text-cyan-300 uppercase tracking-[0.2em] italic mb-4">Contact & Background</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div class="flex flex-col gap-1 sm:col-span-2">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Email Address</span>
+                                            <span class="text-sm font-extrabold text-white lowercase drop-shadow-sm" id="modalEmail"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Contact Number</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalContactNumber"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Facebook Account</span>
+                                            <span class="text-sm font-extrabold text-white drop-shadow-sm" id="modalFacebook"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Religion / Church</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalReligionChurch"></span>
+                                    </div>
+                                    @if($app->level === 'shs')
+                                    <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Junior High School</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalJuniorHigh"></span>
+                                    </div>
+                                    @endif
+                                    <div class="flex flex-col gap-1 sm:col-span-2">
+                                            <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Address</span>
+                                            <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalAddress"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-5 border-t border-white/5">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Health Concerns</span>
+                                    <p class="text-sm font-semibold text-white/85 leading-relaxed" id="modalHealthConcerns"></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="modalDocuments">
-                        {{-- Injected via JS --}}
+
+                    {{-- Row 3: Guardian Information --}}
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em] drop-shadow-sm">Guardian Information</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/[0.04] border border-white/10 rounded-[32px] p-8 shadow-[0_12px_40px_rgba(0,0,0,0.18)]">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Father's Name</span>
+                                <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalFather"></span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Mother's Name</span>
+                                <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalMother"></span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Guardian Name</span>
+                                <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalGuardian"></span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] font-black text-white/45 uppercase tracking-widest italic">Emergency Contact</span>
+                                <span class="text-sm font-extrabold text-white uppercase drop-shadow-sm" id="modalContact"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Row 4: Required Documents --}}
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em] drop-shadow-sm">Required Documents</h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6" id="modalDocuments">
+                            {{-- Injected via JS --}}
+                        </div>
                     </div>
                 </div>
 
@@ -438,17 +487,27 @@
         currentApplicationId = app.id;
         document.getElementById('modalTitle').innerText = 'Application Details #' + String(app.id).padStart(5, '0');
         const middle = app.middle_name ? ' ' + app.middle_name : '';
-        const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle;
+        const extension = app.extension ? ' ' + app.extension : '';
+        const fullName = (app.last_name || '') + ', ' + (app.first_name || '') + middle + extension;
+        const valueOrNA = (value) => value && String(value).trim() !== '' ? value : 'N/A';
 
         // Student Profile section
         document.getElementById('modalNameValue').innerText = fullName;
-        document.getElementById('modalEmail').innerText = app.email || 'N/A';
+        document.getElementById('modalExtension').innerText = valueOrNA(app.extension);
+        document.getElementById('modalEmail').innerText = valueOrNA(app.email);
         document.getElementById('modalAppId').innerText = 'REF-' + String(app.id).padStart(5, '0');
         document.getElementById('modalSubmitted').innerText = new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('modalDob').innerText = app.birth_date || 'N/A';
-        document.getElementById('modalAge').innerText = app.age || 'N/A';
-        document.getElementById('modalGender').innerText = app.gender || 'N/A';
-        document.getElementById('modalAddress').innerText = app.address_full || 'N/A';
+        document.getElementById('modalDob').innerText = valueOrNA(app.birth_date);
+        document.getElementById('modalAge').innerText = valueOrNA(app.age);
+        document.getElementById('modalLrn').innerText = valueOrNA(app.lrn);
+        document.getElementById('modalGender').innerText = valueOrNA(app.gender);
+        document.getElementById('modalContactNumber').innerText = valueOrNA(app.contact);
+        document.getElementById('modalFacebook').innerText = valueOrNA(app.facebook_account);
+        document.getElementById('modalReligionChurch').innerText = valueOrNA(app.religion_church);
+        document.getElementById('modalBirthplace').innerText = valueOrNA(app.birthplace);
+        document.getElementById('modalAddress').innerText = valueOrNA(app.address_full);
+        document.getElementById('modalJuniorHigh').innerText = valueOrNA(app.junior_high_school);
+        document.getElementById('modalHealthConcerns').innerText = valueOrNA(app.health_concerns);
 
         // Program details
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A';

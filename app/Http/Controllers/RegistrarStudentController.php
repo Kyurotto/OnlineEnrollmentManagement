@@ -121,4 +121,45 @@ class RegistrarStudentController extends Controller
 
         return back()->with('success', 'Student record deleted.');
     }
+
+    /**
+     * Display Student Profile Bank (Registry of enrolled students only).
+     */
+    public function profileBank()
+    {
+        // Fetch only enrolled students for the profile bank
+        $students = User::where('role', 'student')
+                        ->whereIn('id', Enrollment::where('status', 'Enrolled')->pluck('user_id')->toArray())
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(15);
+
+        foreach ($students as $student) {
+            $enrollment = Enrollment::with('course')
+                                    ->where('user_id', $student->id)
+                                    ->orderBy('created_at', 'desc')
+                                    ->first();
+            
+            // Program information
+            if ($enrollment && $enrollment->course && !empty($enrollment->course->name)) {
+                $student->program = $enrollment->course->name;
+            } elseif ($enrollment && !empty($enrollment->course_code)) {
+                $student->program = $enrollment->course_code;
+            } else {
+                $student->program = 'N/A';
+            }
+
+            // Year Level
+            if ($enrollment && !empty($enrollment->year_level)) {
+                $parts = explode('|', $enrollment->year_level);
+                $student->year_display = trim($parts[0]);
+            } else {
+                $student->year_display = 'N/A';
+            }
+
+            // Enrollment Status
+            $student->enrollment_status = $enrollment ? $enrollment->status : 'No Enrollment';
+        }
+
+        return view('registrar.students.profile-bank', compact('students'));
+    }
 }

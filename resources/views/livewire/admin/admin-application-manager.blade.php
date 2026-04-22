@@ -133,7 +133,12 @@
                             <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
                             <td class="py-6 px-8">
                                 <div class="flex flex-col">
-                                    <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider block font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                        @if($application->extension)
+                                        <span class="text-sm font-bold text-white/40 italic">{{ $application->extension }}</span>
+                                        @endif
+                                    </div>
                                     <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
                                 </div>
                             </td>

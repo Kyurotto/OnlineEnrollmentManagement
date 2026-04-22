@@ -31,6 +31,9 @@ class RegistrarStudentManager extends Component
 
     public function render()
     {
+        // Map field names if needed (already using latest_enrollments in blade)
+        $sortField = $this->sortField;
+        
         $query = User::query()
             ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level', 'courses.course_name')
             ->joinSub(
@@ -56,7 +59,7 @@ class RegistrarStudentManager extends Component
             });
         }
 
-        $students = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $students = $query->orderBy($sortField, $this->sortDirection)->paginate(10);
 
         foreach ($students as $student) {
             // Program sync: Displays only the Course Code (e.g., BSIS)
@@ -69,6 +72,10 @@ class RegistrarStudentManager extends Component
             } else {
                 $student->year_display = 'N/A';
             }
+            
+            // Level: Determine if SHS or College based on course code
+            $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+            $student->level = in_array($student->course_code, $shsStrands) ? 'SHS' : 'COLLEGE';
             
             $student->display_email = $student->email;
             $student->display_account = $student->username ?: 'N/A';

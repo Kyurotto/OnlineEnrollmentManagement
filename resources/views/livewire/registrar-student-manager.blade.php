@@ -53,11 +53,23 @@
                             </div>
                         </th>
                         <th class="py-6 px-8">ACCOUNT DETAILS</th>
-                        <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.course_code')">
+                        <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('latest_enrollments.course_code')">
                             <div class="flex items-center justify-center gap-2">
                                 ACADEMIC TRACK
-                                <span class="transition-opacity {{ $sortField === 'enrollments.course_code' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
-                                    @if($sortField === 'enrollments.course_code' && $sortDirection === 'asc')
+                                <span class="transition-opacity {{ $sortField === 'latest_enrollments.course_code' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'latest_enrollments.course_code' && $sortDirection === 'asc')
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                                    @else
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    @endif
+                                </span>
+                            </div>
+                        </th>
+                        <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('latest_enrollments.year_level')">
+                            <div class="flex items-center justify-center gap-2">
+                                LEVEL
+                                <span class="transition-opacity {{ $sortField === 'latest_enrollments.year_level' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                                    @if($sortField === 'latest_enrollments.year_level' && $sortDirection === 'asc')
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
                                     @else
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
@@ -98,6 +110,11 @@
                                 <span class="text-blue-400 uppercase tracking-widest font-black text-[10px]">{{ $student->program }}</span>
                             </td>
                             <td class="py-6 px-8 text-center">
+                                <span class="px-3 py-1 rounded text-[10px] font-black uppercase tracking-tighter border {{ $student->level === 'SHS' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20' }}">
+                                    {{ $student->level ?? 'N/A' }}
+                                </span>
+                            </td>
+                            <td class="py-6 px-8 text-center">
                                 <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
                             </td>
                             <td class="py-6 px-8">
@@ -123,7 +140,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-20 text-center">
+                            <td colspan="8" class="py-20 text-center">
                                 <div class="flex flex-col items-center opacity-20">
                                     <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                     <span class="text-[10px] font-black uppercase tracking-[0.3em] italic">No Students Documented</span>

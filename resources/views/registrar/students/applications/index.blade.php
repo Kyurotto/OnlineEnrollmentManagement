@@ -10,7 +10,7 @@
         <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
             <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Applications</h2>
+                    <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Application Request</h2>
                     <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1"></p>
                 </div>
                 <div class="flex items-center gap-4">
@@ -39,7 +39,12 @@
                             <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
                             <td class="py-6 px-8">
                                 <div class="flex flex-col">
-                                    <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider block font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                        @if($application->extension)
+                                        <span class="text-sm font-bold text-white/40 italic">{{ $application->extension }}</span>
+                                        @endif
+                                    </div>
                                     <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
                                 </div>
                             </td>
