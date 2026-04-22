@@ -138,12 +138,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">House No. / Unit</label>
-                    <p class="text-white font-semibold">{{ $enrollment->house_no ?? 'N/A' }}</p>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Street / Road</label>
-                    <p class="text-white font-semibold">{{ $enrollment->street ?? 'N/A' }}</p>
+                    <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Prk. / Blk. Lot / Vill.</label>
+                    <p class="text-white font-semibold">{{ $enrollment->prk_blk_lot_vill ?? 'N/A' }}</p>
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Barangay</label>

@@ -173,28 +173,34 @@ class RegistrarStudentManager extends Component
     public function render()
     {
 
+        // Map field names if needed (already using latest_enrollments in blade)
+        $sortField = $this->sortField;
+        
+
+
 
         $optionalEnrollmentColumns = [
-            'promissory_reason',
-            'is_regular',
-            'classification_reason',
-            'credentials_verified',
-            'student_type',
-            'physical_documents_received',
-        ];
+    'promissory_reason',
+    'is_regular',
+    'classification_reason',
+    'credentials_verified',
+    'student_type',
+    'physical_documents_received',
+];
+$availableColumns = collect($optionalEnrollmentColumns)
+    ->mapWithKeys(fn($column) => [$column => Schema::hasColumn('enrollments', $column)])
+    ->all();
+$enrollmentSelect = ['user_id', 'course_code', 'year_level', 'status', 'id'];
+foreach ($optionalEnrollmentColumns as $column) {
+    $enrollmentSelect[] = $availableColumns[$column]
+        ? $column
+        : DB::raw("NULL as {$column}");
+}
+$hasIsRegular = $availableColumns['is_regular'] ?? false;
 
-        $availableColumns = collect($optionalEnrollmentColumns)
-            ->mapWithKeys(fn($column) => [$column => Schema::hasColumn('enrollments', $column)])
-            ->all();
+// Map field names if needed (already using latest_enrollments in blade)
+$sortField = $this->sortField;
 
-        $enrollmentSelect = ['user_id', 'course_code', 'year_level', 'status', 'id'];
-        foreach ($optionalEnrollmentColumns as $column) {
-            $enrollmentSelect[] = $availableColumns[$column]
-                ? $column
-                : DB::raw("NULL as {$column}");
-        }
-
-        $hasIsRegular = $availableColumns['is_regular'] ?? false;
 
 
 
@@ -228,14 +234,19 @@ class RegistrarStudentManager extends Component
             });
         }
 
-        // Filter by classification
-        if ($this->filter === 'regular' && $hasIsRegular) {
-            $query->whereRaw('latest_enrollments.is_regular = 1');
-        } elseif ($this->filter === 'irregular' && $hasIsRegular) {
-            $query->whereRaw('latest_enrollments.is_regular = 0');
-        }
 
-        $students = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $students = $query->orderBy($sortField, $this->sortDirection)->paginate(10);
+
+        // Filter by classification
+if ($this->filter === 'regular' && $hasIsRegular) {
+    $query->whereRaw('latest_enrollments.is_regular = 1');
+} elseif ($this->filter === 'irregular' && $hasIsRegular) {
+    $query->whereRaw('latest_enrollments.is_regular = 0');
+}
+
+$students = $query->orderBy($sortField, $this->sortDirection)->paginate(10);
+
+
 
         // Stats
 
@@ -271,7 +282,16 @@ class RegistrarStudentManager extends Component
                 $student->year_display = 'N/A';
             }
 
+            
+            // Level: Determine if SHS or College based on course code
+            $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+            $student->level = in_array($student->course_code, $shsStrands) ? 'SHS' : 'COLLEGE';
+
+            $student->display_email = $student->email;
+
+
             $student->display_email   = $student->email;
+
             $student->display_account = $student->username ?: 'N/A';
 
             // Compute warning flags inline

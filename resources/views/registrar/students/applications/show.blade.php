@@ -81,7 +81,12 @@
                             {{-- Full Name Section --}}
                             <div class="flex flex-col gap-1">
                                 <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
-                                <span class="text-xl font-black text-white uppercase italic tracking-tight">{{ $application->last_name ?? 'N/A' }}, {{ $application->first_name ?? 'N/A' }} {{ $application->middle_name ?? '' }}</span>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-xl font-black text-white uppercase italic tracking-tight">{{ $application->last_name ?? 'N/A' }}, {{ $application->first_name ?? 'N/A' }} {{ $application->middle_name ?? '' }}</span>
+                                    @if($application->extension)
+                                    <span class="text-sm font-bold text-white/40 italic">{{ $application->extension }}</span>
+                                    @endif
+                                </div>
                             </div>
 
                             {{-- Basic Information --}}
@@ -99,13 +104,25 @@
                                     <span class="text-sm font-bold text-white/60">{{ $application->age ?? 'N/A' }} Years</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">LRN</span>
+                                    <span class="text-sm font-bold text-white/60">{{ $application->lrn ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+
+                            {{-- Religion & Church --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
+                                <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Religion</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->religion ?? 'N/A' }}</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Religious Affiliation</span>
+                                    <span class="text-sm font-bold text-white/60">{{ $application->religion_church ?? 'N/A' }}</span>
                                 </div>
                             </div>
 
                             {{-- Contact & Email --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/5">
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Email Address</span>
                                     <span class="text-sm font-bold text-white/60 lowercase">{{ $application->email ?? 'N/A' }}</span>
@@ -113,6 +130,10 @@
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Contact Number</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->contact ?? 'N/A' }}</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Facebook Account</span>
+                                    <span class="text-sm font-bold text-white/60">{{ $application->facebook_account ?? 'N/A' }}</span>
                                 </div>
                             </div>
 
@@ -127,6 +148,17 @@
                                     <span class="text-sm font-bold text-white/60">{{ $application->address_full ?? 'N/A' }}</span>
                                 </div>
                             </div>
+
+                            {{-- Educational Background (SHS Only) --}}
+                            @if($application->level === 'shs')
+                            <div class="pt-6 border-t border-white/5 space-y-6">
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic">Educational Background</h4>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Junior High School Attended</span>
+                                    <span class="text-sm font-bold text-white/60">{{ $application->junior_high_school ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+                            @endif
 
                             {{-- Family Information --}}
                             <div class="pt-6 border-t border-white/5 space-y-6">
@@ -156,6 +188,17 @@
                                 </div>
                                 @endif
                             </div>
+
+                            {{-- Health Information --}}
+                            @if($application->health_concerns)
+                            <div class="pt-6 border-t border-white/5 space-y-6">
+                                <h4 class="text-[10px] font-black text-pink-400/60 uppercase tracking-[0.2em] italic">Health Information</h4>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Health Concerns / Medical Issues</span>
+                                    <p class="text-sm font-bold text-white/60 leading-relaxed">{{ $application->health_concerns }}</p>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
