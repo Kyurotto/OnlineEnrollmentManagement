@@ -55,30 +55,11 @@ class PaymentManager extends Component
         'editingPaymentId' => ['except' => null, 'as' => 'edit_id'],
     ];
 
-    private function debugLog(string $hypothesisId, string $message, array $data = [], string $runId = 'pre-fix'): void
-    {
-        $payload = [
-            'sessionId' => 'c6b285',
-            'runId' => $runId,
-            'hypothesisId' => $hypothesisId,
-            'location' => 'app/Livewire/PaymentManager.php',
-            'message' => $message,
-            'data' => $data,
-            'timestamp' => (int) round(microtime(true) * 1000),
-        ];
 
-        @file_put_contents(base_path('debug-c6b285.log'), json_encode($payload) . PHP_EOL, FILE_APPEND);
-    }
 
     public function mount()
     {
-        // #region agent log
-        $this->debugLog('H1', 'PaymentManager::mount route context', [
-            'route_name' => request()->route()?->getName(),
-            'is_college_route' => request()->routeIs('cashier.payments.college'),
-            'is_shs_route' => request()->routeIs('cashier.payments.shs'),
-        ]);
-        // #endregion
+
 
         if (request()->routeIs('cashier.payments.college')) {
             $this->level = 'college';
@@ -86,11 +67,7 @@ class PaymentManager extends Component
             $this->level = 'shs';
         }
 
-        // #region agent log
-        $this->debugLog('H2', 'PaymentManager::mount resolved level', [
-            'level' => $this->level,
-        ]);
-        // #endregion
+
 
         if (request()->has('showModal') && request('showModal') === 'true') {
             $this->openCreateModal();
@@ -371,14 +348,7 @@ class PaymentManager extends Component
 
     public function render()
     {
-        // #region agent log
-        $this->debugLog('H3', 'PaymentManager::render entered', [
-            'level' => $this->level,
-            'filterCourse' => $this->filterCourse,
-            'statusFilter' => $this->statusFilter,
-            'search_set' => $this->search !== '',
-        ]);
-        // #endregion
+
 
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
@@ -434,12 +404,7 @@ class PaymentManager extends Component
             $enrollmentQuery->whereNotIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
         }
 
-        // #region agent log
-        $this->debugLog('H4', 'Enrollment branch and filter list used', [
-            'branch' => $branch,
-            'shs_codes' => ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'],
-        ]);
-        // #endregion
+
 
         // Get the latest enrollment for each student, prioritizing those with vouchers set by registrar
         $allEnrollments = $enrollmentQuery
@@ -458,14 +423,7 @@ class PaymentManager extends Component
             })
             ->values();
 
-        // #region agent log
-        $this->debugLog('H5', 'Filtered enrollment result snapshot', [
-            'all_enrollments_count' => $allEnrollments->count(),
-            'unique_students_count' => $enrolledStudents->count(),
-            'sample_course_codes' => $enrolledStudents->take(8)->pluck('course_code')->values()->all(),
-            'sample_levels' => $enrolledStudents->take(8)->pluck('level')->values()->all(),
-        ]);
-        // #endregion
+
 
         $students = User::where('role', 'student')->orderBy('name')->get();
 

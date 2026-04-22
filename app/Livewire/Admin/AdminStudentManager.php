@@ -104,8 +104,12 @@ class AdminStudentManager extends Component
         $optionalEnrollmentColumns = ['level', 'promissory_reason', 'is_regular', 'classification_reason', 'student_type'];
         $enrollmentSelect = ['user_id', 'course_code', 'year_level', 'status', 'id'];
 
+        $availableColumns = collect($optionalEnrollmentColumns)
+            ->mapWithKeys(fn($column) => [$column => Schema::hasColumn('enrollments', $column)])
+            ->all();
+
         foreach ($optionalEnrollmentColumns as $column) {
-            $enrollmentSelect[] = Schema::hasColumn('enrollments', $column)
+            $enrollmentSelect[] = $availableColumns[$column]
                 ? $column
                 : DB::raw("NULL as {$column}");
         }

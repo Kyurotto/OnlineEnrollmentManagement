@@ -32,20 +32,7 @@ class RegistrarStudentManager extends Component
         $this->filter = $this->normalizeFilter($this->filter);
     }
 
-    private function debugLog(string $hypothesisId, string $message, array $data = [], string $runId = 'pre-fix'): void
-    {
-        $payload = [
-            'sessionId' => 'c6b285',
-            'runId' => $runId,
-            'hypothesisId' => $hypothesisId,
-            'location' => 'app/Livewire/RegistrarStudentManager.php',
-            'message' => $message,
-            'data' => $data,
-            'timestamp' => (int) round(microtime(true) * 1000),
-        ];
 
-        @file_put_contents(base_path('debug-c6b285.log'), json_encode($payload) . PHP_EOL, FILE_APPEND);
-    }
 
     public function setFilter($value) {
         $this->filter = $this->normalizeFilter($value);
@@ -185,14 +172,7 @@ class RegistrarStudentManager extends Component
 
     public function render()
     {
-        // #region agent log
-        $this->debugLog('H1', 'RegistrarStudentManager::render entered', [
-            'filter' => $this->filter,
-            'sortField' => $this->sortField,
-        ]);
-        // #endregion
 
-        $hasIsRegular = Schema::hasColumn('enrollments', 'is_regular');
 
         $optionalEnrollmentColumns = [
             'promissory_reason',
@@ -202,36 +182,21 @@ class RegistrarStudentManager extends Component
             'student_type',
             'physical_documents_received',
         ];
+
+        $availableColumns = collect($optionalEnrollmentColumns)
+            ->mapWithKeys(fn($column) => [$column => Schema::hasColumn('enrollments', $column)])
+            ->all();
+
         $enrollmentSelect = ['user_id', 'course_code', 'year_level', 'status', 'id'];
         foreach ($optionalEnrollmentColumns as $column) {
-            $enrollmentSelect[] = Schema::hasColumn('enrollments', $column)
+            $enrollmentSelect[] = $availableColumns[$column]
                 ? $column
                 : DB::raw("NULL as {$column}");
         }
 
-        // #region agent log
-        $this->debugLog('H5', 'Schema-safe enrollment select prepared', [
-            'has_is_regular' => $hasIsRegular,
-            'enrollment_select_count' => count($enrollmentSelect),
-        ], 'post-fix');
-        // #endregion
+        $hasIsRegular = $availableColumns['is_regular'] ?? false;
 
-        // #region agent log
-        $this->debugLog('H2', 'Enrollment optional column presence', [
-            'is_regular' => Schema::hasColumn('enrollments', 'is_regular'),
-            'classification_reason' => Schema::hasColumn('enrollments', 'classification_reason'),
-            'credentials_verified' => Schema::hasColumn('enrollments', 'credentials_verified'),
-            'student_type' => Schema::hasColumn('enrollments', 'student_type'),
-            'physical_documents_received' => Schema::hasColumn('enrollments', 'physical_documents_received'),
-            'promissory_reason' => Schema::hasColumn('enrollments', 'promissory_reason'),
-        ]);
-        // #endregion
 
-        // #region agent log
-        $this->debugLog('H3', 'Hardcoded render subquery columns include optional fields', [
-            'subquery_columns' => ['promissory_reason', 'is_regular', 'classification_reason', 'credentials_verified', 'student_type', 'physical_documents_received'],
-        ]);
-        // #endregion
 
         $query = User::query()
             ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level',
@@ -273,11 +238,7 @@ class RegistrarStudentManager extends Component
         $students = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
         // Stats
-        // #region agent log
-        $this->debugLog('H4', 'Stats subquery hardcodes is_regular', [
-            'stats_columns' => ['user_id', 'id', 'is_regular', 'status'],
-        ]);
-        // #endregion
+
 
         $baseStats = User::query()
             ->joinSub(
