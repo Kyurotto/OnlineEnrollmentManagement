@@ -21,6 +21,18 @@ class PaymentManager extends Component
     public $status = 'All statuses';
     public $sortField = 'payments.id';
     public $sortDirection = 'desc';
+    public $level = null;
+
+    private const SHS_STRANDS = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+
+    public function mount()
+    {
+        if (request()->routeIs('admin.payments.college')) {
+            $this->level = 'college';
+        } elseif (request()->routeIs('admin.payments.shs')) {
+            $this->level = 'shs';
+        }
+    }
 
     public function resetFilters()
     {
@@ -169,6 +181,13 @@ class PaymentManager extends Component
             ->leftJoin('users', 'payments.user_id', '=', 'users.id')
             ->with(['user', 'application']);
 
+        // Filter by level (SHS or College)
+        if ($this->level === 'shs') {
+            $query->whereIn('enrollments.course_code', self::SHS_STRANDS);
+        } elseif ($this->level === 'college') {
+            $query->whereNotIn('enrollments.course_code', self::SHS_STRANDS);
+        }
+
         if ($this->status != 'All statuses') {
             $query->where('payments.status', $this->status);
         }
@@ -205,9 +224,28 @@ class PaymentManager extends Component
         $payments = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
         $students = User::where('role', 'student')->orderBy('name')->get();
 
+        // Build dynamic program options based on level
+        $programOptions = collect();
+        if ($this->level === 'shs') {
+            $programOptions = \App\Models\Course::where('type', 'shs')->get();
+        } elseif ($this->level === 'college') {
+            $programOptions = \App\Models\Course::where('type', 'program')->get();
+        } else {
+            $programOptions = \App\Models\Course::get();
+        }
+
+        // Determine the page title
+        $pageTitle = match($this->level) {
+            'shs' => 'SHS Payment Management',
+            'college' => 'College Payment Management',
+            default => 'Payment Management',
+        };
+
         return view('livewire.admin.admin-payment-manager', [
             'payments' => $payments,
-            'students' => $students
-        ])->layout('components.layouts.admin', ['title' => 'Payment Management']);
+            'students' => $students,
+            'programOptions' => $programOptions,
+            'pageTitle' => $pageTitle,
+        ])->layout('components.layouts.admin', ['title' => $pageTitle]);
     }
 }

@@ -15,7 +15,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                 </div>
                 <div>
-                    <h3 class="font-black text-white text-xl leading-none uppercase tracking-tight">Payments Management</h3>
+                    <h3 class="font-black text-white text-xl leading-none uppercase tracking-tight">{{ $pageTitle }}</h3>
                     <p class="text-xs text-white/30 font-bold uppercase tracking-widest mt-2">Manage and Verify Student Collections</p>
                 </div>
             </div>
@@ -35,8 +35,8 @@
                     <div class="w-full sm:w-48 relative">
                         <select wire:model.live="filter_course" class="w-full bg-white/5 bg-none border border-white/10 rounded-xl py-3 px-5 text-xs text-white/60 font-black uppercase tracking-widest focus:border-emerald-500/50 outline-none cursor-pointer appearance-none transition-all shadow-inner">
                             <option value="ALL" class="bg-[#0d1f3c]">All Programs</option>
-                            @foreach(['BSIS-1', 'BSIS-2', 'BSIS-3', 'BSIS-4', 'DIT-1', 'DIT-2', 'DIT-3', 'DIT-4'] as $course)
-                                <option value="{{ $course }}" class="bg-[#0d1f3c]">{{ str_replace('-', ' ', $course) }}</option>
+                            @foreach($programOptions as $program)
+                                <option value="{{ $program->course_code }}" class="bg-[#0d1f3c]">{{ $program->course_code }} — {{ $program->course_name }}</option>
                             @endforeach
                         </select>
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
@@ -113,7 +113,6 @@
                             </div>
                         </th>
                         <th class="py-5 px-5 text-center font-black">Status</th>
-
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -148,7 +147,6 @@
                                 <span class="bg-amber-500/10 text-amber-400 text-[10px] font-black px-3 py-1 rounded-full border border-amber-500/20 shadow-sm uppercase tracking-[0.1em]">Pending</span>
                             @endif
                         </td>
-
                     </tr>
                     @empty
                     <tr>
