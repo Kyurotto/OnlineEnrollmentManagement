@@ -16,10 +16,11 @@ class StudentPaymentManager extends Component
     public $studentLevel; // Display name
     public $tuitionFee = 0;
     public $miscellaneousFees = 0;
+    public $cashierDiscount = 0;
     public $totalAssessment = 0;
     public $totalPaymentsMade = 0;
-    public $voucherType = null; // 'free_tuition', 'discounted', or null
-    public $hasEnrollment = false; // Track if student has an enrollment
+    public $voucherType = null;
+    public $hasEnrollment = false;
 
     // Level comparison properties
     public $shsFees = ['tuitionFee' => 0, 'miscellaneousFees' => 0];
@@ -72,10 +73,15 @@ class StudentPaymentManager extends Component
 
         $this->tuitionFee = (float)($assessment['tuitionFee'] ?? 0);
         $this->miscellaneousFees = (float)($assessment['miscellaneousFees'] ?? 0);
-        $this->totalAssessment = $this->tuitionFee + $this->miscellaneousFees;
+
+        // Load cashier-applied discount from enrollment
+        $user = Auth::user();
+        $latestEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
+        $this->cashierDiscount = (float) ($latestEnrollment->cashier_discount ?? 0);
+
+        $this->totalAssessment = max(0, $this->tuitionFee + $this->miscellaneousFees - $this->cashierDiscount);
 
         // Calculate total payments made by student
-        $user = Auth::user();
         $this->totalPaymentsMade = (float)Payment::where('user_id', $user->id)
             ->where('status', 'Paid')
             ->sum('amount');
@@ -138,6 +144,7 @@ class StudentPaymentManager extends Component
             'enrollment' => $enrollment,
             'tuitionFee' => $this->tuitionFee,
             'miscellaneousFees' => $this->miscellaneousFees,
+            'cashierDiscount' => $this->cashierDiscount,
             'totalAssessment' => $this->totalAssessment,
             'totalPaymentsMade' => $this->totalPaymentsMade,
             'voucherType' => $this->voucherType,

@@ -28,6 +28,7 @@ class PaymentManager extends Component
 
     // New properties for sidebar layout
     public $activeTab = 'assessment';
+    public $isDropPayMode = false;
     public $selectedStudentId = null;
     public $selectedStudent = null;
     public $enrollment = null;
@@ -128,6 +129,9 @@ class PaymentManager extends Component
     {
         $this->selectedStudentId = $studentId;
         $this->selectedStudent = User::findOrFail($studentId);
+        $this->appliedDiscount = 0;
+        $this->discountAmount  = 0;
+        $this->isDropPayMode   = false; // always reset to Payment mode on student change
         
         // Use provided enrollment ID or get the latest enrollment
         if ($enrollmentId) {
@@ -152,19 +156,16 @@ class PaymentManager extends Component
             $this->tuitionFees = $assessment['tuitionFee'] ?? 0;
             $this->miscellaneousFees = $assessment['miscellaneousFees'] ?? 0;
             $this->totalAssessment = $this->tuitionFees + $this->miscellaneousFees;
-            
-            // Handle voucher discount
-            if ($this->enrollment->voucher_type === 'free_tuition') {
-                $this->appliedDiscount = $this->tuitionFees;
-            } elseif ($this->enrollment->voucher_type === 'discounted') {
-                $this->appliedDiscount = ($this->totalAssessment * 0.15); // 15% discount
-            } else {
-                $this->appliedDiscount = 0; // Reset discount if no voucher
-            }
-            
+
+            // Load persisted discount from enrollment
+            $this->appliedDiscount = (float) ($this->enrollment->cashier_discount ?? 0);
+
+            // Voucher is indicator only — no automatic discount applied
+            // Cashier must manually input discount amount
+
             // Get payment history
             $this->paymentHistory = Payment::where('user_id', $studentId)->orderBy('created_at', 'desc')->get();
-            
+
             // Calculate balance
             $totalPaid = Payment::where('user_id', $studentId)->where('status', 'Paid')->sum('amount');
             $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
@@ -181,6 +182,16 @@ class PaymentManager extends Component
         $this->activeTab = 'assessment';
     }
 
+    public function setPaymentMode()
+    {
+        $this->isDropPayMode = false;
+    }
+
+    public function setDropPayMode()
+    {
+        $this->isDropPayMode = true;
+    }
+
     public function applyDiscount()
     {
         if (!$this->discountAmount || $this->discountAmount < 0) {
@@ -194,16 +205,30 @@ class PaymentManager extends Component
         }
 
         $this->appliedDiscount = $this->discountAmount;
+
+        // Persist discount to enrollment so student can see it
+        if ($this->enrollment) {
+            $this->enrollment->cashier_discount = $this->appliedDiscount;
+            $this->enrollment->save();
+        }
+
         $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
         $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
         $this->discountAmount = 0;
-        session()->flash('success', 'Discount applied successfully.');
+        session()->flash('success', 'Discount of ₱' . number_format($this->appliedDiscount, 2) . ' applied successfully.');
     }
 
     public function removeDiscount()
     {
         $this->appliedDiscount = 0;
         $this->discountAmount = 0;
+
+        // Remove persisted discount from enrollment
+        if ($this->enrollment) {
+            $this->enrollment->cashier_discount = 0;
+            $this->enrollment->save();
+        }
+
         $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
         $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
         session()->flash('success', 'Discount removed successfully.');
@@ -286,13 +311,14 @@ class PaymentManager extends Component
         $latestEnrollment = Enrollment::where('user_id', $this->selectedStudentId)->latest()->first();
 
         $payment = Payment::create([
-            'user_id' => $this->selectedStudentId,
-            'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
-            'amount' => $this->amount,
-            'transaction_id' => $this->reference_no ?? 'CASH-' . time(),
-            'status' => 'Paid',
-            'payment_method' => $this->payment_type,
-            'payment_date' => now(),
+            'user_id'          => $this->selectedStudentId,
+            'application_id'   => $latestEnrollment ? $latestEnrollment->id : null,
+            'amount'           => $this->amount,
+            'transaction_id'   => $this->reference_no ?? 'CASH-' . time(),
+            'status'           => 'Paid',
+            'payment_method'   => $this->payment_type,
+            'payment_date'     => now(),
+            'is_drop_payment'  => $this->isDropPayMode,
         ]);
 
         if ($payment->application_id) {
@@ -307,7 +333,8 @@ class PaymentManager extends Component
         // Reset form
         $this->amount = '';
         $this->reference_no = '';
-        session()->flash('success', 'Payment of ₱' . number_format($payment->amount, 2) . ' processed successfully.');
+        $label = $this->isDropPayMode ? 'Drop payment' : 'Payment';
+        session()->flash('success', "{$label} of ₱" . number_format($payment->amount, 2) . ' processed successfully.');
     }
 
     public function updateStatus($id, $status)
@@ -428,19 +455,20 @@ class PaymentManager extends Component
         $students = User::where('role', 'student')->orderBy('name')->get();
 
         return view('livewire.cashier-payment-manager-new', [
-            'payments' => $enrolledStudents,
-            'students' => $students,
-            'activeTab' => $this->activeTab,
-            'selectedStudentId' => $this->selectedStudentId,
-            'selectedStudent' => $this->selectedStudent,
-            'enrollment' => $this->enrollment,
-            'selectedVoucherType' => $this->selectedVoucherType,
-            'paymentHistory' => $this->paymentHistory,
-            'tuitionFees' => $this->tuitionFees,
-            'miscellaneousFees' => $this->miscellaneousFees,
-            'appliedDiscount' => $this->appliedDiscount,
-            'totalAssessment' => $this->totalAssessment,
-            'currentBalance' => $this->currentBalance,
+            'payments'           => $enrolledStudents,
+            'students'           => $students,
+            'activeTab'          => $this->activeTab,
+            'isDropPayMode'      => $this->isDropPayMode,
+            'selectedStudentId'  => $this->selectedStudentId,
+            'selectedStudent'    => $this->selectedStudent,
+            'enrollment'         => $this->enrollment,
+            'selectedVoucherType'=> $this->selectedVoucherType,
+            'paymentHistory'     => $this->paymentHistory,
+            'tuitionFees'        => $this->tuitionFees,
+            'miscellaneousFees'  => $this->miscellaneousFees,
+            'appliedDiscount'    => $this->appliedDiscount,
+            'totalAssessment'    => $this->totalAssessment,
+            'currentBalance'     => $this->currentBalance,
         ])->layout('components.layouts.cashier', ['title' => 'Manage Payments']);
     }
 }

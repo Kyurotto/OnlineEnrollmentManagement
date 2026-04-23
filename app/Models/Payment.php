@@ -14,10 +14,11 @@ class Payment extends Model
         'application_id',
         'user_id',
         'amount',
-        'status', // Replaced 'payment_status' with 'status'
-        'installment_type', // Prelim, Midterm, Final, or Full Payment
-        'down_payment_total', // Total downpayment amount
-        'is_installment', // Flag to identify installment payments
+        'status',
+        'installment_type',
+        'down_payment_total',
+        'is_installment',
+        'is_drop_payment',
         'payment_date',
         'transaction_id',
         'proof',

@@ -79,6 +79,20 @@
                          <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Students</span>
                      </a>
 
+                    {{-- Dropped Students --}}
+                    <a href="{{ route('registrar.dropped.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('registrar.dropped.*') ? 'background: rgba(239,68,68,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('registrar.dropped.*') ? 'rgba(239,68,68,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('registrar.dropped.*') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('registrar.dropped.*'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #ef4444;"></span>
+                        @endif
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                        <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Dropped Students</span>
+                    </a>
+
                     {{-- College Applications --}}
                     <a href="{{ route('registrar.applications.college') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
