@@ -114,8 +114,9 @@ class StudentPaymentManager extends Component
             ->latest()
             ->first();
 
-        // Fetch payment history for the student
+        // Fetch payment history for the student (only confirmed/paid)
         $paymentRecords = Payment::where('user_id', $user->id)
+            ->where('status', 'Paid')
             ->orderBy('created_at', 'desc')
             ->get();
 

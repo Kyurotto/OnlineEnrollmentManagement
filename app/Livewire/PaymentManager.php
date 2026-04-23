@@ -162,8 +162,8 @@ class PaymentManager extends Component
                 $this->appliedDiscount = 0; // Reset discount if no voucher
             }
             
-            // Get payment history
-            $this->paymentHistory = Payment::where('user_id', $studentId)->orderBy('created_at', 'desc')->get();
+            // Get payment history (only confirmed paid)
+            $this->paymentHistory = Payment::where('user_id', $studentId)->where('status', 'Paid')->orderBy('created_at', 'desc')->get();
             
             // Calculate balance
             $totalPaid = Payment::where('user_id', $studentId)->where('status', 'Paid')->sum('amount');
@@ -353,7 +353,8 @@ class PaymentManager extends Component
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
             ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
-            ->with(['user', 'application']); 
+            ->with(['user', 'application'])
+            ->where('payments.status', '!=', 'Pending');
 
         if ($this->statusFilter != 'All statuses') {
             $query->where('payments.status', $this->statusFilter);
