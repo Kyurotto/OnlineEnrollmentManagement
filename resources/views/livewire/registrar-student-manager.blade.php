@@ -49,6 +49,70 @@
         <div>
             <table class="w-full text-left border-collapse">
                 <thead>
+<tr class="text-[10px] text-white/20 uppercase tracking-[0.2em] bg-white/[0.02]">
+    <th class="py-6 px-8 cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('users.id')">
+        <div class="flex items-center gap-2">
+            ID
+            <span class="transition-opacity {{ $sortField === 'users.id' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                @if($sortField === 'users.id' && $sortDirection === 'asc')
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                @else
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                @endif
+            </span>
+        </div>
+    </th>
+    <th class="py-6 px-8 cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('last_name')">
+        <div class="flex items-center gap-2">
+            FULL NAME
+            <span class="transition-opacity {{ $sortField === 'last_name' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                @if($sortField === 'last_name' && $sortDirection === 'asc')
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                @else
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                @endif
+            </span>
+        </div>
+    </th>
+    <th class="py-6 px-8">ACCOUNT DETAILS</th>
+    <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('latest_enrollments.course_code')">
+        <div class="flex items-center justify-center gap-2">
+            ACADEMIC TRACK
+            <span class="transition-opacity {{ $sortField === 'latest_enrollments.course_code' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                @if($sortField === 'latest_enrollments.course_code' && $sortDirection === 'asc')
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                @else
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                @endif
+            </span>
+        </div>
+    </th>
+    <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('latest_enrollments.year_level')">
+        <div class="flex items-center justify-center gap-2">
+            LEVEL
+            <span class="transition-opacity {{ $sortField === 'latest_enrollments.year_level' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                @if($sortField === 'latest_enrollments.year_level' && $sortDirection === 'asc')
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                @else
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                @endif
+            </span>
+        </div>
+    </th>
+    <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('year_level')">
+        <div class="flex items-center justify-center gap-2">
+            SECTION
+            <span class="transition-opacity {{ $sortField === 'year_level' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
+                @if($sortField === 'year_level' && $sortDirection === 'asc')
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                @else
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                @endif
+            </span>
+        </div>
+    </th>
+    <th class="py-6 px-8">STATUS</th>
+    <th class="py-6 px-8 text-right">ACTIONS</th>
                     <tr class="text-[9px] text-white/20 uppercase tracking-[0.25em] border-b border-white/5">
                         <th class="py-5 px-3 w-10">ID</th>
                         <th class="py-5 px-3 w-36">Full Name</th>
@@ -58,6 +122,7 @@
                         <th class="py-5 px-3 text-center w-20">Type</th>
                         <th class="py-5 px-3 text-center w-28">Classification</th>
                         <th class="py-5 px-3 text-right w-48">Actions</th>
+
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -87,10 +152,18 @@
                             <td class="py-5 px-3 text-center whitespace-nowrap">
                                 <span class="text-purple-400 font-black text-[10px] uppercase tracking-widest">{{ $student->program }}</span>
                             </td>
+<td class="py-6 px-8 text-center">
+    <span class="px-3 py-1 rounded text-[10px] font-black uppercase tracking-tighter border {{ $student->level === 'SHS' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20' }}">
+        {{ $student->level ?? 'N/A' }}
+    </span>
+</td>
+<td class="py-6 px-8 text-center">
+    <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
 
                             {{-- Year --}}
                             <td class="py-5 px-3 text-center whitespace-nowrap">
                                 <span class="text-white/40 font-black text-[10px] uppercase tracking-widest">{{ $student->year_display }}</span>
+
                             </td>
 
                             {{-- Type --}}
