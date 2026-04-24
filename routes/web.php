@@ -168,6 +168,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/students/{id}/edit', [AdminStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [AdminStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
+    Route::get('/dropped', [\App\Http\Controllers\RegistrarDroppedStudentController::class, 'index'])->name('dropped.index');
     Route::get('/applications', AdminApplicationManager::class)->name('applications.index');
     Route::get('/archives', \App\Livewire\Admin\AdminArchiveManager::class)->name('archives.index');
 

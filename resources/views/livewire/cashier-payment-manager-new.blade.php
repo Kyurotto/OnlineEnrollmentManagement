@@ -49,7 +49,9 @@
                             </div>
                         </div>
                         <div class="text-xs text-white/40 font-bold uppercase tracking-widest">{{ $enrollment->course_code ?? 'N/A' }} • {{ $enrollment->year_level ?? 'N/A' }}</div>
-                        <div class="text-xs text-white/20 font-bold uppercase tracking-widest mt-1">{{ $enrollment->semester ?? 'N/A' }} semester</div>
+                        @if($enrollment->semester)
+                        <div class="text-xs text-white/20 font-bold uppercase tracking-widest mt-1">{{ $enrollment->semester }} semester</div>
+                        @endif
                     </button>
                 @empty
                     <div class="px-6 py-12 text-center">
@@ -89,7 +91,34 @@
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-xs text-white/40 font-bold uppercase tracking-widest truncate">{{ $enrollment->year_level ?? 'N/A' }} | {{ $enrollment->course_code ?? 'N/A' }} | {{ $enrollment->semester ?? 'N/A' }}</p>
+                            <p class="text-xs text-white/40 font-bold uppercase tracking-widest truncate">
+                                {{ $enrollment->year_level ?? 'N/A' }} | {{ $enrollment->course_code ?? 'N/A' }}@if($enrollment->semester) | {{ $enrollment->semester }}@endif
+                            </p>
+                            {{-- Academic Classification --}}
+                            @if($enrollment)
+                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                @php
+                                    $stype = ucfirst(strtolower($enrollment->student_type ?? 'New'));
+                                @endphp
+                                <span class="text-[8px] font-black px-2 py-0.5 rounded-full border uppercase tracking-widest
+                                    {{ $stype === 'Transferee' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' :
+                                       ($stype === 'Shifter'    ? 'text-sky-400 bg-sky-400/10 border-sky-400/20' :
+                                       ($stype === 'Returnee'   ? 'text-violet-400 bg-violet-400/10 border-violet-400/20' :
+                                                                  'text-white/30 bg-white/5 border-white/10')) }}">
+                                    {{ $stype }}
+                                </span>
+                                @if($enrollment->is_regular === null)
+                                    <span class="text-[8px] font-black px-2 py-0.5 rounded-full border border-white/10 text-white/20 uppercase tracking-widest">Not Audited</span>
+                                @elseif($enrollment->is_regular)
+                                    <span class="text-[8px] font-black px-2 py-0.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 text-emerald-400 uppercase tracking-widest">Regular</span>
+                                @else
+                                    <span class="text-[8px] font-black px-2 py-0.5 rounded-full border border-rose-400/20 bg-rose-400/10 text-rose-400 uppercase tracking-widest">Irregular</span>
+                                    @if($enrollment->classification_reason)
+                                        <span class="text-[8px] font-bold text-rose-300/60 italic">— {{ $enrollment->classification_reason }}</span>
+                                    @endif
+                                @endif
+                            </div>
+                            @endif
                         </div>
 <div class="flex items-center gap-3">
     <button wire:click="setPaymentMode"

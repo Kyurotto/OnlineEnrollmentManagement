@@ -7,11 +7,44 @@
         <p class="text-gray-300">Edit payment assessment fees and discount settings</p>
     </div>
 
-    <!-- Success Message -->
+    <!-- Success Modal -->
     @if($successMessage)
-        <div class="mb-6 p-4 rounded-lg flex items-center gap-3" style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #86efac;">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            <span>{{ $successMessage }}</span>
+        <div
+            x-data="{ show: true }"
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-90"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-90"
+            class="fixed inset-0 z-50 flex items-center justify-center"
+            style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);"
+        >
+            <div class="rounded-2xl p-8 text-center max-w-sm w-full mx-4 shadow-2xl" style="background: rgba(13,31,60,0.98); border: 1px solid rgba(34,197,94,0.4);">
+                <!-- Animated checkmark circle -->
+                <div class="flex items-center justify-center mb-5">
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center" style="background: rgba(34,197,94,0.15); border: 2px solid rgba(34,197,94,0.5);">
+                        <svg class="w-10 h-10" style="color: #4ade80;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-2">Assessment Saved!</h3>
+                <p class="mb-1" style="color: #86efac; font-size: 0.95rem;">{{ $successMessage }}</p>
+                <p class="text-sm mb-6" style="color: #64748b;">The updated fees will be applied to all new and existing payments.</p>
+
+                <button
+                    @click="show = false"
+                    class="w-full py-3 rounded-xl font-semibold text-white transition-all duration-200"
+                    style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none; cursor: pointer;"
+                    onmouseover="this.style.opacity='0.9'; this.style.transform='scale(1.02)';"
+                    onmouseout="this.style.opacity='1'; this.style.transform='scale(1)';"
+                >
+                    Got it!
+                </button>
+            </div>
         </div>
     @endif
 

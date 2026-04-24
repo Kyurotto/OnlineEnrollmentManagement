@@ -1,7 +1,7 @@
 <x-layouts.registrar title="Update Student Record">
     @php
         $enrollment = \App\Models\Enrollment::where('user_id', $student->id)
-            ->whereIn('status', ['Enrolled', 'Approved'])
+            ->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
             ->latest()
             ->first();
     @endphp
@@ -97,7 +97,12 @@
                         <select name="classification_reason" id="classificationReasonSelect"
                             class="w-full bg-white/[0.03] text-white border border-white/10 py-4 px-5 rounded-2xl outline-none text-sm font-bold tracking-wide focus:border-purple-500/50 focus:bg-white/[0.05] transition-all cursor-pointer">
                             <option value="" style="background-color:#0d1b2e;color:#ffffff;">— None / Not Applicable —</option>
-                            @foreach(\App\Models\Enrollment::CLASSIFICATION_REASONS as $key => $label)
+                            @php
+                                $reasons = $enrollment->isSHS()
+                                    ? \App\Models\Enrollment::SHS_CLASSIFICATION_REASONS
+                                    : \App\Models\Enrollment::CLASSIFICATION_REASONS;
+                            @endphp
+                            @foreach($reasons as $key => $label)
                                 <option value="{{ $key }}" {{ old('classification_reason', $enrollment->classification_reason) === $key ? 'selected' : '' }} style="background-color:#0d1b2e;color:#ffffff;">{{ $label }}</option>
                             @endforeach
                         </select>
