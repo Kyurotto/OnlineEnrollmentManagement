@@ -130,20 +130,19 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Semester</label>
-                        <select name="semester" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
-                            <option value="">Select Semester</option>
-                            <option value="1st Semester" {{ old('semester', $semester ?? '') === '1st Semester' ? 'selected' : '' }}>1st Semester</option>
-                            <option value="2nd Semester" {{ old('semester', $semester ?? '') === '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
-                        </select>
+                        <div class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="font-bold">{{ $activeSemester ? $activeSemester->name : 'Not Set' }}</span>
+                            <span class="text-[9px] font-black text-emerald-400/60 uppercase tracking-widest ml-auto">Auto</span>
+                        </div>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Academic Year</label>
-                        <select name="academic_year" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
-                            <option value="">Select Year</option>
-                            @foreach($academicYears as $year)
-                                <option value="{{ $year->year_name }}" {{ old('academic_year', $academic_year ?? '') === $year->year_name ? 'selected' : '' }}>{{ $year->year_name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="font-bold">{{ $activeYear ? $activeYear->year_name : 'Not Set' }}</span>
+                            <span class="text-[9px] font-black text-emerald-400/60 uppercase tracking-widest ml-auto">Auto</span>
+                        </div>
                     </div>
                 </div>
             </div>

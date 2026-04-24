@@ -5,7 +5,9 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Enrollment;
+use Livewire\Attributes\Layout;
 
+#[Layout('components.layouts.admin', ['title' => 'Applications'])]
 class AdminApplicationManager extends Component
 {
     use WithPagination;
@@ -87,9 +89,18 @@ class AdminApplicationManager extends Component
 
     public function render()
     {
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
         $query = Enrollment::with('user')
             ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->select('enrollments.*');
+
+        // Only show applications for the current active term
+        if ($activeYear && $activeSemester) {
+            $query->where('enrollments.year_level', 'LIKE', "%{$activeYear->year_name}%")
+                  ->where('enrollments.year_level', 'LIKE', "%{$activeSemester->name}%");
+        }
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -160,6 +171,6 @@ class AdminApplicationManager extends Component
             'collegePrograms' => $collegePrograms,
             'shsStrands' => $shsStrands,
             'sections' => $sections
-        ])->layout('components.layouts.admin', ['title' => 'Applications']);
+        ]);
     }
 }

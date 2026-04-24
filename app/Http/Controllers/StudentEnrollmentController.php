@@ -50,15 +50,11 @@ class StudentEnrollmentController extends Controller
         $draft = session()->get('enrollment_draft_' . Auth::id(), []);
         $data = array_merge($data, $draft);
 
-        $semesters = Semester::all();
         $activeSemester = Semester::where('is_active', true)->first();
-        $academicYears = AcademicYear::all();
         $activeYear = AcademicYear::where('is_active', true)->first();
 
         return view('student.enrollment', array_merge($data, [
-            'semesters' => $semesters,
             'activeSemester' => $activeSemester,
-            'academicYears' => $academicYears,
             'activeYear' => $activeYear,
         ]));
     }
@@ -77,8 +73,6 @@ class StudentEnrollmentController extends Controller
             'level' => 'required|in:shs,college',
             'course_code' => 'required',
             'year_level' => 'required',
-            'semester' => 'required',
-            'academic_year' => 'required',
             'first_name' => 'required',
             'last_name' => 'required',
             'birth_date' => 'required|date',
@@ -87,7 +81,7 @@ class StudentEnrollmentController extends Controller
             'contact' => 'required',
             'middle_name' => 'nullable|string|max:255',
             'extension' => 'nullable|string|max:50',
-            'lrn' => 'nullable|string|max:12|unique:enrollments,lrn',
+            'lrn' => 'nullable|string|max:12',
             'facebook_account' => 'nullable|string|max:255',
             'religion_church' => 'nullable|string|max:255',
             'junior_high_school' => 'nullable|string|max:255',
@@ -111,8 +105,22 @@ class StudentEnrollmentController extends Controller
             return back()->with('error', 'Selected program is invalid or not registered in the system.')->withInput();
         }
 
+        // Auto-populate semester and academic year from active registrar settings
+        $activeSemester = Semester::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+
+        if (!$activeSemester || !$activeYear) {
+            return back()->with('error', 'No active semester or academic year set by the registrar. Please contact the registrar.')->withInput();
+        }
+
+        $semesterName = $activeSemester->name;
+        $academicYearName = $activeYear->year_name;
+
         // Unified Year Level String: "Year | Semester | Academic Year"
-        $unifiedYearLevel = "{$request->year_level} | {$request->semester} | {$request->academic_year}";
+        $unifiedYearLevel = "{$request->year_level} | {$semesterName} | {$academicYearName}";
+
+        // Check for any previous balance carried over from prior terms
+        $previousBalance = \Illuminate\Support\Facades\Cache::pull("student_previous_balance_" . Auth::id(), 0);
 
         $enrollment = Enrollment::create([
             'user_id' => Auth::id(),
@@ -120,6 +128,8 @@ class StudentEnrollmentController extends Controller
             'course_code' => $request->course_code,
             'level' => $level,
             'year_level' => $unifiedYearLevel,
+            'semester_name' => $semesterName,
+            'academic_year_name' => $academicYearName,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
@@ -142,6 +152,7 @@ class StudentEnrollmentController extends Controller
             'guardian_name' => $request->guardian_name,
             'guardian_contact' => $request->guardian_contact,
             'status' => 'Pending',
+            'previous_balance' => $previousBalance,
         ]);
 
         // Clear draft on successful submission
@@ -268,9 +279,7 @@ class StudentEnrollmentController extends Controller
         $programs = Course::where('type', 'program')->orderBy('course_code', 'asc')->get();
         $strands = Course::where('type', 'shs')->orderBy('course_code', 'asc')->get();
 
-        $semesters = Semester::all();
         $activeSemester = Semester::where('is_active', true)->first();
-        $academicYears = AcademicYear::all();
         $activeYear = AcademicYear::where('is_active', true)->first();
 
         $data = $enrollment->toArray();
@@ -279,9 +288,7 @@ class StudentEnrollmentController extends Controller
 
         return view('student.enrollment_edit', array_merge($data, [
             'enrollment' => $enrollment,
-            'semesters' => $semesters,
             'activeSemester' => $activeSemester,
-            'academicYears' => $academicYears,
             'activeYear' => $activeYear,
         ]));
     }
@@ -300,8 +307,6 @@ class StudentEnrollmentController extends Controller
             'level' => 'required|in:shs,college',
             'course_code' => 'required',
             'year_level' => 'required',
-            'semester' => 'required',
-            'academic_year' => 'required',
             'first_name' => 'required',
             'last_name' => 'required',
             'birth_date' => 'required|date',
@@ -310,7 +315,7 @@ class StudentEnrollmentController extends Controller
             'contact' => 'required',
             'middle_name' => 'nullable|string|max:255',
             'extension' => 'nullable|string|max:50',
-            'lrn' => 'nullable|string|max:12|unique:enrollments,lrn,' . Auth::id() . ',user_id',
+            'lrn' => 'nullable|string|max:12',
             'facebook_account' => 'nullable|string|max:255',
             'religion_church' => 'nullable|string|max:255',
             'junior_high_school' => 'nullable|string|max:255',
@@ -334,7 +339,13 @@ class StudentEnrollmentController extends Controller
             return back()->with('error', 'Selected program is invalid or not registered in the system.')->withInput();
         }
 
-        $unifiedYearLevel = "{$request->year_level} | {$request->semester} | {$request->academic_year}";
+        // Auto-populate semester and academic year from active registrar settings
+        $activeSemester = Semester::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $semesterName = $activeSemester ? $activeSemester->name : '';
+        $academicYearName = $activeYear ? $activeYear->year_name : '';
+
+        $unifiedYearLevel = "{$request->year_level} | {$semesterName} | {$academicYearName}";
 
         $address = $request->address_full;
         if(empty($address)){
@@ -346,6 +357,8 @@ class StudentEnrollmentController extends Controller
             'course_code' => $request->course_code,
             'level' => $level,
             'year_level' => $unifiedYearLevel,
+            'semester_name' => $semesterName,
+            'academic_year_name' => $academicYearName,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
