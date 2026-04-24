@@ -20,24 +20,19 @@ class CashierDashboardManager extends Component
         $stats = [
             'daily_collection'   => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->sum('amount'),
             'transactions_today'  => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->count(),
-            'pending_verifications' => Enrollment::whereIn('status', ['Pending', 'Approved'])->count('*'),
         ];
 
-        // 2. Fetch Payments for Today (Paid today OR Pending from today)
+        // 2. Fetch Payments for Today (Paid only)
         $paymentsToday = Payment::with('user')
-            ->where(function($q) {
-                $q->where('status', 'Paid')->whereDate('payment_date', Carbon::today())
-                  ->orWhere('status', 'Pending')->whereDate('created_at', Carbon::today());
-            })
+            ->where('status', 'Paid')
+            ->whereDate('payment_date', Carbon::today())
             ->latest('updated_at')
             ->get();
 
-        // 3. Fetch Payments for Yesterday (Paid yesterday OR Pending from yesterday)
+        // 3. Fetch Payments for Yesterday (Paid only)
         $paymentsYesterday = Payment::with('user')
-            ->where(function($q) {
-                $q->where('status', 'Paid')->whereDate('payment_date', Carbon::yesterday())
-                  ->orWhere('status', 'Pending')->whereDate('created_at', Carbon::yesterday());
-            })
+            ->where('status', 'Paid')
+            ->whereDate('payment_date', Carbon::yesterday())
             ->latest('updated_at')
             ->get();
 

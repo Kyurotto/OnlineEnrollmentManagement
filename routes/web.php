@@ -107,8 +107,6 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::patch('/students/{id}', [RegistrarStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [RegistrarStudentController::class, 'destroy'])->name('students.destroy');
 
-    Route::get('/profile-bank', [RegistrarStudentController::class, 'profileBank'])->name('profile_bank.index');
-
     Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
     Route::get('/applications/college', RegistrarApplicationManager::class)->name('applications.college');
     Route::get('/applications/shs', RegistrarApplicationManager::class)->name('applications.shs');
