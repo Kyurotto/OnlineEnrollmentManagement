@@ -110,6 +110,7 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
     Route::get('/applications/college', RegistrarApplicationManager::class)->name('applications.college');
     Route::get('/applications/shs', RegistrarApplicationManager::class)->name('applications.shs');
+    Route::get('/archives', \App\Livewire\RegistrarArchiveManager::class)->name('archives.index');
     Route::patch('/applications/{id}/toggle-physical', [RegistrarApplicationController::class, 'togglePhysicalDocuments'])->name('applications.toggle-physical');
     Route::post('/applications/{id}/apply-voucher', [RegistrarApplicationController::class, 'applyVoucher'])->name('applications.apply-voucher');
     Route::post('/applications/{id}/remove-voucher', [RegistrarApplicationController::class, 'removeVoucher'])->name('applications.remove-voucher');
@@ -158,6 +159,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::patch('/students/{id}', [AdminStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
     Route::get('/applications', AdminApplicationManager::class)->name('applications.index');
+    Route::get('/archives', \App\Livewire\Admin\AdminArchiveManager::class)->name('archives.index');
 
 
     // API/Export routes

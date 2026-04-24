@@ -102,6 +102,40 @@ class RegistrarApplicationManager extends Component
         $this->dispatch('modal-reset');
     }
 
+    public function verifyCredentials($id)
+    {
+        $enrollment = Enrollment::findOrFail($id);
+        $enrollment->credentials_verified = true;
+        $enrollment->is_regular = true;
+        $enrollment->classification_reason = null;
+        $enrollment->last_audited_at = now();
+        $enrollment->save();
+
+        session()->flash('success', 'Clearance approved for student.');
+        $this->dispatch('modal-reset');
+    }
+
+    public function grantClearance($id)
+    {
+        $enrollment = Enrollment::findOrFail($id);
+        $enrollment->credentials_verified = true;
+        $enrollment->last_audited_at = now();
+        $enrollment->save();
+
+        session()->flash('success', 'Registrar clearance granted.');
+        $this->dispatch('modal-reset');
+    }
+
+    public function revokeClearance($id)
+    {
+        $enrollment = Enrollment::findOrFail($id);
+        $enrollment->credentials_verified = false;
+        $enrollment->save();
+
+        session()->flash('success', 'Registrar clearance revoked.');
+        $this->dispatch('modal-reset');
+    }
+
     public function destroy($id)
     {
         $application = Enrollment::findOrFail($id);
@@ -137,10 +171,19 @@ class RegistrarApplicationManager extends Component
 
     public function render()
     {
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
         $query = Enrollment::query()
             ->select('enrollments.*')
             ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->with(['user']);
+
+        // Only show applications for the current active term
+        if ($activeYear && $activeSemester) {
+            $query->where('enrollments.year_level', 'LIKE', "%{$activeYear->year_name}%")
+                  ->where('enrollments.year_level', 'LIKE', "%{$activeSemester->name}%");
+        }
 
         if ($this->level) {
             $query->where('enrollments.level', $this->level);

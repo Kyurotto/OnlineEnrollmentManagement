@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -61,47 +61,79 @@
                 <div class="my-4 mx-2" style="border-top: 1px solid rgba(26,58,110,0.3);"></div>
                 <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2 hidden group-hover/side:block whitespace-nowrap" style="color: rgba(138,180,216,0.35);">Management</p>
 
-                {{-- Enrolled Students --}}
-                <a href="{{ route('registrar.students.index') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
-                   style="{{ request()->routeIs('registrar.students.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
-                   onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                   onmouseout="this.style.background='{{ request()->routeIs('registrar.students.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
-                   {{ request()->routeIs('registrar.students.*') ? 'data-active=1' : '' }}>
-                    @if(request()->routeIs('registrar.students.*'))
-                        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
-                    @endif
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"></path></svg>
-                    <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Enrolled Students</span>
-                </a>
+                <div class="mt-1 space-y-0.5">
 
-                {{-- Applications for College --}}
-                <a href="{{ route('registrar.applications.college') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
-                   style="{{ request()->routeIs('registrar.applications.college') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
-                   onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                   onmouseout="this.style.background='{{ request()->routeIs('registrar.applications.college') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
-                   {{ request()->routeIs('registrar.applications.college') ? 'data-active=1' : '' }}>
-                    @if(request()->routeIs('registrar.applications.college'))
-                        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
-                    @endif
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Applications for College</span>
-                </a>
+                    {{-- Enrolled Students --}}
+                    <a href="{{ route('registrar.students.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('registrar.students.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('registrar.students.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('registrar.students.*') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('registrar.students.*'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"></path></svg>
+                        <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Enrolled Students</span>
+                    </a>
 
-                {{-- Applications for SHS --}}
-                <a href="{{ route('registrar.applications.shs') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
-                   style="{{ request()->routeIs('registrar.applications.shs') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
-                   onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                   onmouseout="this.style.background='{{ request()->routeIs('registrar.applications.shs') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
-                   {{ request()->routeIs('registrar.applications.shs') ? 'data-active=1' : '' }}>
-                    @if(request()->routeIs('registrar.applications.shs'))
-                        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
-                    @endif
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path></svg>
-                    <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Applications for SHS</span>
-                </a>
+                    {{-- Student Profile Bank --}}
+                    <a href="{{ route('registrar.profile_bank.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('registrar.profile_bank.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('registrar.profile_bank.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('registrar.profile_bank.*') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('registrar.profile_bank.*'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Student Profile Bank</span>
+                    </a>
+
+                    {{-- College Applications --}}
+                    <a href="{{ route('registrar.applications.college') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('registrar.applications.college') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('registrar.applications.college') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('registrar.applications.college') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('registrar.applications.college'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Applications for College</span>
+                    </a>
+
+                    {{-- SHS Applications --}}
+                    <a href="{{ route('registrar.applications.shs') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('registrar.applications.shs') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('registrar.applications.shs') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('registrar.applications.shs') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('registrar.applications.shs'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path></svg>
+                        <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Applications for SHS</span>
+                    </a>
+
+                    {{-- Enrollment Archives --}}
+                    <a href="{{ route('registrar.archives.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
+                       style="{{ request()->routeIs('registrar.archives.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
+                       onmouseout="this.style.background='{{ request()->routeIs('registrar.archives.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       {{ request()->routeIs('registrar.archives.*') ? 'data-active=1' : '' }}>
+                        @if(request()->routeIs('registrar.archives.*'))
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
+                        @endif
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                        <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Enrollment Archives</span>
+                    </a>
+
+                </div>
 
                 <div class="my-4 mx-2" style="border-top: 1px solid rgba(26,58,110,0.3);"></div>
                 <p class="text-[11px] font-black uppercase tracking-[0.25em] px-3 mb-2 hidden group-hover/side:block whitespace-nowrap" style="color: rgba(138,180,216,0.35);">Configuration</p>
@@ -116,7 +148,7 @@
                     @if(request()->routeIs('registrar.programs.*'))
                         <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
                     @endif
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
                     <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Programs</span>
                 </a>
 
@@ -299,6 +331,16 @@
                                 Enrolled Students
                             </a>
 
+                            <a href="{{ route('registrar.profile_bank.index') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative"
+                               style="{{ request()->routeIs('registrar.profile_bank.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}">
+                                @if(request()->routeIs('registrar.profile_bank.*'))
+                                    <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style="background: #63b3ed;"></span>
+                                @endif
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                Student Profile Bank
+                            </a>
+
                             <a href="{{ route('registrar.applications.college') }}"
                                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative"
                                style="{{ request()->routeIs('registrar.applications.college') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}">
@@ -318,6 +360,17 @@
                                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path></svg>
                                 Applications for SHS
                             </a>
+
+                            <a href="{{ route('registrar.archives.index') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative"
+                               style="{{ request()->routeIs('registrar.archives.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}">
+                                @if(request()->routeIs('registrar.archives.*'))
+                                    <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style="background: #63b3ed;"></span>
+                                @endif
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                                Enrollment Archives
+                            </a>
+
                         </div>
                     </div>
 
@@ -347,7 +400,7 @@
                                 @if(request()->routeIs('registrar.programs.*'))
                                     <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style="background: #63b3ed;"></span>
                                 @endif
-                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
                                 Programs
                             </a>
 
@@ -380,6 +433,7 @@
                                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 Semesters
                             </a>
+
                         </div>
                     </div>
 

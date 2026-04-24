@@ -34,14 +34,16 @@
 
                     // Check if student can enroll in the CURRENT ACTIVE semester
                     $currentAcademicYear = $activeYear;
-                    if ($currentAcademicYear && $currentYearEnrollment) {
-                        $isEnrollmentForCurrentYear =
-                            strpos($currentYearEnrollment->year_level, $currentAcademicYear->year_name) !== false;
+                    $currentSemester = $activeSemester;
+                    if ($currentAcademicYear && $currentSemester && $currentYearEnrollment) {
+                        $isEnrollmentForCurrentTerm =
+                            stripos($currentYearEnrollment->year_level, $currentAcademicYear->year_name) !== false &&
+                            stripos($currentYearEnrollment->year_level, $currentSemester->name) !== false;
                         $canEnroll =
-                            !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved', 'Paid']) ||
-                            !$isEnrollmentForCurrentYear;
+                            (!in_array($currentStatus, ['Pending', 'Enrolled', 'Approved', 'Paid']) ||
+                            !$isEnrollmentForCurrentTerm) && $canEnrollNow && !$hasSubmitted;
                     } else {
-                        $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved', 'Paid']);
+                        $canEnroll = !in_array($currentStatus, ['Pending', 'Enrolled', 'Approved', 'Paid']) && $canEnrollNow && !$hasSubmitted;
                     }
                 @endphp
 
@@ -110,7 +112,7 @@
                 </div>
 
                 {{-- Enrollment Open Alert --}}
-                @if ($activeSemester && $activeYear && $canEnroll)
+                @if ($activeSemester && $activeYear && !$hasSubmitted)
                     <div class="p-6 rounded-2xl border flex items-center gap-4"
                         style="background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); box-shadow: 0 4px 20px rgba(16,185,129,0.1);">
                         <div class="text-[#10B981] p-3 rounded-xl bg-[#10B981]/10 flex-shrink-0 animate-pulse">
@@ -122,15 +124,21 @@
                         <div>
                             <h3 class="text-[#34d399] font-bold text-lg mb-0.5">Enrollment is Now Open!</h3>
                             <p class="text-white/60 text-xs">
-                                You can now submit your application for <strong
-                                    class="text-white">{{ $activeSemester->name }}</strong>, Academic Year <strong
-                                    class="text-white">{{ $activeYear->year_name }}</strong>.
+                                @if($canEnrollNow)
+                                    You can now submit your application for <strong class="text-white">{{ $activeSemester->name }}</strong>, Academic Year <strong class="text-white">{{ $activeYear->year_name }}</strong>.
+                                @else
+                                    The enrollment period is open, but you must first complete your <strong>Registrar Clearance</strong> (Steps 1-3) to proceed.
+                                @endif
                             </p>
                         </div>
                         <div class="ml-auto hidden sm:block">
-                            <a href="{{ route('student.enrollment.create') }}"
-                                class="bg-[#10B981] hover:bg-[#34d399] text-black text-xs font-black px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-emerald-500/20">Enroll
-                                Now</a>
+                            @if($canEnrollNow)
+                                <a href="{{ route('student.enrollment.create') }}"
+                                    class="bg-[#10B981] hover:bg-[#34d399] text-black text-xs font-black px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-emerald-500/20">Enroll
+                                    Now</a>
+                            @else
+                                <span class="bg-white/5 text-white/20 text-[10px] font-black px-6 py-2.5 rounded-xl uppercase tracking-widest border border-white/10 cursor-not-allowed italic">Waiting for Clearance</span>
+                            @endif
                         </div>
                     </div>
                 @elseif(!$activeSemester || !$activeYear)
@@ -220,8 +228,13 @@
                                     </svg>
                                 </div>
                             </div>
-                            <p class="text-xs text-white/10 leading-relaxed mb-6 italic">Active session detected.
-                                Application commit locked.</p>
+                            <p class="text-xs text-white/10 leading-relaxed mb-6 italic">
+                                @if($hasSubmitted)
+                                    Active session detected. Application commit locked.
+                                @else
+                                    Clearance required. Complete Steps 1-3 to unlock.
+                                @endif
+                            </p>
                         </div>
                     @endif
 

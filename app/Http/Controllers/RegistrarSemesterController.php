@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Semester;
 use App\Models\AcademicYear; // Import is required!
+use App\Models\Enrollment;
+use App\Models\Payment;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 class RegistrarSemesterController extends Controller
@@ -41,8 +44,9 @@ class RegistrarSemesterController extends Controller
 
         $isActive = $request->has('is_active');
 
-        // Logic: If setting to Active, auto-update Academic Year
+        // Logic: If setting to Active, auto-update Academic Year and perform reset
         if ($isActive) {
+            $this->performSemesterReset();
             $this->activateSemesterAndYear($request->academic_year);
         }
 
@@ -69,9 +73,14 @@ class RegistrarSemesterController extends Controller
         ]);
 
         $isActive = $request->has('is_active');
+        $wasActive = $semester->is_active;
 
-        if ($isActive) {
-             $this->activateSemesterAndYear($request->academic_year, $id);
+        // Only perform reset when switching FROM inactive TO active
+        if ($isActive && !$wasActive) {
+            $this->performSemesterReset();
+            $this->activateSemesterAndYear($request->academic_year, $id);
+        } elseif ($isActive) {
+            $this->activateSemesterAndYear($request->academic_year, $id);
         }
 
         $semester->update([
@@ -91,18 +100,135 @@ class RegistrarSemesterController extends Controller
         return redirect()->route('registrar.semesters.index')->with('success', 'Semester deleted successfully.');
     }
 
-    // --- NEW: Custom Activate Function (Button Click) ---
+    // --- Custom Activate Function (Button Click) ---
     public function activate($id)
     {
         $semester = Semester::findOrFail($id);
         
+        // Perform the full semester reset before activating
+        $this->performSemesterReset();
+
         // Call helper to activate this semester and its year
         $this->activateSemesterAndYear($semester->academic_year, $id);
 
         // Explicitly update this semester to active (redundancy check)
         $semester->update(['is_active' => true]);
 
-        return redirect()->route('registrar.semesters.index')->with('success', "Active status updated for {$semester->academic_year} - {$semester->name}.");
+        return redirect()->route('registrar.semesters.index')->with('success', "Semester activated: {$semester->academic_year} - {$semester->name}. Enrollment cycle has been reset.");
+    }
+
+    /**
+     * Perform the full semester reset when a new semester is activated.
+     * 
+     * This method:
+     * 1. Archives enrolled students from the current/previous active term
+     * 2. Deletes non-enrolled application records (Pending/Approved/Rejected)
+     * 3. Calculates and stores previous_balance for returning students
+     */
+    private function performSemesterReset()
+    {
+        $currentYear = AcademicYear::where('is_active', true)->first();
+        $currentSemester = Semester::where('is_active', true)->first();
+
+        if (!$currentYear || !$currentSemester) {
+            return; // No active term to reset from
+        }
+
+        $yearName = $currentYear->year_name;
+        $semesterName = $currentSemester->name;
+
+        // 1. Find all enrollments for the current active term
+        $currentTermEnrollments = Enrollment::where('year_level', 'LIKE', "%{$yearName}%")
+            ->where('year_level', 'LIKE', "%{$semesterName}%")
+            ->get();
+
+        // 2. Process enrolled students — archive them and carry forward balance
+        $enrolledRecords = $currentTermEnrollments->where('status', 'Enrolled');
+        
+        foreach ($enrolledRecords as $enrollment) {
+            // Calculate remaining balance for this student
+            $previousBalance = $this->calculateRemainingBalance($enrollment);
+            
+            // Archive the enrollment record
+            $enrollment->update([
+                'archived_at' => now(),
+                'semester_name' => $semesterName,
+                'academic_year_name' => $yearName,
+            ]);
+
+            // Store the previous balance on the user level for the next enrollment
+            // We'll use cache to temporarily hold this until the student re-enrolls
+            if ($previousBalance > 0) {
+                Cache::put("student_previous_balance_{$enrollment->user_id}", $previousBalance, now()->addMonths(6));
+            }
+        }
+
+        // 3. Process non-enrolled students — delete their application records
+        $nonEnrolledRecords = $currentTermEnrollments->whereIn('status', ['Pending', 'Approved', 'Rejected']);
+        
+        foreach ($nonEnrolledRecords as $enrollment) {
+            // Calculate any balance that might exist (e.g., partial payments on approved apps)
+            $previousBalance = $this->calculateRemainingBalance($enrollment);
+            
+            if ($previousBalance > 0) {
+                Cache::put("student_previous_balance_{$enrollment->user_id}", $previousBalance, now()->addMonths(6));
+            }
+            
+            // Delete the non-enrolled application record
+            $enrollment->delete();
+        }
+
+        // 4. Also handle "Paid" status records — these are approved+paid but not yet fully enrolled
+        $paidRecords = $currentTermEnrollments->where('status', 'Paid');
+        
+        foreach ($paidRecords as $enrollment) {
+            $previousBalance = $this->calculateRemainingBalance($enrollment);
+            
+            $enrollment->update([
+                'archived_at' => now(),
+                'semester_name' => $semesterName,
+                'academic_year_name' => $yearName,
+            ]);
+
+            if ($previousBalance > 0) {
+                Cache::put("student_previous_balance_{$enrollment->user_id}", $previousBalance, now()->addMonths(6));
+            }
+        }
+    }
+
+    /**
+     * Calculate the remaining unpaid balance for an enrollment.
+     */
+    private function calculateRemainingBalance(Enrollment $enrollment): float
+    {
+        // Get the assessment for this enrollment's level
+        $level = $enrollment->getLevel();
+        $cacheKey = 'payment_assessment_' . $level;
+        $assessment = Cache::get($cacheKey, [
+            'tuitionFee' => 0,
+            'miscellaneousFees' => 0,
+        ]);
+
+        $totalAssessment = ($assessment['tuitionFee'] ?? 0) + ($assessment['miscellaneousFees'] ?? 0);
+
+        // Apply voucher discount
+        $discount = 0;
+        if ($enrollment->voucher_type === 'free_tuition') {
+            $discount = $assessment['tuitionFee'] ?? 0;
+        } elseif ($enrollment->voucher_type === 'discounted') {
+            $discount = $totalAssessment * 0.15;
+        }
+
+        // Add any existing previous_balance from prior terms
+        $priorBalance = $enrollment->previous_balance ?? 0;
+
+        // Get total payments made
+        $totalPaid = Payment::where('user_id', $enrollment->user_id)
+            ->where('application_id', $enrollment->id)
+            ->where('status', 'Paid')
+            ->sum('amount');
+
+        return max(0, ($totalAssessment - $discount + $priorBalance) - $totalPaid);
     }
 
     // Helper function to keep code clean
