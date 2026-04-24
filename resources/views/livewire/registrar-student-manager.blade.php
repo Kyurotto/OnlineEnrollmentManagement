@@ -49,7 +49,7 @@
         <div>
             <table class="w-full text-left border-collapse">
                 <thead>
-<tr class="text-[10px] text-white/20 uppercase tracking-[0.2em] bg-white/[0.02]">
+<tr class="text-[10px] text-white/20 uppercase tracking-[0.2em] bg-white/[0.02] border-b border-white/5">
     <th class="py-6 px-8 cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('users.id')">
         <div class="flex items-center gap-2">
             ID
@@ -111,30 +111,20 @@
             </span>
         </div>
     </th>
-    <th class="py-6 px-8">STATUS</th>
+    <th class="py-6 px-8 text-center">STATUS</th>
     <th class="py-6 px-8 text-right">ACTIONS</th>
-                    <tr class="text-[9px] text-white/20 uppercase tracking-[0.25em] border-b border-white/5">
-                        <th class="py-5 px-3 w-10">ID</th>
-                        <th class="py-5 px-3 w-36">Full Name</th>
-                        <th class="py-5 px-3">Email</th>
-                        <th class="py-5 px-3 text-center w-20">Program</th>
-                        <th class="py-5 px-3 text-center w-24">Year</th>
-                        <th class="py-5 px-3 text-center w-20">Type</th>
-                        <th class="py-5 px-3 text-center w-28">Classification</th>
-                        <th class="py-5 px-3 text-right w-48">Actions</th>
-
-                    </tr>
+</tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     @forelse($students as $student)
                         <tr class="hover:bg-white/[0.02] transition-colors group">
                             {{-- ID --}}
-                            <td class="py-5 px-3 text-white/40 font-bold text-xs whitespace-nowrap">
+                            <td class="py-6 px-8 text-white/40 font-bold text-xs whitespace-nowrap">
                                 {{ $student->id }}
                             </td>
 
                             {{-- Full Name --}}
-                            <td class="py-5 px-3">
+                            <td class="py-6 px-8">
                                 <div class="flex flex-col">
                                     <span class="text-white font-black text-xs uppercase tracking-wider">
                                         {{ $student->last_name }}, {{ $student->first_name }}
@@ -144,58 +134,55 @@
                             </td>
 
                             {{-- Email --}}
-                            <td class="py-5 px-3">
+                            <td class="py-6 px-8">
                                 <span class="text-white/40 text-xs lowercase">{{ $student->email }}</span>
                             </td>
 
                             {{-- Program --}}
-                            <td class="py-5 px-3 text-center whitespace-nowrap">
+                            <td class="py-6 px-8 text-center whitespace-nowrap">
                                 <span class="text-purple-400 font-black text-[10px] uppercase tracking-widest">{{ $student->program }}</span>
                             </td>
-<td class="py-6 px-8 text-center">
-    <span class="px-3 py-1 rounded text-[10px] font-black uppercase tracking-tighter border {{ $student->level === 'SHS' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20' }}">
-        {{ $student->level ?? 'N/A' }}
-    </span>
-</td>
-<td class="py-6 px-8 text-center">
-    <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
 
-                            {{-- Year --}}
-                            <td class="py-5 px-3 text-center whitespace-nowrap">
-                                <span class="text-white/40 font-black text-[10px] uppercase tracking-widest">{{ $student->year_display }}</span>
-
+                            {{-- Level --}}
+                            <td class="py-6 px-8 text-center">
+                                <span class="px-3 py-1 rounded text-[10px] font-black uppercase tracking-tighter border {{ $student->level === 'SHS' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20' }}">
+                                    {{ $student->level ?? 'N/A' }}
+                                </span>
                             </td>
 
-                            {{-- Type --}}
-                            <td class="py-5 px-3 text-center whitespace-nowrap">
+                            {{-- Year --}}
+                            <td class="py-6 px-8 text-center">
+                                <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
+                            </td>
+
+                            {{-- Status (Type and Classification) --}}
+                            <td class="py-6 px-8 text-center whitespace-nowrap space-y-1">
                                 @php $stype = ucfirst(strtolower($student->student_type ?? 'New')); @endphp
-                                <span class="text-[9px] font-black px-3 py-1.5 rounded-full border uppercase tracking-widest
+                                <div class="text-[9px] font-black px-3 py-1.5 rounded-full border uppercase tracking-widest inline-block
                                     {{ $stype === 'Transferee' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' :
                                        ($stype === 'Shifter' ? 'text-sky-400 bg-sky-400/10 border-sky-400/20' :
                                        'text-white/40 bg-white/5 border-white/10') }}">
                                     {{ $stype }}
-                                </span>
-                            </td>
-
-                            {{-- Classification --}}
-                            <td class="py-5 px-3 text-center whitespace-nowrap">
-                                @if($student->is_regular === null)
-                                    <span class="text-white/20 text-[9px] font-black px-3 py-1.5 rounded-full border border-white/10 uppercase tracking-widest">
-                                        Not Audited
-                                    </span>
-                                @elseif($student->is_regular)
-                                    <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
-                                        Regular
-                                    </span>
-                                @else
-                                    <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
-                                        Irregular
-                                    </span>
-                                @endif
+                                </div>
+                                <div class="mt-1">
+                                    @if($student->is_regular === null)
+                                        <span class="text-white/20 text-[9px] font-black px-3 py-1.5 rounded-full border border-white/10 uppercase tracking-widest inline-block">
+                                            Not Audited
+                                        </span>
+                                    @elseif($student->is_regular)
+                                        <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest inline-block">
+                                            Regular
+                                        </span>
+                                    @else
+                                        <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest inline-block">
+                                            Irregular
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
 
                             {{-- Actions --}}
-                            <td class="py-5 px-3 text-right whitespace-nowrap">
+                            <td class="py-6 px-8 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center gap-2">
                                     <button wire:click="openClassificationModal({{ $student->enrollment_id }})"
                                         class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all text-[9px] font-black uppercase tracking-widest whitespace-nowrap">

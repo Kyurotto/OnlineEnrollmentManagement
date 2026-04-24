@@ -529,35 +529,6 @@
                         Volume</p>
                 </div>
 
-                {{-- Pending Verifications --}}
-                <div class="p-8 rounded-2xl border group transition-all duration-500 hover:scale-[1.02]"
-                    style="background: rgba(251,191,36,0.04); border-color: rgba(251,191,36,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h4 class="text-xs font-bold text-amber-400/80 uppercase tracking-[0.2em] mb-1">
-                                Verification
-                                Queue</h4>
-                            <div
-                                class="text-3xl font-black text-white tracking-tighter transition-transform group-hover:translate-x-1 duration-500">
-                                {{ $stats['pending_verifications'] }}
-                            </div>
-                        </div>
-                        <div
-                            class="p-3 rounded-xl bg-amber-500/10 text-amber-400 group-hover:rotate-12 transition-transform shadow-lg shadow-amber-500/10">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                        <div class="bg-amber-500 h-full w-[30%] group-hover:w-full transition-all duration-1000"></div>
-                    </div>
-                    <p class="text-xs mt-4 font-bold text-white/20 uppercase tracking-widest italic">Pending Financial
-                        Audit</p>
-                </div>
-            </div>
-
             {{-- SECTION 3 — Transaction Logs --}}
             <div class="p-6 rounded-2xl border shadow-2xl shadow-black/40 overflow-hidden"
                 style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">

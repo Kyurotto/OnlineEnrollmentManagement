@@ -382,7 +382,8 @@ class PaymentManager extends Component
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
             ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
-            ->with(['user', 'application']); 
+            ->with(['user', 'application'])
+            ->where('payments.status', '!=', 'Pending');
 
         if ($this->statusFilter != 'All statuses') {
             $query->where('payments.status', $this->statusFilter);
