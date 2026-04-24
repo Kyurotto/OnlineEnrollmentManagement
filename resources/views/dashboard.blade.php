@@ -471,7 +471,7 @@
             </div>
 
             {{-- SECTION 2 — Core Metrics Grid --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Collected Today --}}
                 <div class="p-8 rounded-2xl border group transition-all duration-500 hover:scale-[1.02]"
                     style="background: rgba(16,185,129,0.04); border-color: rgba(16,185,129,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
@@ -512,6 +512,15 @@
                                 class="text-3xl font-black text-white tracking-tighter transition-transform group-hover:translate-x-1 duration-500">
                                 {{ $stats['transactions_today'] }}
                             </div>
+                            <div class="flex items-center gap-1.5 mt-2">
+                                <svg class="w-3.5 h-3.5 text-blue-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 20H5a2 2 0 01-2-2V6a2 2 0 012-2h3m4 0h3a2 2 0 012 2v1M9 12h6m-6 4h6"/>
+                                </svg>
+                                <span class="text-xs font-bold text-blue-400/60 uppercase tracking-widest">
+                                    {{ $stats['students_paid_today'] }} {{ Str::plural('student', $stats['students_paid_today']) }} paid
+                                </span>
+                            </div>
                         </div>
                         <div
                             class="p-3 rounded-xl bg-blue-500/10 text-blue-400 group-hover:rotate-12 transition-transform shadow-lg shadow-blue-500/10">
@@ -528,6 +537,7 @@
                     <p class="text-xs mt-4 font-bold text-white/20 uppercase tracking-widest italic">Daily Transaction
                         Volume</p>
                 </div>
+            </div>{{-- end metrics grid --}}
 
             {{-- SECTION 3 — Transaction Logs --}}
             <div class="p-6 rounded-2xl border shadow-2xl shadow-black/40 overflow-hidden"
