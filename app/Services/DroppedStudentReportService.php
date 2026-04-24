@@ -73,7 +73,7 @@ class DroppedStudentReportService
         $cutoffDate = Carbon::now()->subDays($paymentGapDays);
 
         return Enrollment::with(['user', 'payments'])
-            ->whereIn('status', ['Enrolled', 'Approved'])
+            ->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
             ->get()
             ->filter(function ($enrollment) use ($absenceThreshold, $cutoffDate) {
                 $hasAbsenceRisk = ($enrollment->consecutive_absences ?? 0) >= $absenceThreshold;

@@ -1,4 +1,5 @@
-<x-layouts.registrar title="Dropped Students Report">
+@php $isAdmin = request()->routeIs('admin.*'); @endphp
+<x-dynamic-component :component="$isAdmin ? 'layouts.admin' : 'layouts.registrar'" title="Dropped Students Report">
 
     <div class="space-y-8 animate-in fade-in duration-500">
 
@@ -95,7 +96,9 @@
                                 <th class="py-4 px-6 text-right">Total Paid</th>
                                 <th class="py-4 px-6 text-right">Charge</th>
                                 <th class="py-4 px-6 text-right">Refundable</th>
+                                @unless($isAdmin)
                                 <th class="py-4 px-6 text-center">Actions</th>
+                                @endunless
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
@@ -149,6 +152,7 @@
                                             ₱{{ number_format($s->net_refundable, 2) }}
                                         </span>
                                     </td>
+                                    @unless($isAdmin)
                                     <td class="py-4 px-6 text-center">
                                         <form action="{{ route('registrar.dropped.restore', $s->enrollment_id) }}" method="POST"
                                               onsubmit="return confirm('Restore this student to Enrolled status?')">
@@ -160,6 +164,7 @@
                                             </button>
                                         </form>
                                     </td>
+                                    @endunless
                                 </tr>
                             @endforeach
                         </tbody>
@@ -194,7 +199,9 @@
                                 <th class="py-4 px-6 text-center">Last Payment</th>
                                 <th class="py-4 px-6 text-right">Total Paid</th>
                                 <th class="py-4 px-6">Risk Flags</th>
+                                @unless($isAdmin)
                                 <th class="py-4 px-6 text-center">Action</th>
+                                @endunless
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
@@ -223,6 +230,7 @@
                                             @endforeach
                                         </div>
                                     </td>
+                                    @unless($isAdmin)
                                     <td class="py-4 px-6 text-center">
                                         <button @click="showModal = true"
                                             class="text-[9px] font-black px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 uppercase tracking-widest transition-all">
@@ -290,6 +298,7 @@
                                             </div>
                                         </div>
                                     </td>
+                                    @endunless
                                 </tr>
                             @endforeach
                         </tbody>
@@ -299,4 +308,4 @@
         </div>
 
     </div>
-</x-layouts.registrar>
+</x-dynamic-component>

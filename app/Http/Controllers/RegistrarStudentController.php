@@ -111,7 +111,7 @@ class RegistrarStudentController extends Controller
 
         // Update enrollment classification fields if present
         $enrollment = \App\Models\Enrollment::where('user_id', $id)
-            ->whereIn('status', ['Enrolled', 'Approved'])
+            ->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
             ->latest()
             ->first();
 
