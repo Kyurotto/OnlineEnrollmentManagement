@@ -77,19 +77,6 @@
                         <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Enrolled Students</span>
                     </a>
 
-                    {{-- Student Profile Bank --}}
-                    <a href="{{ route('registrar.profile_bank.index') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('registrar.profile_bank.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
-                       onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('registrar.profile_bank.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
-                       {{ request()->routeIs('registrar.profile_bank.*') ? 'data-active=1' : '' }}>
-                        @if(request()->routeIs('registrar.profile_bank.*'))
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
-                        @endif
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Student Profile Bank</span>
-                    </a>
 
                     {{-- College Applications --}}
                     <a href="{{ route('registrar.applications.college') }}"
@@ -331,15 +318,6 @@
                                 Enrolled Students
                             </a>
 
-                            <a href="{{ route('registrar.profile_bank.index') }}"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative"
-                               style="{{ request()->routeIs('registrar.profile_bank.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}">
-                                @if(request()->routeIs('registrar.profile_bank.*'))
-                                    <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style="background: #63b3ed;"></span>
-                                @endif
-                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                Student Profile Bank
-                            </a>
 
                             <a href="{{ route('registrar.applications.college') }}"
                                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative"
