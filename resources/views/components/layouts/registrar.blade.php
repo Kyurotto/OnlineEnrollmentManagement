@@ -105,6 +105,7 @@
                          <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Students</span>
                      </a>
 
+<<<<<<< HEAD
                     {{-- Dropped Students --}}
                     <a href="{{ route('registrar.dropped.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
@@ -118,6 +119,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
                         <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Dropped Students</span>
                     </a>
+=======
+>>>>>>> origin/main
 
                     {{-- College Applications --}}
                     <a href="{{ route('registrar.applications.college') }}"
