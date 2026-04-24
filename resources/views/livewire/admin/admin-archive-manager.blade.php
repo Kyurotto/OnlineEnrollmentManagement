@@ -199,6 +199,22 @@
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6" id="modalDocuments"></div>
                     </div>
+
+                    {{-- Promissory Note Section --}}
+                    <div class="space-y-6 pt-6 hidden border-t border-white/5" id="modalPromissorySection">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Promissory Explanation</h3>
+                        </div>
+                        <div class="bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8">
+                            <div class="space-y-2">
+                                <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic text-shadow shadow-amber-500/20">Reason for Delayed Requirements:</span>
+                                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[80px]">
+                                    <p class="text-[11px] text-white/60 leading-relaxed italic" id="modalPromissoryReason"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="px-12 py-8 bg-white/[0.01] border-t border-white/5 text-center">
                     <p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">Archived System Record — Locked for Historical Reference</p>
@@ -210,7 +226,7 @@
     <script>
         function openArchiveModal(app) {
             const modal = document.getElementById('archiveModal');
-            const storageBase = "{{ asset('storage') }}/";
+            const storageBase = @json(url('/documents')) + '/';
             document.getElementById('modalAvatar').innerText = app.user.first_name.charAt(0).toUpperCase();
             document.getElementById('modalName').innerText = `${app.user.first_name} ${app.user.last_name}`;
             document.getElementById('modalEmailLabel').innerText = app.user.email;
@@ -227,10 +243,22 @@
             Object.entries(docFields).forEach(([field, label]) => {
                 if (app[field]) {
                     const isPdf = app[field].toLowerCase().endsWith('.pdf');
-                    const assetUrl = storageBase + app[field];
+                    const cleanPath = app[field].replace(/^\//, '');
+                    const assetUrl = storageBase + cleanPath;
                     docsContainer.innerHTML += `<div class="group relative bg-white/[0.03] border border-white/10 rounded-3xl p-4 hover:border-emerald-500/30 transition-all"><p class="text-[9px] font-black text-white/30 uppercase tracking-widest mb-3">${label}<\/p><a href="${assetUrl}" target="_blank" class="block aspect-[4/3] rounded-2xl overflow-hidden bg-black/40 border border-white/5 relative">${isPdf ? `<div class="absolute inset-0 flex items-center justify-center text-emerald-400 font-black text-[10px] tracking-widest">PDF DOCUMENT<\/div>` : `<img src="${assetUrl}" class="w-full h-full object-cover transition-transform group-hover:scale-110">`}<\/a><\/div>`;
                 }
             });
+
+            // Handle Promissory Section
+            const promissorySection = document.getElementById('modalPromissorySection');
+            const promissoryReason = document.getElementById('modalPromissoryReason');
+            if (app.promissory_reason) {
+                promissorySection.classList.remove('hidden');
+                promissoryReason.innerText = app.promissory_reason;
+            } else {
+                promissorySection.classList.add('hidden');
+            }
+
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
