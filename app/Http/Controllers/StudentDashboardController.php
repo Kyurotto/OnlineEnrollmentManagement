@@ -43,8 +43,9 @@ class StudentDashboardController extends Controller
         // 4. Get enrollment for CURRENT ACTIVE YEAR
         $currentYearEnrollment = null;
         if ($activeYear && $activeSemester && $latestEnrollment) {
-            if (stripos($latestEnrollment->year_level, $activeYear->year_name) !== false && 
-                stripos($latestEnrollment->year_level, $activeSemester->name) !== false) {
+            if (($latestEnrollment->academic_year_name === $activeYear->year_name && $latestEnrollment->semester_name === $activeSemester->name) ||
+                (stripos($latestEnrollment->year_level, $activeYear->year_name) !== false && 
+                 stripos($latestEnrollment->year_level, $activeSemester->name) !== false)) {
                 $currentYearEnrollment = $latestEnrollment;
             }
         }
@@ -84,7 +85,7 @@ class StudentDashboardController extends Controller
                                        ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
                               });
                           });
-                    })->orWhereIn('status', ['Pending', 'Approved']); // Block if they have ANY unresolved applications
+                    })->orWhereIn('status', ['Pending', 'Approved', 'Paid']); // Block if they have ANY active processes
                 })
                 ->first();
             $hasSubmitted = $existingEnrollment !== null;

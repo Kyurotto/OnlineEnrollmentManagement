@@ -84,7 +84,7 @@
                                                       ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
                                               });
                                           });
-                                    })->orWhereIn('status', ['Pending', 'Approved']); // Block if they have ANY unresolved applications
+                                    })->orWhereIn('status', ['Pending', 'Approved', 'Paid']); // Block if they have ANY active processes
                                 })
                                 ->exists();
                         }
