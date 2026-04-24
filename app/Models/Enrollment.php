@@ -16,6 +16,8 @@ class Enrollment extends Model
         'credentials_verified'   => 'boolean',
         'physical_documents_received' => 'boolean',
         'last_audited_at'        => 'datetime',
+        'archived_at'            => 'datetime',
+        'previous_balance'       => 'decimal:2',
     ];
 
     /**

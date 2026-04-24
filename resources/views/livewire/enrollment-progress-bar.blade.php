@@ -5,17 +5,35 @@
         
         <div class="relative z-10 flex justify-between items-start">
             @php
-                $progressBar = [
-                    ['key' => 'application', 'label' => 'Fill Up Application'],
-                    ['key' => 'online_docs', 'label' => 'Upload Online Documents'],
-                    ['key' => 'physical_docs', 'label' => 'Pass Physical Documents'],
-                    ['key' => 'payment', 'label' => 'Pay Physical in Cashier'],
-                    ['key' => 'enroll', 'label' => 'Enroll'],
-                ];
+                if ($isOldStudentWithMissingDocs) {
+                    // Dynamic steps for old students
+                    $progressBar = [];
+                    $allLabels = [
+                        'online_docs' => 'Upload Online Documents',
+                        'physical_docs' => 'Pass Physical Documents',
+                        'application' => 'Fill Up Application',
+                        'registrar_clearance' => 'Registrar Clearance',
+                        'payment' => 'Pay Physical in Cashier',
+                        'enroll' => 'Enroll',
+                    ];
+                    
+                    foreach ($oldStudentStepsKeys as $key) {
+                        $progressBar[] = ['key' => $key, 'label' => $allLabels[$key]];
+                    }
+                } else {
+                    // Previous 5-step bar for new students or fully cleared students
+                    $progressBar = [
+                        ['key' => 'application', 'label' => 'Fill Up Application'],
+                        ['key' => 'online_docs', 'label' => 'Upload Online Documents'],
+                        ['key' => 'physical_docs', 'label' => 'Physical Documents'],
+                        ['key' => 'payment', 'label' => 'Cashier Payment'],
+                        ['key' => 'enroll', 'label' => 'Enrolled'],
+                    ];
+                }
             @endphp
 
             @foreach($progressBar as $step)
-                <div class="flex flex-col items-center group w-1/5">
+                <div class="flex flex-col items-center group flex-1">
                     @php
                         $color = $steps[$step['key']];
                         $circleClass = match($color) {

@@ -21,10 +21,18 @@ class StudentDashboardController extends Controller
         // 2. Check if student has a PENDING application for the CURRENT ACTIVE SEMESTER
         $hasPendingApplication = false;
 
-        if ($activeYear) {
+        if ($activeYear && $activeSemester) {
             $hasPendingApplication = Enrollment::where('user_id', $user->id)
                 ->where('status', 'Pending')
-                ->whereRaw("year_level LIKE ?", ["%{$activeYear->year_name}%"])
+                ->where(function($q) use ($activeYear, $activeSemester) {
+                    $q->where(function($sub) use ($activeYear, $activeSemester) {
+                        $sub->where('semester_name', $activeSemester->name)
+                            ->where('academic_year_name', $activeYear->year_name);
+                    })->orWhere(function($sub) use ($activeYear, $activeSemester) {
+                        $sub->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                            ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                    });
+                })
                 ->exists();
         }
 
@@ -34,32 +42,102 @@ class StudentDashboardController extends Controller
 
         // 4. Get enrollment for CURRENT ACTIVE YEAR
         $currentYearEnrollment = null;
-        if ($activeYear && $latestEnrollment) {
-            if (strpos($latestEnrollment->year_level, $activeYear->year_name) !== false) {
+        if ($activeYear && $activeSemester && $latestEnrollment) {
+            if (stripos($latestEnrollment->year_level, $activeYear->year_name) !== false && 
+                stripos($latestEnrollment->year_level, $activeSemester->name) !== false) {
                 $currentYearEnrollment = $latestEnrollment;
             }
         }
 
         // 5. Check if student is enrolled in the CURRENTLY ACTIVE academic year
         $isEnrolledInActiveYear = false;
-        if ($activeYear) {
+        if ($activeYear && $activeSemester) {
             $isEnrolledInActiveYear = Enrollment::where('user_id', $user->id)
-                ->whereIn('status', ['Enrolled', 'Approved', 'Pending'])
-                ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                ->whereIn('status', ['Enrolled', 'Approved', 'Pending', 'Paid'])
+                ->where(function($q) use ($activeYear, $activeSemester) {
+                    $q->where(function($sub) use ($activeYear, $activeSemester) {
+                        $sub->where('semester_name', $activeSemester->name)
+                            ->where('academic_year_name', $activeYear->year_name);
+                    })->orWhere(function($sub) use ($activeYear, $activeSemester) {
+                        $sub->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                            ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                    });
+                })
                 ->exists();
         }
 
 
-        // 7. Check if an enrollment record already exists for this user in the active year
+        // 7. Check if an enrollment record already exists for this user in the active year, or if they have unresolved applications
         $existingEnrollment = null;
         $hasSubmitted = false;
-        if ($activeYear) {
+        if ($activeYear && $activeSemester) {
             $existingEnrollment = Enrollment::where('user_id', $user->id)
-                ->whereIn('status', ['Pending', 'Approved', 'Enrolled', 'Rejected'])
-                ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                ->where(function($query) use ($activeYear, $activeSemester) {
+                    $query->where(function($q) use ($activeYear, $activeSemester) {
+                        $q->whereIn('status', ['Pending', 'Approved', 'Paid', 'Enrolled', 'Rejected'])
+                          ->where(function($sub) use ($activeYear, $activeSemester) {
+                              $sub->where(function($sub2) use ($activeYear, $activeSemester) {
+                                  $sub2->where('semester_name', $activeSemester->name)
+                                       ->where('academic_year_name', $activeYear->year_name);
+                              })->orWhere(function($sub2) use ($activeYear, $activeSemester) {
+                                  $sub2->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                                       ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                              });
+                          });
+                    })->orWhereIn('status', ['Pending', 'Approved']); // Block if they have ANY unresolved applications
+                })
                 ->first();
             $hasSubmitted = $existingEnrollment !== null;
         }
+
+        // 8. Logic for Progress Bar Steps (to be used for button visibility)
+        $isOldStudent = false;
+        if ($myEnrollments > 1) {
+            $isOldStudent = true;
+        } else {
+            $hasArchivedEnrollment = Enrollment::where('user_id', $user->id)
+                ->whereNotNull('archived_at')
+                ->exists();
+            if ($hasArchivedEnrollment) {
+                $isOldStudent = true;
+            } else {
+                // Check if they have an Enrolled status from a PREVIOUS term
+                $previousEnrolled = Enrollment::where('user_id', $user->id)
+                    ->where('status', 'Enrolled')
+                    ->get()
+                    ->filter(function($enrollment) use ($activeYear, $activeSemester) {
+                        if (!$activeYear || !$activeSemester) return true;
+                        return !(stripos((string)$enrollment->year_level, $activeYear->year_name) !== false && 
+                                 stripos((string)$enrollment->year_level, $activeSemester->name) !== false);
+                    });
+                $isOldStudent = $previousEnrolled->count() > 0;
+            }
+        }
+        $isStep1Done = false;
+        $isStep2Done = false;
+        $isStep3Done = false;
+
+        if ($isOldStudent && $latestEnrollment) {
+            // Step 1: Online Docs
+            $docFields = $latestEnrollment->getDocumentFields();
+            $uploadedCount = 0;
+            foreach ($docFields as $field => $label) {
+                if (!empty($latestEnrollment->$field)) {
+                    $uploadedCount++;
+                }
+            }
+            $isStep1Done = ($uploadedCount === count($docFields));
+
+            // Step 2: Physical Docs
+            $isStep2Done = ($latestEnrollment->physical_documents_received == 1);
+
+            // Step 3: Registrar Clearance
+            $isStep3Done = ($latestEnrollment->credentials_verified == 1);
+        }
+        
+        // Final flag for dashboard button: 
+        // New student can always enroll. Old student must finish Step 3 (Clearance).
+        $canEnrollNow = !$isOldStudent || $isStep3Done;
 
         return view('dashboard', compact(
             'activeSemester',
@@ -70,7 +148,8 @@ class StudentDashboardController extends Controller
             'currentYearEnrollment',
             'isEnrolledInActiveYear',
             'hasSubmitted',
-            'existingEnrollment'
+            'existingEnrollment',
+            'canEnrollNow'
         ));
     }
 }
