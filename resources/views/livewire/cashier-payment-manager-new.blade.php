@@ -91,7 +91,6 @@
                             </div>
                             <p class="text-xs text-white/40 font-bold uppercase tracking-widest truncate">{{ $enrollment->year_level ?? 'N/A' }} | {{ $enrollment->course_code ?? 'N/A' }} | {{ $enrollment->semester ?? 'N/A' }}</p>
                         </div>
-<<<<<<< HEAD
                         <div class="flex items-center gap-3">
                             <button wire:click="setPaymentMode"
                                 class="text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
@@ -101,13 +100,6 @@
                             <button wire:click="setDropPayMode"
                                 class="text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
                                     {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400 text-white ring-2 ring-amber-300/40' : 'bg-white/10 text-white/50 hover:bg-white/20' }}">
-=======
-                        <div class="flex items-center gap-2.5 flex-shrink-0">
-                            <button wire:click="openCreateModal" class="bg-cyan-500 hover:bg-cyan-400 text-white text-xs font-black py-2 px-5 rounded-lg uppercase tracking-[0.1em] transition-all shadow-lg active:scale-95">
-                                Payment
-                            </button>
-                            <button class="bg-amber-500 hover:bg-amber-400 text-white text-xs font-black py-2 px-5 rounded-lg uppercase tracking-[0.1em] transition-all shadow-lg active:scale-95">
->>>>>>> origin/main
                                 Drop Pay
                             </button>
                         </div>
@@ -128,7 +120,6 @@
                 </div>
 
                 <!-- Tab Content -->
-<<<<<<< HEAD
                 <div class="px-8 py-4 space-y-4">
                     @if($activeTab === 'assessment')
                         <div class="space-y-3">
@@ -144,11 +135,6 @@
                                     </div>
                                 </div>
                             @endif
-=======
-                <div class="flex-grow overflow-y-auto custom-scrollbar px-6 py-3 space-y-2">
-                    @if($activeTab === 'assessment')
-                        <div class="space-y-1">
->>>>>>> origin/main
                             <!-- Fee Items -->
                             <div class="space-y-1">
                                 <div class="flex justify-between items-center pb-1">
@@ -223,7 +209,6 @@
                             @forelse($paymentHistory as $transaction)
                                 <div class="p-2 bg-white/[0.05] rounded border border-white/10 space-y-1">
                                     <div class="flex items-center justify-between">
-<<<<<<< HEAD
                                         <span class="font-black text-white text-xs">Transaction #{{ $transaction->id }}</span>
                                         <div class="flex items-center gap-1.5">
                                             @if($transaction->is_drop_payment)
@@ -233,12 +218,6 @@
                                                 {{ $transaction->status }}
                                             </span>
                                         </div>
-=======
-                                        <span class="font-black text-white text-xs">Txn #{{ $transaction->id }}</span>
-                                        <span class="text-xs font-black {{ $transaction->status === 'Paid' ? 'text-emerald-400' : ($transaction->status === 'Pending' ? 'text-amber-400' : 'text-rose-400') }} bg-white/5 px-1.5 py-0.5 rounded text-xs">
-                                            {{ $transaction->status }}
-                                        </span>
->>>>>>> origin/main
                                     </div>
                                     <div class="text-xs text-white/40 font-bold">{{ $transaction->created_at->format('M d • h:i A') }}</div>
                                     <div class="space-y-0.5 pt-1 border-t border-white/5">
@@ -262,7 +241,6 @@
                 </div>
 
                 <!-- TRANSACTION ENTRY SECTION -->
-<<<<<<< HEAD
                 <div class="px-6 py-2 border-t {{ $isDropPayMode ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-white/[0.02]' }} space-y-2">
                     <div class="flex items-center gap-2">
                         <h4 class="font-black text-white uppercase tracking-tight text-xs">Transaction Entry</h4>
@@ -270,10 +248,6 @@
                             <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 uppercase tracking-widest">Drop Pay Mode</span>
                         @endif
                     </div>
-=======
-                <div class="px-6 py-2 border-t border-white/5 bg-white/[0.02] space-y-1.5">
-                    <h4 class="font-black text-white uppercase tracking-tight text-xs">Transaction Entry</h4>
->>>>>>> origin/main
 
                     <!-- Amount Due Display -->
                     <div class="flex justify-center items-center p-2 bg-white/[0.05] rounded border border-white/10">
@@ -303,15 +277,10 @@
                     </div>
 
                     <!-- Pay Button -->
-<<<<<<< HEAD
                     <button wire:click="submitPayment"
                         class="w-full text-white text-xs font-black py-2 px-4 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
                             {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400' : 'bg-cyan-500 hover:bg-cyan-400' }}">
                         {{ $isDropPayMode ? 'Dropping Payment' : 'Pay' }}
-=======
-                    <button wire:click="submitPayment" class="w-full bg-cyan-500 hover:bg-cyan-400 text-white text-xs font-black py-1.5 px-4 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95">
-                        Pay
->>>>>>> origin/main
                     </button>
                 </div>
             @else
