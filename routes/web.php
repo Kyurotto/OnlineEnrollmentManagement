@@ -104,6 +104,7 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::patch('/dashboard/applications/{id}/approve', [RegistrarDashboardController::class, 'approve'])->name('dashboard.approve');
     Route::patch('/dashboard/applications/{id}/reject', [RegistrarDashboardController::class, 'reject'])->name('dashboard.reject');
     Route::get('/students', RegistrarStudentManager::class)->name('students.index');
+    Route::get('/students/export', [\App\Http\Controllers\RegistryExportController::class, 'export'])->name('students.export');
     Route::get('/students/{id}/edit', [RegistrarStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [RegistrarStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [RegistrarStudentController::class, 'destroy'])->name('students.destroy');
@@ -165,6 +166,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/payments/college', PaymentManager::class)->name('payments.college');
     Route::get('/payments/shs', PaymentManager::class)->name('payments.shs');
     Route::get('/students', AdminStudentManager::class)->name('students.index');
+    Route::get('/students/export', [\App\Http\Controllers\RegistryExportController::class, 'export'])->name('students.export');
     Route::get('/students/{id}/edit', [AdminStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [AdminStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
