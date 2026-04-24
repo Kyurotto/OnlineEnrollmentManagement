@@ -202,7 +202,9 @@
         </div>
     @endif
 </td>
+=======
 <<<<<<< HEAD
+>>>>>>> origin/main
 <td class="py-6 px-8 text-right">
     <div class="flex justify-end gap-3">
         <a href="{{ route('admin.students.edit', $student->id) }}"
@@ -216,7 +218,7 @@
         </a>
     </div>
 </td>
-=======
+<<<<<<< HEAD
 >>>>>>> origin/main
                         </tr>
                     @empty

@@ -91,15 +91,15 @@
                             </div>
                             <p class="text-xs text-white/40 font-bold uppercase tracking-widest truncate">{{ $enrollment->year_level ?? 'N/A' }} | {{ $enrollment->course_code ?? 'N/A' }} | {{ $enrollment->semester ?? 'N/A' }}</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <button wire:click="setPaymentMode"
-                                class="text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
-                                    {{ !$isDropPayMode ? 'bg-cyan-500 hover:bg-cyan-400 text-white ring-2 ring-cyan-300/40' : 'bg-white/10 text-white/50 hover:bg-white/20' }}">
-                                Payment
-                            </button>
-                            <button wire:click="setDropPayMode"
-                                class="text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
-                                    {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400 text-white ring-2 ring-amber-300/40' : 'bg-white/10 text-white/50 hover:bg-white/20' }}">
+<div class="flex items-center gap-3">
+    <button wire:click="setPaymentMode"
+        class="text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
+            {{ !$isDropPayMode ? 'bg-cyan-500 hover:bg-cyan-400 text-white ring-2 ring-cyan-300/40' : 'bg-white/10 text-white/50 hover:bg-white/20' }}">
+        Payment
+    </button>
+    <button wire:click="setDropPayMode"
+        class="text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
+            {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400 text-white ring-2 ring-amber-300/40' : 'bg-white/10 text-white/50 hover:bg-white/20' }}">
                                 Drop Pay
                             </button>
                         </div>
@@ -120,21 +120,21 @@
                 </div>
 
                 <!-- Tab Content -->
-                <div class="px-8 py-4 space-y-4">
-                    @if($activeTab === 'assessment')
-                        <div class="space-y-3">
-                            {{-- Dropped/Withdrawn banner --}}
-                            @if($enrollment && in_array($enrollment->status, ['Dropped', 'Withdrawn']))
-                                <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/20">
-                                    <svg class="w-4 h-4 text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-                                    <div>
-                                        <p class="text-rose-400 text-[10px] font-black uppercase tracking-widest">{{ $enrollment->status }} Student</p>
-                                        @if($enrollment->drop_reason)
-                                            <p class="text-rose-300/60 text-[9px] font-bold mt-0.5">Reason: {{ $enrollment->drop_reason }}</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
+<div class="px-8 py-4 space-y-4">
+    @if($activeTab === 'assessment')
+        <div class="space-y-3">
+            {{-- Dropped/Withdrawn banner --}}
+            @if($enrollment && in_array($enrollment->status, ['Dropped', 'Withdrawn']))
+                <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                    <svg class="w-4 h-4 text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                    <div>
+                        <p class="text-rose-400 text-[10px] font-black uppercase tracking-widest">{{ $enrollment->status }} Student</p>
+                        @if($enrollment->drop_reason)
+                            <p class="text-rose-300/60 text-[9px] font-bold mt-0.5">Reason: {{ $enrollment->drop_reason }}</p>
+                        @endif
+                    </div>
+                </div>
+            @endif
                             <!-- Fee Items -->
                             <div class="space-y-1">
                                 <div class="flex justify-between items-center pb-1">
@@ -209,15 +209,15 @@
                             @forelse($paymentHistory as $transaction)
                                 <div class="p-2 bg-white/[0.05] rounded border border-white/10 space-y-1">
                                     <div class="flex items-center justify-between">
-                                        <span class="font-black text-white text-xs">Transaction #{{ $transaction->id }}</span>
-                                        <div class="flex items-center gap-1.5">
-                                            @if($transaction->is_drop_payment)
-                                                <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 uppercase tracking-widest">DROP</span>
-                                            @endif
-                                            <span class="text-xs font-black {{ $transaction->status === 'Paid' ? 'text-emerald-400' : ($transaction->status === 'Pending' ? 'text-amber-400' : 'text-rose-400') }} bg-white/5 px-2 py-1 rounded-lg">
-                                                {{ $transaction->status }}
-                                            </span>
-                                        </div>
+<span class="font-black text-white text-xs">Transaction #{{ $transaction->id }}</span>
+<div class="flex items-center gap-1.5">
+    @if($transaction->is_drop_payment)
+        <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 uppercase tracking-widest">DROP</span>
+    @endif
+    <span class="text-xs font-black {{ $transaction->status === 'Paid' ? 'text-emerald-400' : ($transaction->status === 'Pending' ? 'text-amber-400' : 'text-rose-400') }} bg-white/5 px-2 py-1 rounded-lg">
+        {{ $transaction->status }}
+    </span>
+</div>
                                     </div>
                                     <div class="text-xs text-white/40 font-bold">{{ $transaction->created_at->format('M d • h:i A') }}</div>
                                     <div class="space-y-0.5 pt-1 border-t border-white/5">
@@ -241,13 +241,13 @@
                 </div>
 
                 <!-- TRANSACTION ENTRY SECTION -->
-                <div class="px-6 py-2 border-t {{ $isDropPayMode ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-white/[0.02]' }} space-y-2">
-                    <div class="flex items-center gap-2">
-                        <h4 class="font-black text-white uppercase tracking-tight text-xs">Transaction Entry</h4>
-                        @if($isDropPayMode)
-                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 uppercase tracking-widest">Drop Pay Mode</span>
-                        @endif
-                    </div>
+<div class="px-6 py-2 border-t {{ $isDropPayMode ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-white/[0.02]' }} space-y-2">
+    <div class="flex items-center gap-2">
+        <h4 class="font-black text-white uppercase tracking-tight text-xs">Transaction Entry</h4>
+        @if($isDropPayMode)
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 uppercase tracking-widest">Drop Pay Mode</span>
+        @endif
+    </div>
 
                     <!-- Amount Due Display -->
                     <div class="flex justify-center items-center p-2 bg-white/[0.05] rounded border border-white/10">
@@ -277,10 +277,10 @@
                     </div>
 
                     <!-- Pay Button -->
-                    <button wire:click="submitPayment"
-                        class="w-full text-white text-xs font-black py-2 px-4 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
-                            {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400' : 'bg-cyan-500 hover:bg-cyan-400' }}">
-                        {{ $isDropPayMode ? 'Dropping Payment' : 'Pay' }}
+<button wire:click="submitPayment"
+    class="w-full text-white text-xs font-black py-2 px-4 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95
+        {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400' : 'bg-cyan-500 hover:bg-cyan-400' }}">
+    {{ $isDropPayMode ? 'Dropping Payment' : 'Pay' }}
                     </button>
                 </div>
             @else

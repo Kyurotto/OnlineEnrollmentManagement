@@ -165,8 +165,10 @@ class PaymentManager extends Component
 
             // Get payment history
             $this->paymentHistory = Payment::where('user_id', $studentId)->orderBy('created_at', 'desc')->get();
+            // Include previous balance carried from prior terms
+            $previousBalance = $this->enrollment->previous_balance ?? 0;
 
-            // Calculate balance
+            // Calculate balance (assessment - discount + previous balance - paid)
             $totalPaid = Payment::where('user_id', $studentId)->where('status', 'Paid')->sum('amount');
             $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $previousBalance) - $totalPaid);
         } else {
