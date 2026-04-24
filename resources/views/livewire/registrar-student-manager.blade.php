@@ -274,7 +274,7 @@
                         class="w-full bg-white/[0.03] text-white border border-white/10 py-4 px-5 rounded-2xl outline-none text-sm font-bold tracking-wide focus:border-purple-500/50 focus:bg-white/[0.05] transition-all cursor-pointer">
                         <option value="" style="background-color:#0d1b2e;color:#ffffff;">— Select a reason —</option>
                         @foreach($classificationReasons as $key => $label)
-                            <option value="{{ $key }}" style="background-color:#0d1b2e;color:#ffffff;">{{ $key }}</option>
+                            <option value="{{ $key }}" style="background-color:#0d1b2e;color:#ffffff;">{{ $label }}</option>
                         @endforeach
                     </select>
                     @error('classificationReason')

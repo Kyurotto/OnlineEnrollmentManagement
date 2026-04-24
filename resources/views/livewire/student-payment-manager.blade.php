@@ -97,6 +97,9 @@
                 <div class="p-4 rounded-lg" style="background: rgba(99,179,237,0.12); border: 2px solid rgba(99,179,237,0.4);">
                     <p class="text-xs font-bold uppercase mb-1" style="color: #63b3ed;">Total Assessment</p>
                     <p class="text-xl font-black text-white">₱{{ number_format($totalAssessment, 2) }}</p>
+                    @if($cashierDiscount > 0)
+                        <p class="text-[10px] mt-1" style="color: #86efac;">Discount: ₱{{ number_format($cashierDiscount, 2) }}</p>
+                    @endif
                 </div>
 
                 <!-- Total Paid -->
@@ -133,6 +136,14 @@
                         <p class="text-xs" style="color: rgba(138,180,216,0.8);">Miscellaneous Fee:</p>
                         <p class="text-sm font-bold text-white">₱{{ number_format($miscellaneousFees, 2) }}</p>
                     </div>
+
+                    @if($cashierDiscount > 0)
+                    <!-- Cashier Discount -->
+                    <div class="flex justify-between items-center pb-3" style="border-bottom: 1px solid rgba(99,179,237,0.2);">
+                        <p class="text-xs font-bold" style="color: #86efac;">✓ Discount Applied by Cashier:</p>
+                        <p class="text-sm font-bold" style="color: #86efac;">(₱{{ number_format($cashierDiscount, 2) }})</p>
+                    </div>
+                    @endif
 
                     <!-- Total to Pay -->
                     <div class="flex justify-between items-center pb-3" style="border-bottom: 2px solid rgba(99,179,237,0.4);">

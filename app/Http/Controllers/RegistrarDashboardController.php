@@ -19,7 +19,7 @@ class RegistrarDashboardController extends Controller
         // 1. Fetch Accurate Data Counts
         $studentsCount = User::where('role', 'student')
                              ->whereHas('application', function($q) {
-                                 $q->whereIn('status', ['Enrolled', 'Approved']);
+                                 $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
                              })
                              ->count();
 
@@ -50,7 +50,7 @@ class RegistrarDashboardController extends Controller
                 'latest_enrollments.user_id'
             )
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved']);
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
 
         $registryTotalStudents = (clone $baseStudentClassStats)->count();
         $registryRegularCount = $hasIsRegular

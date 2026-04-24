@@ -71,7 +71,7 @@
                             <label class="block text-[9px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Student Type</label>
                             <select name="student_type"
                                 class="w-full bg-white/[0.03] text-white border border-white/10 py-4 px-5 rounded-2xl outline-none text-sm font-bold tracking-wide focus:border-purple-500/50 focus:bg-white/[0.05] transition-all cursor-pointer">
-                                @foreach(['New Student' => 'New', 'Transferee' => 'Transferee', 'Shifter' => 'Shifter', 'Returnee' => 'Returnee', 'Old Student' => 'Old'] as $label => $value)
+                                @foreach(['new' => 'New Student', 'transferee' => 'Transferee', 'shifter' => 'Shifter', 'returnee' => 'Returnee'] as $value => $label)
                                     <option value="{{ $value }}" {{ old('student_type', $enrollment->student_type) === $value ? 'selected' : '' }} style="background-color:#0d1b2e;color:#ffffff;">{{ $label }}</option>
                                 @endforeach
                             </select>

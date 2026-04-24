@@ -87,7 +87,7 @@ class RegistrarStudentController extends Controller
             'last_name'              => ['required', 'string', 'max:255'],
             'email'                  => ['required', 'email', 'max:255', Rule::unique('users')->ignore($student->id)],
             'status'                 => ['nullable', 'string'],
-            'student_type'           => ['nullable', 'string', 'in:New,Old,Transferee,Returnee,Shifter'],
+            'student_type'           => ['nullable', 'string', 'in:new,transferee,shifter,returnee'],
             'is_regular'             => ['nullable', 'in:0,1,'],
             'classification_reason'  => ['nullable', 'string'],
         ]);
