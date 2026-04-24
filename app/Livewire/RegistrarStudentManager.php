@@ -135,6 +135,18 @@ class RegistrarStudentManager extends Component
         $enrollment->is_regular = false;
         $enrollment->classification_reason = $this->classificationReason;
         $enrollment->last_audited_at = now();
+
+        // Auto-update student_type to match the reason
+        $typeMap = [
+            'Transferee Credit Gap'   => 'transferee',
+            'Shifter/Bridging'        => 'shifter',
+            'Academic Deficiency'     => 'returnee',
+            'Financial Underloading'  => 'returnee',
+            'Personal/Health Reasons' => 'returnee',
+            'Graduating Special Load' => 'returnee',
+        ];
+        $enrollment->student_type = $typeMap[$this->classificationReason] ?? $enrollment->student_type;
+
         $enrollment->save();
 
         $this->closeClassificationModal();
@@ -221,7 +233,7 @@ $sortField = $this->sortField;
             )
             ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved']);
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid']);
 
         // Search logic
         if (!empty($this->search)) {
@@ -266,7 +278,7 @@ $students = $query->orderBy($sortField, $this->sortDirection)->paginate(10);
                 'users.id', '=', 'latest_enrollments.user_id'
             )
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved']);
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid']);
 
         $totalStudents   = (clone $baseStats)->count();
         $regularCount    = $hasIsRegular ? (clone $baseStats)->whereRaw('latest_enrollments.is_regular = 1')->count() : 0;

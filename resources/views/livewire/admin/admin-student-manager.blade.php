@@ -202,6 +202,22 @@
         </div>
     @endif
 </td>
+<<<<<<< HEAD
+<td class="py-6 px-8 text-right">
+    <div class="flex justify-end gap-3">
+        <a href="{{ route('admin.students.edit', $student->id) }}"
+            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-blue-400 hover:border-blue-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
+            UPDATE
+            <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                    d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+    </div>
+</td>
+=======
+>>>>>>> origin/main
                         </tr>
                     @empty
                         <tr>
