@@ -145,7 +145,12 @@
                             <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
                             <td class="py-6 px-8">
                                 <div class="flex flex-col">
-                                    <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider block font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                        @if($application->extension)
+                                        <span class="text-sm font-bold text-white/40 italic">{{ $application->extension }}</span>
+                                        @endif
+                                    </div>
                                     <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
                                 </div>
                             </td>
@@ -220,7 +225,7 @@
     <div x-show="modalOpen" class="fixed inset-0 z-50 p-4 flex items-center justify-center transition-all duration-300" x-cloak>
         <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false"></div>
 
-        <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10" id="modalContent" wire:ignore>
+        <div class="bg-[#0d1f3c] w-full max-w-7xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10" id="modalContent" wire:ignore>
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                 <div>
                     <span class="text-[9px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-1 block italic text-shadow shadow-cyan-500/20">Analysis Protocol</span>

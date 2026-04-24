@@ -131,20 +131,19 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Semester</label>
-                        <select name="semester" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
-                            <option value="">Select Semester</option>
-                            <option value="1st Semester" {{ old('semester', $semester_part ?? '') === '1st Semester' ? 'selected' : '' }}>1st Semester</option>
-                            <option value="2nd Semester" {{ old('semester', $semester_part ?? '') === '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
-                        </select>
+                        <div class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="font-bold">{{ $activeSemester ? $activeSemester->name : 'Not Set' }}</span>
+                            <span class="text-[9px] font-black text-emerald-400/60 uppercase tracking-widest ml-auto">Auto</span>
+                        </div>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Academic Year</label>
-                        <select name="academic_year" class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-400 outline-none transition-all cursor-pointer" required>
-                            <option value="">Select Year</option>
-                            @foreach($academicYears as $year)
-                                <option value="{{ $year->year_name }}" {{ old('academic_year', $year_part ?? '') === $year->year_name ? 'selected' : '' }}>{{ $year->year_name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3 px-4 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="font-bold">{{ $activeYear ? $activeYear->year_name : 'Not Set' }}</span>
+                            <span class="text-[9px] font-black text-emerald-400/60 uppercase tracking-widest ml-auto">Auto</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,6 +169,19 @@
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Middle Name</label>
                         <input type="text" name="middle_name" value="{{ old('middle_name', $middle_name ?? '') }}" placeholder="Optional" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Extension</label>
+                        <input type="text" name="extension" value="{{ old('extension', $extension ?? '') }}" placeholder="e.g., Jr., Sr., III" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">LRN (Learner Reference Number)</label>
+                        <input type="text" name="lrn" value="{{ old('lrn', $lrn ?? '') }}" placeholder="e.g., 123456789012" maxlength="12" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Religion / Church</label>
+                        <input type="text" name="religion_church" value="{{ old('religion_church', $religion_church ?? '') }}" placeholder="e.g., Catholic, Protestant" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
                     </div>
 
                     <div class="space-y-2">
@@ -204,6 +216,10 @@
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Contact Number</label>
                         <input type="text" name="contact" value="{{ old('contact', $contact ?? '') }}" placeholder="09XXXXXXXXX" maxlength="11" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Facebook Account</label>
+                        <input type="text" name="facebook_account" value="{{ old('facebook_account', $facebook_account ?? '') }}" placeholder="Facebook username or URL" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
                 </div>
             </div>
 
@@ -218,12 +234,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">House No. / Unit</label>
-                        <input type="text" name="house_no" value="{{ old('house_no', $house_no ?? '') }}" placeholder="e.g. 123, Unit 4A" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Street / Road</label>
-                        <input type="text" name="street" value="{{ old('street', $street ?? '') }}" placeholder="Street name" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Prk. / Blk. Lot / Vill.</label>
+                        <input type="text" name="prk_blk_lot_vill" value="{{ old('prk_blk_lot_vill', $prk_blk_lot_vill ?? '') }}" placeholder="e.g., Purok 1, Block A, Lot 5" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-teal-400 outline-none placeholder-white/10 transition-colors" required>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Barangay</label>
@@ -269,6 +281,43 @@
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Guardian Contact Number</label>
                         <input type="text" name="guardian_contact" value="{{ old('guardian_contact', $guardian_contact ?? '') }}" placeholder="09XXXXXXXXX" maxlength="11" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-purple-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Educational Background (SHS Only) --}}
+            @if($level === 'shs')
+            <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
+                 style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
+
+                <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-orange-400 rounded-full"></span>
+                    Educational Background
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Junior High School Attended</label>
+                        <input type="text" name="junior_high_school" value="{{ old('junior_high_school', $junior_high_school ?? '') }}" placeholder="Name of JHS school" class="w-full bg-transparent border-b border-white/10 py-2.5 text-white focus:border-orange-400 outline-none placeholder-white/10 transition-colors">
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Health Information --}}
+            <div class="p-8 rounded-2xl border shadow-2xl shadow-black/40"
+                 style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
+
+                <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-pink-400 rounded-full"></span>
+                    Health Information
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Health Concerns / Medical Issues</label>
+                        <p class="text-xs text-white/30 italic mb-2 ml-1">Please inform us of any health conditions or medical concerns we should be aware of (optional)</p>
+                        <textarea name="health_concerns" placeholder="e.g., Asthma, Allergies, Medications, Physical limitations, etc." rows="4" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-pink-400 outline-none placeholder-white/10 transition-colors resize-none">{{ old('health_concerns', $health_concerns ?? '') }}</textarea>
                     </div>
                 </div>
             </div>

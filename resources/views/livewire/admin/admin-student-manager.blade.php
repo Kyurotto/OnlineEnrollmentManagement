@@ -129,7 +129,6 @@
                         </th>
                      <th class="py-6 px-8 text-center">TYPE</th>
                      <th class="py-6 px-8 text-center">CLASSIFICATION</th>
-                     <th class="py-6 px-8 text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">

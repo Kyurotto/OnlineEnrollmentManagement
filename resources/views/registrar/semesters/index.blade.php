@@ -54,7 +54,7 @@
                                 @if($semester->is_active)
                                     <span class="bg-teal-500/10 text-teal-400 text-xs font-black px-4 py-1.5 rounded-full border border-teal-500/20 shadow-sm uppercase tracking-widest animate-pulse">Actived</span>
                                 @else
-                                    <form action="{{ route('registrar.semesters.activate', $semester->id) }}" method="POST">
+                                    <form action="{{ route('registrar.semesters.activate', $semester->id) }}" method="POST" onsubmit="return confirm('⚠️ SEMESTER ACTIVATION WARNING\n\nActivating this semester will:\n• Archive all currently enrolled students\n• Remove all pending/unapproved applications\n• Reset the enrollment cycle for all students\n• Carry forward unpaid balances\n\nThis action CANNOT be undone.\n\nAre you sure you want to proceed?');">
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit" class="bg-white/5 text-white/20 text-xs font-black px-4 py-1.5 rounded-full border border-white/5 uppercase tracking-widest hover:text-teal-400 hover:border-teal-500/20 transition-all">Activate</button>

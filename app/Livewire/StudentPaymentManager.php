@@ -30,9 +30,18 @@ class StudentPaymentManager extends Component
     {
         $user = Auth::user();
 
-        // Auto-detect from student's latest enrollment (from their application form)
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
+        // Auto-detect from student's latest enrollment for the current term
         $latestEnrollment = Enrollment::where('user_id', $user->id)
             ->where('year_level', '!=', null)
+            ->when($activeYear, function($query) use ($activeYear) {
+                return $query->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%');
+            })
+            ->when($activeSemester, function($query) use ($activeSemester) {
+                return $query->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+            })
             ->latest()
             ->first();
 
@@ -74,16 +83,31 @@ class StudentPaymentManager extends Component
         $this->tuitionFee = (float)($assessment['tuitionFee'] ?? 0);
         $this->miscellaneousFees = (float)($assessment['miscellaneousFees'] ?? 0);
 
-        // Load cashier-applied discount from enrollment
-        $user = Auth::user();
-        $latestEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
-        $this->cashierDiscount = (float) ($latestEnrollment->cashier_discount ?? 0);
+// Load cashier-applied discount from enrollment
+$user = Auth::user();
+$activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+$activeSemester = \App\Models\Semester::where('is_active', true)->first();
 
-        $this->totalAssessment = max(0, $this->tuitionFee + $this->miscellaneousFees - $this->cashierDiscount);
+$currentEnrollment = Enrollment::where('user_id', $user->id)
+    ->when($activeYear, function($query) use ($activeYear) {
+        return $query->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%');
+    })
+    ->when($activeSemester, function($query) use ($activeSemester) {
+        return $query->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+    })
+    ->latest()
+    ->first();
 
-        // Calculate total payments made by student
+$latestEnrollment = $currentEnrollment ?? Enrollment::where('user_id', $user->id)->latest()->first();
+$this->cashierDiscount = (float) ($latestEnrollment->cashier_discount ?? 0);
+$this->totalAssessment = max(0, $this->tuitionFee + $this->miscellaneousFees - $this->cashierDiscount);
+
+// Calculate total payments made by student
         $this->totalPaymentsMade = (float)Payment::where('user_id', $user->id)
             ->where('status', 'Paid')
+            ->when($currentEnrollment, function($query) use ($currentEnrollment) {
+                return $query->where('application_id', $currentEnrollment->id);
+            })
             ->sum('amount');
     }
 
