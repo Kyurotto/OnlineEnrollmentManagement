@@ -18,8 +18,9 @@ class CashierDashboardManager extends Component
     {
         // 1. Calculate Stats
         $stats = [
-            'daily_collection'   => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->sum('amount'),
+            'daily_collection'    => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->sum('amount'),
             'transactions_today'  => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->count(),
+            'students_paid_today' => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->distinct('user_id')->count('user_id'),
         ];
 
         // 2. Fetch Payments for Today (Paid only)
