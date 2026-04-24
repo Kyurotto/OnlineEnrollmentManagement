@@ -22,12 +22,9 @@ class CashierDashboardController extends Controller
             ->whereDate('updated_at', Carbon::today())
             ->count();
             
-        $pendingApprovals = Enrollment::where('status', 'Pending')->count();
-
         $stats = [
             'daily_collection' => $dailyCollection,
             'transactions_today' => $transactionsToday,
-            'pending_verifications' => $pendingApprovals,
         ];
 
         // 2. Fetch Payments for Today

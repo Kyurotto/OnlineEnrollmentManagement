@@ -30,9 +30,18 @@ class StudentPaymentManager extends Component
     {
         $user = Auth::user();
 
-        // Auto-detect from student's latest enrollment (from their application form)
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
+        // Auto-detect from student's latest enrollment for the current term
         $latestEnrollment = Enrollment::where('user_id', $user->id)
             ->where('year_level', '!=', null)
+            ->when($activeYear, function($query) use ($activeYear) {
+                return $query->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%');
+            })
+            ->when($activeSemester, function($query) use ($activeSemester) {
+                return $query->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+            })
             ->latest()
             ->first();
 
@@ -84,6 +93,9 @@ class StudentPaymentManager extends Component
         // Calculate total payments made by student
         $this->totalPaymentsMade = (float)Payment::where('user_id', $user->id)
             ->where('status', 'Paid')
+            ->when($currentEnrollment, function($query) use ($currentEnrollment) {
+                return $query->where('application_id', $currentEnrollment->id);
+            })
             ->sum('amount');
     }
 
@@ -120,8 +132,9 @@ class StudentPaymentManager extends Component
             ->latest()
             ->first();
 
-        // Fetch payment history for the student
+        // Fetch payment history for the student (only confirmed/paid)
         $paymentRecords = Payment::where('user_id', $user->id)
+            ->where('status', 'Paid')
             ->orderBy('created_at', 'desc')
             ->get();
 

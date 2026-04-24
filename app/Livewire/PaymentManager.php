@@ -168,7 +168,7 @@ class PaymentManager extends Component
 
             // Calculate balance
             $totalPaid = Payment::where('user_id', $studentId)->where('status', 'Paid')->sum('amount');
-            $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
+            $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $previousBalance) - $totalPaid);
         } else {
             // No enrollment found, reset all fields
             $this->tuitionFees = 0;
@@ -380,7 +380,8 @@ class PaymentManager extends Component
         $query = Payment::select('payments.*')
             ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
             ->leftJoin('users', 'payments.user_id', '=', 'users.id') 
-            ->with(['user', 'application']); 
+            ->with(['user', 'application'])
+            ->where('payments.status', '!=', 'Pending');
 
         if ($this->statusFilter != 'All statuses') {
             $query->where('payments.status', $this->statusFilter);

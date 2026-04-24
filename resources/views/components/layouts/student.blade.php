@@ -65,11 +65,67 @@
                 <div class="mt-1 space-y-0.5">
 
                     @php
-                        $hasEnrollment = \App\Models\Enrollment::where('user_id', auth()->id())->exists();
+                        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+                        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+                        
+                        $hasCurrentEnrollment = false;
+                        if ($activeYear && $activeSemester) {
+                            $hasCurrentEnrollment = \App\Models\Enrollment::where('user_id', auth()->id())
+                                ->where(function($query) use ($activeYear, $activeSemester) {
+                                    $query->where(function($q) use ($activeYear, $activeSemester) {
+                                        $q->whereIn('status', ['Pending', 'Approved', 'Paid', 'Enrolled', 'Rejected'])
+                                          ->where(function($sub) use ($activeYear, $activeSemester) {
+                                              $sub->where(function($sub2) use ($activeYear, $activeSemester) {
+                                                  $sub2->where('semester_name', $activeSemester->name)
+                                                      ->where('academic_year_name', $activeYear->year_name);
+                                              })->orWhere(function($sub2) use ($activeYear, $activeSemester) {
+                                                  // Case-insensitive fallback if supported by DB or exact match
+                                                  $sub2->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                                                      ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                                              });
+                                          });
+                                    })->orWhereIn('status', ['Pending', 'Approved']); // Block if they have ANY unresolved applications
+                                })
+                                ->exists();
+                        }
+
+                        // Determine if it's an old student who is cleared (Step 3 complete)
+                        $latestEnrollment = \App\Models\Enrollment::where('user_id', auth()->id())->latest()->first();
+                        $enrollmentCount = \App\Models\Enrollment::where('user_id', auth()->id())->count();
+                        $hasPreviousEnrollment = \App\Models\Enrollment::where('user_id', auth()->id())
+                            ->where('status', 'Enrolled')
+                            ->exists();
+                        $hasArchivedEnrollment = \App\Models\Enrollment::where('user_id', auth()->id())
+                            ->whereNotNull('archived_at')
+                            ->exists();
+                        $isOldStudent = $hasPreviousEnrollment || $hasArchivedEnrollment || ($enrollmentCount > 1);
+                        $isStep1Done = false;
+                        $isStep2Done = false;
+                        $isStep3Done = false;
+
+                        if ($isOldStudent) {
+                            // Step 1: Online Docs
+                            $docFields = $latestEnrollment->getDocumentFields();
+                            $uploadedCount = 0;
+                            foreach($docFields as $field => $label) {
+                                if (!empty($latestEnrollment->$field)) { $uploadedCount++; }
+                            }
+                            $isStep1Done = ($uploadedCount === count($docFields));
+
+                            // Step 2: Physical Docs
+                            $isStep2Done = ($latestEnrollment->physical_documents_received == 1);
+
+                            // Step 3: Registrar Clearance
+                            $isStep3Done = ($latestEnrollment->credentials_verified == 1);
+                        }
+                        
+                        // Link is clickable if NO current enrollment exists, 
+                        // AND (it's a new student OR all 3 prep steps for old students are done)
+                        $canEnroll = !$hasCurrentEnrollment && (!$isOldStudent || $isStep3Done);
                     @endphp
 
                     {{-- Enrollment --}}
-                    @if(!$hasEnrollment)
+                    @if($canEnroll)
                     <a href="{{ route('student.enrollment.create') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
                        style="{{ request()->routeIs('student.enrollment.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
@@ -87,12 +143,20 @@
                          style="color: #8ab4d8;">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
                         <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Enrollment</span>
-                        <span class="absolute left-full ml-2 px-2 py-1 bg-black text-[10px] font-bold text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Already submitted</span>
+                        @if($hasCurrentEnrollment)
+                            <span class="absolute left-full ml-2 px-2 py-1 bg-black text-[10px] font-bold text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Already submitted</span>
+                        @else
+                            <span class="absolute left-full ml-2 px-2 py-1 bg-black text-[10px] font-bold text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Complete Steps 1-3 to unlock</span>
+                        @endif
                     </div>
                     @endif
 
 
-                    @if($hasEnrollment)
+                    @php
+                        $hasAnyEnrollment = \App\Models\Enrollment::where('user_id', auth()->id())->exists();
+                    @endphp
+
+                    @if($hasAnyEnrollment)
                         <a href="{{ route('student.enrollment.upload') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
                            style="{{ request()->routeIs('student.enrollment.upload') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
@@ -105,7 +169,16 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                             <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Documents</span>
                         </a>
+                    @else
+                        <div class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium opacity-40 cursor-not-allowed group relative"
+                             style="color: #8ab4d8;">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <span class="hidden group-hover/side:inline-block whitespace-nowrap align-middle">Documents</span>
+                            <span class="absolute left-full ml-2 px-2 py-1 bg-black text-[10px] font-bold text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Apply first to unlock</span>
+                        </div>
+                    @endif
 
+                    @if($hasCurrentEnrollment)
                         <a href="{{ route('student.enrollment.review') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-[15px] font-medium transition-all duration-200 relative"
                            style="{{ request()->routeIs('student.enrollment.review') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"

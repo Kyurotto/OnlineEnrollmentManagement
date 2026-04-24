@@ -50,7 +50,7 @@
                     <div class="w-full sm:w-40 relative">
                         <select wire:model.live="statusFilter" class="w-full bg-white/5 bg-none border border-white/10 rounded-xl py-3 px-5 text-xs text-white/60 font-black uppercase tracking-widest focus:border-emerald-500/50 outline-none cursor-pointer appearance-none transition-all shadow-inner">
                             <option value="All statuses" class="bg-[#0d1f3c]">All Statuses</option>
-                            @foreach(['Paid', 'Pending', 'Rejected'] as $s)
+                            @foreach(['Paid', 'Rejected'] as $s)
                                 <option value="{{ $s }}" class="bg-[#0d1f3c]">{{ $s }}</option>
                             @endforeach
                         </select>
@@ -102,10 +102,8 @@
                         <td class="py-5 px-5 text-center whitespace-nowrap">
                             @if($payment->status === 'Paid')
                                 <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full border border-emerald-500/20 shadow-sm uppercase tracking-[0.1em]">Paid</span>
-                            @elseif($payment->status === 'Rejected')
-                                <span class="bg-rose-500/10 text-rose-500 text-[10px] font-black px-3 py-1 rounded-full border border-rose-500/20 shadow-sm uppercase tracking-[0.1em]">Rejected</span>
                             @else
-                                <span class="bg-amber-500/10 text-amber-400 text-[10px] font-black px-3 py-1 rounded-full border border-amber-500/20 shadow-sm uppercase tracking-[0.1em]">Pending</span>
+                                <span class="bg-rose-500/10 text-rose-500 text-[10px] font-black px-3 py-1 rounded-full border border-rose-500/20 shadow-sm uppercase tracking-[0.1em]">Rejected</span>
                             @endif
                         </td>
                         <td class="py-5 px-5 text-right whitespace-nowrap">

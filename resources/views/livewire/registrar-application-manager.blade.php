@@ -235,7 +235,7 @@
     <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false; selectedId = null"></div>
 
-        <div class="bg-[#0d1f3c] w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent" wire:ignore>
+        <div class="bg-[#0d1f3c] w-full max-w-7xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent" wire:ignore>
 
             <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center gap-6 bg-white/[0.01]">
                 <div>
@@ -459,6 +459,10 @@
                         class="text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0">
                         Done Hard Docs
                     </button>
+                    <button type="button" id="clearanceBtn"
+                        class="text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0">
+                        Grant Clearance
+                    </button>
                     <button type="button" id="approveBtn"
                         @click="@this.approve(selectedId); setTimeout(() => { location.reload(); }, 800);"
                         class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 shrink-0">
@@ -519,6 +523,24 @@
         } else {
             toggleBtn.textContent = 'Done Hard Docs';
             toggleBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-cyan-500 text-black shrink-0';
+        }
+        
+        // Clearance Button Styling & Click Handler
+        const clearanceBtn = document.getElementById('clearanceBtn');
+        if (app.credentials_verified) {
+            clearanceBtn.textContent = 'Revoke Clearance';
+            clearanceBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 shrink-0';
+            clearanceBtn.onclick = function() {
+                @this.revokeClearance(currentApplicationId);
+                setTimeout(() => { location.reload(); }, 800);
+            };
+        } else {
+            clearanceBtn.textContent = 'Grant Clearance';
+            clearanceBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0';
+            clearanceBtn.onclick = function() {
+                @this.grantClearance(currentApplicationId);
+                setTimeout(() => { location.reload(); }, 800);
+            };
         }
 
         // Guardian info

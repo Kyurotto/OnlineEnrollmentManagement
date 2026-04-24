@@ -78,12 +78,7 @@
                             <p class="text-xs text-white/40 font-bold uppercase tracking-widest">{{ $enrollment->year_level ?? 'N/A' }} | {{ $enrollment->course_code ?? 'N/A' }} | {{ $enrollment->semester ?? 'N/A' }} semester • {{ $enrollment->academic_year ?? 'N/A' }}</p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <button wire:click="openCreateModal" class="bg-cyan-500 hover:bg-cyan-400 text-white text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95">
-                                Payment
-                            </button>
-                            <button class="bg-amber-500 hover:bg-amber-400 text-white text-xs font-black py-3 px-6 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95">
-                                Drop Pay
-                            </button>
+                            <!-- Buttons removed for Admin -->
                         </div>
                     </div>
                 </div>
@@ -141,25 +136,6 @@
                                             <span class="font-black text-emerald-400 text-xs uppercase tracking-widest">✓ Discount Applied</span>
                                             <span class="font-black text-emerald-300 text-xs">₱{{ number_format($appliedDiscount, 2) }} ({{ number_format(($totalAssessment > 0 ? ($appliedDiscount / $totalAssessment * 100) : 0), 2) }}%)</span>
                                         </div>
-                                        <button wire:click="removeDiscount" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs font-black py-1.5 px-3 rounded-lg uppercase tracking-[0.15em] transition-all">
-                                            Remove Discount
-                                        </button>
-                                    </div>
-                                @else
-                                    <!-- Discount Input -->
-                                    <div class="space-y-2">
-                                        <label class="font-black text-white/70 text-xs uppercase tracking-widest">Apply Discount:</label>
-                                        <div class="flex gap-2">
-                                            <div class="flex-1 relative">
-                                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 font-bold text-xs">₱</span>
-                                                <input type="number" wire:model="discountAmount" step="0.01" min="0"
-                                                    class="w-full pl-7 pr-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 font-bold text-xs focus:border-blue-500/50 outline-none transition-all"
-                                                    placeholder="0.00">
-                                            </div>
-                                            <button wire:click="applyDiscount" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-1.5 px-4 rounded-lg uppercase tracking-[0.15em] transition-all text-xs">
-                                                Apply
-                                            </button>
-                                        </div>
                                     </div>
                                 @endif
                             </div>
@@ -209,40 +185,6 @@
                     @endif
                 </div>
 
-                <!-- TRANSACTION ENTRY SECTION -->
-                <div class="px-6 py-2 border-t border-white/5 bg-white/[0.02] space-y-2">
-                    <h4 class="font-black text-white uppercase tracking-tight text-xs">Transaction Entry</h4>
-
-                    <!-- Amount Due Display -->
-                    <div class="flex justify-between items-center p-2 bg-white/[0.05] rounded-lg border border-white/10">
-                        <span class="text-xs text-white/60 font-bold uppercase tracking-widest">Amount Due:</span>
-                        <span class="font-black text-cyan-300 text-sm">₱ {{ number_format($currentBalance, 2) }}</span>
-                    </div>
-
-                    <!-- Amount Paid & Reference -->
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-xs text-white/60 font-bold uppercase tracking-widest mb-1 block">Amount Paid:</label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 font-bold text-xs">₱</span>
-                                <input type="number" wire:model.live="amount" step="0.01" min="0"
-                                    class="w-full pl-7 pr-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 font-bold text-xs focus:border-blue-500/50 outline-none transition-all"
-                                    placeholder="0.00">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs text-white/60 font-bold uppercase tracking-widest mb-1 block">Reference No.:</label>
-                            <input type="text" wire:model="reference_no"
-                                class="w-full px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 font-bold text-xs focus:border-blue-500/50 outline-none transition-all"
-                                placeholder="xxxxx">
-                        </div>
-                    </div>
-
-                    <!-- Pay Button -->
-                    <button wire:click="submitPayment" class="w-full bg-cyan-500 hover:bg-cyan-400 text-white text-xs font-black py-2 px-4 rounded-lg uppercase tracking-[0.2em] transition-all shadow-lg active:scale-95">
-                        Pay
-                    </button>
-                </div>
             @else
                 <div class="flex-grow flex items-center justify-center">
                     <div class="text-center">

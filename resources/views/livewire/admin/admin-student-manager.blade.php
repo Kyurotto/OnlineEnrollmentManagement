@@ -129,7 +129,6 @@
                         </th>
                      <th class="py-6 px-8 text-center">TYPE</th>
                      <th class="py-6 px-8 text-center">CLASSIFICATION</th>
-                     <th class="py-6 px-8 text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-white/5">
@@ -203,6 +202,7 @@
         </div>
     @endif
 </td>
+<<<<<<< HEAD
 <td class="py-6 px-8 text-right">
     <div class="flex justify-end gap-3">
         <a href="{{ route('admin.students.edit', $student->id) }}"
@@ -216,6 +216,8 @@
         </a>
     </div>
 </td>
+=======
+>>>>>>> origin/main
                         </tr>
                     @empty
                         <tr>
