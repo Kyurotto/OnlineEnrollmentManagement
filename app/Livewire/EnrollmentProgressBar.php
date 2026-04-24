@@ -25,7 +25,6 @@ class EnrollmentProgressBar extends Component
             ->latest()
             ->first();
 
-
         $isEnrollmentForCurrentTerm = false;
         if ($latestEnrollment && $activeYear && $activeSemester) {
             $isEnrollmentForCurrentTerm = (stripos((string)$latestEnrollment->year_level, $activeYear->year_name) !== false && 
@@ -35,10 +34,6 @@ class EnrollmentProgressBar extends Component
         $anyEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
         $allEnrollmentsCount = Enrollment::where('user_id', $user->id)->count();
         
-        // A student is "Old" if they have been previously enrolled (completed enrollment)
-        // for a PREVIOUS term, or have archived enrollment records from previous terms,
-        // or have multiple enrollments.
-        // If they only have 1 enrollment, they are a new student, even if their status is 'Enrolled'.
         $isOldStudent = false;
         if ($allEnrollmentsCount > 1) {
             $isOldStudent = true;
@@ -49,13 +44,11 @@ class EnrollmentProgressBar extends Component
             if ($hasArchivedEnrollment) {
                 $isOldStudent = true;
             } else {
-                // Check if they have an Enrolled status from a PREVIOUS term
                 $previousEnrolled = Enrollment::where('user_id', $user->id)
                     ->where('status', 'Enrolled')
                     ->get()
                     ->filter(function($enrollment) use ($activeYear, $activeSemester) {
                         if (!$activeYear || !$activeSemester) return true;
-                        // If the enrollment is for the current term, it's NOT a previous term
                         return !(stripos((string)$enrollment->year_level, $activeYear->year_name) !== false && 
                                  stripos((string)$enrollment->year_level, $activeSemester->name) !== false);
                     });
@@ -76,7 +69,6 @@ class EnrollmentProgressBar extends Component
             $isFullyUploaded = ($uploadedCount === count($docFields));
         }
 
-        // Always use 6-step bar for old students
         $isOldStudentWithMissingDocs = $isOldStudent;
 
         $steps = [
@@ -88,16 +80,13 @@ class EnrollmentProgressBar extends Component
             'enroll'              => 'grey'
         ];
 
-        // Build dynamic steps array for Old Students
         $oldStudentStepsKeys = [];
 
         if ($isOldStudent) {
-            // Determine lifetime document completion based on ANY enrollment they've had
             $isOnlineDocsDone = $isFullyUploaded;
             $isPhysicalDocsDone = ($anyEnrollment && $anyEnrollment->physical_documents_received == 1);
             $isCleared = ($anyEnrollment && $anyEnrollment->credentials_verified == 1);
 
-            // Fixed 6-step sequence for Old Students
             $oldStudentStepsKeys = [
                 'online_docs',
                 'physical_docs',
@@ -110,14 +99,17 @@ class EnrollmentProgressBar extends Component
             // 1. Online Docs
             if ($isOnlineDocsDone) {
                 $steps['online_docs'] = 'green';
+            } else if ($anyEnrollment && !empty($anyEnrollment->promissory_note_path)) {
+                $steps['online_docs'] = 'ongoing'; // Promissory Note -> Ongoing
             } else {
                 $steps['online_docs'] = 'yellow';
             }
 
             // 2. Physical Docs
-            // "if the registrar approve the done hard docs the display of the progress bar is done check indicator and it can also proceed the third steps"
             if ($isPhysicalDocsDone) {
                 $steps['physical_docs'] = 'green';
+            } else if ($anyEnrollment && !empty($anyEnrollment->promissory_note_path)) {
+                $steps['physical_docs'] = 'ongoing';
             } else {
                 $steps['physical_docs'] = 'yellow';
             }
@@ -125,25 +117,25 @@ class EnrollmentProgressBar extends Component
             // 3. Registrar Clearance
             if ($isCleared) {
                 $steps['registrar_clearance'] = 'green';
+            } else if ($anyEnrollment && !empty($anyEnrollment->promissory_note_path)) {
+                $steps['registrar_clearance'] = 'ongoing';
             } else {
-                // If they haven't been cleared yet, it's yellow/pending
                 $steps['registrar_clearance'] = 'yellow';
             }
 
-            // 4. Application (Fill up form for new term)
-            // They can only fill up the form if they are cleared
-            if ($steps['registrar_clearance'] === 'green') {
+            // 4. Application
+            if ($steps['registrar_clearance'] === 'green' || $steps['registrar_clearance'] === 'ongoing') {
                 if ($isEnrollmentForCurrentTerm && in_array($latestEnrollment->status, ['Pending', 'Approved', 'Paid', 'Enrolled'])) {
                     $steps['application'] = 'green';
                 } else {
-                    $steps['application'] = 'yellow'; // Ready to fill up
+                    $steps['application'] = 'yellow'; 
                 }
             } else {
-                $steps['application'] = 'grey'; // Blocked by clearance
+                $steps['application'] = 'grey'; 
             }
 
             // 5. Payment
-            if ($steps['application'] === 'green') {
+            if ($steps['application'] === 'green' || $steps['application'] === 'ongoing') {
                 if ($isEnrollmentForCurrentTerm && in_array($latestEnrollment->status, ['Paid', 'Enrolled'])) {
                     $steps['payment'] = 'green';
                 } else {
@@ -154,7 +146,7 @@ class EnrollmentProgressBar extends Component
             }
 
             // 6. Enroll
-            if ($steps['payment'] === 'green') {
+            if ($steps['payment'] === 'green' || $steps['payment'] === 'ongoing') {
                 if ($isEnrollmentForCurrentTerm && $latestEnrollment->status === 'Enrolled') {
                     $steps['enroll'] = 'green';
                 } else {
@@ -164,9 +156,7 @@ class EnrollmentProgressBar extends Component
                 $steps['enroll'] = 'grey';
             }
         } 
-        // 2. Logic for Previous 5-Step Bar (New Students or Fully Cleared Old Students)
         else {
-            // For new students, use $anyEnrollment as fallback if $latestEnrollment is null
             $newStudentEnrollment = $latestEnrollment ?? $anyEnrollment;
 
             // Step 1: Application
@@ -182,7 +172,9 @@ class EnrollmentProgressBar extends Component
                 $hasPrimaryDocs = (!empty($anyEnrollment->form_137_path) && !empty($anyEnrollment->psa_path));
                 $hasPromissory = !empty($anyEnrollment->promissory_note_path);
 
-                if ($hasGoodMoral || $hasPrimaryDocs || $hasPromissory) {
+                if ($hasPromissory && !($hasGoodMoral && $hasPrimaryDocs)) {
+                    $steps['online_docs'] = 'ongoing'; // Promissory note gives 'Ongoing' yellow check
+                } else if ($hasGoodMoral || $hasPrimaryDocs) {
                     $steps['online_docs'] = 'green';
                 } else if ($steps['application'] === 'green') {
                     $steps['online_docs'] = 'yellow';
@@ -191,10 +183,11 @@ class EnrollmentProgressBar extends Component
                 $steps['online_docs'] = 'grey';
             }
 
-            // Step 3: Physical Documents (depends on Step 1, NOT Step 2)
-            // Student can proceed to physical docs even if online docs are not fully uploaded
+            // Step 3: Physical Documents
             if ($newStudentEnrollment && $newStudentEnrollment->physical_documents_received == 1) {
                 $steps['physical_docs'] = 'green';
+            } else if ($anyEnrollment && !empty($anyEnrollment->promissory_note_path)) {
+                $steps['physical_docs'] = 'ongoing';
             } else if ($steps['application'] === 'green') {
                 $steps['physical_docs'] = 'yellow';
             } else {
@@ -204,7 +197,7 @@ class EnrollmentProgressBar extends Component
             // Step 4: Cashier Payment
             if ($newStudentEnrollment && in_array($newStudentEnrollment->status, ['Paid', 'Enrolled'])) {
                 $steps['payment'] = 'green';
-            } else if ($steps['physical_docs'] === 'green') {
+            } else if ($steps['physical_docs'] === 'green' || $steps['physical_docs'] === 'ongoing') {
                 $steps['payment'] = 'yellow';
             } else {
                 $steps['payment'] = 'grey';
@@ -213,20 +206,17 @@ class EnrollmentProgressBar extends Component
             // Step 5: Enrolled
             if ($newStudentEnrollment && $newStudentEnrollment->status === 'Enrolled') {
                 $steps['enroll'] = 'green';
-            } else if ($steps['payment'] === 'green') {
+            } else if ($steps['payment'] === 'green' || $steps['payment'] === 'ongoing') {
                 $steps['enroll'] = 'yellow';
             } else {
                 $steps['enroll'] = 'grey';
             }
         }
 
-
-
-
         return view('livewire.enrollment-progress-bar', [
             'steps'                       => $steps,
             'latestEnrollment'            => $latestEnrollment,
-            'isOldStudentWithMissingDocs' => $isOldStudent, // renamed internally to just isOldStudent flag for blade
+            'isOldStudentWithMissingDocs' => $isOldStudent,
             'oldStudentStepsKeys'         => $oldStudentStepsKeys ?? [],
         ]);
     }

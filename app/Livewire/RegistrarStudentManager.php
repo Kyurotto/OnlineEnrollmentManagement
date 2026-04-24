@@ -182,6 +182,103 @@ class RegistrarStudentManager extends Component
         session()->flash('success', 'Student manually marked as Regular.');
     }
 
+    /**
+     * Export the student registry to CSV based on current filters and sorting.
+     */
+    public function exportCsv()
+    {
+        $optionalEnrollmentColumns = [
+            'promissory_reason',
+            'is_regular',
+            'classification_reason',
+            'credentials_verified',
+            'student_type',
+            'physical_documents_received',
+        ];
+        $availableColumns = collect($optionalEnrollmentColumns)
+            ->mapWithKeys(fn($column) => [$column => Schema::hasColumn('enrollments', $column)])
+            ->all();
+        $enrollmentSelect = ['user_id', 'course_code', 'year_level', 'status', 'id'];
+        foreach ($optionalEnrollmentColumns as $column) {
+            $enrollmentSelect[] = $availableColumns[$column]
+                ? $column
+                : DB::raw("NULL as {$column}");
+        }
+
+        $query = User::query()
+            ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level',
+                     'latest_enrollments.id as enrollment_id',
+                     'latest_enrollments.is_regular', 'latest_enrollments.classification_reason',
+                     'latest_enrollments.credentials_verified', 'latest_enrollments.student_type',
+                     'latest_enrollments.physical_documents_received',
+                     'courses.course_name')
+            ->joinSub(
+                Enrollment::select($enrollmentSelect)
+                    ->whereIn('id', function($q) {
+                        $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
+                    }),
+                'latest_enrollments',
+                'users.id', '=', 'latest_enrollments.user_id'
+            )
+            ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
+            ->where('users.role', 'student')
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid']);
+
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('users.first_name', 'like', "%{$this->search}%")
+                  ->orWhere('users.last_name', 'like', "%{$this->search}%")
+                  ->orWhere('users.email', 'like', "%{$this->search}%")
+                  ->orWhere('latest_enrollments.course_code', 'like', "%{$this->search}%")
+                  ->orWhere('latest_enrollments.promissory_reason', 'like', "%{$this->search}%");
+            });
+        }
+
+        if ($this->filter === 'regular' && ($availableColumns['is_regular'] ?? false)) {
+            $query->whereRaw('latest_enrollments.is_regular = 1');
+        } elseif ($this->filter === 'irregular' && ($availableColumns['is_regular'] ?? false)) {
+            $query->whereRaw('latest_enrollments.is_regular = 0');
+        }
+
+        $students = $query->orderBy($this->sortField, $this->sortDirection)->get();
+
+        $csv = [];
+        $csv[] = ['Last Name', 'First Name', 'Middle Name', 'Programs', 'Academic Track', 'Section'];
+
+        foreach ($students as $student) {
+            $program = $student->course_name ?: 'N/A';
+            $track = $student->course_code ?: 'N/A';
+            
+            $section = 'N/A';
+            if (!empty($student->year_level)) {
+                $parts = explode('|', $student->year_level);
+                $section = trim($parts[0]);
+            }
+
+            $csv[] = [
+                $student->last_name,
+                $student->first_name,
+                $student->middle_name ?: '',
+                $program,
+                $track,
+                $section
+            ];
+        }
+
+        $filename = "student_registry_" . now()->format('Ymd_His') . ".csv";
+        $handle = fopen('php://temp', 'r+');
+        foreach ($csv as $row) {
+            fputcsv($handle, $row);
+        }
+        rewind($handle);
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        return response()->streamDownload(function () use ($content) {
+            echo $content;
+        }, $filename);
+    }
+
     public function render()
     {
 

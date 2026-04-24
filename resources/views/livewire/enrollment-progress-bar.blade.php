@@ -38,13 +38,15 @@
                         $color = $steps[$step['key']];
                         $circleClass = match($color) {
                             'green' => 'bg-emerald-500 shadow-emerald-500/40 text-black',
+                            'ongoing' => 'bg-amber-500 shadow-amber-500/40 text-black', // Solid yellow background
                             'yellow' => 'bg-amber-500 shadow-amber-500/40 text-black animate-pulse',
                             default => 'bg-[#1a1a1a] border-2 border-white/10 text-white/20'
                         };
                     @endphp
                     
                     <div class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 {{ $circleClass }} shadow-lg">
-                        @if($color === 'green')
+                        {{-- Include 'ongoing' state to show the checkmark icon --}}
+                        @if($color === 'green' || $color === 'ongoing')
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         @elseif($color === 'yellow')
                             <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -56,8 +58,12 @@
                     <span class="mt-4 text-[9px] font-black uppercase tracking-widest text-center px-2 {{ $color !== 'grey' ? 'text-white' : 'text-white/20' }}">
                         {{ $step['label'] }}
                     </span>
+                    
+                    {{-- Badge Status Rendering --}}
                     @if($color === 'yellow')
                         <span class="mt-2 text-[7px] font-black uppercase text-amber-500 tracking-[0.2em] bg-amber-500/10 px-2 py-1 rounded shadow-lg shadow-amber-500/20 border border-amber-500/20">Pending</span>
+                    @elseif($color === 'ongoing')
+                        <span class="mt-2 text-[7px] font-black uppercase text-amber-500 tracking-[0.2em] bg-amber-500/10 px-2 py-1 rounded shadow-lg shadow-amber-500/20 border border-amber-500/20">Ongoing</span>
                     @elseif($color === 'green')
                         <span class="mt-2 text-[7px] font-black uppercase text-emerald-400 tracking-[0.2em] bg-emerald-500/10 px-2 py-1 rounded shadow-lg shadow-emerald-500/20 border border-emerald-500/20">Done</span>
                     @endif

@@ -179,12 +179,6 @@ class RegistrarApplicationManager extends Component
             ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->with(['user']);
 
-        // Only show applications for the current active term
-        if ($activeYear && $activeSemester) {
-            $query->where('enrollments.year_level', 'LIKE', "%{$activeYear->year_name}%")
-                  ->where('enrollments.year_level', 'LIKE', "%{$activeSemester->name}%");
-        }
-
         if ($this->level) {
             $query->where('enrollments.level', $this->level);
         }

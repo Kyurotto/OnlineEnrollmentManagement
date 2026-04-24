@@ -202,7 +202,19 @@
                                 </span>
                             </td>
                             <td class="py-6 px-8">
-                                <div class="flex justify-end items-center gap-4">
+                                <div class="flex justify-end items-center gap-3">
+                                    @if($application->credentials_verified)
+                                        <button type="button" wire:click="revokeClearance({{ $application->id }})"
+                                            class="px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-all text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
+                                            REJECT CLEARANCE
+                                        </button>
+                                    @endif
+                                    @if(!$application->credentials_verified)
+                                        <button type="button" wire:click="grantClearance({{ $application->id }})"
+                                            class="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/30 transition-all text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
+                                            APPROVED CLEARANCE
+                                        </button>
+                                    @endif
                                     <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
                                         class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-black/20 whitespace-nowrap">
                                         View Details
@@ -450,18 +462,9 @@
             <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
                     <button type="button"
-                        @click="
-                            @this.togglePhysicalDocuments(selectedId);
-                            modalOpen = false;
-                            setTimeout(() => { location.reload(); }, 800);
-                        "
                         id="togglePhysicalBtn"
                         class="text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0">
                         Done Hard Docs
-                    </button>
-                    <button type="button" id="clearanceBtn"
-                        class="text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0">
-                        Grant Clearance
                     </button>
                     <button type="button" id="approveBtn"
                         @click="@this.approve(selectedId); setTimeout(() => { location.reload(); }, 800);"
@@ -523,24 +526,6 @@
         } else {
             toggleBtn.textContent = 'Done Hard Docs';
             toggleBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-cyan-500 text-black shrink-0';
-        }
-        
-        // Clearance Button Styling & Click Handler
-        const clearanceBtn = document.getElementById('clearanceBtn');
-        if (app.credentials_verified) {
-            clearanceBtn.textContent = 'Revoke Clearance';
-            clearanceBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 shrink-0';
-            clearanceBtn.onclick = function() {
-                @this.revokeClearance(currentApplicationId);
-                setTimeout(() => { location.reload(); }, 800);
-            };
-        } else {
-            clearanceBtn.textContent = 'Grant Clearance';
-            clearanceBtn.className = 'px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0';
-            clearanceBtn.onclick = function() {
-                @this.grantClearance(currentApplicationId);
-                setTimeout(() => { location.reload(); }, 800);
-            };
         }
 
         // Guardian info
@@ -661,6 +646,21 @@
         if (['pending', 'approved', 'enrolled', 'paid'].includes(status)) {
             actionButtons.classList.remove('hidden');
             actionButtons.classList.add('flex');
+
+            // Set up Toggle Hard Docs Button
+            const docsBtn = document.getElementById('togglePhysicalBtn');
+            if (app.physical_documents_received == 1) {
+                docsBtn.textContent = 'Cancel Hard Docs';
+                docsBtn.className = 'text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0 bg-rose-500/10 text-rose-400 border border-rose-500/20';
+            } else {
+                docsBtn.textContent = 'Done Hard Docs';
+                docsBtn.className = 'text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+            }
+            docsBtn.onclick = function() {
+                @this.togglePhysicalDocuments(app.id);
+                setTimeout(() => location.reload(), 800);
+            };
+
         } else {
             actionButtons.classList.add('hidden');
             actionButtons.classList.remove('flex');

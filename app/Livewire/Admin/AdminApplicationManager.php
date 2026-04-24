@@ -96,12 +96,6 @@ class AdminApplicationManager extends Component
             ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->select('enrollments.*');
 
-        // Only show applications for the current active term
-        if ($activeYear && $activeSemester) {
-            $query->where('enrollments.year_level', 'LIKE', "%{$activeYear->year_name}%")
-                  ->where('enrollments.year_level', 'LIKE', "%{$activeSemester->name}%");
-        }
-
         if (!empty($this->search)) {
             $query->where(function ($q) {
                 $q->whereHas('user', function ($sub) {

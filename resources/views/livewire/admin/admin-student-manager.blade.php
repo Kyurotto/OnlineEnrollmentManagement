@@ -37,6 +37,11 @@
                         Irregular
                     </button>
                 </div>
+                <button type="button" wire:click="exportCsv"
+                    class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all text-[10px] font-black uppercase tracking-widest shadow-xl shadow-indigo-500/5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Printable CSV
+                </button>
             </div>
         </div>
 
@@ -202,24 +207,7 @@
         </div>
     @endif
 </td>
-=======
-<<<<<<< HEAD
->>>>>>> origin/main
-<td class="py-6 px-8 text-right">
-    <div class="flex justify-end gap-3">
-        <a href="{{ route('admin.students.edit', $student->id) }}"
-            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-blue-400 hover:border-blue-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
-            UPDATE
-            <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                    d="M9 5l7 7-7 7"></path>
-            </svg>
-        </a>
-    </div>
-</td>
-<<<<<<< HEAD
->>>>>>> origin/main
+
                         </tr>
                     @empty
                         <tr>
