@@ -240,6 +240,10 @@
                     <div>
                         <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Registrar Control</p>
                         <h3 class="text-xl font-black text-white uppercase tracking-tight italic mt-0.5">Set Classification</h3>
+                        <span class="inline-block mt-1.5 px-2.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest
+                            {{ $classificationLevel === 'shs' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400' }}">
+                            {{ $classificationLevel === 'shs' ? 'Senior High School' : 'College' }}
+                        </span>
                     </div>
                     <button wire:click="closeClassificationModal" class="text-white/20 hover:text-white transition-colors mt-1">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -278,7 +282,7 @@
                     <select wire:model="classificationReason"
                         class="w-full bg-white/[0.03] text-white border border-white/10 py-4 px-5 rounded-2xl outline-none text-sm font-bold tracking-wide focus:border-purple-500/50 focus:bg-white/[0.05] transition-all cursor-pointer">
                         <option value="" style="background-color:#0d1b2e;color:#ffffff;">— Select a reason —</option>
-                        @foreach($classificationReasons as $key => $label)
+                        @foreach($classificationLevel === 'shs' ? $shsClassificationReasons : $classificationReasons as $key => $label)
                             <option value="{{ $key }}" style="background-color:#0d1b2e;color:#ffffff;">{{ $label }}</option>
                         @endforeach
                     </select>

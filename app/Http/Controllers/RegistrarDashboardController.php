@@ -27,6 +27,7 @@ class RegistrarDashboardController extends Controller
         $pendingCount = Enrollment::where('status', 'Pending')->count();
         $enrolledCount = Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count();
         $programsCount = Course::where('type', 'program')->count();
+        $strandsCount = Course::where('type', 'strand')->count();
 
         // 2. CALCULATE EXTRA STATS
         $sectionsCount = \App\Models\Section::count();
@@ -65,6 +66,7 @@ class RegistrarDashboardController extends Controller
             'students'     => $studentsCount,
             'applications' => $pendingCount,
             'programs'     => $programsCount,
+            'strands'      => $strandsCount,
             'sections'     => $sectionsCount,
         ];
 

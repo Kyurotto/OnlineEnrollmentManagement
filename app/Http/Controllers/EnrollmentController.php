@@ -99,8 +99,14 @@ class EnrollmentController extends Controller
             ]
         );
 
-        // 5. UPDATE USER STATUS
-        User::where('id', $user->id)->update(['status' => 'Pending']);
+        // 5. UPDATE USER STATUS + sync name from enrollment form
+        User::where('id', $user->id)->update([
+            'status'      => 'Pending',
+            'first_name'  => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name'   => $request->last_name,
+            'name'        => trim($request->first_name . ' ' . ($request->middle_name ? $request->middle_name . ' ' : '') . $request->last_name),
+        ]);
 
         // 6. NOTIFY ADMINS AND REGISTRARS
         $staff = User::whereIn('role', ['admin', 'registrar'])->get();

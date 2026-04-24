@@ -78,30 +78,47 @@
 
                         <div class="flex items-center gap-4">
                             <div class="text-right hidden sm:block">
-                                <p class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1">Enrollment Status
-                                </p>
-                                @if ($currentStatus === 'Enrolled')
-                                    <span
-                                        class="bg-[#10B981]/20 text-[#10B981] px-4 py-1.5 rounded-full font-black text-xs border border-[#10B981]/30 tracking-widest uppercase">ENROLLED</span>
-                                @elseif($currentStatus === 'Pending' || $currentStatus === 'Approved' || $currentStatus === 'Paid')
-                                    <span
-                                        class="bg-amber-500/20 text-amber-400 px-4 py-1.5 rounded-full font-black text-xs border border-amber-500/30 tracking-widest uppercase">PENDING</span>
-                                @elseif($currentStatus === 'Rejected')
-                                    <span
-                                        class="bg-rose-500/20 text-rose-400 px-4 py-1.5 rounded-full font-black text-xs border border-rose-500/30 tracking-widest uppercase">REJECTED</span>
-                                @else
-                                    <span
-                                        class="bg-white/5 text-white/30 px-4 py-1.5 rounded-full font-black text-xs border border-white/10 tracking-widest uppercase">NOT ENROLLED</span>
-                                @endif
+                                <p class="text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Enrollment Status</p>
+                                {{-- Row 1: Status + Level --}}
+                                <div class="flex items-center justify-end gap-2 flex-wrap">
+                                    @if ($currentStatus === 'Enrolled')
+                                        <span class="bg-[#10B981]/20 text-[#10B981] px-4 py-1.5 rounded-full font-black text-xs border border-[#10B981]/30 tracking-widest uppercase">ENROLLED</span>
+                                    @elseif($currentStatus === 'Pending' || $currentStatus === 'Approved' || $currentStatus === 'Paid')
+                                        <span class="bg-amber-500/20 text-amber-400 px-4 py-1.5 rounded-full font-black text-xs border border-amber-500/30 tracking-widest uppercase">PENDING</span>
+                                    @elseif($currentStatus === 'Rejected')
+                                        <span class="bg-rose-500/20 text-rose-400 px-4 py-1.5 rounded-full font-black text-xs border border-rose-500/30 tracking-widest uppercase">REJECTED</span>
+                                    @else
+                                        <span class="bg-white/5 text-white/30 px-4 py-1.5 rounded-full font-black text-xs border border-white/10 tracking-widest uppercase">NOT ENROLLED</span>
+                                    @endif
+                                    @if(isset($currentYearEnrollment) && $currentYearEnrollment)
+                                        @php
+                                            $level = strtolower($currentYearEnrollment->level);
+                                            $bgClass = $level === 'college' ? 'bg-blue-500/20' : ($level === 'shs' ? 'bg-emerald-500/20' : 'bg-gray-500/20');
+                                            $textClass = $level === 'college' ? 'text-blue-500' : ($level === 'shs' ? 'text-emerald-500' : 'text-white');
+                                        @endphp
+                                        <span class="text-xs font-black uppercase tracking-widest {{ $bgClass }} {{ $textClass }} px-2 py-1.5 rounded-full border {{ $level === 'college' ? 'border-blue-500/30' : 'border-emerald-500/30' }}">
+                                            Level: {{ ucfirst($currentYearEnrollment->level) }}
+                                        </span>
+                                    @endif
+                                </div>
+                                {{-- Row 2: Academic Classification centered --}}
                                 @if(isset($currentYearEnrollment) && $currentYearEnrollment)
-                                    @php
-                                        $level = strtolower($currentYearEnrollment->level);
-                                        $bgClass = $level === 'college' ? 'bg-blue-500/20' : ($level === 'shs' ? 'bg-emerald-500/20' : 'bg-gray-500/20');
-                                        $textClass = $level === 'college' ? 'text-blue-500' : ($level === 'shs' ? 'text-emerald-500' : 'text-white');
-                                    @endphp
-                                    <span class="ml-2 text-xs font-black uppercase tracking-widest {{ $bgClass }} {{ $textClass }} px-2 py-0.5 rounded">
-                                        Level: {{ ucfirst($currentYearEnrollment->level) }}
-                                    </span>
+                                <div class="flex justify-center mt-2">
+                                    @if($currentYearEnrollment->is_regular === null)
+                                        <span class="text-[10px] font-black uppercase tracking-widest bg-white/5 text-white/30 border border-white/10 px-3 py-1 rounded-full">
+                                            Not Audited
+                                        </span>
+                                    @elseif($currentYearEnrollment->is_regular)
+                                        <span class="text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full">
+                                            ✓ Regular
+                                        </span>
+                                    @else
+                                        <span class="text-[10px] font-black uppercase tracking-widest bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1 rounded-full"
+                                            title="{{ $currentYearEnrollment->classification_reason ?? '' }}">
+                                            Irregular
+                                        </span>
+                                    @endif
+                                </div>
                                 @endif
                             </div>
                         </div>

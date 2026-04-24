@@ -34,8 +34,6 @@ class Enrollment extends Model
     public function setClassificationReasonAttribute(?string $value): void
     {
         $this->attributes['classification_reason'] = $value;
-        // Keep irregular_reason in sync for backward compatibility
-        $this->attributes['irregular_reason'] = $value;
     }
 
     /**
@@ -48,6 +46,19 @@ class Enrollment extends Model
         'Financial Underloading'    => 'Financial Underloading (requesting fewer units due to tuition)',
         'Personal/Health Reasons'   => 'Personal/Health Reasons (requested light load)',
         'Graduating Special Load'   => 'Graduating Special Load (customized final year schedule)',
+    ];
+
+    /**
+     * SHS-specific classification reasons.
+     */
+    public const SHS_CLASSIFICATION_REASONS = [
+        'Academic Deficiency'       => 'Academic Deficiency (failed/incomplete subjects)',
+        'Strand Shifter'            => 'Strand Shifter (changing to a different SHS strand)',
+        'Transferee Credit Gap'     => 'Transferee Credit Gap (missing JHS credentials or unmatched subjects)',
+        'Financial Underloading'    => 'Financial Underloading (requesting fewer subjects due to tuition)',
+        'Personal/Health Reasons'   => 'Personal/Health Reasons (requested light load)',
+        'Repeater'                  => 'Repeater (retaking a grade level or subject)',
+        'Graduating Special Load'   => 'Graduating Special Load (customized final semester schedule)',
     ];
 
     /**

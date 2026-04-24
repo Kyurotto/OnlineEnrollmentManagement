@@ -23,6 +23,7 @@ class RegistrarStudentManager extends Component
     public $classificationReason = '';
     public $classificationIsRegular = true;
     public $showClassificationModal = false;
+    public $classificationLevel = 'college'; // 'shs' or 'college'
 
     protected $queryString = ['search', 'sortField', 'sortDirection', 'filter'];
     private const ALLOWED_FILTERS = ['all', 'regular', 'irregular'];
@@ -97,7 +98,8 @@ class RegistrarStudentManager extends Component
         $enrollment = Enrollment::findOrFail($enrollmentId);
         $this->classificationEnrollmentId = $enrollmentId;
         $this->classificationReason = $enrollment->classification_reason ?? '';
-        $this->classificationIsRegular = $enrollment->is_regular !== false; // true if regular or null
+        $this->classificationIsRegular = $enrollment->is_regular !== false;
+        $this->classificationLevel = $enrollment->isSHS() ? 'shs' : 'college';
         $this->showClassificationModal = true;
     }
 
@@ -107,6 +109,7 @@ class RegistrarStudentManager extends Component
         $this->classificationEnrollmentId = null;
         $this->classificationReason = '';
         $this->classificationIsRegular = true;
+        $this->classificationLevel = 'college';
     }
 
     /**
@@ -129,7 +132,11 @@ class RegistrarStudentManager extends Component
         }
 
         $this->validate([
-            'classificationReason' => 'required|string|in:' . implode(',', array_keys(Enrollment::CLASSIFICATION_REASONS)),
+            'classificationReason' => 'required|string|in:' . implode(',', array_keys(
+                $this->classificationLevel === 'shs'
+                    ? Enrollment::SHS_CLASSIFICATION_REASONS
+                    : Enrollment::CLASSIFICATION_REASONS
+            )),
         ]);
 
         $enrollment->is_regular = false;
@@ -313,6 +320,8 @@ $sortField = $this->sortField;
 
 
 
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+
         $query = User::query()
             ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level',
                      'latest_enrollments.id as enrollment_id',
@@ -330,7 +339,12 @@ $sortField = $this->sortField;
             )
             ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid']);
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+
+        // Only show students enrolled in the current active academic year
+        if ($activeYear) {
+            $query->where('latest_enrollments.year_level', 'like', '%' . $activeYear->year_name . '%');
+        }
 
         // Search logic
         if (!empty($this->search)) {
@@ -366,6 +380,7 @@ $students = $query->orderBy($sortField, $this->sortDirection)->paginate(10);
                     'user_id',
                     'id',
                     'status',
+                    'year_level',
                     $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular')
                 )
                     ->whereIn('id', function($q) {
@@ -375,7 +390,11 @@ $students = $query->orderBy($sortField, $this->sortDirection)->paginate(10);
                 'users.id', '=', 'latest_enrollments.user_id'
             )
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid']);
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+
+        if ($activeYear) {
+            $baseStats->where('latest_enrollments.year_level', 'like', '%' . $activeYear->year_name . '%');
+        }
 
         $totalStudents   = (clone $baseStats)->count();
         $regularCount    = $hasIsRegular ? (clone $baseStats)->whereRaw('latest_enrollments.is_regular = 1')->count() : 0;
@@ -413,12 +432,13 @@ $students = $query->orderBy($sortField, $this->sortDirection)->paginate(10);
         $pendingCount = Enrollment::where('status', 'Pending')->count();
 
         return view('livewire.registrar-student-manager', [
-            'students'              => $students,
-            'pendingCount'          => $pendingCount,
-            'classificationReasons' => Enrollment::CLASSIFICATION_REASONS,
-            'totalStudents'         => $totalStudents,
-            'regularCount'          => $regularCount,
-            'irregularCount'        => $irregularCount,
+            'students'                  => $students,
+            'pendingCount'              => $pendingCount,
+            'classificationReasons'     => Enrollment::CLASSIFICATION_REASONS,
+            'shsClassificationReasons'  => Enrollment::SHS_CLASSIFICATION_REASONS,
+            'totalStudents'             => $totalStudents,
+            'regularCount'              => $regularCount,
+            'irregularCount'            => $irregularCount,
         ])->layout('components.layouts.registrar', ['title' => 'Student Registry']);
     }
 }
