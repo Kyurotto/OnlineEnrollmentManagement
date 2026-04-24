@@ -108,16 +108,12 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::patch('/students/{id}', [RegistrarStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [RegistrarStudentController::class, 'destroy'])->name('students.destroy');
 
-<<<<<<< HEAD
     // Dropped Students
     Route::get('/dropped', [RegistrarDroppedStudentController::class, 'index'])->name('dropped.index');
     Route::patch('/dropped/{id}/mark', [RegistrarDroppedStudentController::class, 'markDropped'])->name('dropped.mark');
     Route::patch('/dropped/{id}/withdraw', [RegistrarDroppedStudentController::class, 'markWithdrawn'])->name('dropped.withdraw');
     Route::patch('/dropped/{id}/restore', [RegistrarDroppedStudentController::class, 'restore'])->name('dropped.restore');
     Route::get('/dropped/penalty-preview', [RegistrarDroppedStudentController::class, 'getPenaltyPreview'])->name('dropped.penalty-preview');
-
-=======
->>>>>>> origin/main
     Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
     Route::get('/applications/college', RegistrarApplicationManager::class)->name('applications.college');
     Route::get('/applications/shs', RegistrarApplicationManager::class)->name('applications.shs');
