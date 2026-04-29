@@ -37,10 +37,10 @@
                     @php
                         $color = $steps[$step['key']];
                         $circleClass = match($color) {
-                            'green' => 'bg-emerald-500 shadow-emerald-500/40 text-black',
-                            'ongoing' => 'bg-amber-500 shadow-amber-500/40 text-black', // Solid yellow background
-                            'yellow' => 'bg-amber-500 shadow-amber-500/40 text-black animate-pulse',
-                            default => 'bg-[#1a1a1a] border-2 border-white/10 text-white/20'
+                            'green' => 'bg-emerald-500 shadow-emerald-500/40 text-white',
+                            'ongoing' => 'bg-indigo-500 shadow-indigo-500/40 text-white',
+                            'yellow' => 'bg-amber-400 shadow-amber-400/40 text-white animate-pulse',
+                            default => 'bg-white/5 border-2 border-white/10 text-white/20'
                         };
                     @endphp
                     
@@ -55,17 +55,17 @@
                         @endif
                     </div>
                     
-                    <span class="mt-4 text-[9px] font-black uppercase tracking-widest text-center px-2 {{ $color !== 'grey' ? 'text-white' : 'text-white/20' }}">
+                    <span class="mt-4 text-[9px] font-black uppercase tracking-widest text-center px-2 {{ $color !== 'grey' ? 'text-slate-800' : 'text-slate-300' }}">
                         {{ $step['label'] }}
                     </span>
                     
                     {{-- Badge Status Rendering --}}
                     @if($color === 'yellow')
-                        <span class="mt-2 text-[7px] font-black uppercase text-amber-500 tracking-[0.2em] bg-amber-500/10 px-2 py-1 rounded shadow-lg shadow-amber-500/20 border border-amber-500/20">Pending</span>
+                        <span class="mt-2 text-[7px] font-black uppercase text-amber-600 tracking-[0.2em] bg-amber-50 px-2 py-1 rounded shadow-sm border border-amber-100">Pending</span>
                     @elseif($color === 'ongoing')
-                        <span class="mt-2 text-[7px] font-black uppercase text-amber-500 tracking-[0.2em] bg-amber-500/10 px-2 py-1 rounded shadow-lg shadow-amber-500/20 border border-amber-500/20">Ongoing</span>
+                        <span class="mt-2 text-[7px] font-black uppercase text-indigo-600 tracking-[0.2em] bg-indigo-50 px-2 py-1 rounded shadow-sm border border-indigo-100">Ongoing</span>
                     @elseif($color === 'green')
-                        <span class="mt-2 text-[7px] font-black uppercase text-emerald-400 tracking-[0.2em] bg-emerald-500/10 px-2 py-1 rounded shadow-lg shadow-emerald-500/20 border border-emerald-500/20">Done</span>
+                        <span class="mt-2 text-[7px] font-black uppercase text-emerald-600 tracking-[0.2em] bg-emerald-50 px-2 py-1 rounded shadow-sm border border-emerald-100">Done</span>
                     @endif
                 </div>
             @endforeach

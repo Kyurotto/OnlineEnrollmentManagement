@@ -62,7 +62,7 @@
                         @empty
                         <tr>
                             <td colspan="4" class="py-20 text-center">
-                                <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em] italic">No records found</p>
+                                <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em]">No records found</p>
                             </td>
                         </tr>
                         @endforelse
@@ -86,49 +86,65 @@
 
         @if($showModal)
         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
-            <a href="{{ route('registrar.academic_years.index') }}" class="absolute inset-0 bg-[#060d1a]/95 backdrop-blur-2xl"></a>
+            <a href="{{ route('registrar.academic_years.index') }}" class="absolute inset-0 bg-slate-900/20"></a>
 
-            <div class="bg-[#0d1f3c] border border-white/10 w-full max-w-md rounded-[32px] overflow-hidden shadow-[0_32px_120px_rgba(0,0,0,0.6)] relative z-10 transform animate-in zoom-in-95 duration-300">
-                <div class="p-10">
-                    <div class="mb-10 text-center">
-                        <h3 class="text-xl font-bold text-white uppercase tracking-tight">{{ $isEditMode ? 'Edit Academic Year' : 'New Academic Year' }}</h3>
-                        <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-1">Academic Year Information</p>
+            <div class="bg-white border border-blue-100 w-full max-w-3xl rounded-[40px] overflow-hidden shadow-[0_32px_120px_rgba(37,99,235,0.15)] relative z-10 transform animate-in zoom-in-95 duration-300">
+                <div class="p-12">
+                    <div class="mb-12 text-center">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-600 text-white shadow-2xl shadow-blue-600/30 mb-8 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tight">{{ $isEditMode ? 'Edit Academic Year' : 'New Academic Year' }}</h3>
+                        <div class="flex items-center justify-center gap-3 mt-2">
+                            <span class="h-px w-8 bg-blue-100"></span>
+                            <p class="text-blue-600 text-[10px] font-black uppercase tracking-[0.4em]">Academic Repository</p>
+                            <span class="h-px w-8 bg-blue-100"></span>
+                        </div>
                     </div>
 
-                    <form action="{{ $isEditMode ? route('registrar.academic_years.update', $editingYear->id) : route('registrar.academic_years.store') }}" method="POST" class="space-y-8">
+                    <form action="{{ $isEditMode ? route('registrar.academic_years.update', $editingYear->id) : route('registrar.academic_years.store') }}" method="POST" class="space-y-10">
                         @csrf
                         @if($isEditMode) @method('PATCH') @endif
 
-                        <div class="space-y-2">
-                            <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Period Designation</label>
+                        <div class="space-y-3">
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Period Designation</label>
                             <input type="text" name="year_name" value="{{ old('year_name', $editingYear ? $editingYear->year_name : '') }}"
-                                class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-amber-500/50 transition-all shadow-inner"
+                                class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-5 px-8 rounded-2xl outline-none placeholder-slate-300 text-sm font-bold tracking-wider focus:border-blue-600 focus:bg-white transition-all"
                                 placeholder="e.g. 2025 - 2026" required>
                             @error('year_name') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="relative group overflow-hidden rounded-xl bg-white/5 border border-white/10 p-5 hover:bg-white/10 transition-all cursor-pointer">
-                            <label class="flex items-center gap-4 cursor-pointer">
-                                <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $editingYear && $editingYear->is_active) ? 'checked' : '' }}
-                                    class="w-5 h-5 rounded border-white/10 bg-white/5 text-amber-500 focus:ring-amber-500 transition-all">
+                        <div class="relative group rounded-[24px] bg-blue-50/40 border border-blue-100 p-8 hover:bg-blue-50/60 transition-all cursor-pointer">
+                            <label class="flex items-center gap-6 cursor-pointer">
+                                <div class="relative w-8 h-8 flex-shrink-0">
+                                    <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $editingYear && $editingYear->is_active) ? 'checked' : '' }}
+                                        class="peer absolute inset-0 opacity-0 cursor-pointer z-10">
+                                    <div class="absolute inset-0 rounded-xl border-2 border-blue-200 bg-white transition-all peer-checked:bg-blue-600 peer-checked:border-blue-600 flex items-center justify-center peer-checked:[&_svg]:opacity-100">
+                                        <svg class="w-5 h-5 text-white opacity-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
                                 <div class="flex flex-col">
-                                    <span class="text-xs font-black text-white uppercase tracking-wider">Set Operational</span>
-                                    <span class="text-xs text-white/30 uppercase tracking-widest mt-0.5 font-bold">Current Active Phase</span>
+                                    <span class="text-sm font-black text-slate-900 uppercase tracking-wider">Set Operational</span>
+                                    <span class="text-[10px] text-blue-600 uppercase tracking-widest mt-1 font-bold">Activate this cycle now</span>
                                 </div>
                             </label>
                         </div>
 
-                        <div class="flex gap-4 pt-6">
+                        <div class="flex gap-4 pt-4">
                             <a href="{{ route('registrar.academic_years.index') }}"
-                                class="flex-1 px-8 py-4 text-center text-xs font-bold text-white/40 uppercase tracking-widest border border-white/10 rounded-xl hover:bg-white/5 hover:text-white transition-all">
+                                class="flex-1 px-8 py-5 text-center text-xs font-black text-slate-400 uppercase tracking-widest border-2 border-slate-100 rounded-2xl hover:bg-slate-50 hover:text-slate-900 hover:border-slate-200 transition-all">
                                 Back
                             </a>
                             <button type="submit"
-                                class="flex-1 bg-amber-500 hover:bg-amber-400 text-white text-xs font-black py-4 px-8 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20 active:scale-95">
-                                {{ $isEditMode ? 'Update' : 'Save' }}
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black py-5 px-8 rounded-2xl uppercase tracking-widest transition-all shadow-xl shadow-blue-600/30 active:scale-95">
+                                {{ $isEditMode ? 'Update Year' : 'Create Year' }}
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
                 </div>
             </div>
         </div>

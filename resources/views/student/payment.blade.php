@@ -22,8 +22,8 @@
                     @endif
                 </div>
             </div>
-            <a href="{{ route('student.dashboard') }}" class="text-xs font-bold text-[#10B981] hover:text-[#34d399] transition-colors flex items-center gap-2 uppercase tracking-widest">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <a href="{{ route('student.dashboard') }}" class="flex items-center gap-3 px-8 py-3.5 rounded-full bg-white border border-slate-100 text-[11px] font-black text-indigo-600 uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all shadow-lg shadow-indigo-600/5 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Dashboard
             </a>
         </div>
@@ -54,7 +54,7 @@
                                 <p class="text-xl font-black text-white tracking-tight">₱{{ number_format($payment['amount'], 2) }}</p>
                                 <span class="text-[10px] font-bold text-white/20 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">Txn: {{ $payment['txn_id'] }}</span>
                             </div>
-                            <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1 italic">{{ $payment['date'] }}</p>
+                            <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">{{ $payment['date'] }}</p>
                         </div>
                     </div>
 
@@ -69,7 +69,7 @@
                 </div>
                 @empty
                 <div class="py-24 text-center border-2 border-white/5 border-dashed rounded-2xl">
-                    <p class="text-[10px] font-black text-white/10 uppercase tracking-[0.4em] italic leading-loose transition-opacity group-hover:opacity-100">No archival records detected in current stream.</p>
+                    <p class="text-[10px] font-black text-white/10 uppercase tracking-[0.4em] leading-loose transition-opacity group-hover:opacity-100">No archival records detected in current stream.</p>
                 </div>
                 @endforelse
             </div>
@@ -77,13 +77,13 @@
 
         {{-- Help Card --}}
         <div class="p-6 rounded-2xl border"
-             style="background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); box-shadow: 0 4px 20px rgba(16,185,129,0.1);">
+             style="background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2); box-shadow: 0 4px 20px rgba(59,130,246,0.1);">
             <div class="flex items-center gap-4">
                 <div class="text-emerald-400 p-3 rounded-xl bg-emerald-500/10 flex-shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <div>
-                    <h3 class="text-emerald-400 font-bold text-sm mb-0.5 italic">Payment Details</h3>
+                    <h3 class="text-emerald-400 font-bold text-sm mb-0.5">Payment Details</h3>
                     <p class="text-white/40 text-[11px] leading-relaxed">
                         All recorded transactions are subject to administrative audit. Status updates usually propagate within <strong class="text-white/60">24-48 business hours</strong> after verification of the financial node.
                     </p>

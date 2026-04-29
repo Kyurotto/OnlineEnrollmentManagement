@@ -12,11 +12,11 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-[#A1A1AA] bg-[#121212] antialiased">
-        <!-- Fixed dark background with premium blurry glows -->
-        <div class="fixed inset-0 overflow-hidden pointer-events-none" style="background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 50%, #1a3a6e 100%); z-index: -1;">
-            <div class="absolute top-[20%] left-[10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
-            <div class="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-emerald-500/10 blur-[120px] rounded-full"></div>
+    <body class="font-sans text-slate-900 bg-white antialiased">
+        <!-- Premium light background with subtle glows -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none" style="background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); z-index: -1;">
+            <div class="absolute top-[20%] left-[10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full"></div>
+            <div class="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-blue-400/5 blur-[120px] rounded-full"></div>
         </div>
         {{ $slot }}
     </body>

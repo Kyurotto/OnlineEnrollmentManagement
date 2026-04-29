@@ -33,10 +33,16 @@ class User extends Authenticatable
         'status'
     ];
 
-    // Link to Application
+    // Link to Application (Legacy/Latest)
     public function application()
     {
         return $this->hasOne(Enrollment::class, 'user_id')->latest();
+    }
+
+    // Historical Enrollment Records
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class, 'user_id');
     }
 
     // Helper for Real Status

@@ -9,6 +9,8 @@ use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Enrollment;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
@@ -73,6 +75,9 @@ class DashboardManager extends Component
 
     public function render()
     {
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYearName = $activeYear ? $activeYear->year_name : null;
+
         // 1. Applications Query for Table
         $query = Enrollment::query()->with(['user'])->whereNotIn('status', ['Enrolled', 'Rejected'])->latest();
 
@@ -90,15 +95,20 @@ class DashboardManager extends Component
 
         $applications = $query->paginate(10);
 
-        // 2. Gather Overview Statistics
         $stats = [
             'active_courses' => Course::where('type', 'course')->count(),
             'students'       => User::where('role', 'student')
-                                    ->whereHas('application', function($q) {
-                                        $q->whereIn('status', ['Enrolled', 'Approved']);
+                                    ->whereHas('application', function($q) use ($activeYearName) {
+                                        $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+                                        if ($activeYearName) {
+                                            $q->where('year_level', 'like', '%' . $activeYearName . '%');
+                                        }
                                     })->count(),
             'total_payments' => Payment::count(),
-            'applications'   => Enrollment::where('status', 'Pending')->count(),
+            'applications'   => Enrollment::where('status', 'Pending')
+                                        ->when($activeYearName, function($q) use ($activeYearName) {
+                                            $q->where('year_level', 'like', '%' . $activeYearName . '%');
+                                        })->count(),
         ];
 
         // 3. ROLLING 5 DAYS
@@ -110,6 +120,7 @@ class DashboardManager extends Component
             ->whereIn('status', ['Pending', 'Paid'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
+            ->take(20)
             ->get();
 
         $appsByDate = $weeklyApplications->groupBy(function($date) {
@@ -139,9 +150,59 @@ class DashboardManager extends Component
 
         // 4. CALCULATE SHS vs COLLEGE ENROLLMENT COUNTS
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-        $shs_count = Enrollment::whereIn('course_code', $shsStrands)->count();
-        $college_count = Enrollment::whereNotIn('course_code', $shsStrands)->count();
-        $total_count = Enrollment::count();
+        $baseEnrollmentQuery = Enrollment::whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
+            ->when($activeYearName, function($q) use ($activeYearName) {
+                $q->where('year_level', 'like', '%' . $activeYearName . '%');
+            });
+
+        $shs_count = (clone $baseEnrollmentQuery)->whereIn('course_code', $shsStrands)->count();
+        $college_count = (clone $baseEnrollmentQuery)->whereNotIn('course_code', $shsStrands)->count();
+        $total_count = (clone $baseEnrollmentQuery)->count();
+
+        // 5. STUDENT CLASSIFICATION STATS (Synced with Registrar Registry)
+        $hasIsRegular = Schema::hasColumn('enrollments', 'is_regular');
+        $baseStudentClassStats = User::query()
+            ->joinSub(
+                Enrollment::select(
+                    'user_id',
+                    'id',
+                    'status',
+                    'year_level',
+                    $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular')
+                )
+                    ->whereIn('id', function ($q) {
+                        $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
+                    }),
+                'latest_enrollments',
+                'users.id',
+                '=',
+                'latest_enrollments.user_id'
+            )
+            ->where('users.role', 'student')
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
+            ->when($activeYearName, function($q) use ($activeYearName) {
+                $q->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');
+            });
+
+        $registryTotalStudents = (clone $baseStudentClassStats)->count();
+        $registryRegularCount = $hasIsRegular
+            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 1')->count()
+            : 0;
+        $registryIrregularCount = $hasIsRegular
+            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 0')->count()
+            : 0;
+
+        // Calculate New vs Returning Students
+        $registryReturningCount = (clone $baseStudentClassStats)
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('enrollments')
+                    ->whereColumn('enrollments.user_id', 'users.id')
+                    ->whereColumn('enrollments.id', '<>', 'latest_enrollments.id');
+            })
+            ->count();
+
+        $registryNewCount = $registryTotalStudents - $registryReturningCount;
 
         return view('dashboard', [
             'stats' => $stats,
@@ -154,6 +215,11 @@ class DashboardManager extends Component
             'shs_count' => $shs_count,
             'college_count' => $college_count,
             'total_count' => $total_count,
+            'registryTotalStudents' => $registryTotalStudents,
+            'registryRegularCount'  => $registryRegularCount,
+            'registryIrregularCount' => $registryIrregularCount,
+            'registryNewCount'      => $registryNewCount,
+            'registryReturningCount' => $registryReturningCount,
         ]);
     }
 }

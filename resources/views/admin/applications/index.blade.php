@@ -9,7 +9,7 @@
         <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
             <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Application Request</h2>
+                    <h2 class="text-2xl font-black text-white tracking-tight uppercase">Application</h2>
                     <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1"></p>
                 </div>
                 <div class="flex items-center gap-4">
@@ -35,7 +35,7 @@
                     <tbody class="text-xs divide-y divide-white/5">
                         @forelse($applications as $application)
                             <tr class="hover:bg-white/[0.02] transition-colors group">
-                                <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">
+                                <td class="py-6 px-8 text-white/20 font-mono tracking-tighter">
                                     #{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}
                                 </td>
                                 <td class="py-6 px-8">
@@ -45,7 +45,7 @@
                                                 {{ $application->last_name }}, {{ $application->first_name }}
                                             </span>
                                             @if($application->extension)
-                                            <span class="text-sm font-bold text-white/40 italic">{{ $application->extension }}</span>
+                                            <span class="text-sm font-bold text-white/40">{{ $application->extension }}</span>
                                             @endif
                                         </div>
                                         <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
@@ -60,7 +60,7 @@
                                     </span>
                                     <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_level }})</span>
                                 </td>
-                                <td class="py-6 px-8 text-white/30 font-medium italic tracking-tight">
+                                <td class="py-6 px-8 text-white/30 font-medium tracking-tight">
                                     {{ $application->created_at->format('M d, Y') }}
                                 </td>
                                 <td class="py-6 px-8 text-center">
@@ -93,7 +93,7 @@
                                 <td colspan="7" class="py-24 text-center">
                                     <div class="flex flex-col items-center gap-3 opacity-20">
                                         <svg class="w-16 h-16 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <p class="italic text-sm font-black uppercase tracking-widest">No applications found in queue</p>
+                                        <p class="text-sm font-black uppercase tracking-widest">No applications found in queue</p>
                                     </div>
                                 </td>
                             </tr>
@@ -115,7 +115,7 @@
 
             <div id="modalContent" class="w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform scale-95 transition-all duration-300"
                  style="background: #0d1f3c;">
-                
+
                 <div id="modalInnerContent" class="flex flex-col h-full overflow-hidden">
                     {{-- Populated via JS/openModal --}}
                 </div>
@@ -143,8 +143,8 @@ function openModal(app) {
     inner.innerHTML = `
         <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01] shrink-0">
             <div>
-                <h2 class="text-2xl font-black text-white italic uppercase tracking-tight">Application Details #${String(app.id).padStart(5, '0')}</h2>
-                <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process</p>
+                <h2 class="text-2xl font-black text-white uppercase tracking-tight">Application Details #${String(app.id).padStart(5, '0')}</h2>
+                <p class="text-[9px] text-white/30 uppercase tracking-[0.3em] mt-1">Review Process</p>
             </div>
             <button onclick="closeModal()" class="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -162,35 +162,35 @@ function openModal(app) {
                     <div class="grid grid-cols-1 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
                         <div class="grid grid-cols-2 gap-8">
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Full Name</span>
                                 <span class="text-xs font-bold text-cyan-400 capitalize">${app.last_name || ''}, ${app.first_name || ''}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Email Address</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Email Address</span>
                                 <span class="text-xs font-bold text-white/60 lowercase">${app.email || 'N/A'}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Application ID</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Application ID</span>
                                 <span class="text-xs font-bold text-white/40 font-mono tracking-tighter">#${String(app.id).padStart(5, '0')}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Submitted On</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Submitted On</span>
                                 <span class="text-xs font-bold text-white/60">${new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Date of Birth</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Date of Birth</span>
                                 <span class="text-xs font-bold text-white/60">${app.birth_date || 'N/A'}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Age</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Age</span>
                                 <span class="text-xs font-bold text-white/60">${app.age || 'N/A'}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Gender</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Gender</span>
                                 <span class="text-xs font-bold text-white/60 capitalize">${app.gender || 'N/A'}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Address</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Address</span>
                                 <span class="text-xs font-bold text-white/60">${app.address_full || 'N/A'}</span>
                             </div>
                         </div>
@@ -205,16 +205,16 @@ function openModal(app) {
                     </div>
                     <div class="bg-cyan-500/5 border border-cyan-500/10 rounded-[32px] p-8 space-y-8 h-full flex flex-col justify-center">
                         <div class="flex flex-col gap-2">
-                            <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest italic">Program</span>
-                            <span class="text-2xl font-black text-white uppercase italic tracking-tighter">${app.course_code}</span>
+                            <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest">Program</span>
+                            <span class="text-2xl font-black text-white uppercase tracking-tighter">${app.course_code}</span>
                         </div>
                         <div class="flex items-center gap-10 pt-6 border-t border-cyan-500/10">
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Year Level</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Year Level</span>
                                 <span class="text-sm font-black text-white uppercase">${app.year_level}</span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Status</span>
                                 <span class="text-sm font-black text-cyan-400 uppercase tracking-[0.1em]">${displayText}</span>
                             </div>
                         </div>
@@ -230,19 +230,19 @@ function openModal(app) {
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
                     <div class="flex flex-col gap-1">
-                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Father's Name</span>
+                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Father's Name</span>
                         <span class="text-xs font-bold text-white uppercase">${app.father_name || 'N/A'}</span>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Mother's Name</span>
+                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Mother's Name</span>
                         <span class="text-xs font-bold text-white uppercase">${app.mother_maiden_name || 'N/A'}</span>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Guardian Name</span>
+                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Guardian Name</span>
                         <span class="text-xs font-bold text-white uppercase">${app.guardian_name || 'N/A'}</span>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Emergency Contact</span>
+                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Emergency Contact</span>
                         <span class="text-xs font-bold text-white uppercase">${app.guardian_contact || 'N/A'}</span>
                     </div>
                 </div>
@@ -318,9 +318,9 @@ function openModal(app) {
                             Reject Application
                         </button>
                     </form>
-                ` : `<div class="text-[10px] font-black text-white/20 uppercase tracking-widest italic tracking-[0.2em]">Status: ${displayText}</div>`}
+                ` : `<div class="text-[10px] font-black text-white/20 uppercase tracking-widest tracking-[0.2em]">Status: ${displayText}</div>`}
             </div>
-            <button onclick="closeModal()" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 transition-all ml-auto italic">Close Details</button>
+            <button onclick="closeModal()" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 transition-all ml-auto">Close Details</button>
         </div>
     `;
 

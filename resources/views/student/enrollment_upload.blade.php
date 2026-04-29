@@ -7,8 +7,8 @@
                 <h2 class="text-3xl font-bold text-white tracking-tight">Upload Documents</h2>
                 <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Enrollment Verification</p>
             </div>
-            <a href="{{ route('student.dashboard') }}" class="text-xs font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <a href="{{ route('student.dashboard') }}" class="flex items-center gap-3 px-8 py-3.5 rounded-full bg-white border border-slate-100 text-[11px] font-black text-indigo-600 uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all shadow-lg shadow-indigo-600/5 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Dashboard
             </a>
         </div>
@@ -44,7 +44,7 @@
                             <span class="w-1.5 h-6 bg-emerald-400 rounded-full"></span>
                             Document Verification
                         </h3>
-                        <p class="text-xs font-bold text-white/20 uppercase tracking-widest italic mt-1">Upload high-resolution assets for verification</p>
+                        <p class="text-xs font-bold text-white/20 uppercase tracking-widest mt-1">Upload high-resolution assets for verification</p>
                     </div>
                     <div class="bg-white/5 px-4 py-2 rounded-lg border border-white/10">
                         <span class="text-[10px] font-black uppercase tracking-widest text-white/40 mr-2">Level:</span>

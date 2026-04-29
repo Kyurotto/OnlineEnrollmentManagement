@@ -34,6 +34,8 @@ use App\Http\Controllers\StudentPaymentController;
 use App\Http\Controllers\StudentPaymentRedirectController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\RegistrarArchiveController;
+use App\Http\Controllers\CashierAssessmentController;
 
 // Student Livewire Components
 use App\Livewire\StudentPaymentManager;
@@ -103,7 +105,7 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::get('/dashboard', [RegistrarDashboardController::class, 'index'])->name('dashboard');
     Route::patch('/dashboard/applications/{id}/approve', [RegistrarDashboardController::class, 'approve'])->name('dashboard.approve');
     Route::patch('/dashboard/applications/{id}/reject', [RegistrarDashboardController::class, 'reject'])->name('dashboard.reject');
-    Route::get('/students', RegistrarStudentManager::class)->name('students.index');
+    Route::get('/students', [RegistrarStudentController::class, 'index'])->name('students.index');
     Route::get('/students/export', [\App\Http\Controllers\RegistryExportController::class, 'export'])->name('students.export');
     Route::get('/students/{id}/edit', [RegistrarStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [RegistrarStudentController::class, 'update'])->name('students.update');
@@ -115,13 +117,19 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
     Route::patch('/dropped/{id}/withdraw', [RegistrarDroppedStudentController::class, 'markWithdrawn'])->name('dropped.withdraw');
     Route::patch('/dropped/{id}/restore', [RegistrarDroppedStudentController::class, 'restore'])->name('dropped.restore');
     Route::get('/dropped/penalty-preview', [RegistrarDroppedStudentController::class, 'getPenaltyPreview'])->name('dropped.penalty-preview');
+    Route::get('/reports/students/print', [\App\Http\Controllers\ReportController::class, 'printStudentRegistry'])->name('reports.students.print');
+    Route::get('/reports/dropped/print', [\App\Http\Controllers\ReportController::class, 'printDroppedStudents'])->name('reports.dropped.print');
 
     Route::get('/profile-bank', [RegistrarStudentController::class, 'profileBank'])->name('profile_bank.index');
 
     Route::get('/applications', RegistrarApplicationManager::class)->name('applications.index');
     Route::get('/applications/college', RegistrarApplicationManager::class)->name('applications.college');
     Route::get('/applications/shs', RegistrarApplicationManager::class)->name('applications.shs');
-    Route::get('/archives', \App\Livewire\RegistrarArchiveManager::class)->name('archives.index');
+    Route::get('/archives', [RegistrarArchiveController::class, 'index'])->name('archives.index');
+    Route::patch('/archives/{id}/toggle-physical', [RegistrarArchiveController::class, 'togglePhysicalDocuments'])->name('archives.toggle_physical');
+    Route::patch('/archives/{id}/verify', [RegistrarArchiveController::class, 'verifyCredentials'])->name('archives.verify');
+    Route::get('/applications/{id}', [RegistrarApplicationController::class, 'show'])->name('applications.show');
+    Route::patch('/applications/{id}', [RegistrarApplicationController::class, 'update'])->name('applications.update');
     Route::patch('/applications/{id}/toggle-physical', [RegistrarApplicationController::class, 'togglePhysicalDocuments'])->name('applications.toggle-physical');
     Route::post('/applications/{id}/apply-voucher', [RegistrarApplicationController::class, 'applyVoucher'])->name('applications.apply-voucher');
     Route::post('/applications/{id}/remove-voucher', [RegistrarApplicationController::class, 'removeVoucher'])->name('applications.remove-voucher');
@@ -165,20 +173,25 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/payments', PaymentManager::class)->name('payments.index');
     Route::get('/payments/college', PaymentManager::class)->name('payments.college');
     Route::get('/payments/shs', PaymentManager::class)->name('payments.shs');
-    Route::get('/students', AdminStudentManager::class)->name('students.index');
+    Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
     Route::get('/students/export', [\App\Http\Controllers\RegistryExportController::class, 'export'])->name('students.export');
     Route::get('/students/{id}/edit', [AdminStudentController::class, 'edit'])->name('students.edit');
     Route::patch('/students/{id}', [AdminStudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
     Route::get('/dropped', [\App\Http\Controllers\RegistrarDroppedStudentController::class, 'index'])->name('dropped.index');
     Route::get('/applications', AdminApplicationManager::class)->name('applications.index');
-    Route::get('/archives', \App\Livewire\Admin\AdminArchiveManager::class)->name('archives.index');
+    Route::get('/archives', [\App\Http\Controllers\Admin\ArchiveController::class, 'index'])->name('archives.index');
 
 
     // API/Export routes
     Route::get('/payments/export', [\App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');
     Route::get('/api/pending-counts', [\App\Http\Controllers\Admin\DashboardController::class, 'getPendingCounts'])->name('api.pending-counts');
     Route::post('/api/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('api.notifications.mark-read');
+
+    // Printable Reports
+    Route::get('/reports/students/print', [\App\Http\Controllers\ReportController::class, 'printStudentRegistry'])->name('reports.students.print');
+    Route::get('/reports/payments/print', [\App\Http\Controllers\ReportController::class, 'printPayments'])->name('reports.payments.print');
+    Route::get('/reports/dropped/print', [\App\Http\Controllers\ReportController::class, 'printDroppedStudents'])->name('reports.dropped.print');
 });
 
 /*
@@ -191,8 +204,9 @@ Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')-
     Route::get('/payments', CashierPaymentManager::class)->name('payments.index');
     Route::get('/payments/college', CashierPaymentManager::class)->name('payments.college');
     Route::get('/payments/shs', CashierPaymentManager::class)->name('payments.shs');
-    Route::get('/assessment/shs', PaymentAssessmentManager::class)->name('assessment.shs');
-    Route::get('/assessment/college', PaymentAssessmentManager::class)->name('assessment.college');
+    Route::get('/assessment/shs', [CashierAssessmentController::class, 'showSHS'])->name('assessment.shs');
+    Route::get('/assessment/college', [CashierAssessmentController::class, 'showCollege'])->name('assessment.college');
+    Route::post('/assessment/{level}', [CashierAssessmentController::class, 'store'])->name('assessment.store');
 });
 
 /*
@@ -216,7 +230,9 @@ Route::middleware(['auth', 'can:student'])->prefix('student')->name('student.')-
     Route::get('/payments', [StudentPaymentRedirectController::class, 'redirect'])->name('payment');
     Route::get('/payments/shs', StudentPaymentManager::class)->name('payment.shs');
     Route::get('/payments/college', StudentPaymentManager::class)->name('payment.college');
-    Route::get('/profile', StudentProfileManager::class)->name('profile');
+    Route::get('/profile', [StudentProfileController::class, 'index'])->name('profile');
+    Route::patch('/profile', [StudentProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 /*

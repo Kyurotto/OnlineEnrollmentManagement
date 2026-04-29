@@ -1,125 +1,105 @@
-<x-layouts.admin>
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="mb-8">
-                <h2 class="text-3xl font-black text-white tracking-tight">Student Records</h2>
-                <p class="text-purple-400/60 text-xs font-bold uppercase tracking-widest mt-1">Official Student Directory</p>
+<x-layouts.admin title="Student Registry">
+    <div class="space-y-6 animate-in fade-in duration-500">
+        @if (session('success'))
+            <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
+                <span class="text-xs font-black uppercase tracking-widest">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        <div class="glass-card rounded-[32px] overflow-hidden border-white/5 shadow-2xl shadow-black/40">
+            <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight uppercase">{{ $level === 'shs' ? 'SHS' : ($level === 'college' ? 'College' : 'Student') }} Enrolled List</h2>
+                    <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Management of Verified Academic Personas & Operational Status</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full md:w-auto">
+                    <!-- Search Form -->
+                    <form action="{{ route('admin.students.index') }}" method="GET" class="relative group w-full md:w-80">
+                        <input type="hidden" name="filter" value="{{ $filter }}">
+                        <input type="hidden" name="level" value="{{ $level }}">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Search identifier, name, or track..."
+                            class="w-full bg-white/[0.03] border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-xs text-white placeholder:text-white/20 focus:border-purple-500/50 outline-none transition-all font-bold uppercase tracking-widest">
+                    </form>
+
+                    <!-- Filter Form -->
+                    <div class="flex bg-white/5 p-1 rounded-2xl border border-white/10 shadow-inner">
+                        <a href="{{ route('admin.students.index', ['filter' => 'all', 'search' => $search, 'level' => $level]) }}"
+                           class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all {{ $filter === 'all' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'text-white/40 hover:text-white' }}">ALL</a>
+                        <a href="{{ route('admin.students.index', ['filter' => 'regular', 'search' => $search, 'level' => $level]) }}"
+                           class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all {{ $filter === 'regular' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'text-white/40 hover:text-white' }}">REGULAR</a>
+                        <a href="{{ route('admin.students.index', ['filter' => 'irregular', 'search' => $search, 'level' => $level]) }}"
+                           class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all {{ $filter === 'irregular' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'text-white/40 hover:text-white' }}">IRREGULAR</a>
+                    </div>
+                </div>
             </div>
 
-            @if (session('success'))
-                <div class="bg-purple-500/10 border border-purple-500/20 text-purple-400 px-4 py-3 rounded-xl relative mb-6 font-bold shadow-lg backdrop-blur-md flex items-center gap-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    {{ session('success') }}
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse font-bold">
+                    <thead>
+                        <tr class="text-[10px] text-white/20 uppercase tracking-[0.2em] bg-white/[0.02]">
+                            <th class="py-6 px-8">ID</th>
+                            <th class="py-6 px-8">Full Name</th>
+                            <th class="py-6 px-8">Email</th>
+                            <th class="py-6 px-8 text-center">Academic Track</th>
+                            <th class="py-6 px-8 text-center">Section</th>
+                            <th class="py-6 px-8">Status</th>
+                            <th class="py-6 px-8 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-xs divide-y divide-white/5">
+                        @forelse($students as $student)
+                            <tr class="hover:bg-white/[0.02] transition-colors group">
+                                <td class="py-6 px-8 text-white/20 font-mono tracking-tighter">#{{ str_pad($student->id, 5, '0', STR_PAD_LEFT) }}</td>
+                                <td class="py-6 px-8">
+                                    <div class="flex flex-col">
+                                        <span class="text-white group-hover:text-purple-400 transition-colors uppercase tracking-wider block">{{ $student->last_name }}, {{ $student->first_name }}</span>
+                                        <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Verified Profile</span>
+                                    </div>
+                                </td>
+                                <td class="py-6 px-8">
+                                    <span class="text-white/40 lowercase tracking-tight">{{ $student->email }}</span>
+                                </td>
+                                <td class="py-6 px-8 text-center">
+                                    <span class="text-purple-400 uppercase tracking-widest font-black text-[10px]">{{ $student->program }}</span>
+                                </td>
+                                <td class="py-6 px-8 text-center">
+                                    <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
+                                </td>
+                                <td class="py-6 px-8">
+                                    <span class="bg-purple-500/10 text-purple-400 text-[10px] font-black px-4 py-1.5 rounded-full border border-purple-500/20 uppercase tracking-widest">
+                                        {{ $student->status ?? 'Enrolled' }}
+                                    </span>
+                                </td>
+                                <td class="py-6 px-8 text-right">
+                                    <a href="{{ route('admin.students.edit', $student->id) }}"
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-purple-400 hover:border-purple-500/30 transition-all text-[10px] font-black uppercase tracking-widest group/btn">
+                                        UPDATE
+                                        <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="py-20 text-center">
+                                    <div class="flex flex-col items-center opacity-20">
+                                        <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                        <span class="text-[10px] font-black uppercase tracking-[0.3em]">No Students Documented</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if ($students->hasPages())
+                <div class="p-8 border-t border-white/5 bg-white/[0.01]">
+                    {{ $students->appends(request()->query())->links('pagination') }}
                 </div>
             @endif
-
-            <div class="rounded-2xl border overflow-hidden"
-                 style="background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
-
-                <div class="px-6 py-5 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white/5">
-                    <h3 class="font-bold text-white flex items-center gap-2">
-                        <span class="w-1 h-5 rounded-full bg-purple-500 inline-block"></span>
-                        Students List
-                        <span class="text-white/40 text-xs font-normal ml-1">({{ $students->total() }})</span>
-                    </h3>
-
-                    <form action="{{ route('admin.students.index') }}" method="GET" class="relative group w-full md:w-80">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-purple-400">
-                            <svg class="h-4 w-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                               class="pl-11 pr-4 w-full bg-white/5 border border-white/10 rounded-xl py-3 text-sm text-white focus:border-purple-500/50 outline-none transition-all placeholder-white/10 font-bold uppercase tracking-tight shadow-inner"
-                               placeholder="Search students...">
-                    </form>
-                </div>
-
-                <div class="overflow-x-auto min-h-[400px]">
-                    <table class="w-full text-sm text-left text-white/70">
-                        <thead class="text-[10px] text-purple-300 uppercase tracking-widest border-b border-white/5"
-                            style="background: rgba(255,255,255,0.03);">
-                            <tr>
-                                <th scope="col" class="px-6 py-5 font-black">Full Name</th>
-                                <th scope="col" class="px-6 py-5 font-black">Email Address</th>
-                                <th scope="col" class="px-6 py-5 font-black text-center">Program</th>
-                                <th scope="col" class="px-6 py-5 font-black text-center">Section</th>
-                                <th scope="col" class="px-6 py-5 font-black text-center">Type</th>
-                                <th scope="col" class="px-6 py-5 font-black text-center">Classification</th>
-                                <th scope="col" class="px-6 py-5 font-black text-center">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5">
-                            @forelse($students as $student)
-                                <tr class="hover:bg-white/5 transition-all group">
-                                    <td class="px-6 py-5">
-                                        <span class="font-bold text-white uppercase tracking-tight group-hover:text-purple-200 transition-colors">
-                                            {{ $student->last_name }}, {{ $student->first_name }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-white/40 lowercase italic text-xs">
-                                        {{ $student->email }}
-                                    </td>
-                                    <td class="px-6 py-5 text-center">
-                                        <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-purple-500/20 bg-purple-500/10 text-purple-400">
-                                            {{ $student->program }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 font-bold text-white/60 text-center whitespace-nowrap text-xs">
-                                        {{ $student->year_display }}
-                                    </td>
-                                    <td class="px-6 py-5 text-center whitespace-nowrap">
-                                        <span class="text-[10px] font-black px-3 py-1 rounded-full border uppercase tracking-widest
-                                            {{ $student->student_type === 'Transferee' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' :
-                                               ($student->student_type === 'Shifter' ? 'text-sky-400 bg-sky-400/10 border-sky-400/20' :
-                                               'text-white/40 bg-white/5 border-white/10') }}">
-                                            {{ $student->student_type }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-center whitespace-nowrap">
-                                        @if($student->is_regular === null)
-                                            <span class="text-white/20 text-[10px] font-black px-3 py-1 rounded-full border border-white/10 uppercase tracking-widest">
-                                                Not Audited
-                                            </span>
-                                        @elseif($student->is_regular)
-                                            <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                                                Regular
-                                            </span>
-                                        @else
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                                                    Irregular
-                                                </span>
-                                                @if($student->classification_reason)
-                                                    <span class="text-[8px] text-rose-300/50 uppercase tracking-wider">{{ $student->classification_reason }}</span>
-                                                @endif
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-5 text-center">
-                                        <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full border border-emerald-500/20 shadow-sm uppercase tracking-widest">
-                                            {{ $student->status ?? 'Active' }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="px-6 py-20 text-center">
-                                        <div class="flex flex-col items-center gap-2 opacity-20">
-                                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                            <p class="italic text-sm font-bold uppercase tracking-widest">No students found</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                @if ($students->hasPages())
-                    <div class="px-6 py-4 border-t border-white/5 bg-white/5">
-                        {{ $students->appends(request()->query())->links('pagination') }}
-                    </div>
-                @endif
-            </div>
         </div>
     </div>
 </x-layouts.admin>

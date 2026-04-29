@@ -29,9 +29,10 @@ class RegistrarAcademicYearController extends Controller
             abort(403, 'Forbidden: This Academic Year already exists.');
         }
 
-        // If setting this to Active, deactivate all others
+        // If setting this to Active, deactivate all others and semesters to ensure sync
         if ($request->has('is_active')) {
             AcademicYear::where('is_active', true)->update(['is_active' => false]);
+            \App\Models\Semester::query()->update(['is_active' => false]);
         }
 
         AcademicYear::create([
@@ -50,9 +51,10 @@ class RegistrarAcademicYearController extends Controller
             'year_name' => 'required|string|unique:academic_years,year_name,'.$id,
         ]);
 
-        // If setting this to Active, deactivate others
+        // If setting this to Active, deactivate others and ALL semesters to ensure sync
         if ($request->has('is_active')) {
             AcademicYear::where('id', '!=', $id)->update(['is_active' => false]);
+            \App\Models\Semester::query()->update(['is_active' => false]);
         }
 
         $academicYear->update([

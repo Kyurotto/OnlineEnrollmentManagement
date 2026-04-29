@@ -7,11 +7,15 @@
                 <h2 class="text-3xl font-bold text-white tracking-tight">Review Enrollment Application</h2>
                 <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">View Your Submitted Application</p>
             </div>
+            <a href="{{ route('student.dashboard') }}" class="flex items-center gap-3 px-8 py-3.5 rounded-full bg-white border border-slate-100 text-[11px] font-black text-indigo-600 uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all shadow-lg shadow-indigo-600/5 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Dashboard
+            </a>
         </div>
 
         {{-- Status Alert --}}
         <div class="p-6 rounded-2xl border flex items-center gap-4"
-             style="background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.2); box-shadow: 0 4px 20px rgba(251,191,36,0.1);">
+             style="background: rgba(96,165,250,0.08); border-color: rgba(96,165,250,0.2); box-shadow: 0 4px 20px rgba(96,165,250,0.1);">
             <div class="p-3 rounded-xl {{ $enrollment->status === 'Enrolled' || $enrollment->status === 'Approved' ? 'bg-emerald-500/20' : ($enrollment->status === 'Pending' ? 'bg-amber-500/20' : 'bg-rose-500/20') }} flex-shrink-0">
                 <svg class="w-6 h-6 {{ $enrollment->status === 'Enrolled' || $enrollment->status === 'Approved' ? 'text-emerald-400' : ($enrollment->status === 'Pending' ? 'text-amber-400' : 'text-rose-400') }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
@@ -33,7 +37,7 @@
 
         {{-- Important Notice --}}
         <div class="p-6 rounded-2xl border flex items-start gap-4 bg-amber-500/5 group relative"
-             style="border-color: rgba(251,191,36,0.3);">
+             style="border-color: rgba(96,165,250,0.3);">
             <div class="p-2 rounded-lg bg-amber-500/20 text-amber-400 flex-shrink-0 mt-1">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
@@ -48,7 +52,7 @@
              style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
 
             <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-3">
-                <span class="w-1.5 h-6 rounded-full" style="background-color: {{ $enrollment->isSHS() ? '#10B981' : '#3B82F6' }};"></span>
+                <span class="w-1.5 h-6 rounded-full" style="background-color: {{ $enrollment->isSHS() ? '#3b82f6' : '#3B82F6' }};"></span>
                 Academic Information
             </h3>
 
@@ -194,7 +198,8 @@
 
         {{-- Action Buttons --}}
         <div class="flex flex-col sm:flex-row gap-4 pt-4">
-            <a href="{{ route('student.dashboard') }}" class="flex-1 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold border border-white/20 transition-all text-center">
+            <a href="{{ route('student.dashboard') }}" class="flex-1 flex items-center justify-center gap-3 px-8 py-3.5 rounded-full bg-white border border-slate-100 text-[11px] font-black text-indigo-600 uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all shadow-lg shadow-indigo-600/5 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Dashboard
             </a>
             @if($enrollment->status === 'Pending')

@@ -39,9 +39,9 @@
                 {{-- Dashboard --}}
                 <a href="{{ route('admin.dashboard') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-all duration-200 relative"
-                   style="{{ request()->routeIs('admin.dashboard') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                   style="{{ request()->routeIs('admin.dashboard') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #3b82f6;' }}"
                    onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                   onmouseout="this.style.background='{{ request()->routeIs('admin.dashboard') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                   onmouseout="this.style.background='{{ request()->routeIs('admin.dashboard') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#3b82f6';"
                    {{ request()->routeIs('admin.dashboard') ? 'data-active=1' : '' }}>
                     @if(request()->routeIs('admin.dashboard'))
                         <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style="background: #63b3ed;"></span>
@@ -63,9 +63,9 @@
                     {{-- Manage Courses --}}
                     <a href="{{ route('admin.courses.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('admin.courses.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       style="{{ request()->routeIs('admin.courses.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #3b82f6;' }}"
                        onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('admin.courses.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       onmouseout="this.style.background='{{ request()->routeIs('admin.courses.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#3b82f6';"
                        {{ request()->routeIs('admin.courses.*') ? 'data-active=1' : '' }}>
                         @if(request()->routeIs('admin.courses.*'))
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
@@ -77,9 +77,9 @@
                     {{-- Manage Students --}}
                     <a href="{{ route('admin.students.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('admin.students.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       style="{{ request()->routeIs('admin.students.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #3b82f6;' }}"
                        onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('admin.students.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       onmouseout="this.style.background='{{ request()->routeIs('admin.students.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#3b82f6';"
                        {{ request()->routeIs('admin.students.*') ? 'data-active=1' : '' }}>
                         @if(request()->routeIs('admin.students.*'))
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
@@ -91,9 +91,9 @@
                     {{-- Manage Payments --}}
                     <a href="{{ route('admin.payments.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('admin.payments.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       style="{{ request()->routeIs('admin.payments.*') ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #3b82f6;' }}"
                        onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('admin.payments.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       onmouseout="this.style.background='{{ request()->routeIs('admin.payments.*') ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#3b82f6';"
                        {{ request()->routeIs('admin.payments.*') ? 'data-active=1' : '' }}>
                         @if(request()->routeIs('admin.payments.*'))
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
@@ -105,9 +105,9 @@
                     {{-- Applications for College --}}
                     <a href="{{ route('admin.applications.index', ['level' => 'college']) }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       style="{{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #3b82f6;' }}"
                        onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       onmouseout="this.style.background='{{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#3b82f6';"
                        {{ request()->routeIs('admin.applications.*') && request('level') === 'college' ? 'data-active=1' : '' }}>
                         @if(request()->routeIs('admin.applications.*') && request('level') === 'college')
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
@@ -119,9 +119,9 @@
                     {{-- Applications for SHS --}}
                     <a href="{{ route('admin.applications.index', ['level' => 'shs']) }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative"
-                       style="{{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #8ab4d8;' }}"
+                       style="{{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'background: rgba(99,179,237,0.12); color: #ffffff;' : 'color: #3b82f6;' }}"
                        onmouseover="this.style.background='rgba(255,255,255,0.05)'; if(!this.dataset.active) this.style.color='#ffffff';"
-                       onmouseout="this.style.background='{{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#8ab4d8';"
+                       onmouseout="this.style.background='{{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'rgba(99,179,237,0.12)' : 'transparent' }}'; if(!this.dataset.active) this.style.color='#3b82f6';"
                        {{ request()->routeIs('admin.applications.*') && request('level') === 'shs' ? 'data-active=1' : '' }}>
                         @if(request()->routeIs('admin.applications.*') && request('level') === 'shs')
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-full" style="background: #63b3ed;"></span>
@@ -149,16 +149,16 @@
 
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">
-                        <div class="text-xs text-white/40 italic">Signed in as</div>
+                        <div class="text-xs text-white/40">Signed in as</div>
                         <div class="text-sm font-bold text-white">Administrator</div>
                     </div>
                     @if(request()->routeIs('admin.dashboard'))
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button class="text-white text-sm font-semibold py-2 px-4 rounded-full transition-all"
-                            style="background: rgba(220,38,38,0.8); border: 1px solid rgba(220,38,38,0.5);"
-                            onmouseover="this.style.background='rgba(220,38,38,1)'"
-                            onmouseout="this.style.background='rgba(220,38,38,0.8)'">Logout</button>
+                            style="background: rgba(37,99,235,0.8); border: 1px solid rgba(37,99,235,0.5);"
+                            onmouseover="this.style.background='rgba(37,99,235,1)'"
+                            onmouseout="this.style.background='rgba(37,99,235,0.8)'">Logout</button>
                     </form>
                     @endif
                 </div>

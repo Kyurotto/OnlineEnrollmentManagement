@@ -54,7 +54,7 @@
                             </div>
                             <div class="space-y-4">
                                 <h3 class="text-4xl font-black text-white tracking-tighter">{{ $application->course_code ?? 'N/A' }}</h3>
-                                <p class="text-white/40 text-sm italic">{{ $application->year_level }}</p>
+                                <p class="text-white/40 text-sm">{{ $application->year_level }}</p>
                                 <div class="pt-6">
                                     <span class="text-[10px] font-black text-white/20 uppercase tracking-widest block mb-2 px-1">Current Status</span>
                                     @php
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="col-span-2 md:col-span-1 border-l-2 border-white/10 pl-4">
                                     <span class="block text-[10px] text-white/20 uppercase font-black mb-1">Contact Email</span>
-                                    <span class="text-sm font-bold text-cyan-400 lowercase italic">{{ $application->user?->email }}</span>
+                                    <span class="text-sm font-bold text-cyan-400 lowercase">{{ $application->user?->email }}</span>
                                 </div>
                                 <div class="col-span-2 md:col-span-1 border-l-2 border-white/10 pl-4">
                                     <span class="block text-[10px] text-white/20 uppercase font-black mb-1">Birth Date</span>
@@ -156,7 +156,7 @@
                                     <div class="space-y-4 group/doc">
                                         <div class="flex items-center gap-2">
                                             @if (!empty($application->$path))
-                                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                                                 <span class="text-[9px] font-black uppercase text-white tracking-widest">{{ $label }}</span>
                                             @else
                                                 <div class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]"></div>

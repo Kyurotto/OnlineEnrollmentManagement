@@ -13,51 +13,51 @@
     </style>
     @if(session('success'))
         <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3 mb-6">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
             <span class="text-xs font-black uppercase tracking-widest">{{ session('success') }}</span>
         </div>
     @endif
 
-    <div class="glass-card rounded-[32px] border-white/5 shadow-2xl shadow-black/40">
-        <div class="p-8 md:p-10 border-b border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div class="bg-white rounded-[32px] border border-blue-500/10 shadow-xl overflow-hidden">
+        <div class="p-8 md:p-10 border-b border-blue-500/10 bg-blue-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex-shrink-0">
-                <h2 class="text-2xl font-black text-white tracking-tight uppercase italic text-shadow-lg shadow-black/40">Applications</h2>
-                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">Student Enrollment Lifecycle & Review Pipeline</p>
+                <h2 class="text-2xl font-black text-black tracking-tight uppercase">Applications</h2>
+                <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Student Enrollment Lifecycle & Review Pipeline</p>
             </div>
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                 <div class="relative group w-full sm:w-64">
                     <input type="text" wire:model.live.debounce.500ms="search"
                         placeholder="Search Applicant or Course..."
-                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all shadow-inner tracking-wider">
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-3.5 text-[11px] font-bold text-black placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all shadow-sm tracking-wider">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-focus-within:opacity-100 transition-opacity">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
                 <div class="w-full sm:w-44">
-                    <select wire:model.live="status" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
-                        <option value="All statuses" class="bg-[#0a0f1d]">All Status</option>
-                        <option value="Pending" class="bg-[#0a0f1d]">Pending</option>
-                        <option value="Approved" class="bg-[#0a0f1d]">Approved</option>
-                        <option value="Rejected" class="bg-[#0a0f1d]">Rejected</option>
-                        <option value="Paid" class="bg-[#0a0f1d]">Paid</option>
+                    <select wire:model.live="status" class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-black focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer transition-all shadow-sm">
+                        <option value="All statuses">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Paid">Paid</option>
                     </select>
                 </div>
                 <div class="w-full sm:w-44">
-                    <select wire:model.live="course_filter" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer transition-all shadow-inner">
+                    <select wire:model.live="course_filter" class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-3.5 text-[11px] font-black uppercase tracking-widest text-black focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer transition-all shadow-sm">
                         @php
                             $courseLabel = 'ALL PROGRAMS/STRANDS';
                             if ($level === 'college') $courseLabel = 'ALL PROGRAMS';
                             if ($level === 'shs') $courseLabel = 'ALL STRANDS';
                         @endphp
-                        <option value="All Programs" class="bg-[#0a0f1d]">{{ $courseLabel }}</option>
+                        <option value="All Programs">{{ $courseLabel }}</option>
                         @if($level === 'All Levels' || $level === 'college')
                             @foreach($collegePrograms as $course)
-                                <option value="{{ $course->course_code }}" class="bg-[#0a0f1d] text-white">{{ $course->course_code }}</option>
+                                <option value="{{ $course->course_code }}">{{ $course->course_code }}</option>
                             @endforeach
                         @endif
                         @if($level === 'All Levels' || $level === 'shs')
                             @foreach($shsStrands as $course)
-                                <option value="{{ $course->course_code }}" class="bg-[#0a0f1d] text-white">{{ $course->course_code }}</option>
+                                <option value="{{ $course->course_code }}">{{ $course->course_code }}</option>
                                 @endforeach
                             </optgroup>
                         @endif
@@ -66,11 +66,11 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto custom-scrollbar">
+        <div class="overflow-x-auto custom-scrollbar bg-white">
             <table class="min-w-max w-full text-left border-collapse font-bold">
-                <thead class="text-[10px] text-white/20 uppercase tracking-[0.2em] border-b border-white/5 bg-white/[0.01]">
+                <thead class="text-[10px] text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 bg-slate-50/50">
                     <tr>
-                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.id')">
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-blue-600 transition-colors" wire:click="sortBy('enrollments.id')">
                             <div class="flex items-center gap-2">
                                 ID
                                 <span class="transition-opacity {{ $sortField === 'enrollments.id' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
@@ -82,7 +82,7 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('last_name')">
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-blue-600 transition-colors" wire:click="sortBy('last_name')">
                             <div class="flex items-center gap-2">
                                 Full Name
                                 <span class="transition-opacity {{ $sortField === 'last_name' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
@@ -94,13 +94,14 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-left">Account Details</th>
-                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors">
+                        <th class="py-6 px-8 text-left text-slate-400">Account Details</th>
+                        <th class="py-6 px-8 text-left text-slate-400">Classification</th>
+                        <th class="py-6 px-8 text-left text-slate-400 cursor-pointer group/th hover:text-blue-600 transition-colors">
                             <div class="flex items-center gap-2">
                                 Level
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.course_code')">
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-blue-600 transition-colors" wire:click="sortBy('enrollments.course_code')">
                             <div class="flex items-center gap-2">
                                 Program
                                 <span class="transition-opacity {{ $sortField === 'enrollments.course_code' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
@@ -112,7 +113,7 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('enrollments.created_at')">
+                        <th class="py-6 px-8 text-left cursor-pointer group/th hover:text-blue-600 transition-colors" wire:click="sortBy('enrollments.created_at')">
                             <div class="flex items-center gap-2">
                                 Date
                                 <span class="transition-opacity {{ $sortField === 'enrollments.created_at' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
@@ -124,7 +125,7 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-white transition-colors" wire:click="sortBy('status')">
+                        <th class="py-6 px-8 text-center cursor-pointer group/th hover:text-blue-600 transition-colors" wire:click="sortBy('status')">
                             <div class="flex items-center gap-2 justify-center pl-5">
                                 Status
                                 <span class="transition-opacity {{ $sortField === 'status' ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-50' }}">
@@ -139,22 +140,37 @@
 
                     </tr>
                 </thead>
-                <tbody class="text-xs divide-y divide-white/5">
+                <tbody class="text-xs divide-y divide-slate-100 bg-white">
                     @forelse($applications as $application)
-                        <tr class="hover:bg-white/[0.02] transition-colors group">
-                            <td class="py-6 px-8 text-white/20 font-mono tracking-tighter italic">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
+                        <tr class="hover:bg-blue-50/30 transition-all group">
+                            <td class="py-6 px-8 text-slate-400 font-mono tracking-tighter">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
                             <td class="py-6 px-8">
                                 <div class="flex flex-col">
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-white group-hover:text-cyan-400 transition-colors uppercase tracking-wider font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
+                                        <span class="text-black group-hover:text-blue-600 transition-colors uppercase tracking-wider font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
                                         @if($application->extension)
-                                        <span class="text-sm font-bold text-white/40 italic">{{ $application->extension }}</span>
+                                        <span class="text-sm font-bold text-slate-400">{{ $application->extension }}</span>
                                         @endif
                                     </div>
-                                    <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Applicant Profile</span>
+                                    <span class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">Applicant Profile</span>
                                 </div>
                             </td>
-                            <td class="py-6 px-8 text-white/40 lowercase tracking-tight">{{ $application->email }}</td>
+                            <td class="py-6 px-8 text-slate-500 lowercase tracking-tight">{{ $application->email }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                @php
+                                    $classification = $application->classification ?? 'New';
+                                    $classColor = match(strtolower($classification)) {
+                                        'new' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                                        'returning' => 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                                        'transferee' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        'shifter' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                                        default => 'bg-white/5 text-white/40 border-white/10'
+                                    };
+                                @endphp
+                                <span class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter {{ $classColor }} rounded-lg">
+                                    {{ $classification }}
+                                </span>
+                            </td>
                             <td class="py-6 px-8 whitespace-nowrap">
                                 @php
                                     $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
@@ -172,10 +188,10 @@
                                 @endif
                             </td>
                             <td class="py-6 px-8 whitespace-nowrap">
-                                <span class="text-cyan-400 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
-                                <span class="text-white/20 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
+                                <span class="text-blue-600 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
+                                <span class="text-slate-400 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
                             </td>
-                            <td class="py-6 px-8 text-white/30 font-medium italic tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
+                            <td class="py-6 px-8 text-slate-500 font-medium tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
                             <td class="py-6 px-8">
                                 @php
                                     $badgeColor = match(ucfirst($application->status)) {
@@ -204,8 +220,8 @@
                     <tr>
                         <td colspan="8" class="py-24 text-center">
                             <div class="flex flex-col items-center opacity-20">
-                                <svg class="w-16 h-16 mb-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-white">No applications found in the review pipeline</span>
+                                <svg class="w-16 h-16 mb-6 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">No applications found in the review pipeline</span>
                             </div>
                         </td>
                     </tr>
@@ -215,7 +231,7 @@
         </div>
 
         @if($applications->hasPages())
-            <div class="p-8 border-t border-white/5 bg-white/[0.01]">
+            <div class="p-8 border-t border-blue-500/10 bg-blue-50/20">
                 {{ $applications->links('pagination') }}
             </div>
         @endif
@@ -223,15 +239,15 @@
 
     <!-- Details Modal -->
     <div x-show="modalOpen" class="fixed inset-0 z-50 p-4 flex items-center justify-center transition-all duration-300" x-cloak>
-        <div class="absolute inset-0 bg-[#060d1a]/90 backdrop-blur-2xl" @click="modalOpen = false"></div>
+        <div class="absolute inset-0 bg-blue-900/40 backdrop-blur-md" @click="modalOpen = false"></div>
 
-        <div class="bg-[#0d1f3c] w-full max-w-7xl rounded-[40px] shadow-[0_32px_120px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10" id="modalContent" wire:ignore>
-            <div class="px-8 md:px-12 py-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
+        <div class="bg-white w-full max-w-7xl rounded-[40px] shadow-[0_32px_120px_rgba(30,58,138,0.2)] border border-blue-500/20 overflow-hidden flex flex-col max-h-[95vh] relative z-10" id="modalContent" wire:ignore>
+            <div class="px-8 md:px-12 py-8 border-b border-blue-500/10 flex justify-between items-center bg-blue-50/30">
                 <div>
-                    <span class="text-[9px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-1 block italic text-shadow shadow-cyan-500/20">Analysis Protocol</span>
-                    <h2 class="text-2xl font-black text-white uppercase italic tracking-tight" id="modalTitle">Application Details</h2>
+                    <span class="text-[9px] font-black text-blue-600 uppercase tracking-[0.4em] mb-1 block">Analysis Protocol</span>
+                    <h2 class="text-2xl font-black text-black uppercase tracking-tight" id="modalTitle">Application Details</h2>
                 </div>
-                <button @click="modalOpen = false" class="p-4 rounded-2xl bg-white/5 text-white/20 hover:text-white transition-colors border border-white/10">
+                <button @click="modalOpen = false" class="p-4 rounded-2xl bg-slate-100 text-slate-400 hover:text-black transition-all border border-slate-200">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -241,42 +257,42 @@
                     <!-- Student Profile -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
-                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Applicant Profile</h3>
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                            <h3 class="text-[10px] font-black text-black uppercase tracking-[0.3em]">Applicant Profile</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
+                        <div class="grid grid-cols-1 gap-6 bg-white border border-blue-500/10 rounded-[32px] p-8">
                             <div class="grid grid-cols-2 gap-8">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalNameValue"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Full Name</span>
+                                    <span class="text-xs font-bold text-black uppercase" id="modalNameValue"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Email Address</span>
-                                    <span class="text-xs font-bold text-white lowercase" id="modalEmail"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Email Address</span>
+                                    <span class="text-xs font-bold text-black lowercase" id="modalEmail"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Reference ID</span>
-                                    <span class="text-xs font-bold text-cyan-400 uppercase" id="modalAppId"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Reference ID</span>
+                                    <span class="text-xs font-bold text-blue-600 uppercase" id="modalAppId"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Applied On</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalSubmitted"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Applied On</span>
+                                    <span class="text-xs font-bold text-black uppercase" id="modalSubmitted"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Birth Date</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalDob"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Birth Date</span>
+                                    <span class="text-xs font-bold text-black uppercase" id="modalDob"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Age</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalAge"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Age</span>
+                                    <span class="text-xs font-bold text-black uppercase" id="modalAge"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Gender</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalGender"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gender</span>
+                                    <span class="text-xs font-bold text-black uppercase" id="modalGender"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Address</span>
-                                    <span class="text-xs font-bold text-white uppercase" id="modalAddress"></span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Address</span>
+                                    <span class="text-xs font-bold text-black uppercase" id="modalAddress"></span>
                                 </div>
                             </div>
                         </div>
@@ -291,16 +307,16 @@
                         <div class="bg-blue-500/5 border border-blue-500/10 rounded-[32px] p-8 h-full flex flex-col justify-center">
                             <div class="space-y-4">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Applied Program</span>
-                                    <span class="text-2xl font-black text-white uppercase italic tracking-tighter" id="modalCourse"></span>
+                                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Applied Program</span>
+                                    <span class="text-2xl font-black text-white uppercase tracking-tighter" id="modalCourse"></span>
                                 </div>
                                 <div class="grid grid-cols-2 gap-8 pt-6 border-t border-white/5">
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Academic Level</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Academic Level</span>
                                         <span class="text-xs font-bold text-white uppercase" id="modalYear"></span>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status Now</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Status Now</span>
                                         <span class="text-xs font-black text-cyan-400 uppercase tracking-widest" id="modalStatus"></span>
                                     </div>
                                 </div>
@@ -317,19 +333,19 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Father's Name</span>
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Father's Name</span>
                             <span class="text-xs font-bold text-white uppercase" id="modalFather"></span>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Mother's Name</span>
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Mother's Name</span>
                             <span class="text-xs font-bold text-white uppercase" id="modalMother"></span>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Guardian Name</span>
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Guardian Name</span>
                             <span class="text-xs font-bold text-white uppercase" id="modalGuardian"></span>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Emergency Contact</span>
+                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Emergency Contact</span>
                             <span class="text-xs font-bold text-white uppercase" id="modalContact"></span>
                         </div>
                     </div>
@@ -357,29 +373,31 @@
                             <!-- Injected via JS -->
                         </div>
                         <div class="lg:col-span-2 space-y-2">
-                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
+                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Student's Explanation</span>
                             <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[80px]">
-                                <p class="text-[11px] text-white/60 leading-relaxed italic" id="modalPromissoryReason"></p>
+                                <p class="text-[11px] text-white/60 leading-relaxed" id="modalPromissoryReason"></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="px-8 md:px-12 py-8 border-t border-white/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="px-8 md:px-12 py-8 border-t border-blue-500/10 bg-blue-50/30 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
                     <button type="button"
                         @click="modalOpen = false; @this.approve(selectedId)"
-                        class="bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 shrink-0">
+                        class="flex items-center gap-2 bg-white border-2 border-blue-500/20 text-black text-[10px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-lg shadow-blue-500/10 hover:bg-blue-50 hover:border-blue-500/40 active:scale-95 shrink-0">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         Approve Enrollment
                     </button>
                     <button type="button"
                         @click="if(confirm('Are you sure you want to reject this application?')) { modalOpen = false; @this.reject(selectedId) }"
-                        class="bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-rose-500/10 active:scale-95 shrink-0">
+                        class="flex items-center gap-2 bg-white border-2 border-slate-200 text-black text-[10px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-md hover:bg-rose-50 hover:border-rose-500/30 active:scale-95 shrink-0">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                         Reject Application
                     </button>
                 </div>
-                <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] border border-white/10 rounded-2xl hover:bg-white/5 hover:text-white transition-all ml-auto italic">
+                <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-2 border-slate-100 rounded-2xl hover:bg-slate-50 hover:text-black transition-all ml-auto">
                     Close Protocol
                 </button>
             </div>
@@ -490,7 +508,7 @@
 
                 promissoryFile.innerHTML = `
                     <div class="space-y-3">
-                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment<\/span>
+                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Note Attachment<\/span>
                         <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">
                             <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
@@ -505,9 +523,9 @@
             } else {
                 promissoryFile.innerHTML = `
                     <div class="space-y-3">
-                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment<\/span>
+                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Note Attachment<\/span>
                         <div class="p-4 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] flex items-center justify-center opacity-30">
-                            <span class="text-[8px] font-black text-white uppercase tracking-widest italic">No File<\/span>
+                            <span class="text-[8px] font-black text-white uppercase tracking-widest">No File<\/span>
                         <\/div>
                     <\/div>
                 `;

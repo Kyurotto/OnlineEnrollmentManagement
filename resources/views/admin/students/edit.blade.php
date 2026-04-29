@@ -6,8 +6,8 @@
                     <svg class="w-5 h-5 group-hover/back:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
                 </a>
                 <div>
-                    <h2 class="text-3xl font-black text-white tracking-tight uppercase italic">Profile Update</h2>
-                    <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mt-1 italic">Updating Verified Academic Persona Record</p>
+                    <h2 class="text-3xl font-black text-white tracking-tight uppercase">Profile Update</h2>
+                    <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Updating Verified Academic Persona Record</p>
                 </div>
             </div>
         </div>
@@ -21,19 +21,19 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="space-y-3">
-                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2 italic">Given Name</label>
+                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2">Given Name</label>
                         <input type="text" name="first_name" value="{{ old('first_name', $student->first_name) }}" 
                             class="w-full bg-white/[0.03] text-white border border-white/10 py-5 px-6 rounded-2xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-purple-500/50 focus:bg-white/[0.05] transition-all shadow-inner uppercase">
                         @error('first_name') <span class="text-rose-500 text-[10px] font-black uppercase tracking-tighter ml-2">{{ $message }}</span> @enderror
                     </div>
                     <div class="space-y-3">
-                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2 italic">Middle Accessor</label>
+                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2">Middle Accessor</label>
                         <input type="text" name="middle_name" value="{{ old('middle_name', $student->middle_name) }}" 
                             class="w-full bg-white/[0.03] text-white border border-white/10 py-5 px-6 rounded-2xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-purple-500/50 focus:bg-white/[0.05] transition-all shadow-inner uppercase">
                         @error('middle_name') <span class="text-rose-500 text-[10px] font-black uppercase tracking-tighter ml-2">{{ $message }}</span> @enderror
                     </div>
                     <div class="space-y-3">
-                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2 italic">Ancestral Header</label>
+                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2">Ancestral Header</label>
                         <input type="text" name="last_name" value="{{ old('last_name', $student->last_name) }}" 
                             class="w-full bg-white/[0.03] text-white border border-white/10 py-5 px-6 rounded-2xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-purple-500/50 focus:bg-white/[0.05] transition-all shadow-inner uppercase">
                         @error('last_name') <span class="text-rose-500 text-[10px] font-black uppercase tracking-tighter ml-2">{{ $message }}</span> @enderror
@@ -42,7 +42,7 @@
 
                 <div class="grid grid-cols-1 gap-8">
                     <div class="space-y-3">
-                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2 italic">Email</label>
+                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-2">Email</label>
                         <input type="email" name="email" value="{{ old('email', $student->email) }}" 
                             class="w-full bg-white/[0.03] text-white border border-white/10 py-5 px-6 rounded-2xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-purple-500/50 focus:bg-white/[0.05] transition-all shadow-inner">
                         @error('email') <span class="text-rose-500 text-[10px] font-black uppercase tracking-tighter ml-2">{{ $message }}</span> @enderror
@@ -55,7 +55,7 @@
                         Cancel
                     </a>
                     <button type="submit" 
-                        class="flex-[2] bg-purple-500 hover:bg-purple-400 text-white text-[10px] font-black py-5 px-10 rounded-2xl uppercase tracking-[0.3em] transition-all shadow-[0_20px_50px_rgba(167,139,250,0.3)] active:scale-[0.98] italic">
+                        class="flex-[2] bg-purple-500 hover:bg-purple-400 text-white text-[10px] font-black py-5 px-10 rounded-2xl uppercase tracking-[0.3em] transition-all shadow-[0_20px_50px_rgba(167,139,250,0.3)] active:scale-[0.98]">
                         Update
                     </button>
                 </div>

@@ -16,12 +16,19 @@ class RegistrarDashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // 0. Get Active Academic Year
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYearName = $activeYear ? $activeYear->year_name : null;
+
         // 1. Fetch Accurate Data Counts
-        $studentsCount = User::where('role', 'student')
-                             ->whereHas('application', function($q) {
+        $studentsCountQuery = User::where('role', 'student')
+                             ->whereHas('application', function($q) use ($activeYearName) {
                                  $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
-                             })
-                             ->count();
+                                 if ($activeYearName) {
+                                     $q->where('year_level', 'like', '%' . $activeYearName . '%');
+                                 }
+                             });
+        $studentsCount = $studentsCountQuery->count();
 
         $totalApplicationsCount = Enrollment::count();
         $pendingCount = Enrollment::where('status', 'Pending')->count();
@@ -31,15 +38,15 @@ class RegistrarDashboardController extends Controller
 
         // 2. CALCULATE EXTRA STATS
         $sectionsCount = \App\Models\Section::count();
-
-        // Student classification stats (aligned with registrar student registry logic)
         $hasIsRegular = Schema::hasColumn('enrollments', 'is_regular');
+
         $baseStudentClassStats = User::query()
             ->joinSub(
                 Enrollment::select(
                     'user_id',
                     'id',
                     'status',
+                    'year_level',
                     $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular')
                 )
                     ->whereIn('id', function ($q) {
@@ -53,6 +60,10 @@ class RegistrarDashboardController extends Controller
             ->where('users.role', 'student')
             ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
 
+        if ($activeYearName) {
+            $baseStudentClassStats->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');
+        }
+
         $registryTotalStudents = (clone $baseStudentClassStats)->count();
         $registryRegularCount = $hasIsRegular
             ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 1')->count()
@@ -60,6 +71,18 @@ class RegistrarDashboardController extends Controller
         $registryIrregularCount = $hasIsRegular
             ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 0')->count()
             : 0;
+
+        // Calculate New vs Returning Students
+        $registryReturningCount = (clone $baseStudentClassStats)
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('enrollments')
+                    ->whereColumn('enrollments.user_id', 'users.id')
+                    ->whereColumn('enrollments.id', '<>', 'latest_enrollments.id');
+            })
+            ->count();
+
+        $registryNewCount = $registryTotalStudents - $registryReturningCount;
 
         // 3. MAP THE STATS EXACTLY FOR THE HTML VIEW
         $stats = [
@@ -83,10 +106,12 @@ class RegistrarDashboardController extends Controller
         $endDate = Carbon::now()->endOfDay();
         $startDate = Carbon::now()->subDays(4)->startOfDay();
 
+        // Limit to latest 50 applications to prevent massive rendering overhead
         $weeklyApplications = Enrollment::with('user')
             ->whereIn('status', ['Pending', 'Paid'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
+            ->take(50)
             ->get();
 
         // Group applications by date (Y-m-d)
@@ -125,7 +150,8 @@ class RegistrarDashboardController extends Controller
             'stats', 'newEnrolleesCount', 'notifications',
             'appsByDate', 'weekDates', 'weekRange', 'selectedApp',
             'shs_count', 'college_count', 'total_count',
-            'registryTotalStudents', 'registryRegularCount', 'registryIrregularCount'
+            'registryTotalStudents', 'registryRegularCount', 'registryIrregularCount',
+            'registryNewCount', 'registryReturningCount'
         ));
     }
 

@@ -145,20 +145,43 @@ class PaymentManager extends Component
             $this->selectedVoucherType = $this->enrollment->voucher_type;
             
             // Get payment assessment details from cache (base fees)
-            // Use the getLevel() method to determine if SHS or college
-            $level = $this->enrollment->getLevel();
-            $cacheKey = 'payment_assessment_' . $level;
-            $assessment = Cache::get($cacheKey, [
-                'tuitionFee' => 0,
-                'miscellaneousFees' => 0,
-            ]);
+            $level = strtolower($this->enrollment->level ?? 'college');
+            $program = $this->enrollment->course_code ?? 'all';
+            $yearLevelDigit = filter_var($this->enrollment->year_level, FILTER_SANITIZE_NUMBER_INT);
+            
+            $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
+            $assessment = Cache::get($cacheKey);
+            
+            if (!$assessment) {
+                // Fallback to global if specific not found
+                $assessment = Cache::get("payment_assessment_{$level}_all_all", [
+                    'tuitionFee' => 0,
+                    'miscellaneousFees' => 0,
+                    'discountPercentage' => 0,
+                    'discountAmount' => 0,
+                ]);
+            }
 
             $this->tuitionFees = $assessment['tuitionFee'] ?? 0;
             $this->miscellaneousFees = $assessment['miscellaneousFees'] ?? 0;
-            $this->totalAssessment = $this->tuitionFees + $this->miscellaneousFees;
+            
+            // Calculate base assessment
+            $subtotal = $this->tuitionFees + $this->miscellaneousFees;
+            
+            // Calculate and apply pre-set discounts from assessment configuration
+            $configDiscPerc = (float) ($assessment['discountPercentage'] ?? 0);
+            $configDiscFixed = (float) ($assessment['discountAmount'] ?? 0);
+            $presetDiscount = ($subtotal * ($configDiscPerc / 100)) + $configDiscFixed;
+            
+            $this->totalAssessment = $subtotal;
 
-            // Load persisted discount from enrollment
+            // Load persisted discount from enrollment or use preset from configuration
             $this->appliedDiscount = (float) ($this->enrollment->cashier_discount ?? 0);
+            
+            // If no specific discount is set for this enrollment, use the preset from config
+            if ($this->appliedDiscount == 0 && $presetDiscount > 0) {
+                $this->appliedDiscount = $presetDiscount;
+            }
 
             // Voucher is indicator only — no automatic discount applied
             // Cashier must manually input discount amount
