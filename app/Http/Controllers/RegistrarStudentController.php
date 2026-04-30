@@ -52,9 +52,13 @@ class RegistrarStudentController extends Controller
             $query->whereNotIn('latest_enrollments.course_code', $shsStrands);
         }
 
+        // Removed strict year filter to allow students from previous terms to remain visible
+        // so they can be processed as returning students for the new active year.
+        /*
         if ($activeYear) {
             $query->where('latest_enrollments.year_level', 'like', '%' . $activeYear->year_name . '%');
         }
+        */
 
         if ($filter === 'regular') {
             $query->where('latest_enrollments.is_regular', true);
@@ -75,6 +79,14 @@ class RegistrarStudentController extends Controller
 
         foreach ($students as $student) {
             $student->program = $student->course_code ?: 'N/A';
+
+            // Status Override Logic for Term Transitions
+            // If the student's latest enrollment is not for the current active year, mark them as Pending
+            // EXEMPTION: If they are already marked as "Enrolled", respect that status.
+            if ($activeYear && stripos((string)$student->year_level, $activeYear->year_name) === false && $student->status !== 'Enrolled') {
+                $student->status = 'Pending';
+            }
+
             if (!empty($student->year_level)) {
                 $parts = explode('|', $student->year_level);
                 $student->year_display = trim($parts[0]);

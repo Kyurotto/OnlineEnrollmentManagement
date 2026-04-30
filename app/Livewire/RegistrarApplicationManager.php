@@ -223,7 +223,7 @@ class RegistrarApplicationManager extends Component
         $courses = Course::whereIn('course_code', $courseCodes)->get()->keyBy('course_code');
 
         // Transform each item in the collection
-        $applications->getCollection()->transform(function ($application) use ($courses) {
+        $applications->getCollection()->transform(function ($application) use ($courses, $activeYear) {
             if (isset($courses[$application->course_code])) {
                 $application->setRelation('course', $courses[$application->course_code]);
             }
@@ -243,6 +243,13 @@ class RegistrarApplicationManager extends Component
             $application->classification = $application->student_type 
                 ?? ($isReturning ? 'Returning' : 'New');
             
+            // Status Override for Term Transitions
+            // If the application is not for the current active year, mark as Pending
+            // EXEMPTION: If the registrar has approved it (status is Enrolled), respect that status.
+            if ($activeYear && stripos((string)$application->year_level, $activeYear->year_name) === false && $application->status !== 'Enrolled') {
+                $application->status = 'Pending';
+            }
+
             return $application;
         });
 
@@ -275,7 +282,9 @@ class RegistrarApplicationManager extends Component
             'applications' => $applications,
             'pendingCount' => $pendingCount,
             'courses' => $availableCourses,
-            'sections' => $sections
+            'sections' => $sections,
+            'activeYear' => $activeYear,
+            'activeSemester' => $activeSemester
         ]);
     }
 }

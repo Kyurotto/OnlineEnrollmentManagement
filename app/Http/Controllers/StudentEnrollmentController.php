@@ -182,12 +182,12 @@ class StudentEnrollmentController extends Controller
             ->latest()
             ->first();
 
-        // If no enrollment for current term, but they are an old student, allow upload
         if (!$enrollment) {
-            $isOldStudent = Enrollment::where('user_id', $user->id)->count() > 0;
-            if (!$isOldStudent) {
+            $latestEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
+            if (!$latestEnrollment) {
                 return redirect()->route('student.enrollment.create')->with('info', 'Please submit your enrollment application first.');
             }
+            $enrollment = $latestEnrollment;
         }
 
         return view('student.enrollment_upload', compact('enrollment'));
@@ -208,19 +208,29 @@ class StudentEnrollmentController extends Controller
             ->latest()
             ->first();
 
-        // If no enrollment record for this term yet (Old Student starting clearance)
         if (!$enrollment) {
-            $isOldStudent = Enrollment::where('user_id', $user->id)->count() > 0;
-            if (!$isOldStudent) {
+            $lastEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
+            if (!$lastEnrollment) {
                 return redirect()->route('student.enrollment.create')->with('error', 'No active enrollment record found.');
             }
 
             // Create a shell record for Clearance (Step 3) tracking
             $enrollment = Enrollment::create([
                 'user_id' => $user->id,
+                'course_id' => $lastEnrollment->course_id,
+                'course_code' => $lastEnrollment->course_code,
+                'level' => $lastEnrollment->level,
                 'first_name' => $user->first_name,
+                'middle_name' => $lastEnrollment->middle_name,
                 'last_name' => $user->last_name,
+                'extension' => $lastEnrollment->extension,
+                'lrn' => $lastEnrollment->lrn,
+                'birth_date' => $lastEnrollment->birth_date,
+                'age' => $lastEnrollment->age,
+                'gender' => $lastEnrollment->gender,
                 'email' => $user->email,
+                'contact' => $lastEnrollment->contact,
+                'address_full' => $lastEnrollment->address_full,
                 'status' => 'Pending',
                 'year_level' => "Returning Student | " . ($activeSemester->name ?? 'New Semester') . " | " . ($activeYear->year_name ?? 'New Year'),
                 'semester_name' => $activeSemester->name ?? '',

@@ -39,7 +39,7 @@ use App\Http\Controllers\CashierAssessmentController;
 
 // Student Livewire Components
 use App\Livewire\StudentPaymentManager;
-use App\Livewire\StudentProfileManager;
+
 
 // Registrar Livewire Components
 use App\Livewire\RegistrarApplicationManager;

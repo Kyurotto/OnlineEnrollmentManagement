@@ -266,19 +266,43 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0"
                  x-transition:leave-end="opacity-0 -translate-y-2"
-                 class="sm:hidden absolute top-20 left-0 right-0 border-b shadow-2xl z-30 bg-white"
+                 class="sm:hidden absolute top-20 left-0 right-0 border-b shadow-2xl z-30 bg-white max-h-[85vh] overflow-y-auto"
                  style="border-color: rgba(0,0,0,0.06);"
+                 @click.away="mobileOpen = false"
                  x-cloak>
-                <div class="p-6 space-y-3">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-blue-50 text-blue-600 font-black uppercase text-[11px] tracking-widest">
+                <div class="p-4 space-y-1">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-400">Main Menu</p>
+                    <a href="{{ route('admin.dashboard') }}" 
+                       class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('admin.dashboard') ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        <span>Dashboard</span>
+                        <span class="font-bold text-[13px] uppercase tracking-wider">Dashboard</span>
                     </a>
-                    <a href="{{ route('admin.courses.index') }}" class="flex items-center gap-4 px-5 py-4 rounded-2xl text-slate-600 font-black uppercase text-[11px] tracking-widest hover:bg-slate-50 transition-colors">
-                        <span>Course Management</span>
+
+                    <div class="my-4 border-t border-slate-50"></div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-300">Operational Nodes</p>
+                    
+                    <a href="{{ route('admin.courses.index') }}" 
+                       class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('admin.courses.*') ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
+                        <span class="font-bold text-[13px] uppercase tracking-wider">Courses</span>
                     </a>
-                    <a href="{{ route('admin.archives.index') }}" class="flex items-center gap-4 px-5 py-4 rounded-2xl text-slate-600 font-black uppercase text-[11px] tracking-widest hover:bg-slate-50 transition-colors">
-                        <span>Academic Archives</span>
+
+                    <a href="{{ route('admin.students.index', ['level' => 'college']) }}" 
+                       class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request('level') === 'college' ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span class="font-bold text-[13px] uppercase tracking-wider">College Enrolled</span>
+                    </a>
+
+                    <a href="{{ route('admin.payments.college') }}" 
+                       class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('admin.payments.college') ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        <span class="font-bold text-[13px] uppercase tracking-wider">College Payments</span>
+                    </a>
+
+                    <a href="{{ route('admin.archives.index') }}" 
+                       class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('admin.archives.*') ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                        <span class="font-bold text-[13px] uppercase tracking-wider">Archives</span>
                     </a>
                 </div>
             </div>
