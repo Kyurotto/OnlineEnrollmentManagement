@@ -21,7 +21,7 @@ class PaymentManager extends Component
     public $filter_course = 'ALL';
     public $status = 'All statuses';
     public $level = null;
-    
+
     public $showModal = false;
     public $isEditMode = false;
     public $editingPaymentId = null;
@@ -39,7 +39,7 @@ class PaymentManager extends Component
     public $appliedDiscount = 0;
     public $totalAssessment = 0;
     public $currentBalance = 0;
-    public $discountAmount = 0;
+    public $discountPercentage = 0;
     public $totalPaymentsMade = 0;
 
     // Form fields
@@ -123,27 +123,37 @@ class PaymentManager extends Component
     {
         $this->selectedStudentId = $studentId;
         $this->selectedStudent = User::findOrFail($studentId);
-        
+
         // Use provided enrollment ID or get the latest enrollment
         if ($enrollmentId) {
             $this->enrollment = Enrollment::findOrFail($enrollmentId);
         } else {
             $this->enrollment = Enrollment::where('user_id', $studentId)->latest()->first();
         }
-        
+
         if ($this->enrollment) {
             // Extract and store voucher type for easy access
             $this->selectedVoucherType = $this->enrollment->voucher_type;
             $this->isDropPayMode = false;
-            
+
             // Get payment assessment details from cache (base fees)
             $level = strtolower($this->enrollment->level ?? 'college');
             $program = $this->enrollment->course_code ?? 'all';
-            $yearLevelDigit = filter_var($this->enrollment->year_level, FILTER_SANITIZE_NUMBER_INT);
-            
+            $yearLevelDigit = preg_match('/\d+/', $this->enrollment->year_level, $matches) ? $matches[0] : filter_var($this->enrollment->year_level, FILTER_SANITIZE_NUMBER_INT);
+
             $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
             $assessment = Cache::get($cacheKey);
-            
+
+            if (!$assessment && $yearLevelDigit !== 'all') {
+                // Try program-wide default (e.g., ICT All Levels)
+                $assessment = Cache::get("payment_assessment_{$level}_{$program}_all");
+            }
+
+            if (!$assessment && $program !== 'all') {
+                // Try level-wide default (e.g., All Strands Grade 11)
+                $assessment = Cache::get("payment_assessment_{$level}_all_{$yearLevelDigit}");
+            }
+
             if (!$assessment) {
                 // Fallback to global if specific not found
                 $assessment = Cache::get("payment_assessment_{$level}_all_all", [
@@ -156,20 +166,20 @@ class PaymentManager extends Component
 
             $this->tuitionFees = $assessment['tuitionFee'] ?? 0;
             $this->miscellaneousFees = $assessment['miscellaneousFees'] ?? 0;
-            
+
             // Calculate base assessment
             $subtotal = $this->tuitionFees + $this->miscellaneousFees;
-            
+
             // Calculate and apply pre-set discounts from assessment configuration
             $configDiscPerc = (float) ($assessment['discountPercentage'] ?? 0);
             $configDiscFixed = (float) ($assessment['discountAmount'] ?? 0);
             $presetDiscount = ($subtotal * ($configDiscPerc / 100)) + $configDiscFixed;
-            
+
             $this->totalAssessment = $subtotal;
 
             // Load persisted discount from enrollment or use preset from configuration
             $this->appliedDiscount = (float) ($this->enrollment->cashier_discount ?? 0);
-            
+
             // If no specific discount is set for this enrollment, use the preset from config
             if ($this->appliedDiscount == 0 && $presetDiscount > 0) {
                 $this->appliedDiscount = $presetDiscount;
@@ -192,7 +202,7 @@ class PaymentManager extends Component
             $this->currentBalance = 0;
             $this->paymentHistory = [];
         }
-        
+
         $this->activeTab = 'assessment';
     }
 
@@ -208,27 +218,48 @@ class PaymentManager extends Component
 
     public function applyDiscount()
     {
-        if (!$this->discountAmount || $this->discountAmount < 0) {
-            session()->flash('error', 'Please enter a valid discount amount.');
+        // Calculate total discount from percentage
+        $subtotal = $this->tuitionFees + $this->miscellaneousFees;
+        $totalRequestedDiscount = ($subtotal * ($this->discountPercentage / 100));
+
+        if ($totalRequestedDiscount <= 0) {
+            session()->flash('error', 'Please enter a valid discount percentage.');
             return;
         }
 
-        if ($this->discountAmount > $this->totalAssessment) {
+        if ($totalRequestedDiscount > $this->totalAssessment) {
             session()->flash('error', 'Discount cannot exceed the total assessment.');
             return;
         }
 
-        $this->appliedDiscount = $this->discountAmount;
+        $this->appliedDiscount = $totalRequestedDiscount;
+        
+        // Persist discount to enrollment
+        if ($this->enrollment) {
+            $this->enrollment->cashier_discount = $this->appliedDiscount;
+            $this->enrollment->save();
+        }
+
         $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
         $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
-        $this->discountAmount = 0;
+        
+        // Reset input fields
+        $this->discountPercentage = 0;
+        
         session()->flash('success', 'Discount applied successfully.');
     }
 
     public function removeDiscount()
     {
         $this->appliedDiscount = 0;
-        $this->discountAmount = 0;
+        $this->discountPercentage = 0;
+
+        // Remove from enrollment
+        if ($this->enrollment) {
+            $this->enrollment->cashier_discount = 0;
+            $this->enrollment->save();
+        }
+
         $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
         $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
         session()->flash('success', 'Discount removed successfully.');
@@ -257,7 +288,7 @@ class PaymentManager extends Component
             'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
             'amount' => $this->amount,
             'transaction_id' => $this->reference_no ?? 'CASH-' . time(),
-            'status' => 'Paid', 
+            'status' => 'Paid',
             'payment_method' => $this->payment_type,
             'payment_date' => now(),
         ]);
@@ -276,7 +307,7 @@ class PaymentManager extends Component
     {
         $this->validate([
             'user_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:0', 
+            'amount' => 'required|numeric|min:0',
             'payment_type' => 'required|string',
             'reference_no' => 'nullable|string',
         ]);
@@ -323,7 +354,7 @@ class PaymentManager extends Component
 
         $this->notifyRecipients($payment);
         $this->selectStudent($this->selectedStudentId);
-        
+
         $this->amount = '';
         $this->reference_no = '';
         session()->flash('success', 'Payment of ₱' . number_format($payment->amount, 2) . ' processed successfully.');
@@ -334,7 +365,7 @@ class PaymentManager extends Component
         if (!in_array($status, ['Paid', 'Rejected'])) return;
 
         $payment = Payment::findOrFail($id);
-        
+
         $payment->update([
             'status' => $status,
             'payment_date' => $status === 'Paid' ? now() : $payment->payment_date
@@ -369,7 +400,7 @@ class PaymentManager extends Component
         if ($this->level === 'shs' || $this->level === 'college') {
             // Cashier-style view for SHS and College
             $enrollmentQuery = Enrollment::query();
-            
+
             if ($this->level === 'shs') {
                 $enrollmentQuery->whereIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
             } else {
@@ -435,7 +466,7 @@ class PaymentManager extends Component
             $searchTerm = '%' . $this->search . '%';
             $query->where(function($q) use ($searchTerm) {
                 $q->where('payments.id', 'like', $searchTerm)
-                  ->orWhere('payments.transaction_id', 'like', $searchTerm) 
+                  ->orWhere('payments.transaction_id', 'like', $searchTerm)
                   ->orWhereHas('user', function($u) use ($searchTerm) {
                       $u->where('name', 'like', $searchTerm)
                         ->orWhere('email', 'like', $searchTerm);

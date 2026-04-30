@@ -6,6 +6,13 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="bg-rose-50 border border-rose-200 text-rose-600 px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
+            <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="h-[calc(100vh-200px)] flex gap-6">
         <!-- LEFT SIDEBAR: STUDENT LIST -->
         <div class="w-80 flex flex-col bg-white border border-blue-500/10 rounded-[32px] shadow-xl shadow-blue-900/5 overflow-hidden">
@@ -134,14 +141,15 @@
                                         <span class="font-bold text-slate-600 text-xs uppercase">Miscellaneous</span>
                                         <span class="font-black text-black text-xs">₱ {{ number_format($miscellaneousFees, 2) }}</span>
                                     </div>
-                                    @if($appliedDiscount > 0)
-                                    <div class="flex justify-between items-center py-2">
-                                        <span class="font-bold text-rose-500 text-xs uppercase">Scholarship Credit</span>
-                                        <span class="font-black text-rose-600 text-xs">(₱ {{ number_format($appliedDiscount, 2) }})</span>
+                                    <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                        <span class="font-bold text-slate-600 text-xs uppercase">Discounted</span>
+                                        <span class="font-black {{ $appliedDiscount > 0 ? 'text-rose-600' : 'text-slate-300' }} text-xs">{{ $appliedDiscount > 0 ? '-' : '' }} ₱ {{ number_format($appliedDiscount, 2) }}</span>
                                     </div>
-                                    @endif
                                     <div class="flex justify-between items-center pt-6 border-t-2 border-blue-500/10">
-                                        <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
+                                        <div class="flex flex-col">
+                                            <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase">Net Payable Amount</span>
+                                        </div>
                                         <span class="font-black text-blue-600 text-lg tracking-tighter">₱ {{ number_format((float)$totalAssessment - (float)$appliedDiscount, 2) }}</span>
                                     </div>
                                 </div>
@@ -151,13 +159,19 @@
                                     @if($appliedDiscount > 0)
                                         <div class="space-y-4">
                                             <div class="flex items-center justify-between">
-                                                <span class="font-black text-emerald-600 text-[10px] uppercase tracking-widest">✓ Credit Verified</span>
-                                                <span class="font-black text-emerald-500 text-xs">₱{{ number_format($appliedDiscount, 2) }}</span>
+                                                <span class="font-black text-emerald-600 text-[10px] uppercase tracking-widest">✓ Discount Applied</span>
+                                                <span class="font-black text-emerald-500 text-xs">₱ {{ number_format($appliedDiscount, 2) }}</span>
+                                            </div>
+                                            <div class="pt-4 border-t border-blue-500/5 mt-4">
+                                                <p class="text-[9px] font-bold text-slate-400 uppercase leading-relaxed">Status: Discounted by cashier</p>
                                             </div>
                                         </div>
                                     @else
                                         <div class="py-6 text-center">
-                                            <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Scholarship Protocol Applied</p>
+                                            <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                                                <svg class="w-5 h-5 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                            </div>
+                                            <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Active Protocol</p>
                                         </div>
                                     @endif
                                 </div>

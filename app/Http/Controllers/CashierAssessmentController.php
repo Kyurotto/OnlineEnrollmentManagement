@@ -36,6 +36,16 @@ class CashierAssessmentController extends Controller
         $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevel}";
         $assessment = Cache::get($cacheKey);
 
+        if (!$assessment && $yearLevel !== 'all') {
+            // Try program-wide default (e.g., ICT All Levels)
+            $assessment = Cache::get("payment_assessment_{$level}_{$program}_all");
+        }
+
+        if (!$assessment && $program !== 'all') {
+            // Try level-wide default (e.g., All Strands Grade 11)
+            $assessment = Cache::get("payment_assessment_{$level}_all_{$yearLevel}");
+        }
+
         if (!$assessment) {
             // Fallback to global if specific not found
             $globalKey = "payment_assessment_{$level}_all_all";
@@ -47,11 +57,9 @@ class CashierAssessmentController extends Controller
 
         $tuitionFee = $assessment['tuitionFee'] ?? 0;
         $miscellaneousFees = $assessment['miscellaneousFees'] ?? 0;
-        $discountPercentage = $assessment['discountPercentage'] ?? 0;
-        $discountAmount = $assessment['discountAmount'] ?? 0;
 
         return view('cashier.assessment.index', compact(
-            'level', 'program', 'yearLevel', 'programs', 'yearLevels', 'tuitionFee', 'miscellaneousFees', 'discountPercentage', 'discountAmount'
+            'level', 'program', 'yearLevel', 'programs', 'yearLevels', 'tuitionFee', 'miscellaneousFees'
         ));
     }
 
@@ -62,8 +70,6 @@ class CashierAssessmentController extends Controller
             'yearLevel' => 'required|string',
             'tuitionFee' => 'required|numeric|min:0',
             'miscellaneousFees' => 'required|numeric|min:0',
-            'discountPercentage' => 'nullable|numeric|min:0|max:100',
-            'discountAmount' => 'nullable|numeric|min:0',
         ]);
 
         $program = $request->program;
@@ -74,8 +80,6 @@ class CashierAssessmentController extends Controller
         Cache::put($cacheKey, [
             'tuitionFee' => $request->tuitionFee,
             'miscellaneousFees' => $request->miscellaneousFees,
-            'discountPercentage' => $request->discountPercentage ?? 0,
-            'discountAmount' => $request->discountAmount ?? 0,
         ], now()->addYears(1));
 
         return back()->with('success', 'Assessment for ' . strtoupper($program) . ' ' . $yearLevel . ' saved successfully!');

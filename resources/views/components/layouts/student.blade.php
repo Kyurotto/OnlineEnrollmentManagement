@@ -14,11 +14,11 @@
         /* Hide global scrollbars but allow them where needed */
         html, body { -ms-overflow-style: none; scrollbar-width: none; }
         html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
-        
+
         /* Premium Sidebar Scrollbar - Hidden but scrollable */
         aside { -ms-overflow-style: none; scrollbar-width: none; }
         aside::-webkit-scrollbar { display: none; }
-        
+
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
@@ -27,7 +27,7 @@
     </style>
     @livewireStyles
 </head>
-<body x-data="{ sidebarOpen: localStorage.getItem('student_sidebar_open') === 'true', mobileOpen: false }" 
+<body x-data="{ sidebarOpen: localStorage.getItem('student_sidebar_open') === 'true', mobileOpen: false }"
       x-init="$watch('sidebarOpen', value => localStorage.setItem('student_sidebar_open', value))"
       class="text-slate-900 flex flex-row min-h-screen" style="background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); background-attachment: fixed; min-height: 100vh;">
     {{-- Global Styles for Content Visibility --}}
@@ -160,9 +160,9 @@
                                         ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
                                 });
                             })->first();
-                        
+
                         $hasSubmittedSidebar = $currentEnrollmentSidebar !== null;
-                        
+
                         // 2. Check if they are an OLD student (Returning Student)
                         // A student is old if they have ANY historical record other than the one they are currently processing
                         $isOldStudentSidebar = \App\Models\Enrollment::where('user_id', $user->id)
@@ -171,18 +171,18 @@
 
                         // 3. Check if they are CLEARED for the current term (if they have a record)
                         $isClearedSidebar = ($currentEnrollmentSidebar && $currentEnrollmentSidebar->credentials_verified == 1);
-                        
+
                         // 4. Detect if it's a "Shell" record (Returning student starting clearance but hasn't filled form)
                         $isShellRecord = ($currentEnrollmentSidebar && (empty($currentEnrollmentSidebar->course_code) || str_contains($currentEnrollmentSidebar->year_level, 'Returning Student')));
                     }
-                    
-                    // Logic: 
+
+                    // Logic:
                     // 1. If no record exists at all -> OK for New Students, but Old Students need clearance.
                     // 2. If it's a shell record AND cleared -> OK to click (to fill the form).
                     // 3. If it's a FULL record (has course_code) -> Locked (already applied).
-                    
+
                     $canShowApplicationsLink = false;
-                    
+
                     if (!$hasSubmittedSidebar) {
                         // New Students can always see it. Old students must upload docs first (which creates shell)
                         if (!$isOldStudentSidebar) {
@@ -209,7 +209,10 @@
                     <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Applications</span>
                 </a>
                 @else
-                {{-- Hide completely for all students after submission or during clearance --}}
+                <div class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold text-slate-300 cursor-not-allowed opacity-50 relative group">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Applications</span>
+                </div>
                 @endif
 
                 @php
@@ -244,7 +247,7 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
 
-                    
+
                     {{-- Mobile Hamburger --}}
                     <button @click="mobileOpen = !mobileOpen" class="sm:hidden text-slate-600 hover:bg-slate-100 p-2.5 rounded-xl transition-colors">
                         <svg x-show="!mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -265,7 +268,7 @@
                             <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
 
-                        <div x-show="open" 
+                        <div x-show="open"
                              x-transition:enter="transition ease-out duration-100"
                              x-transition:enter-start="opacity-0 scale-95"
                              x-transition:enter-end="opacity-100 scale-100"
@@ -305,20 +308,20 @@
                  x-cloak>
                 <div class="p-4 space-y-1">
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-300">Navigation</p>
-                    
-                    <a href="{{ route('dashboard') }}" 
+
+                    <a href="{{ route('dashboard') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Dashboard</span>
                     </a>
 
-                    <a href="{{ route('student.payment') }}" 
+                    <a href="{{ route('student.payment') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.payment') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Payments</span>
                     </a>
 
-                    <a href="{{ route('student.profile') }}" 
+                    <a href="{{ route('student.profile') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.profile') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">My Profile</span>
@@ -327,22 +330,27 @@
                     <div class="my-4 border-t border-slate-50"></div>
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-300">Management</p>
 
-                    <a href="{{ route('student.enrollment.upload') }}" 
+                    <a href="{{ route('student.enrollment.upload') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.enrollment.upload') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Documents</span>
                     </a>
 
                     @if($canShowApplicationsLink)
-                    <a href="{{ route('student.enrollment.create') }}" 
+                    <a href="{{ route('student.enrollment.create') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.enrollment.create') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Applications</span>
                     </a>
+                    @else
+                    <div class="flex items-center gap-4 px-5 py-3.5 rounded-2xl text-slate-300 cursor-not-allowed opacity-50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        <span class="font-bold text-[13px] uppercase tracking-wider">Applications</span>
+                    </div>
                     @endif
 
                     @if($canReviewSidebar)
-                    <a href="{{ route('student.enrollment.review') }}" 
+                    <a href="{{ route('student.enrollment.review') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.enrollment.review') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Review Application</span>

@@ -6,6 +6,13 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="bg-rose-50 border border-rose-200 text-rose-600 px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
+            <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="h-[calc(100vh-200px)] flex gap-6">
         <!-- LEFT SIDEBAR: STUDENT LIST -->
         <div class="w-80 flex flex-col bg-white border border-blue-500/10 rounded-[32px] shadow-xl shadow-blue-900/5 overflow-hidden">
@@ -142,14 +149,15 @@
                                         <span class="font-bold text-slate-600 text-xs uppercase">Miscellaneous</span>
                                         <span class="font-black text-black text-xs">₱ {{ number_format($miscellaneousFees, 2) }}</span>
                                     </div>
-                                    @if($appliedDiscount > 0)
-                                    <div class="flex justify-between items-center py-2">
-                                        <span class="font-bold text-rose-500 text-xs uppercase">Scholarship Credit</span>
-                                        <span class="font-black text-rose-600 text-xs">(₱ {{ number_format($appliedDiscount, 2) }})</span>
+                                    <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                        <span class="font-bold text-slate-600 text-xs uppercase">Discounted</span>
+                                        <span class="font-black {{ $appliedDiscount > 0 ? 'text-rose-600' : 'text-slate-300' }} text-xs">{{ $appliedDiscount > 0 ? '-' : '' }} ₱ {{ number_format($appliedDiscount, 2) }}</span>
                                     </div>
-                                    @endif
                                     <div class="flex justify-between items-center pt-6 border-t-2 border-blue-500/10">
-                                        <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
+                                        <div class="flex flex-col">
+                                            <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase">Net Payable Amount</span>
+                                        </div>
                                         <span class="font-black text-blue-600 text-lg tracking-tighter">₱ {{ number_format((float)$totalAssessment - (float)$appliedDiscount, 2) }}</span>
                                     </div>
                                 </div>
@@ -159,7 +167,7 @@
                                     @if($appliedDiscount > 0)
                                         <div class="space-y-4">
                                             <div class="flex items-center justify-between">
-                                                <span class="font-black text-emerald-600 text-[10px] uppercase tracking-widest">✓ Credit Verified</span>
+                                                <span class="font-black text-emerald-600 text-[10px] uppercase tracking-widest">✓ Discount Verified</span>
                                                 <span class="font-black text-emerald-500 text-xs">₱{{ number_format($appliedDiscount, 2) }}</span>
                                             </div>
                                             <button wire:click="removeDiscount" class="w-full mt-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 font-black py-2.5 px-4 rounded-xl text-[9px] uppercase tracking-[0.2em] transition-all shadow-sm">
@@ -167,19 +175,19 @@
                                             </button>
                                         </div>
                                     @else
-                                        <div class="space-y-4 inline-block w-full">
-                                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Apply Scholarship Credit</p>
-                                            <div class="flex gap-2 items-center w-full">
-                                                <div class="relative flex-grow">
-                                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-black text-[10px]">₱</span>
-                                                    <input type="number" wire:model="discountAmount" step="0.01" min="0" autocomplete="off"
-                                                        class="w-full pl-7 pr-3 py-2.5 bg-white border border-blue-500/10 rounded-xl text-slate-800 placeholder-slate-300 font-black text-[11px] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all shadow-sm"
-                                                        placeholder="0.00">
+                                        <div class="space-y-5 w-full">
+                                            <div class="space-y-2">
+                                                <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Discount (%)</label>
+                                                <div class="relative group">
+                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 font-black text-[10px]">%</span>
+                                                    <input type="number" wire:model="discountPercentage" step="0.01" min="0" max="100" autocomplete="off"
+                                                        class="w-full px-4 py-3 bg-white border border-blue-500/10 rounded-2xl text-slate-800 placeholder-slate-200 font-black text-[11px] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all shadow-sm"
+                                                        placeholder="0">
                                                 </div>
-                                                <button wire:click="applyDiscount" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-5 rounded-xl uppercase tracking-[0.2em] transition-all text-[9px] shadow-md shadow-blue-600/20 flex-shrink-0">
-                                                    Apply
-                                                </button>
                                             </div>
+                                            <button wire:click="applyDiscount" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3.5 px-5 rounded-2xl uppercase tracking-[0.2em] transition-all text-[9px] shadow-lg shadow-blue-600/20 active:scale-95">
+                                                Apply Protocol
+                                            </button>
                                         </div>
                                     @endif
                                 </div>
