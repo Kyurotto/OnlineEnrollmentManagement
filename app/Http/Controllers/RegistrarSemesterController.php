@@ -127,20 +127,18 @@ class RegistrarSemesterController extends Controller
      */
     private function performSemesterReset()
     {
+        // 1. Find ALL currently active (non-archived) enrollments
+        // This ensures that even if the Year was switched first, we still catch all previous term records.
+        $currentTermEnrollments = Enrollment::whereNull('archived_at')->get();
+        
+        // We still want to label them with the term they are being archived FROM
+        // But since the year might have already switched, we should try to get the 
+        // term info from the enrollments themselves if the current active term is already new.
         $currentYear = AcademicYear::where('is_active', true)->first();
         $currentSemester = Semester::where('is_active', true)->first();
 
-        if (!$currentYear || !$currentSemester) {
-            return; // No active term to reset from
-        }
-
-        $yearName = $currentYear->year_name;
-        $semesterName = $currentSemester->name;
-
-        // 1. Find all enrollments for the current active term
-        $currentTermEnrollments = Enrollment::where('year_level', 'LIKE', "%{$yearName}%")
-            ->where('year_level', 'LIKE', "%{$semesterName}%")
-            ->get();
+        $yearName = $currentYear ? $currentYear->year_name : 'N/A';
+        $semesterName = $currentSemester ? $currentSemester->name : 'N/A';
 
         // 2. Process enrolled students — archive them and carry forward balance
         $enrolledRecords = $currentTermEnrollments->where('status', 'Enrolled');
@@ -154,6 +152,8 @@ class RegistrarSemesterController extends Controller
                 'archived_at' => now(),
                 'semester_name' => $semesterName,
                 'academic_year_name' => $yearName,
+                'physical_documents_received' => 0,
+                'credentials_verified' => 0,
             ]);
 
             // Store the previous balance on the user level for the next enrollment
@@ -174,8 +174,14 @@ class RegistrarSemesterController extends Controller
                 Cache::put("student_previous_balance_{$enrollment->user_id}", $previousBalance, now()->addMonths(6));
             }
             
-            // Delete the non-enrolled application record
-            $enrollment->delete();
+            // Archive the non-enrolled application record instead of deleting it
+            $enrollment->update([
+                'archived_at' => now(),
+                'semester_name' => $semesterName,
+                'academic_year_name' => $yearName,
+                'physical_documents_received' => 0,
+                'credentials_verified' => 0,
+            ]);
         }
 
         // 4. Also handle "Paid" status records — these are approved+paid but not yet fully enrolled
@@ -188,6 +194,8 @@ class RegistrarSemesterController extends Controller
                 'archived_at' => now(),
                 'semester_name' => $semesterName,
                 'academic_year_name' => $yearName,
+                'physical_documents_received' => 0,
+                'credentials_verified' => 0,
             ]);
 
             if ($previousBalance > 0) {

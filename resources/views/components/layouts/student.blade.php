@@ -162,35 +162,32 @@
                             })->first();
                         
                         $hasSubmittedSidebar = $currentEnrollmentSidebar !== null;
+                        $anyLatestEnrollment = \App\Models\Enrollment::where('user_id', $user->id)->latest()->first();
                         
                         // 2. Check if they are an OLD student (Returning Student)
-                        // A student is old if they have ANY historical record other than the one they are currently processing
-                        $isOldStudentSidebar = \App\Models\Enrollment::where('user_id', $user->id)
-                            ->where('id', '!=', $currentEnrollmentSidebar->id ?? 0)
-                            ->exists();
+                        $allCount = \App\Models\Enrollment::where('user_id', $user->id)->count();
+                        $isOldStudentSidebar = ($allCount > 1) || 
+                                              ($allCount === 1 && $anyLatestEnrollment && 
+                                               stripos((string)$anyLatestEnrollment->year_level, $activeYear->year_name) === false);
 
-                        // 3. Check if they are CLEARED for the current term (if they have a record)
-                        $isClearedSidebar = ($currentEnrollmentSidebar && $currentEnrollmentSidebar->credentials_verified == 1);
+                        // 3. Check if they are CLEARED (using latest available record)
+                        $checkRecordSidebar = $currentEnrollmentSidebar ?? $anyLatestEnrollment;
+                        $isClearedSidebar = ($checkRecordSidebar && $checkRecordSidebar->credentials_verified == 1);
                         
-                        // 4. Detect if it's a "Shell" record (Returning student starting clearance but hasn't filled form)
+                        // 4. Detect if it's a "Shell" record
                         $isShellRecord = ($currentEnrollmentSidebar && (empty($currentEnrollmentSidebar->course_code) || str_contains($currentEnrollmentSidebar->year_level, 'Returning Student')));
                     }
-                    
-                    // Logic: 
-                    // 1. If no record exists at all -> OK for New Students, but Old Students need clearance.
-                    // 2. If it's a shell record AND cleared -> OK to click (to fill the form).
-                    // 3. If it's a FULL record (has course_code) -> Locked (already applied).
                     
                     $canShowApplicationsLink = false;
                     
                     if (!$hasSubmittedSidebar) {
-                        // New Students can always see it. Old students must upload docs first (which creates shell)
-                        if (!$isOldStudentSidebar) {
+                        // New Students can always see it. Old students need clearance.
+                        if (!$isOldStudentSidebar || $isClearedSidebar) {
                             $canShowApplicationsLink = true;
                         }
                     } else {
                         // If they have a record, only allow clicking if it's a SHELL record that is CLEARED
-                        if ($isOldStudentSidebar && $isClearedSidebar && $isShellRecord) {
+                        if ($isClearedSidebar && $isShellRecord) {
                             $canShowApplicationsLink = true;
                         }
                     }
@@ -209,7 +206,11 @@
                     <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Applications</span>
                 </a>
                 @else
-                {{-- Hide completely for all students after submission or during clearance --}}
+                {{-- Show disabled instead of hiding when they cannot click it --}}
+                <div class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold text-slate-300 cursor-not-allowed opacity-50 relative group">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Applications</span>
+                </div>
                 @endif
 
                 @php

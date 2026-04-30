@@ -18,10 +18,33 @@ class ArchiveController extends Controller
         $selectedCourse = $request->get('selectedCourse', '');
         $selectedFolder = $request->get('selectedFolder');
 
+        // Self-heal: Fix any archived records that have empty semester/year columns
+        // by parsing the data from the year_level string (e.g. "1st Year | 1ST SEMESTER | 2025-2026")
+        $brokenArchives = Enrollment::whereNotNull('archived_at')
+            ->where(function($q) {
+                $q->whereNull('semester_name')
+                  ->orWhereNull('academic_year_name')
+                  ->orWhere('semester_name', '')
+                  ->orWhere('academic_year_name', '');
+            })
+            ->get();
+
+        foreach ($brokenArchives as $record) {
+            $parts = array_map('trim', explode('|', $record->year_level));
+            if (count($parts) >= 3) {
+                $record->update([
+                    'semester_name' => $parts[1],
+                    'academic_year_name' => $parts[2],
+                ]);
+            }
+        }
+
         // Get all archived folder groupings
         $folders = Enrollment::whereNotNull('archived_at')
             ->whereNotNull('semester_name')
+            ->where('semester_name', '!=', '')
             ->whereNotNull('academic_year_name')
+            ->where('academic_year_name', '!=', '')
             ->select('semester_name', 'academic_year_name')
             ->selectRaw('COUNT(*) as student_count')
             ->groupBy('semester_name', 'academic_year_name')

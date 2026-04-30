@@ -171,7 +171,11 @@
                                     class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-black px-8 py-4 rounded-xl uppercase tracking-widest transition-all active:scale-95 shadow-xl shadow-blue-600/20">Enroll
                                     Now</a>
                             @else
-                                {{-- Hide button after submission or during clearance --}}
+                                {{-- Show disabled for old/new students when they cannot enroll or have already submitted --}}
+                                <button disabled
+                                    class="bg-slate-100 text-slate-400 text-xs font-black px-8 py-4 rounded-xl uppercase tracking-widest cursor-not-allowed opacity-60 border border-slate-200">
+                                    Enroll Now
+                                </button>
                             @endif
                         </div>
                     </div>

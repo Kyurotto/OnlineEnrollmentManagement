@@ -47,7 +47,7 @@
                                 @if($year->is_active)
                                     <span class="bg-amber-500/10 text-amber-400 text-xs font-black px-4 py-1.5 rounded-full border border-amber-500/20 shadow-sm uppercase tracking-widest animate-pulse">Actived</span>
                                 @else
-                                    <span class="bg-white/5 text-white/20 text-xs font-black px-4 py-1.5 rounded-full border border-white/5 uppercase tracking-widest">Pending</span>
+                                    <span class="bg-white/5 text-white/20 text-xs font-black px-4 py-1.5 rounded-full border border-white/5 uppercase tracking-widest">Inactive</span>
                                 @endif
                             </td>
                             <td class="py-5 px-8 text-right whitespace-nowrap">

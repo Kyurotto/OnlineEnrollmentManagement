@@ -108,8 +108,26 @@ class AdminApplicationManager extends Component
             });
         }
 
+        // ALWAYS exclude archived records from the main applications list
+        $query->whereNull('enrollments.archived_at');
+
         if ($this->status !== 'All statuses') {
             $query->where('enrollments.status', $this->status);
+        } else {
+            // ALSO hide currently active term 'Enrolled' students
+            $query->where(function ($q) use ($activeYear, $activeSemester) {
+                        $q->where('enrollments.status', '!=', 'Enrolled');
+                        
+                        if ($activeYear && $activeSemester) {
+                            $q->orWhere(function($sub) use ($activeYear, $activeSemester) {
+                                $sub->where('enrollments.status', 'Enrolled')
+                                    ->where(function($termQuery) use ($activeYear, $activeSemester) {
+                                        $termQuery->where('enrollments.year_level', 'NOT LIKE', "%{$activeYear->year_name}%")
+                                                  ->orWhere('enrollments.year_level', 'NOT LIKE', "%{$activeSemester->name}%");
+                                    });
+                            });
+                        }
+                  });
         }
 
         if ($this->year_level !== 'All Years') {
@@ -136,7 +154,7 @@ class AdminApplicationManager extends Component
         $applications = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
         // Simplify year level display for each item
-        $applications->getCollection()->transform(function ($application) {
+        $applications->getCollection()->transform(function ($application) use ($activeYear) {
             // Simplify year level display (e.g., "1st Year | 2nd Semester" -> "1st Year")
             if (!empty($application->year_level)) {
                 $parts = explode('|', $application->year_level);
@@ -151,6 +169,34 @@ class AdminApplicationManager extends Component
                 ->exists();
             $application->classification = $application->student_type 
                 ?? ($isReturning ? 'Returning' : 'New');
+
+            // AUTO-INHERIT CLEARANCE: If this returning student was already cleared in a previous/archived record,
+            // inherit that clearance to their current record so the APPROVE CLEARANCE button hides
+            if ($isReturning && !$application->credentials_verified) {
+                $wasCleared = Enrollment::where('user_id', $application->user_id)
+                    ->where('id', '!=', $application->id)
+                    ->where('credentials_verified', true)
+                    ->exists();
+                    
+                if ($wasCleared) {
+                    // Use direct DB update to avoid persisting dynamic attributes (year_display, classification)
+                    \Illuminate\Support\Facades\DB::table('enrollments')
+                        ->where('id', $application->id)
+                        ->update([
+                            'credentials_verified' => true,
+                            'physical_documents_received' => true,
+                            'updated_at' => now(),
+                        ]);
+                    $application->credentials_verified = true;
+                    $application->physical_documents_received = true;
+                }
+            }
+
+            // Status Override for Term Transitions
+            // If the application is not for the current active year, mark as Pending
+            if ($activeYear && stripos((string)$application->year_level, $activeYear->year_name) === false) {
+                $application->status = 'Pending';
+            }
 
             return $application;
         });
