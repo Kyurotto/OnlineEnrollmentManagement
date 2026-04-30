@@ -750,8 +750,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h2 class="text-4xl font-black text-slate-900 leading-tight tracking-tight">Registrar Oversight</h2>
-                                <p class="text-xs mt-2 font-bold uppercase tracking-[0.25em] text-slate-400">Application Pipeline & Student Records</p>
+                                <h2 class="text-4xl font-black text-slate-900 leading-tight tracking-tight">Welcome back, {{ Auth::user()->first_name }}!</h2>
+                                <p class="text-xs mt-2 font-bold uppercase tracking-[0.25em] text-slate-400">Check and monitor application pipelines</p>
                             </div>
                         </div>
                     </div>
@@ -765,8 +765,8 @@
                     <div class="relative z-10 flex items-center gap-4 mb-10">
                         <div class="w-2 h-8 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></div>
                         <div>
-                            <h3 class="text-2xl font-black text-slate-900 tracking-tight">Academic Intake Timeline</h3>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-1">Registry & Operations Summary</p>
+                            <h3 class="text-2xl font-black text-slate-900 tracking-tight">Academic Intake Status</h3>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-1">Summary of Applications this Week</p>
                         </div>
                     </div>
 
@@ -1222,8 +1222,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-4xl font-black text-slate-900 leading-tight tracking-tight">Administrator Oversight</h2>
-                            <p class="text-xs mt-2 font-bold uppercase tracking-[0.25em] text-slate-400">Registry & Operations Summary</p>
+                            <h2 class="text-4xl font-black text-slate-900 leading-tight tracking-tight">Welcome back, {{ Auth::user()->first_name }}!</h2>
+                            <p class="text-xs mt-2 font-bold uppercase tracking-[0.25em] text-slate-400">Check and monitor application pipelines</p>
                         </div>
                     </div>
                 </div>
@@ -1237,8 +1237,8 @@
                 <div class="relative z-10 flex items-center gap-4 mb-10">
                     <div class="w-2 h-8 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></div>
                     <div>
-                        <h3 class="text-2xl font-black text-slate-900 tracking-tight">Academic Intake Timeline</h3>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-1">Registry & Operations Summary</p>
+                        <h3 class="text-2xl font-black text-slate-900 tracking-tight">Academic Intake Status</h3>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-1">Summary of Applications this Month    </p>
                     </div>
                 </div>
 
