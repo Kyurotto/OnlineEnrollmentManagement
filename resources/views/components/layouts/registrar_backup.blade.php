@@ -150,7 +150,7 @@
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">
                         <div class="text-xs text-white/40">Signed in as</div>
-                        <div class="text-sm font-bold text-white">Administrator</div>
+                        <div class="text-sm font-bold text-white">Registrar</div>
                     </div>
                     @if(request()->routeIs('admin.dashboard'))
                     <form action="{{ route('logout') }}" method="POST">

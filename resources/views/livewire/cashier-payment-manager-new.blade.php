@@ -95,8 +95,8 @@
                                 <span class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest bg-white border-blue-100 text-blue-600">
                                     {{ $stype }}
                                 </span>
-                                <span class="text-[9px] font-black px-3 py-1 rounded-full border border-slate-100 bg-white text-slate-400 uppercase tracking-widest">
-                                    {{ $enrollment->is_regular ? 'REGULAR STATUS' : 'IRREGULAR PROTOCOL' }}
+                                <span class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest {{ $enrollment->is_regular ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100' }}">
+                                    {{ $enrollment->is_regular ? 'REGULAR' : 'IRREGULAR' }}
                                 </span>
                             </div>
                         </div>
@@ -171,7 +171,7 @@
                                                 <span class="font-black text-emerald-500 text-xs">₱{{ number_format($appliedDiscount, 2) }}</span>
                                             </div>
                                             <button wire:click="removeDiscount" class="w-full mt-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 font-black py-2.5 px-4 rounded-xl text-[9px] uppercase tracking-[0.2em] transition-all shadow-sm">
-                                                Remove Protocol
+                                                Remove the Discounted
                                             </button>
                                         </div>
                                     @else
@@ -290,7 +290,7 @@
                             <button wire:click="submitPayment"
                                 class="w-full h-[48px] text-white text-[9px] font-black rounded-xl uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:shadow-md
                                 {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400 shadow-amber-500/30' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/30' }}">
-                                {{ $isDropPayMode ? 'Confirm' : 'Process' }}
+                                {{ $isDropPayMode ? 'Confirm' : 'Submit' }}
                             </button>
                         </div>
                     </div>
@@ -315,7 +315,7 @@
             <button wire:click="closeModal" class="absolute inset-0 bg-blue-900/40 backdrop-blur-md transition-all cursor-default"></button>
             <div class="bg-white border border-blue-500/20 w-full max-w-lg rounded-[40px] overflow-hidden shadow-[0_32px_120px_rgba(30,58,138,0.2)] relative z-10 transform animate-in zoom-in-95 duration-300 p-12 text-center">
                  <!-- Add generic modal content here if needed, but the original was empty -->
-                 <p class="text-black font-black uppercase tracking-widest">Protocol Verification in Progress</p>
+                 <p class="text-black font-black uppercase tracking-widest">Special Protocol in Progress</p>
             </div>
         </div>
     @endif

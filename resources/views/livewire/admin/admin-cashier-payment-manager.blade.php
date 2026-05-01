@@ -95,8 +95,8 @@
                                 <span class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest bg-white border-blue-100 text-blue-600">
                                     {{ $stype }}
                                 </span>
-                                <span class="text-[9px] font-black px-3 py-1 rounded-full border border-slate-100 bg-white text-slate-400 uppercase tracking-widest">
-                                    {{ $enrollment->is_regular ? 'REGULAR STATUS' : 'IRREGULAR PROTOCOL' }}
+                                <span class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest {{ $enrollment->is_regular ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100' }}">
+                                    {{ $enrollment->is_regular ? 'REGULAR' : 'IRREGULAR' }}
                                 </span>
                             </div>
                         </div>
