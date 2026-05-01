@@ -77,7 +77,7 @@ class RegistrarApplicationManager extends Component
             $application->user->update(['status' => 'Enrolled']);
         }
 
-        session()->flash('success', 'Application status updated to Enrolled (Paid).');
+        session()->flash('success', 'Application status updated to Enrolled and archived.');
     }
 
     public function reject($id)
@@ -195,8 +195,26 @@ class RegistrarApplicationManager extends Component
             });
         }
 
+        // ALWAYS exclude archived records from the main applications list
+        $query->whereNull('enrollments.archived_at');
+
         if ($this->status !== 'All statuses') {
             $query->where('enrollments.status', $this->status);
+        } else {
+            // ALSO hide currently active term 'Enrolled' students
+            $query->where(function ($q) use ($activeYear, $activeSemester) {
+                        $q->where('enrollments.status', '!=', 'Enrolled');
+                        
+                        if ($activeYear && $activeSemester) {
+                            $q->orWhere(function($sub) use ($activeYear, $activeSemester) {
+                                $sub->where('enrollments.status', 'Enrolled')
+                                    ->where(function($termQuery) use ($activeYear, $activeSemester) {
+                                        $termQuery->where('enrollments.year_level', 'NOT LIKE', "%{$activeYear->year_name}%")
+                                                  ->orWhere('enrollments.year_level', 'NOT LIKE', "%{$activeSemester->name}%");
+                                    });
+                            });
+                        }
+                  });
         }
 
         if ($this->year_level !== 'All Years') {
@@ -223,7 +241,7 @@ class RegistrarApplicationManager extends Component
         $courses = Course::whereIn('course_code', $courseCodes)->get()->keyBy('course_code');
 
         // Transform each item in the collection
-        $applications->getCollection()->transform(function ($application) use ($courses) {
+        $applications->getCollection()->transform(function ($application) use ($courses, $activeYear) {
             if (isset($courses[$application->course_code])) {
                 $application->setRelation('course', $courses[$application->course_code]);
             }
@@ -237,12 +255,46 @@ class RegistrarApplicationManager extends Component
             }
 
             // Calculate Student Classification (New vs Returning)
-            $isReturning = Enrollment::where('user_id', $application->user_id)
+            // A student is returning if they have an older record OR if this record is from a previous term
+            $hasPreviousRecord = Enrollment::where('user_id', $application->user_id)
                 ->where('id', '<', $application->id)
                 ->exists();
+            
+            $isOldTermRecord = ($activeYear && stripos((string)$application->year_level, $activeYear->year_name) === false);
+            
+            $isReturning = $hasPreviousRecord || $isOldTermRecord;
+
             $application->classification = $application->student_type 
                 ?? ($isReturning ? 'Returning' : 'New');
+
+            // AUTO-INHERIT CLEARANCE: If this returning student was already cleared in a previous/archived record,
+            // inherit that clearance to their current record so the APPROVE CLEARANCE button hides
+            if ($isReturning && !$application->credentials_verified) {
+                $wasCleared = Enrollment::where('user_id', $application->user_id)
+                    ->where('id', '!=', $application->id)
+                    ->where('credentials_verified', true)
+                    ->exists();
+                    
+                if ($wasCleared) {
+                    // Use direct DB update to avoid persisting dynamic attributes (year_display, classification)
+                    \Illuminate\Support\Facades\DB::table('enrollments')
+                        ->where('id', $application->id)
+                        ->update([
+                            'credentials_verified' => true,
+                            'physical_documents_received' => true,
+                            'updated_at' => now(),
+                        ]);
+                    $application->credentials_verified = true;
+                    $application->physical_documents_received = true;
+                }
+            }
             
+            // Status Override for Term Transitions
+            // If the application is not for the current active year, mark as Pending
+            if ($activeYear && stripos((string)$application->year_level, $activeYear->year_name) === false) {
+                $application->status = 'Pending';
+            }
+
             return $application;
         });
 
@@ -275,7 +327,9 @@ class RegistrarApplicationManager extends Component
             'applications' => $applications,
             'pendingCount' => $pendingCount,
             'courses' => $availableCourses,
-            'sections' => $sections
+            'sections' => $sections,
+            'activeYear' => $activeYear,
+            'activeSemester' => $activeSemester
         ]);
     }
 }

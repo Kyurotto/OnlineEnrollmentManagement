@@ -94,15 +94,11 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <button wire:click="setPaymentMode"
-                                class="text-[10px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 border-2
-                                    {{ !$isDropPayMode ? 'bg-white border-blue-600 text-black shadow-blue-500/10' : 'bg-white border-slate-100 text-slate-400 hover:text-blue-600 hover:bg-blue-50/30' }}">
-                                Standard Payment
+                            <button wire:click="setPaymentMode" class="text-[10px] font-black py-2.5 px-6 rounded-full uppercase tracking-widest transition-all {{ !$isDropPayMode ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-white border border-slate-200 text-blue-600 hover:bg-slate-50' }}">
+                                Payment
                             </button>
-                            <button wire:click="setDropPayMode"
-                                class="text-[10px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 border-2
-                                    {{ $isDropPayMode ? 'bg-white border-amber-500 text-black shadow-amber-500/10' : 'bg-white border-slate-100 text-slate-400 hover:text-amber-500 hover:bg-amber-50/30' }}">
-                                Drop Protocol
+                            <button wire:click="setDropPayMode" class="text-[10px] font-black py-2.5 px-6 rounded-full uppercase tracking-widest transition-all {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400 text-white shadow-lg shadow-amber-500/30' : 'bg-white border border-slate-200 text-slate-400 hover:bg-slate-50' }}">
+                                Drop Pay
                             </button>
                         </div>
                     </div>
@@ -166,22 +162,24 @@
                                                 <span class="font-black text-emerald-600 text-[10px] uppercase tracking-widest">✓ Credit Verified</span>
                                                 <span class="font-black text-emerald-500 text-xs">₱{{ number_format($appliedDiscount, 2) }}</span>
                                             </div>
-                                            <button wire:click="removeDiscount" class="w-full bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-black py-4 px-6 rounded-2xl uppercase tracking-[0.2em] transition-all hover:bg-rose-100">
-                                                Revoke Credit
+                                            <button wire:click="removeDiscount" class="w-full mt-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 font-black py-2.5 px-4 rounded-xl text-[9px] uppercase tracking-[0.2em] transition-all shadow-sm">
+                                                Remove Protocol
                                             </button>
                                         </div>
                                     @else
-                                        <div class="space-y-4">
-                                            <label class="font-black text-slate-400 text-[10px] uppercase tracking-widest block">Input Discount Amount:</label>
-                                            <div class="relative">
-                                                <span class="absolute left-6 top-1/2 -translate-y-1/2 text-blue-600 font-black text-sm">₱</span>
-                                                <input type="number" wire:model="discountAmount" step="0.01" min="0"
-                                                    class="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl text-black placeholder-slate-300 font-black text-sm focus:border-blue-500/40 outline-none transition-all shadow-sm"
-                                                    placeholder="0.00">
+                                        <div class="space-y-4 inline-block w-full">
+                                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Apply Scholarship Credit</p>
+                                            <div class="flex gap-2 items-center w-full">
+                                                <div class="relative flex-grow">
+                                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-black text-[10px]">₱</span>
+                                                    <input type="number" wire:model="discountAmount" step="0.01" min="0" autocomplete="off"
+                                                        class="w-full pl-7 pr-3 py-2.5 bg-white border border-blue-500/10 rounded-xl text-slate-800 placeholder-slate-300 font-black text-[11px] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all shadow-sm"
+                                                        placeholder="0.00">
+                                                </div>
+                                                <button wire:click="applyDiscount" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-5 rounded-xl uppercase tracking-[0.2em] transition-all text-[9px] shadow-md shadow-blue-600/20 flex-shrink-0">
+                                                    Apply
+                                                </button>
                                             </div>
-                                            <button wire:click="applyDiscount" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-blue-500/20">
-                                                Apply To Assessment
-                                            </button>
                                         </div>
                                     @endif
                                 </div>
@@ -245,43 +243,51 @@
                     @endif
                 </div>
 
+                @if($activeTab === 'assessment')
                 <!-- TRANSACTION ENTRY SECTION -->
-                <div class="px-10 py-10 border-t {{ $isDropPayMode ? 'border-amber-500/20 bg-amber-50/20' : 'border-blue-500/10 bg-blue-50/20' }} rounded-b-[32px]">
-                    <div class="flex items-center gap-3 mb-8">
-                        <h4 class="font-black text-black uppercase tracking-tight text-base">Transaction Terminal</h4>
-                        @if($isDropPayMode)
-                            <span class="text-[9px] font-black px-3 py-1 rounded-full bg-amber-500 text-white uppercase tracking-widest shadow-lg shadow-amber-500/20">DROP PROTOCOL ACTIVE</span>
-                        @endif
+                <div class="px-8 py-6 border-t-2 {{ $isDropPayMode ? 'border-amber-100 bg-amber-50/30' : 'border-slate-100 bg-slate-50/50' }} flex-shrink-0 animate-in slide-in-from-bottom-4 duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 {{ $isDropPayMode ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600' }} rounded-xl flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $isDropPayMode ? 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' : 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' }}"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-black {{ $isDropPayMode ? 'text-amber-600' : 'text-blue-600' }} uppercase tracking-widest text-[9px]">Transaction Phase</h4>
+                                <p class="text-[10px] font-bold text-slate-400 mt-0.5">{{ $isDropPayMode ? 'Drop Protocol Active' : 'Standard Payment Processing' }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-0.5">Amount Due</p>
+                             <p class="font-black text-xl tracking-tighter {{ $isDropPayMode ? 'text-amber-600' : 'text-blue-600' }}">₱ {{ number_format($currentBalance, 2) }}</p>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                        <div class="bg-white p-6 rounded-2xl border border-blue-500/10 shadow-sm flex flex-col justify-center text-center">
-                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Balance Due</p>
-                            <p class="font-black text-blue-600 text-2xl tracking-tighter">₱ {{ number_format($currentBalance, 2) }}</p>
-                        </div>
-                        <div class="space-y-3">
-                            <label class="text-[10px] text-slate-400 font-black uppercase tracking-widest block ml-1">Payment Amount</label>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="col-span-2">
+                            <label class="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] block mb-2">Tendered Amount</label>
                             <div class="relative">
-                                <span class="absolute left-6 top-1/2 -translate-y-1/2 text-blue-600 font-black text-sm">₱</span>
-                                <input type="number" wire:model.live="amount" step="0.01" min="0"
-                                    class="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl text-black placeholder-slate-300 font-black text-base focus:border-blue-500/40 outline-none transition-all shadow-sm"
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black text-xs">₱</span>
+                                <input type="number" wire:model.live="amount" step="0.01" min="0" autocomplete="off"
+                                    class="w-full pl-8 pr-3 py-3 bg-white border-2 border-slate-100 rounded-xl text-slate-800 placeholder-slate-300 font-black text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all shadow-sm"
                                     placeholder="0.00">
                             </div>
                         </div>
-                        <div class="space-y-3">
-                            <label class="text-[10px] text-slate-400 font-black uppercase tracking-widest block ml-1">Reference Code</label>
-                            <input type="text" wire:model="reference_no"
-                                class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-black placeholder-slate-300 font-black text-sm focus:border-blue-500/40 outline-none transition-all uppercase shadow-sm"
-                                placeholder="OR/TXN #">
+                        <div class="col-span-2">
+                            <label class="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] block mb-2">Reference (Optional)</label>
+                            <input type="text" wire:model="reference_no" autocomplete="off"
+                                class="w-full px-4 py-3 bg-white border-2 border-slate-100 rounded-xl text-slate-800 placeholder-slate-300 font-black text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all shadow-sm"
+                                placeholder="TXN-XXXX">
+                        </div>
+                        <div class="col-span-1 flex items-end">
+                            <button wire:click="submitPayment"
+                                class="w-full h-[48px] text-white text-[9px] font-black rounded-xl uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:shadow-md
+                                {{ $isDropPayMode ? 'bg-amber-500 hover:bg-amber-400 shadow-amber-500/30' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/30' }}">
+                                {{ $isDropPayMode ? 'Confirm' : 'Process' }}
+                            </button>
                         </div>
                     </div>
-
-                    <button wire:click="submitPayment"
-                        class="w-full bg-white border-2 {{ $isDropPayMode ? 'border-amber-500/40 hover:border-amber-500' : 'border-blue-500/30 hover:border-blue-500/60' }} text-black text-[10px] font-black py-6 px-8 rounded-2xl uppercase tracking-[0.3em] transition-all shadow-xl {{ $isDropPayMode ? 'shadow-amber-500/5' : 'shadow-blue-500/10' }} hover:bg-slate-50 active:scale-95 flex items-center justify-center gap-3">
-                        <svg class="w-4 h-4 {{ $isDropPayMode ? 'text-amber-500' : 'text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                        {{ $isDropPayMode ? 'Finalize Drop Transaction' : 'Authorize Payment Transfer' }}
-                    </button>
                 </div>
+                @endif
             @else
                 <div class="flex-grow flex flex-col items-center justify-center p-20 text-center space-y-6">
                     <div class="w-24 h-24 bg-blue-50 rounded-[40px] flex items-center justify-center text-blue-200">

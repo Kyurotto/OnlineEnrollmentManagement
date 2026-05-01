@@ -89,10 +89,7 @@ class DashboardController extends Controller
 
         // Calculate SHS vs College enrollment counts
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-        $baseQuery = Enrollment::whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
-            ->when($activeYearName, function($q) use ($activeYearName) {
-                $q->where('year_level', 'like', '%' . $activeYearName . '%');
-            });
+        $baseQuery = Enrollment::whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
 
         $shs_count = (clone $baseQuery)->whereIn('course_code', $shsStrands)->count();
         $college_count = (clone $baseQuery)->whereNotIn('course_code', $shsStrands)->count();

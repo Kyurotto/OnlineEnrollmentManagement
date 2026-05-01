@@ -55,13 +55,9 @@
                                         Active
                                     </span>
                                 @else
-                                    <form action="{{ route('registrar.semesters.activate', $semester->id) }}" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="bg-slate-100 text-slate-400 text-[10px] font-black px-5 py-2 rounded-full border border-slate-200 uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm">
-                                            Activate
-                                        </button>
-                                    </form>
+                                    <span class="bg-slate-100 text-slate-400 text-[10px] font-black px-5 py-2 rounded-full border border-slate-200 uppercase tracking-widest shadow-sm">
+                                        Inactive
+                                    </span>
                                 @endif
                             </td>
                             <td class="py-6 px-8 text-right whitespace-nowrap">

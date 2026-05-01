@@ -122,6 +122,11 @@ class StudentEnrollmentController extends Controller
         // Check for any previous balance carried over from prior terms
         $previousBalance = \Illuminate\Support\Facades\Cache::pull("student_previous_balance_" . Auth::id(), 0);
 
+        // Check if they already have clearance from a preliminary shell record or previous term
+        $latestAny = Enrollment::where('user_id', Auth::id())->latest()->first();
+        $isAlreadyCleared = $latestAny && $latestAny->credentials_verified == 1;
+        $isAlreadyReceived = $latestAny && $latestAny->physical_documents_received == 1;
+
         $enrollment = Enrollment::create([
             'user_id' => Auth::id(),
             'course_id' => $course->id,
@@ -153,7 +158,39 @@ class StudentEnrollmentController extends Controller
             'guardian_contact' => $request->guardian_contact,
             'status' => 'Pending',
             'previous_balance' => $previousBalance,
+            'credentials_verified' => $isAlreadyCleared ? 1 : 0,
+            'physical_documents_received' => $isAlreadyReceived ? 1 : 0,
         ]);
+
+        // ARCHIVE OLD RECORDS: Automatically archive all PREVIOUS non-archived records for this student
+        // Use direct DB update for maximum reliability
+        \Illuminate\Support\Facades\DB::table('enrollments')
+            ->where('user_id', Auth::id())
+            ->where('id', '!=', $enrollment->id)
+            ->whereNull('archived_at')
+            ->update([
+                'archived_at' => now(),
+                'status' => 'Enrolled', // Ensure they are marked as finished in archives
+                'updated_at' => now()
+            ]);
+
+        // Fix missing metadata for folders in archives (for old records that lack columns)
+        $archivedRecords = Enrollment::where('user_id', Auth::id())
+            ->where('id', '!=', $enrollment->id)
+            ->whereNotNull('archived_at')
+            ->get();
+
+        foreach ($archivedRecords as $archived) {
+            if (empty($archived->semester_name) || empty($archived->academic_year_name)) {
+                $parts = array_map('trim', explode('|', $archived->year_level));
+                if (count($parts) >= 3) {
+                    $archived->update([
+                        'semester_name' => $parts[1],
+                        'academic_year_name' => $parts[2]
+                    ]);
+                }
+            }
+        }
 
         // Clear draft on successful submission
         session()->forget('enrollment_draft_' . Auth::id());
@@ -182,12 +219,12 @@ class StudentEnrollmentController extends Controller
             ->latest()
             ->first();
 
-        // If no enrollment for current term, but they are an old student, allow upload
         if (!$enrollment) {
-            $isOldStudent = Enrollment::where('user_id', $user->id)->count() > 0;
-            if (!$isOldStudent) {
+            $latestEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
+            if (!$latestEnrollment) {
                 return redirect()->route('student.enrollment.create')->with('info', 'Please submit your enrollment application first.');
             }
+            $enrollment = $latestEnrollment;
         }
 
         return view('student.enrollment_upload', compact('enrollment'));
@@ -208,19 +245,29 @@ class StudentEnrollmentController extends Controller
             ->latest()
             ->first();
 
-        // If no enrollment record for this term yet (Old Student starting clearance)
         if (!$enrollment) {
-            $isOldStudent = Enrollment::where('user_id', $user->id)->count() > 0;
-            if (!$isOldStudent) {
+            $lastEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
+            if (!$lastEnrollment) {
                 return redirect()->route('student.enrollment.create')->with('error', 'No active enrollment record found.');
             }
 
             // Create a shell record for Clearance (Step 3) tracking
             $enrollment = Enrollment::create([
                 'user_id' => $user->id,
+                'course_id' => $lastEnrollment->course_id,
+                'course_code' => $lastEnrollment->course_code,
+                'level' => $lastEnrollment->level,
                 'first_name' => $user->first_name,
+                'middle_name' => $lastEnrollment->middle_name,
                 'last_name' => $user->last_name,
+                'extension' => $lastEnrollment->extension,
+                'lrn' => $lastEnrollment->lrn,
+                'birth_date' => $lastEnrollment->birth_date,
+                'age' => $lastEnrollment->age,
+                'gender' => $lastEnrollment->gender,
                 'email' => $user->email,
+                'contact' => $lastEnrollment->contact,
+                'address_full' => $lastEnrollment->address_full,
                 'status' => 'Pending',
                 'year_level' => "Returning Student | " . ($activeSemester->name ?? 'New Semester') . " | " . ($activeYear->year_name ?? 'New Year'),
                 'semester_name' => $activeSemester->name ?? '',

@@ -219,14 +219,19 @@
                             </td>
                             <td class="py-6 px-8">
                                 <div class="flex justify-end items-center gap-3">
-                                    @if($application->credentials_verified)
+                                    @if($application->credentials_verified && !($application->classification === 'Returning' || $application->student_type === 'Returning'))
                                         <button type="button" wire:click="revokeClearance({{ $application->id }})"
                                             class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 text-black hover:bg-rose-50 hover:border-rose-500/30 transition-all text-[9px] font-black uppercase tracking-widest group/btn shadow-sm whitespace-nowrap">
                                             <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                             REJECT CLEARANCE
                                         </button>
                                     @endif
-                                    @if(!$application->credentials_verified)
+                                    @php
+                                        $isCurrentTerm = $activeYear && $activeSemester && 
+                                                         $application->academic_year_name === $activeYear->year_name && 
+                                                         $application->semester_name === $activeSemester->name;
+                                    @endphp
+                                    @if(($application->classification === 'Returning' || $application->student_type === 'Returning') && !$application->credentials_verified && $application->status !== 'Enrolled')
                                         <button type="button" wire:click="grantClearance({{ $application->id }})"
                                             class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-blue-500/20 text-black hover:bg-blue-50 hover:border-blue-500/40 transition-all text-[9px] font-black uppercase tracking-widest group/btn shadow-sm whitespace-nowrap">
                                             <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
@@ -485,6 +490,7 @@
                 <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
                     <button type="button"
                         id="togglePhysicalBtn"
+                        @click="$wire.togglePhysicalDocuments(selectedId); setTimeout(() => { location.reload(); }, 1000);"
                         class="text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0">
                         Done Hard Docs
                     </button>
@@ -678,10 +684,8 @@
                 docsBtn.textContent = 'Done Hard Docs';
                 docsBtn.className = 'text-[10px] font-black py-4 px-10 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
             }
-            docsBtn.onclick = function() {
-                @this.togglePhysicalDocuments(app.id);
-                setTimeout(() => location.reload(), 800);
-            };
+            // Logic moved to @click on the button element
+
 
         } else {
             actionButtons.classList.add('hidden');

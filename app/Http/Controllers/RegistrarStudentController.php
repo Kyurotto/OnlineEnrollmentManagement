@@ -36,15 +36,16 @@ class RegistrarStudentController extends Controller
                      'courses.course_name')
             ->joinSub(
                 Enrollment::select($enrollmentSelect)
+                    ->whereNull('archived_at')
                     ->whereIn('id', function($q) {
-                        $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
+                        $q->selectRaw('MAX(id)')->from('enrollments')->whereNull('archived_at')->groupBy('user_id');
                     }),
                 'latest_enrollments',
                 'users.id', '=', 'latest_enrollments.user_id'
             )
             ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+            ->where('latest_enrollments.status', 'Enrolled');
 
         if ($level === 'shs') {
             $query->whereIn('latest_enrollments.course_code', $shsStrands);
@@ -52,9 +53,17 @@ class RegistrarStudentController extends Controller
             $query->whereNotIn('latest_enrollments.course_code', $shsStrands);
         }
 
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
+        // Show only enrolled students for the active term
         if ($activeYear) {
             $query->where('latest_enrollments.year_level', 'like', '%' . $activeYear->year_name . '%');
         }
+        if ($activeSemester) {
+            $query->where('latest_enrollments.year_level', 'like', '%' . $activeSemester->name . '%');
+        }
+
+
 
         if ($filter === 'regular') {
             $query->where('latest_enrollments.is_regular', true);
@@ -75,6 +84,8 @@ class RegistrarStudentController extends Controller
 
         foreach ($students as $student) {
             $student->program = $student->course_code ?: 'N/A';
+
+
             if (!empty($student->year_level)) {
                 $parts = explode('|', $student->year_level);
                 $student->year_display = trim($parts[0]);

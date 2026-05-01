@@ -29,6 +29,7 @@ class PaymentManager extends Component
     // New properties for sidebar layout
     public $activeTab = 'assessment';
     public $selectedStudentId = null;
+    public $isDropPayMode = false;
     public $selectedStudent = null;
     public $enrollment = null;
     public $selectedVoucherType = null;
@@ -133,34 +134,55 @@ class PaymentManager extends Component
         if ($this->enrollment) {
             // Extract and store voucher type for easy access
             $this->selectedVoucherType = $this->enrollment->voucher_type;
+            $this->isDropPayMode = false;
             
             // Get payment assessment details from cache (base fees)
-            $level = $this->enrollment->getLevel();
-            $cacheKey = 'payment_assessment_' . $level;
-            $assessment = Cache::get($cacheKey, [
-                'tuitionFee' => 0,
-                'miscellaneousFees' => 0,
-            ]);
+            $level = strtolower($this->enrollment->level ?? 'college');
+            $program = $this->enrollment->course_code ?? 'all';
+            $yearLevelDigit = filter_var($this->enrollment->year_level, FILTER_SANITIZE_NUMBER_INT);
+            
+            $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
+            $assessment = Cache::get($cacheKey);
+            
+            if (!$assessment) {
+                // Fallback to global if specific not found
+                $assessment = Cache::get("payment_assessment_{$level}_all_all", [
+                    'tuitionFee' => 0,
+                    'miscellaneousFees' => 0,
+                    'discountPercentage' => 0,
+                    'discountAmount' => 0,
+                ]);
+            }
 
             $this->tuitionFees = $assessment['tuitionFee'] ?? 0;
             $this->miscellaneousFees = $assessment['miscellaneousFees'] ?? 0;
-            $this->totalAssessment = $this->tuitionFees + $this->miscellaneousFees;
             
-            // Handle voucher discount
-            if ($this->enrollment->voucher_type === 'free_tuition') {
-                $this->appliedDiscount = $this->tuitionFees;
-            } elseif ($this->enrollment->voucher_type === 'discounted') {
-                $this->appliedDiscount = ($this->totalAssessment * 0.15); // 15% discount
-            } else {
-                $this->appliedDiscount = 0; // Reset discount if no voucher
+            // Calculate base assessment
+            $subtotal = $this->tuitionFees + $this->miscellaneousFees;
+            
+            // Calculate and apply pre-set discounts from assessment configuration
+            $configDiscPerc = (float) ($assessment['discountPercentage'] ?? 0);
+            $configDiscFixed = (float) ($assessment['discountAmount'] ?? 0);
+            $presetDiscount = ($subtotal * ($configDiscPerc / 100)) + $configDiscFixed;
+            
+            $this->totalAssessment = $subtotal;
+
+            // Load persisted discount from enrollment or use preset from configuration
+            $this->appliedDiscount = (float) ($this->enrollment->cashier_discount ?? 0);
+            
+            // If no specific discount is set for this enrollment, use the preset from config
+            if ($this->appliedDiscount == 0 && $presetDiscount > 0) {
+                $this->appliedDiscount = $presetDiscount;
             }
-            
+
             // Get payment history
             $this->paymentHistory = Payment::where('user_id', $studentId)->orderBy('created_at', 'desc')->get();
-            
-            // Calculate balance
+            // Include previous balance carried from prior terms
+            $previousBalance = $this->enrollment->previous_balance ?? 0;
+
+            // Calculate balance (assessment - discount + previous balance - paid)
             $totalPaid = Payment::where('user_id', $studentId)->where('status', 'Paid')->sum('amount');
-            $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
+            $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $previousBalance) - $totalPaid);
         } else {
             // No enrollment found, reset all fields
             $this->tuitionFees = 0;
@@ -172,6 +194,16 @@ class PaymentManager extends Component
         }
         
         $this->activeTab = 'assessment';
+    }
+
+    public function setPaymentMode()
+    {
+        $this->isDropPayMode = false;
+    }
+
+    public function setDropPayMode()
+    {
+        $this->isDropPayMode = true;
     }
 
     public function applyDiscount()

@@ -142,7 +142,7 @@
                 </div>
 
                 {{-- Enrollment Open Alert --}}
-                @if ($activeSemester && $activeYear)
+                @if ($activeSemester && $activeYear && !$hasSubmitted)
                     <div class="p-8 rounded-[1.5rem] border flex items-center gap-6 {{ $hasSubmitted ? 'bg-slate-50' : 'bg-blue-50/50' }}"
                         style="border-color: rgba(37,99,235,0.1); box-shadow: 0 4px 20px rgba(37,99,235,0.05);">
                         <div class="text-blue-600 p-4 rounded-2xl bg-blue-100 flex-shrink-0 {{ $hasSubmitted ? 'opacity-40 grayscale' : 'animate-pulse' }}">
@@ -171,7 +171,11 @@
                                     class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-black px-8 py-4 rounded-xl uppercase tracking-widest transition-all active:scale-95 shadow-xl shadow-blue-600/20">Enroll
                                     Now</a>
                             @else
-                                {{-- Hide button after submission or during clearance --}}
+                                {{-- Show disabled for old/new students when they cannot enroll or have already submitted --}}
+                                <button disabled
+                                    class="bg-slate-100 text-slate-400 text-xs font-black px-8 py-4 rounded-xl uppercase tracking-widest cursor-not-allowed opacity-60 border border-slate-200">
+                                    Enroll Now
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -196,7 +200,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     @if ($hasSubmitted)
                         {{-- Review Application Card --}}
-                        <div class="group block h-full">
+                        @php
+                            $isShellDashboard = $existingEnrollment && empty($existingEnrollment->course_code);
+                        @endphp
+
+                        @if ($isShellDashboard)
+                            <div class="group block h-full opacity-50 cursor-not-allowed">
+                        @else
+                            <a href="{{ route('student.enrollment.review') }}" class="group block h-full">
+                        @endif
                             <div class="p-8 rounded-[2rem] border h-full transition-all duration-500 hover:scale-[1.02] relative overflow-hidden bg-white shadow-xl shadow-blue-900/5"
                                 style="border-color: rgba(37,99,235,0.1);">
                                 <div class="flex justify-between items-start mb-6">
@@ -216,7 +228,11 @@
                                 <p class="text-sm text-slate-500 font-medium leading-relaxed">View and review your submitted
                                     enrollment application details.</p>
                             </div>
-                        </div>
+                            @if ($isShellDashboard)
+                                </div>
+                            @else
+                                </a>
+                            @endif
                     @endif
 
                     {{-- Enrollment Card --}}
@@ -268,7 +284,7 @@
                             </div>
                             <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6">View outstanding balances and record
                                 secure financial transactions.</p>
-                            
+
                             @if(isset($assessment) && $assessment)
                                 <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
                                     <div class="flex justify-between items-center mb-2">
@@ -384,6 +400,18 @@
                                         <div class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         </div>
+                                        <span class="text-xs text-slate-600 font-bold uppercase tracking-tight">Certificate of Good Moral</span>
+                                    </li>
+                                    <li class="flex items-center gap-3 p-2 rounded-lg bg-white border border-blue-50 shadow-sm">
+                                        <div class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </div>
+                                        <span class="text-xs text-slate-600 font-bold uppercase tracking-tight">2x2 ID Picture</span>
+                                    </li>
+                                    <li class="flex items-center gap-3 p-2 rounded-lg bg-white border border-blue-50 shadow-sm">
+                                        <div class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </div>
                                         <span class="text-xs text-slate-600 font-bold uppercase tracking-tight">PSA Birth Certificate</span>
                                     </li>
                                 </ul>
@@ -436,22 +464,24 @@
                                         </div>
                                         <span class="text-xs text-slate-600 font-bold uppercase tracking-tight">PSA Birth Certificate</span>
                                     </li>
+                                    <li class="flex items-center gap-3 p-2 rounded-lg bg-white border border-blue-50 shadow-sm">
+                                        <div class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </div>
+                                        <span class="text-xs text-slate-600 font-bold uppercase tracking-tight">2x2 ID Picture</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
+                    @if ($canEnroll && !$isEnrolledInActiveYear)
                     <div class="relative z-10 flex justify-center pt-4">
-                        @if ($canEnroll && !$isEnrolledInActiveYear)
-                            <a href="{{ route('student.enrollment.create') }}"
-                                class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-black py-5 px-12 rounded-2xl shadow-xl shadow-blue-600/30 transition-all active:scale-95 uppercase tracking-widest text-sm">Apply
-                                Now</a>
-                        @else
-                            <button disabled
-                                class="inline-block bg-slate-100 text-slate-400 border border-slate-200 font-bold py-5 px-12 rounded-2xl cursor-not-allowed uppercase tracking-widest text-sm">Application
-                                Already Submitted</button>
-                        @endif
+                        <a href="{{ route('student.enrollment.create') }}"
+                            class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-black py-5 px-12 rounded-2xl shadow-xl shadow-blue-600/30 transition-all active:scale-95 uppercase tracking-widest text-sm">Apply
+                            Now</a>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -760,7 +790,7 @@
                 {{-- SECTION 2 — Calendar Node --}}
                 <div class="p-10 rounded-[2rem] border shadow-xl shadow-blue-900/5 bg-white overflow-hidden relative"
                     style="border-color: rgba(37,99,235,0.1);">
-                    
+
                     <div class="relative z-10 flex items-center gap-4 mb-10">
                         <div class="w-2 h-8 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></div>
                         <div>

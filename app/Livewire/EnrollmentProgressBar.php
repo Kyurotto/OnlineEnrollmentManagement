@@ -34,28 +34,11 @@ class EnrollmentProgressBar extends Component
         $anyEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
         $allEnrollmentsCount = Enrollment::where('user_id', $user->id)->count();
         
-        $isOldStudent = false;
-        if ($allEnrollmentsCount > 1) {
-            $isOldStudent = true;
-        } else {
-            $hasArchivedEnrollment = Enrollment::where('user_id', $user->id)
-                ->whereNotNull('archived_at')
-                ->exists();
-            if ($hasArchivedEnrollment) {
-                $isOldStudent = true;
-            } else {
-                $previousEnrolled = Enrollment::where('user_id', $user->id)
-                    ->where('status', 'Enrolled')
-                    ->get()
-                    ->filter(function($enrollment) use ($activeYear, $activeSemester) {
-                        if (!$activeYear || !$activeSemester) return true;
-                        return !(stripos((string)$enrollment->year_level, $activeYear->year_name) !== false && 
-                                 stripos((string)$enrollment->year_level, $activeSemester->name) !== false);
-                    });
-                
-                $isOldStudent = $previousEnrolled->count() > 0;
-            }
-        }
+        $isOldStudent = ($allEnrollmentsCount > 1) || 
+                        ($allEnrollmentsCount === 1 && $anyEnrollment && 
+                            $activeYear && $activeSemester && 
+                            (stripos((string)$anyEnrollment->year_level, $activeYear->year_name) === false || 
+                             stripos((string)$anyEnrollment->year_level, $activeSemester->name) === false));
         
         $isFullyUploaded = false;
         $isPartiallyUploaded = false;
@@ -86,21 +69,34 @@ class EnrollmentProgressBar extends Component
 
         if ($isOldStudent) {
             // For Old Students, we check if they have a record for the CURRENT term
-            // If they don't, we start them fresh at Step 1 of the new cycle
-            $currentRecord = $isEnrollmentForCurrentTerm ? $latestEnrollment : null;
+            // If they don't, we look at their absolute latest record (the one from previous term being processed)
+            $currentRecord = $isEnrollmentForCurrentTerm ? $latestEnrollment : $anyEnrollment;
             
+            // 1. Online Docs - Check across ALL enrollments for returning students
+            // We consider it done if they have EVER uploaded all required docs in any record
             $isOnlineDocsDone = false;
             $isPartiallyDone = false;
-            if ($anyEnrollment) {
-                $docFields = $anyEnrollment->getDocumentFields();
-                $uploaded = 0;
-                foreach($docFields as $f => $l) { if(!empty($anyEnrollment->$f)) $uploaded++; }
-                $isOnlineDocsDone = ($uploaded === count($docFields));
-                $isPartiallyDone = ($uploaded > 0);
+            
+            // Check all records for any uploaded documents
+            $allUserEnrollments = Enrollment::where('user_id', $user->id)->get();
+            $uploadedFields = [];
+            
+            foreach ($allUserEnrollments as $rec) {
+                foreach ($docFields as $f => $l) {
+                    if (!empty($rec->$f)) {
+                        $uploadedFields[$f] = true;
+                    }
+                }
             }
-
-            $isPhysicalDocsDone = ($currentRecord && $currentRecord->physical_documents_received == 1);
-            $isCleared = ($currentRecord && $currentRecord->credentials_verified == 1);
+            
+            $isOnlineDocsDone = (count($uploadedFields) === count($docFields));
+            $isPartiallyDone = (count($uploadedFields) > 0);
+            
+            // 2. Physical Docs & Clearance
+            // These should NOT reset after submitting a new term application.
+            // We check if they have EVER been received/verified.
+            $isPhysicalDocsDone = $allUserEnrollments->contains('physical_documents_received', 1);
+            $isCleared = $allUserEnrollments->contains('credentials_verified', 1);
 
             $oldStudentStepsKeys = [
                 'online_docs',
@@ -111,11 +107,11 @@ class EnrollmentProgressBar extends Component
                 'enroll'
             ];
 
-            // 1. Online Docs - Can be "Pending" (ongoing) but doesn't block Step 2/3
+            // 1. Online Docs
             if ($isOnlineDocsDone) {
                 $steps['online_docs'] = 'green';
             } else if ($isPartiallyDone) {
-                $steps['online_docs'] = 'ongoing'; // Shows as Pending/In-Progress
+                $steps['online_docs'] = 'ongoing';
             } else {
                 $steps['online_docs'] = 'yellow';
             }
@@ -124,49 +120,44 @@ class EnrollmentProgressBar extends Component
             if ($isPhysicalDocsDone) {
                 $steps['physical_docs'] = 'green';
             } else {
-                $steps['physical_docs'] = 'yellow'; // Always ready to receive
+                $steps['physical_docs'] = 'yellow';
             }
 
-            // 3. Registrar Clearance (Step 3) - The gate for Step 4
+            // 3. Registrar Clearance
             if ($isCleared) {
                 $steps['registrar_clearance'] = 'green';
             } else {
-                // Step 3 is Pending as long as Step 1 is started
-                $steps['registrar_clearance'] = ($isPartiallyDone || $isOnlineDocsDone) ? 'yellow' : 'grey';
+                // Registrar Clearance is pending (yellow) for old students
+                $steps['registrar_clearance'] = 'yellow';
             }
 
-            // 4. Application (Step 4) - ONLY if Step 3 is GREEN
+            // 4. Application
+            // Requirement: Must be cleared (Step 3 = green) to proceed to Step 4
+            // MUST be for the CURRENT term to be considered done
             if ($steps['registrar_clearance'] === 'green') {
-                // Check if they have ALREADY filled out the course selection (FULL form)
-                $hasFilledForm = ($currentRecord && !empty($currentRecord->course_code));
-                
-                if ($hasFilledForm) {
+                $hasFilledFormForCurrentTerm = ($latestEnrollment && !empty($latestEnrollment->course_code));
+                if ($hasFilledFormForCurrentTerm) {
                     $steps['application'] = 'green';
                 } else {
-                    $steps['application'] = 'yellow'; // Ready to fill up
+                    $steps['application'] = 'yellow';
                 }
             } else {
                 $steps['application'] = 'grey'; 
             }
 
             // 5. Payment
+            // Requirement: Must have filled form (Step 4 = green)
             if ($steps['application'] === 'green') {
-                if ($isEnrollmentForCurrentTerm && in_array($latestEnrollment->status, ['Paid', 'Enrolled'])) {
-                    $steps['payment'] = 'green';
-                } else {
-                    $steps['payment'] = 'yellow';
-                }
+                $isPaid = ($latestEnrollment && $latestEnrollment->status === 'Paid');
+                $steps['payment'] = $isPaid ? 'green' : 'yellow';
             } else {
                 $steps['payment'] = 'grey';
             }
 
             // 6. Enroll
             if ($steps['payment'] === 'green') {
-                if ($isEnrollmentForCurrentTerm && $latestEnrollment->status === 'Enrolled') {
-                    $steps['enroll'] = 'green';
-                } else {
-                    $steps['enroll'] = 'yellow';
-                }
+                $isEnrolled = ($latestEnrollment && $latestEnrollment->status === 'Enrolled');
+                $steps['enroll'] = $isEnrolled ? 'green' : 'yellow';
             } else {
                 $steps['enroll'] = 'grey';
             }
