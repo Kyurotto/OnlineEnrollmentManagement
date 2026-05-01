@@ -19,10 +19,21 @@
                     <p class="text-xs text-white/30 font-bold uppercase tracking-widest mt-2">Manage and Verify Student Collections</p>
                 </div>
             </div>
-            <button wire:click="openCreateModal" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center gap-3">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                New Payment
-            </button>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.reports.payments.print', [
+                    'search' => $search ?? '',
+                    'filter_course' => $filter_course ?? 'ALL',
+                    'status' => $status ?? 'All statuses'
+                ]) }}" target="_blank"
+                    class="bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 text-xs font-black py-4 px-6 rounded-2xl uppercase tracking-widest transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Print PDF
+                </a>
+                <button wire:click="openCreateModal" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center gap-3">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                    New Payment
+                </button>
+            </div>
         </div>
 
         <div class="bg-white/[0.02] px-8 py-5 border-b border-white/5">
@@ -123,22 +134,22 @@
                 <tbody class="divide-y divide-white/5">
                     @forelse($payments as $payment)
                     <tr class="hover:bg-emerald-500/[0.03] transition-all group">
-                        <td class="py-5 px-5 font-mono text-[10px] text-white/20 italic">#{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</td>
+                        <td class="py-5 px-5 font-mono text-[10px] text-white/20">#{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</td>
                         <td class="py-5 px-5">
                             <div class="font-black text-white uppercase tracking-tight group-hover:text-emerald-400 transition-colors text-xs">{{ optional($payment->user)->name ?? 'Unknown student' }}</div>
-                            <div class="text-[10px] text-white/20 font-bold uppercase tracking-widest mt-1 italic">{{ optional($payment->user)->email }}</div>
+                            <div class="text-[10px] text-white/20 font-bold uppercase tracking-widest mt-1">{{ optional($payment->user)->email }}</div>
                         </td>
                         <td class="py-5 px-5">
                             @if(optional($payment->application)->course_code)
                                 <span class="font-black text-white/60 uppercase tracking-widest text-[10px] block leading-tight">{{ $payment->application->course_code }}</span>
                                 <span class="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1 block leading-tight">{{ $payment->application->year_level }}</span>
                             @else
-                                <span class="text-white/10 italic text-[10px] font-black">NOT DOCUMENTED</span>
+                                <span class="text-white/10 text-[10px] font-black">NOT DOCUMENTED</span>
                             @endif
                         </td>
                         <td class="py-5 px-5">
                             <span class="text-white/60 font-black uppercase tracking-[0.1em] text-[10px] block">{{ $payment->created_at->format('M d, Y') }}</span>
-                            <span class="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1 italic">{{ $payment->payment_method ?? 'Cash' }}</span>
+                            <span class="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1">{{ $payment->payment_method ?? 'Cash' }}</span>
                         </td>
                         <td class="py-5 px-5 text-right">
                             <span class="text-emerald-400 font-black tracking-tighter text-sm">₱{{ number_format($payment->amount, 2) }}</span>
@@ -157,7 +168,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="py-24 text-center">
-                            <p class="text-xs font-black text-white/10 uppercase tracking-[0.4em] italic leading-loose">No payment records found.</p>
+                            <p class="text-xs font-black text-white/10 uppercase tracking-[0.4em] leading-loose">No payment records found.</p>
                         </td>
                     </tr>
                     @endforelse
@@ -180,7 +191,7 @@
             <div class="p-10">
                 <div class="mb-10 text-center">
                     <h3 class="text-xl font-black text-white uppercase tracking-tight leading-none">{{ $isEditMode ? 'Edit Payment' : 'New Payment' }}</h3>
-                    <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-2 italic shadow-sm leading-none">Payment Information</p>
+                    <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-2 shadow-sm leading-none">Payment Information</p>
                 </div>
 
                 <form wire:submit.prevent="{{ $isEditMode ? 'update' : 'store' }}" class="space-y-6">

@@ -95,7 +95,7 @@
                         @empty
                         <tr>
                             <td colspan="4" class="py-20 text-center">
-                                <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em] italic">No college programs found</p>
+                                <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em]">No college programs found</p>
                             </td>
                         </tr>
                         @endforelse
@@ -187,7 +187,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="py-20 text-center">
-                                <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em] italic">No SHS strands found</p>
+                                <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em]">No SHS strands found</p>
                             </td>
                         </tr>
                         @endforelse
@@ -224,7 +224,7 @@
                     @else
                         <h3 class="text-xl font-bold text-white uppercase tracking-tight">New {{ $isTypeProgram ? 'Program' : 'Strand' }}</h3>
                     @endif
-                    <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-1 italic">{{ $isTypeProgram ? 'College Program' : 'Senior High' }} Information</p>
+                    <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-1">{{ $isTypeProgram ? 'College Program' : 'Senior High' }} Information</p>
                 </div>
 
                 <form action="{{ $isEditMode ? route('registrar.programs.update', $editingProgram->id) : route('registrar.programs.store') }}" method="POST" class="space-y-8">

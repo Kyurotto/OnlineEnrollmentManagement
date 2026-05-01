@@ -144,6 +144,14 @@ class AdminApplicationManager extends Component
             } else {
                 $application->year_display = 'N/A';
             }
+
+            // Calculate Student Classification (New vs Returning)
+            $isReturning = Enrollment::where('user_id', $application->user_id)
+                ->where('id', '<', $application->id)
+                ->exists();
+            $application->classification = $application->student_type 
+                ?? ($isReturning ? 'Returning' : 'New');
+
             return $application;
         });
 

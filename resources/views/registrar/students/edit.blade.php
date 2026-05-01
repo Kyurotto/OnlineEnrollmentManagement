@@ -15,7 +15,7 @@
             </a>
             <div>
                 <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.3em]">Registrar Control</p>
-                <h2 class="text-2xl font-black text-white tracking-tight uppercase italic">Update Student Record</h2>
+                <h2 class="text-2xl font-black text-white tracking-tight uppercase">Update Student Record</h2>
             </div>
         </div>
 
@@ -92,7 +92,7 @@
                     <div class="space-y-2" id="classificationReasonWrapper">
                         <label class="block text-[9px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">
                             Classification Reason
-                            <span class="text-rose-400 ml-1 font-black italic">(Required if Irregular)</span>
+                            <span class="text-rose-400 ml-1 font-black">(Required if Irregular)</span>
                         </label>
                         <select name="classification_reason" id="classificationReasonSelect"
                             class="w-full bg-white/[0.03] text-white border border-white/10 py-4 px-5 rounded-2xl outline-none text-sm font-bold tracking-wide focus:border-purple-500/50 focus:bg-white/[0.05] transition-all cursor-pointer">
@@ -118,7 +118,7 @@
                         Cancel
                     </a>
                     <button type="submit"
-                        class="flex-[2] bg-purple-500 hover:bg-purple-400 text-white text-[9px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.3em] transition-all shadow-[0_20px_50px_rgba(167,139,250,0.3)] active:scale-[0.98] italic">
+                        class="flex-[2] bg-purple-500 hover:bg-purple-400 text-white text-[9px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.3em] transition-all shadow-[0_20px_50px_rgba(167,139,250,0.3)] active:scale-[0.98]">
                         Save Changes
                     </button>
                 </div>

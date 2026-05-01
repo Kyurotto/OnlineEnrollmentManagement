@@ -13,6 +13,12 @@
                 <h2 class="text-3xl font-bold text-white tracking-tight">Edit Enrollment Application</h2>
                 <p class="text-xs mt-2 font-medium uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Modify Your Submission</p>
             </div>
+
+            <a href="{{ route('student.enrollment.review') }}" 
+               class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:border-white/20 transition-all text-xs font-black uppercase tracking-widest group">
+                <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Review
+            </a>
         </div>
 
         @if(session('error'))
@@ -33,7 +39,7 @@
                  style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.10);">
 
                 <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
-                    <span class="w-1.5 h-6 rounded-full" style="background-color: {{ $level === 'shs' ? '#10B981' : '#3B82F6' }};"></span>
+                    <span class="w-1.5 h-6 rounded-full" style="background-color: {{ $level === 'shs' ? '#3b82f6' : '#3B82F6' }};"></span>
                     {{ $level === 'shs' ? 'Strand Selection' : 'Course Selection' }}
                 </h3>
 
@@ -55,7 +61,7 @@
                                 });
                             @endphp
                             @forelse($acadStrands as $strand)
-                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-emerald-500/10 has-[:checked]:border-emerald-500 has-[:checked]:ring-2 has-[:checked]:ring-emerald-500/20 has-[:checked]:shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                                <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-300 group bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20 has-[:checked]:bg-emerald-500/10 has-[:checked]:border-emerald-500 has-[:checked]:ring-2 has-[:checked]:ring-emerald-500/20 has-[:checked]:shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                                     <input type="radio" name="course_code" value="{{ $strand->course_code }}" {{ old('course_code', $course_code ?? '') === $strand->course_code ? 'checked' : '' }} class="sr-only peer" required>
                                     <div class="w-5 h-5 rounded-full border-2 transition-all duration-300 border-white/20 peer-checked:border-emerald-400 peer-checked:bg-emerald-400"></div>
                                     <div class="ml-4">
@@ -316,11 +322,57 @@
                 <div class="space-y-4">
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Health Concerns / Medical Issues</label>
-                        <p class="text-xs text-white/30 italic mb-2 ml-1">Please inform us of any health conditions or medical concerns we should be aware of (optional)</p>
+                        <p class="text-xs text-white/30 mb-2 ml-1">Please inform us of any health conditions or medical concerns we should be aware of (optional)</p>
                         <textarea name="health_concerns" placeholder="e.g., Asthma, Allergies, Medications, Physical limitations, etc." rows="4" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-pink-400 outline-none placeholder-white/10 transition-colors resize-none">{{ old('health_concerns', $health_concerns ?? '') }}</textarea>
                     </div>
                 </div>
             </div>
+
+            {{-- Dynamic Year Level Filtering --}}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const courseRadios = document.querySelectorAll('input[name="course_code"]');
+                    const yearSelect = document.querySelector('select[name="year_level"]');
+                    const level = "{{ $level }}";
+
+                    function updateYearLevels() {
+                        if (level !== 'college') return;
+
+                        const selectedCourse = document.querySelector('input[name="course_code"]:checked');
+                        if (!selectedCourse) return;
+
+                        const courseCode = selectedCourse.value.toUpperCase();
+                        const currentYear = yearSelect.value;
+                        
+                        // Define max years for each course
+                        let maxYear = 4;
+                        if (courseCode === 'ACT') {
+                            maxYear = 2;
+                        } else if (courseCode === 'DIT' || courseCode === 'DHRT') {
+                            maxYear = 3;
+                        }
+
+                        // Clear options except first
+                        yearSelect.innerHTML = '<option value="">Select Year</option>';
+
+                        for (let i = 1; i <= maxYear; i++) {
+                            const yearStr = i === 1 ? '1st Year' : (i === 2 ? '2nd Year' : (i === 3 ? '3rd Year' : '4th Year'));
+                            const option = document.createElement('option');
+                            option.value = yearStr;
+                            option.textContent = yearStr;
+                            if (yearStr === currentYear) option.selected = true;
+                            yearSelect.appendChild(option);
+                        }
+                    }
+
+                    courseRadios.forEach(radio => {
+                        radio.addEventListener('change', updateYearLevels);
+                    });
+
+                    // Run on load to handle initial selection
+                    updateYearLevels();
+                });
+            </script>
 
             {{-- HCI Guidance: Required Field Scroller --}}
             <script>
@@ -334,7 +386,7 @@
                             invalidElement.focus();
                             // Smooth scroll to the required field for better user guidance
                             invalidElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
+ 
                             // Add visual feedback to the invalid field
                             invalidElement.classList.add('ring-2', 'ring-rose-500');
                             setTimeout(() => {

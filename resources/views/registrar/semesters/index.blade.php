@@ -7,20 +7,18 @@
             </div>
         @endif
 
-        <div class="rounded-2xl border overflow-hidden relative"
-             style="background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
-
-            <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
-                <div class="flex items-center gap-3">
-                    <div class="p-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <div class="card-white relative overflow-hidden">
+            <div class="px-8 py-6 border-b border-blue-50 flex justify-between items-center bg-slate-50/50">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     </div>
                     <div>
-                        <h3 class="font-bold text-white text-lg leading-tight uppercase tracking-tight">Semester</h3>
-                        <p class="text-xs text-white/30 font-bold uppercase tracking-widest mt-0.5">Management Portal</p>
+                        <h3 class="font-black text-slate-900 text-xl leading-tight uppercase tracking-tight">Semesters</h3>
+                        <p class="text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] mt-1">Academic Cycle Management</p>
                     </div>
                 </div>
-                <a href="{{ route('registrar.semesters.index', ['showModal' => 'true']) }}" class="bg-teal-500 hover:bg-teal-400 text-white text-xs font-black py-3 px-6 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-teal-500/20 active:scale-95 flex items-center gap-2">
+                <a href="{{ route('registrar.semesters.index', ['showModal' => 'true']) }}" class="btn-primary flex items-center gap-2 py-3.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                     New Semester
                 </a>
@@ -28,52 +26,57 @@
 
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left font-medium text-sm">
-                    <thead class="text-xs text-white/20 uppercase tracking-widest border-b border-white/5" style="background: rgba(255,255,255,0.03);">
+                    <thead class="text-[11px] text-slate-400 uppercase tracking-[0.2em] border-b border-blue-50 bg-slate-50/30">
                         <tr>
-                            <th class="py-5 px-8 font-black">ID</th>
-                            <th class="py-5 px-8 font-black">Academic Year</th>
-                            <th class="py-5 px-8 font-black">Semesters</th>
-                            <th class="py-5 px-8 font-black">Date</th>
-                            <th class="py-5 px-8 text-center font-black">Status</th>
-                            <th class="py-5 px-8 text-right font-black">Actions</th>
+                            <th class="py-6 px-8 font-black">ID</th>
+                            <th class="py-6 px-8 font-black">Academic Year</th>
+                            <th class="py-6 px-8 font-black">Semester Name</th>
+                            <th class="py-6 px-8 font-black">Duration</th>
+                            <th class="py-6 px-8 text-center font-black">Status</th>
+                            <th class="py-6 px-8 text-right font-black">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-white/5">
+                    <tbody class="divide-y divide-blue-50 bg-white">
                         @forelse($semesters as $semester)
-                        <tr class="hover:bg-teal-500/[0.03] transition-all group">
-                            <td class="py-5 px-8 text-white/20 font-mono text-xs">#{{ str_pad($semester->id, 4, '0', STR_PAD_LEFT) }}</td>
-                            <td class="py-5 px-8 text-white/40 uppercase tracking-widest font-black text-xs">{{ $semester->academic_year }}</td>
-                            <td class="py-5 px-8">
-                                <span class="text-white font-bold group-hover:text-teal-300 transition-colors uppercase tracking-tight">{{ $semester->name }}</span>
+                        <tr class="hover:bg-blue-50/40 transition-all group">
+                            <td class="py-6 px-8 text-slate-400 font-mono text-xs">#{{ str_pad($semester->id, 4, '0', STR_PAD_LEFT) }}</td>
+                            <td class="py-6 px-8 text-blue-600 uppercase tracking-widest font-black text-[10px]">{{ $semester->academic_year }}</td>
+                            <td class="py-6 px-8">
+                                <span class="text-slate-900 font-black uppercase tracking-tight">{{ $semester->name }}</span>
                             </td>
-                            <td class="py-5 px-8 text-white/30 text-xs font-medium">
-                                <span class="block tracking-tight">{{ \Carbon\Carbon::parse($semester->start_date)->format('M d, Y') }} —</span>
-                                <span class="block tracking-tight text-white/20">{{ \Carbon\Carbon::parse($semester->end_date)->format('M d, Y') }}</span>
+                            <td class="py-6 px-8 text-slate-500 text-xs font-bold">
+                                <span class="block tracking-tight text-slate-700">{{ \Carbon\Carbon::parse($semester->start_date)->format('M d, Y') }} —</span>
+                                <span class="block tracking-tight text-slate-400 mt-0.5">{{ \Carbon\Carbon::parse($semester->end_date)->format('M d, Y') }}</span>
                             </td>
-                            <td class="py-5 px-8 text-center">
+                            <td class="py-6 px-8 text-center">
                                 @if($semester->is_active)
-                                    <span class="bg-teal-500/10 text-teal-400 text-xs font-black px-4 py-1.5 rounded-full border border-teal-500/20 shadow-sm uppercase tracking-widest animate-pulse">Actived</span>
+                                    <span class="inline-flex items-center gap-2 bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-full shadow-lg shadow-blue-600/30 uppercase tracking-widest">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                        Active
+                                    </span>
                                 @else
-                                    <form action="{{ route('registrar.semesters.activate', $semester->id) }}" method="POST" onsubmit="return confirm('⚠️ SEMESTER ACTIVATION WARNING\n\nActivating this semester will:\n• Archive all currently enrolled students\n• Remove all pending/unapproved applications\n• Reset the enrollment cycle for all students\n• Carry forward unpaid balances\n\nThis action CANNOT be undone.\n\nAre you sure you want to proceed?');">
+                                    <form action="{{ route('registrar.semesters.activate', $semester->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="bg-white/5 text-white/20 text-xs font-black px-4 py-1.5 rounded-full border border-white/5 uppercase tracking-widest hover:text-teal-400 hover:border-teal-500/20 transition-all">Activate</button>
+                                        <button type="submit" class="bg-slate-100 text-slate-400 text-[10px] font-black px-5 py-2 rounded-full border border-slate-200 uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm">
+                                            Activate
+                                        </button>
                                     </form>
                                 @endif
                             </td>
-                            <td class="py-5 px-8 text-right whitespace-nowrap">
+                            <td class="py-6 px-8 text-right whitespace-nowrap">
                                 <div class="flex justify-end gap-2">
                                     <a href="{{ route('registrar.semesters.index', ['edit_id' => $semester->id]) }}"
-                                       class="px-4 py-1.5 rounded-lg bg-teal-500/10 border border-teal-500/20 text-[10px] font-black uppercase tracking-widest text-teal-400 hover:bg-teal-500 hover:text-white transition-all shadow-lg shadow-teal-500/5">
-                                        EDIT
+                                       class="px-6 py-2.5 rounded-xl bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                        Edit
                                     </a>
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="py-20 text-center">
-                                <p class="text-xs font-black text-white/20 uppercase tracking-[0.4em] italic">No records found</p>
+                            <td colspan="6" class="py-32 text-center">
+                                <p class="text-xs font-black text-slate-300 uppercase tracking-[0.4em]">No records found</p>
                             </td>
                         </tr>
                         @endforelse
@@ -82,7 +85,7 @@
             </div>
 
             @if($semesters->hasPages())
-                <div class="p-6 border-t border-white/5 bg-white/[0.01]">
+                <div class="p-6 border-t border-blue-50 bg-slate-50/30">
                     {{ $semesters->links('pagination') }}
                 </div>
             @endif
@@ -97,73 +100,85 @@
 
         @if($showModal)
         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
-            <a href="{{ route('registrar.semesters.index') }}" class="absolute inset-0 bg-[#060d1a]/95 backdrop-blur-2xl"></a>
-
-            <div class="bg-[#0d1f3c] border border-white/10 w-full max-w-2xl rounded-[32px] overflow-hidden shadow-[0_32px_120px_rgba(0,0,0,0.6)] relative z-10 transform animate-in zoom-in-95 duration-300">
-                <div class="p-10">
-                    <div class="mb-10 text-center">
-                        <h3 class="text-xl font-bold text-white uppercase tracking-tight">{{ $isEditMode ? 'Edit Semester' : 'New Semester' }}</h3>
-                        <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-1 italic">Semester Information</p>
+            <a href="{{ route('registrar.semesters.index') }}" class="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></a>            <div class="bg-white border border-blue-100 w-full max-w-3xl rounded-[40px] overflow-hidden shadow-[0_32px_120px_rgba(37,99,235,0.15)] relative z-10 transform animate-in zoom-in-95 duration-300">
+                <div class="p-12">
+                    <div class="mb-12 text-center">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-600 text-white shadow-2xl shadow-blue-600/30 mb-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tight">{{ $isEditMode ? 'Edit Semester' : 'New Semester' }}</h3>
+                        <div class="flex items-center justify-center gap-3 mt-2">
+                            <span class="h-px w-8 bg-blue-100"></span>
+                            <p class="text-blue-600 text-[10px] font-black uppercase tracking-[0.4em]">Academic Cycle Management</p>
+                            <span class="h-px w-8 bg-blue-100"></span>
+                        </div>
                     </div>
 
-                    <form action="{{ $isEditMode ? route('registrar.semesters.update', $editingSemester->id) : route('registrar.semesters.store') }}" method="POST" class="space-y-6">
+                    <form action="{{ $isEditMode ? route('registrar.semesters.update', $editingSemester->id) : route('registrar.semesters.store') }}" method="POST" class="space-y-8">
                         @csrf
                         @if($isEditMode) @method('PATCH') @endif
 
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Academic Period</label>
-                                <select name="academic_year" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-teal-500/50 appearance-none transition-all cursor-pointer" required>
-                                    <option value="" class="bg-[#060d1a]">Select Period</option>
+                        <div class="grid grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Academic Period</label>
+                                <select name="academic_year" class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-5 px-8 rounded-2xl outline-none text-sm font-bold tracking-wider focus:border-blue-600 focus:bg-white transition-all cursor-pointer" required>
+                                    <option value="">Select Period</option>
                                     @foreach($academicYears as $year)
-                                        <option value="{{ $year->year_name }}" class="bg-[#060d1a]" {{ old('academic_year', $editingSemester ? $editingSemester->academic_year : '') === $year->year_name ? 'selected' : '' }}>{{ $year->year_name }}</option>
+                                        <option value="{{ $year->year_name }}" {{ old('academic_year', $editingSemester ? $editingSemester->academic_year : '') === $year->year_name ? 'selected' : '' }}>{{ $year->year_name }}</option>
                                     @endforeach
                                 </select>
                                 @error('academic_year') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
                             </div>
-                            <div class="space-y-2">
-                                <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Term Label</label>
-                                <select name="name" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-teal-500/50 appearance-none transition-all cursor-pointer" required>
-                                    <option value="1ST SEMESTER" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === '1ST SEMESTER' ? 'selected' : '' }}>1ST SEMESTER</option>
-                                    <option value="2ND SEMESTER" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === '2ND SEMESTER' ? 'selected' : '' }}>2ND SEMESTER</option>
-                                    <option value="Summer" class="bg-[#060d1a]" {{ old('name', $editingSemester ? $editingSemester->name : '') === 'Summer' ? 'selected' : '' }}>Summer Session</option>
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Term Label</label>
+                                <select name="name" class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-5 px-8 rounded-2xl outline-none text-sm font-bold tracking-wider focus:border-blue-600 focus:bg-white transition-all cursor-pointer" required>
+                                    <option value="1ST SEMESTER" {{ old('name', $editingSemester ? $editingSemester->name : '') === '1ST SEMESTER' ? 'selected' : '' }}>1ST SEMESTER</option>
+                                    <option value="2ND SEMESTER" {{ old('name', $editingSemester ? $editingSemester->name : '') === '2ND SEMESTER' ? 'selected' : '' }}>2ND SEMESTER</option>
+                                    <option value="Summer" {{ old('name', $editingSemester ? $editingSemester->name : '') === 'Summer' ? 'selected' : '' }}>Summer Session</option>
                                 </select>
                                 @error('name') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Start Date</label>
-                                <input type="date" name="start_date" value="{{ old('start_date', $editingSemester ? \Carbon\Carbon::parse($editingSemester->start_date)->format('Y-m-d') : '') }}" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none text-sm font-bold tracking-wider focus:border-teal-500/50 transition-all" required>
+                        <div class="grid grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Start Date</label>
+                                <input type="date" name="start_date" value="{{ old('start_date', $editingSemester ? \Carbon\Carbon::parse($editingSemester->start_date)->format('Y-m-d') : '') }}" class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-5 px-8 rounded-2xl outline-none text-sm font-bold tracking-wider focus:border-blue-600 focus:bg-white transition-all" required>
                                 @error('start_date') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
                             </div>
-                            <div class="space-y-2">
-                                <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">End Date</label>
-                                <input type="date" name="end_date" value="{{ old('end_date', $editingSemester ? \Carbon\Carbon::parse($editingSemester->end_date)->format('Y-m-d') : '') }}" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none text-sm font-bold tracking-wider focus:border-teal-500/50 transition-all" required>
+                            <div class="space-y-3">
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">End Date</label>
+                                <input type="date" name="end_date" value="{{ old('end_date', $editingSemester ? \Carbon\Carbon::parse($editingSemester->end_date)->format('Y-m-d') : '') }}" class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-5 px-8 rounded-2xl outline-none text-sm font-bold tracking-wider focus:border-blue-600 focus:bg-white transition-all" required>
                                 @error('end_date') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
                             </div>
                         </div>
 
-                        <div class="relative group overflow-hidden rounded-xl bg-white/5 border border-white/10 p-5 hover:bg-white/10 transition-all cursor-pointer">
-                            <label class="flex items-center gap-4 cursor-pointer">
-                                <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $editingSemester && $editingSemester->is_active) ? 'checked' : '' }}
-                                    class="w-5 h-5 rounded border-white/10 bg-white/5 text-teal-500 focus:ring-teal-500 transition-all">
+                        <div class="relative group rounded-[24px] bg-blue-50/40 border border-blue-100 p-8 hover:bg-blue-50/60 transition-all cursor-pointer">
+                            <label class="flex items-center gap-6 cursor-pointer">
+                                <div class="relative w-8 h-8 flex-shrink-0">
+                                    <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $editingSemester && $editingSemester->is_active) ? 'checked' : '' }}
+                                        class="peer absolute inset-0 opacity-0 cursor-pointer z-10">
+                                    <div class="absolute inset-0 rounded-xl border-2 border-blue-200 bg-white transition-all peer-checked:bg-blue-600 peer-checked:border-blue-600 flex items-center justify-center peer-checked:[&_svg]:opacity-100">
+                                        <svg class="w-5 h-5 text-white opacity-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
                                 <div class="flex flex-col">
-                                    <span class="text-xs font-black text-white uppercase tracking-wider">Set Operational</span>
-                                    <span class="text-xs text-white/30 uppercase tracking-widest mt-0.5 font-bold italic">Current Active Term</span>
+                                    <span class="text-sm font-black text-slate-900 uppercase tracking-wider">Set Operational</span>
+                                    <span class="text-[10px] text-blue-600 uppercase tracking-widest mt-1 font-bold">Activate this term now</span>
                                 </div>
                             </label>
                         </div>
 
-                        <div class="flex gap-4 pt-6">
+                        <div class="flex gap-4 pt-4">
                             <a href="{{ route('registrar.semesters.index') }}"
-                                class="flex-1 px-8 py-4 text-center text-xs font-bold text-white/40 uppercase tracking-widest border border-white/10 rounded-xl hover:bg-white/5 hover:text-white transition-all">
+                                class="flex-1 px-8 py-5 text-center text-xs font-black text-slate-400 uppercase tracking-widest border-2 border-slate-100 rounded-2xl hover:bg-slate-50 hover:text-slate-900 hover:border-slate-200 transition-all">
                                 Back
                             </a>
                             <button type="submit"
-                                class="flex-1 bg-teal-500 hover:bg-teal-400 text-white text-xs font-black py-4 px-8 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-teal-500/20 active:scale-95">
-                                {{ $isEditMode ? 'Update' : 'Save' }}
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black py-5 px-8 rounded-2xl uppercase tracking-widest transition-all shadow-xl shadow-blue-600/30 active:scale-95">
+                                {{ $isEditMode ? 'Update Semester' : 'Create Semester' }}
                             </button>
                         </div>
                     </form>

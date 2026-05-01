@@ -13,54 +13,83 @@ class RegistrarStudentController extends Controller
     /**
      * Display a listing of students (Registrar View).
      */
-    public function index()
-{
-    // 1. Fetch official students (Approved/Enrolled only)
-    $students = User::where('role', 'student')
-                    ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10); 
+    public function index(Request $request)
+    {
+        $search = $request->get('search', '');
+        $filter = $request->get('filter', 'all');
+        $level = $request->get('level', 'all');
+        $sortField = $request->get('sortField', 'users.id');
+        $sortDirection = $request->get('sortDirection', 'desc');
 
-    // 2. Attach Program, Section (Year only), and Account details
-    foreach ($students as $student) {
-        $enrollment = Enrollment::with('course')
-                                ->where('user_id', $student->id)
-                                ->orderBy('created_at', 'desc')
-                                ->first();
-                                
-        // Program sync logic
-        if ($enrollment && $enrollment->course && !empty($enrollment->course->name)) {
-            $student->program = $enrollment->course->name;
-        } elseif ($enrollment && !empty($enrollment->course_code)) {
-            $student->program = $enrollment->course_code;
-        } else {
-            $student->program = 'N/A';
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        
+        $enrollmentSelect = ['user_id', 'course_code', 'year_level', 'status', 'id', 'is_regular', 'classification_reason', 'credentials_verified', 'student_type', 'physical_documents_received'];
+
+        $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+
+        $query = User::query()
+            ->select('users.*', 'latest_enrollments.course_code', 'latest_enrollments.year_level',
+                     'latest_enrollments.id as enrollment_id',
+                     'latest_enrollments.is_regular', 'latest_enrollments.classification_reason',
+                     'latest_enrollments.credentials_verified', 'latest_enrollments.student_type',
+                     'latest_enrollments.physical_documents_received',
+                     'courses.course_name')
+            ->joinSub(
+                Enrollment::select($enrollmentSelect)
+                    ->whereIn('id', function($q) {
+                        $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
+                    }),
+                'latest_enrollments',
+                'users.id', '=', 'latest_enrollments.user_id'
+            )
+            ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
+            ->where('users.role', 'student')
+            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+
+        if ($level === 'shs') {
+            $query->whereIn('latest_enrollments.course_code', $shsStrands);
+        } elseif ($level === 'college') {
+            $query->whereNotIn('latest_enrollments.course_code', $shsStrands);
         }
 
-        // Section: Extracts only the Year Level (e.g., "1st Year")
-        if ($enrollment && !empty($enrollment->year_level)) {
-            $parts = explode('|', $enrollment->year_level);
-            $student->year_display = trim($parts[0]);
-        } else {
-            $student->year_display = 'N/A';
+        if ($activeYear) {
+            $query->where('latest_enrollments.year_level', 'like', '%' . $activeYear->year_name . '%');
         }
-        
-        // MATCHING YOUR LATEST SCREENSHOT:
-        // EMAIL column gets the full email
-        $student->display_email = $student->email;
-        
-        // USER ACCOUNT column gets the short username
-        $student->display_account = $student->username ?: 'N/A';
+
+        if ($filter === 'regular') {
+            $query->where('latest_enrollments.is_regular', true);
+        } elseif ($filter === 'irregular') {
+            $query->where('latest_enrollments.is_regular', false);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('users.first_name', 'like', "%{$search}%")
+                  ->orWhere('users.last_name', 'like', "%{$search}%")
+                  ->orWhere('users.email', 'like', "%{$search}%")
+                  ->orWhere('latest_enrollments.course_code', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->orderBy($sortField, $sortDirection)->paginate(10);
+
+        foreach ($students as $student) {
+            $student->program = $student->course_code ?: 'N/A';
+            if (!empty($student->year_level)) {
+                $parts = explode('|', $student->year_level);
+                $student->year_display = trim($parts[0]);
+            } else {
+                $student->year_display = 'N/A';
+            }
+            $student->display_email = $student->email;
+            $student->display_account = $student->username ?: 'N/A';
+        }
+
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        $totalStudents = (clone $query)->count();
+
+        return view('registrar.students.index', compact('students', 'pendingCount', 'search', 'filter', 'sortField', 'sortDirection', 'totalStudents', 'level'));
     }
-
-    $pendingCount = Enrollment::where('status', 'Pending')->count();
-
-    if (request()->routeIs('registrar.*')) {
-        return view('registrar.students.index', compact('students', 'pendingCount'));
-    }
-
-    return view('admin.students.index', compact('students', 'pendingCount'));
-}
 
     /**
      * Show the form for editing the specified student.

@@ -1,8 +1,44 @@
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-[#f8fafc] text-slate-700 antialiased;
+        background-attachment: fixed;
+    }
+
+    /* Premium Custom Scrollbar */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #dbeafe transparent;
+    }
+
+    *::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background: #dbeafe;
+        border-radius: 20px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+        background: #bfdbfe;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-600/20;
+    }
+
+    .card-white {
+        @apply bg-white border border-blue-50 rounded-[2rem] shadow-xl shadow-blue-900/5 overflow-hidden;
+    }
+}

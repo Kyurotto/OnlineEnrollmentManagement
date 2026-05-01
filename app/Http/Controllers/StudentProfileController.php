@@ -5,32 +5,62 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use App\Models\Payment;
 
 class StudentProfileController extends Controller
 {
-    /**
-     * Display the student's profile form.
-     */
-    public function edit(Request $request)
+    public function index()
+    {
+        $user = Auth::user();
+        
+        $payments = Payment::where('user_id', $user->id)
+                    ->latest()
+                    ->take(3)
+                    ->get()
+                    ->map(function ($record) {
+                        return [
+                            'amount' => $record->amount,
+                            'date' => $record->created_at->format('M d, Y h:i A'),
+                            'status' => $record->status,
+                        ];
+                    });
+
+        return view('student.profile.index', compact('user', 'payments'));
+    }
+
+    public function update(Request $request)
     {
         $user = Auth::user();
 
-        // Fetch payments for the activity section in the profile view
-        $paymentRecords = Payment::where('user_id', $user->id)
-                            ->latest()
-                            ->take(5)
-                            ->get();
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+        ]);
 
-        $payments = $paymentRecords->map(function ($record) {
-            return [
-                'id'      => $record->id,
-                'amount'  => $record->amount,
-                'date'    => $record->created_at->format('Y-m-d H:i:s'),
-                'status'  => $record->status,
-            ];
-        });
+        $user->update([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+        ]);
 
-        return view('student.profile', compact('payments'));
+        return back()->with('profile-updated', 'Profile updated successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return back()->with('password-updated', 'Password successfully updated.');
     }
 }

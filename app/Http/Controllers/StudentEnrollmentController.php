@@ -169,10 +169,25 @@ class StudentEnrollmentController extends Controller
 
     public function upload()
     {
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+        $user = Auth::user();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
 
+        $enrollment = Enrollment::where('user_id', $user->id)
+            ->where(function($q) use ($activeYear, $activeSemester) {
+                if (!$activeYear || !$activeSemester) return;
+                $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                  ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+            })
+            ->latest()
+            ->first();
+
+        // If no enrollment for current term, but they are an old student, allow upload
         if (!$enrollment) {
-            return redirect()->route('student.enrollment.create')->with('info', 'Please submit your enrollment application first.');
+            $isOldStudent = Enrollment::where('user_id', $user->id)->count() > 0;
+            if (!$isOldStudent) {
+                return redirect()->route('student.enrollment.create')->with('info', 'Please submit your enrollment application first.');
+            }
         }
 
         return view('student.enrollment_upload', compact('enrollment'));
@@ -180,10 +195,37 @@ class StudentEnrollmentController extends Controller
 
     public function storeUpload(Request $request)
     {
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+        $user = Auth::user();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
 
+        $enrollment = Enrollment::where('user_id', $user->id)
+            ->where(function($q) use ($activeYear, $activeSemester) {
+                if (!$activeYear || !$activeSemester) return;
+                $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                  ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+            })
+            ->latest()
+            ->first();
+
+        // If no enrollment record for this term yet (Old Student starting clearance)
         if (!$enrollment) {
-            return redirect()->route('student.enrollment.create')->with('error', 'No active enrollment record found.');
+            $isOldStudent = Enrollment::where('user_id', $user->id)->count() > 0;
+            if (!$isOldStudent) {
+                return redirect()->route('student.enrollment.create')->with('error', 'No active enrollment record found.');
+            }
+
+            // Create a shell record for Clearance (Step 3) tracking
+            $enrollment = Enrollment::create([
+                'user_id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'status' => 'Pending',
+                'year_level' => "Returning Student | " . ($activeSemester->name ?? 'New Semester') . " | " . ($activeYear->year_name ?? 'New Year'),
+                'semester_name' => $activeSemester->name ?? '',
+                'academic_year_name' => $activeYear->year_name ?? '',
+            ]);
         }
 
         $level = $enrollment->level;

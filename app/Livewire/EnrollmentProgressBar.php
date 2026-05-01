@@ -58,6 +58,7 @@ class EnrollmentProgressBar extends Component
         }
         
         $isFullyUploaded = false;
+        $isPartiallyUploaded = false;
         if ($anyEnrollment) {
             $docFields = $anyEnrollment->getDocumentFields();
             $uploadedCount = 0;
@@ -67,6 +68,7 @@ class EnrollmentProgressBar extends Component
                 }
             }
             $isFullyUploaded = ($uploadedCount === count($docFields));
+            $isPartiallyUploaded = ($uploadedCount > 0 && !$isFullyUploaded);
         }
 
         $isOldStudentWithMissingDocs = $isOldStudent;
@@ -83,9 +85,22 @@ class EnrollmentProgressBar extends Component
         $oldStudentStepsKeys = [];
 
         if ($isOldStudent) {
-            $isOnlineDocsDone = $isFullyUploaded;
-            $isPhysicalDocsDone = ($anyEnrollment && $anyEnrollment->physical_documents_received == 1);
-            $isCleared = ($anyEnrollment && $anyEnrollment->credentials_verified == 1);
+            // For Old Students, we check if they have a record for the CURRENT term
+            // If they don't, we start them fresh at Step 1 of the new cycle
+            $currentRecord = $isEnrollmentForCurrentTerm ? $latestEnrollment : null;
+            
+            $isOnlineDocsDone = false;
+            $isPartiallyDone = false;
+            if ($anyEnrollment) {
+                $docFields = $anyEnrollment->getDocumentFields();
+                $uploaded = 0;
+                foreach($docFields as $f => $l) { if(!empty($anyEnrollment->$f)) $uploaded++; }
+                $isOnlineDocsDone = ($uploaded === count($docFields));
+                $isPartiallyDone = ($uploaded > 0);
+            }
+
+            $isPhysicalDocsDone = ($currentRecord && $currentRecord->physical_documents_received == 1);
+            $isCleared = ($currentRecord && $currentRecord->credentials_verified == 1);
 
             $oldStudentStepsKeys = [
                 'online_docs',
@@ -96,11 +111,11 @@ class EnrollmentProgressBar extends Component
                 'enroll'
             ];
 
-            // 1. Online Docs
+            // 1. Online Docs - Can be "Pending" (ongoing) but doesn't block Step 2/3
             if ($isOnlineDocsDone) {
                 $steps['online_docs'] = 'green';
-            } else if ($anyEnrollment && !empty($anyEnrollment->promissory_note_path)) {
-                $steps['online_docs'] = 'ongoing'; // Promissory Note -> Ongoing
+            } else if ($isPartiallyDone) {
+                $steps['online_docs'] = 'ongoing'; // Shows as Pending/In-Progress
             } else {
                 $steps['online_docs'] = 'yellow';
             }
@@ -108,34 +123,34 @@ class EnrollmentProgressBar extends Component
             // 2. Physical Docs
             if ($isPhysicalDocsDone) {
                 $steps['physical_docs'] = 'green';
-            } else if ($anyEnrollment && !empty($anyEnrollment->promissory_note_path)) {
-                $steps['physical_docs'] = 'ongoing';
             } else {
-                $steps['physical_docs'] = 'yellow';
+                $steps['physical_docs'] = 'yellow'; // Always ready to receive
             }
 
-            // 3. Registrar Clearance
+            // 3. Registrar Clearance (Step 3) - The gate for Step 4
             if ($isCleared) {
                 $steps['registrar_clearance'] = 'green';
-            } else if ($anyEnrollment && !empty($anyEnrollment->promissory_note_path)) {
-                $steps['registrar_clearance'] = 'ongoing';
             } else {
-                $steps['registrar_clearance'] = 'yellow';
+                // Step 3 is Pending as long as Step 1 is started
+                $steps['registrar_clearance'] = ($isPartiallyDone || $isOnlineDocsDone) ? 'yellow' : 'grey';
             }
 
-            // 4. Application
-            if ($steps['registrar_clearance'] === 'green' || $steps['registrar_clearance'] === 'ongoing') {
-                if ($isEnrollmentForCurrentTerm && in_array($latestEnrollment->status, ['Pending', 'Approved', 'Paid', 'Enrolled'])) {
+            // 4. Application (Step 4) - ONLY if Step 3 is GREEN
+            if ($steps['registrar_clearance'] === 'green') {
+                // Check if they have ALREADY filled out the course selection (FULL form)
+                $hasFilledForm = ($currentRecord && !empty($currentRecord->course_code));
+                
+                if ($hasFilledForm) {
                     $steps['application'] = 'green';
                 } else {
-                    $steps['application'] = 'yellow'; 
+                    $steps['application'] = 'yellow'; // Ready to fill up
                 }
             } else {
                 $steps['application'] = 'grey'; 
             }
 
             // 5. Payment
-            if ($steps['application'] === 'green' || $steps['application'] === 'ongoing') {
+            if ($steps['application'] === 'green') {
                 if ($isEnrollmentForCurrentTerm && in_array($latestEnrollment->status, ['Paid', 'Enrolled'])) {
                     $steps['payment'] = 'green';
                 } else {
@@ -146,7 +161,7 @@ class EnrollmentProgressBar extends Component
             }
 
             // 6. Enroll
-            if ($steps['payment'] === 'green' || $steps['payment'] === 'ongoing') {
+            if ($steps['payment'] === 'green') {
                 if ($isEnrollmentForCurrentTerm && $latestEnrollment->status === 'Enrolled') {
                     $steps['enroll'] = 'green';
                 } else {
@@ -168,14 +183,10 @@ class EnrollmentProgressBar extends Component
 
             // Step 2: Online Docs
             if ($anyEnrollment) {
-                $hasGoodMoral = !empty($anyEnrollment->good_moral_path);
-                $hasPrimaryDocs = (!empty($anyEnrollment->form_137_path) && !empty($anyEnrollment->psa_path));
-                $hasPromissory = !empty($anyEnrollment->promissory_note_path);
-
-                if ($hasPromissory && !($hasGoodMoral && $hasPrimaryDocs)) {
-                    $steps['online_docs'] = 'ongoing'; // Promissory note gives 'Ongoing' yellow check
-                } else if ($hasGoodMoral || $hasPrimaryDocs) {
+                if ($isFullyUploaded) {
                     $steps['online_docs'] = 'green';
+                } else if ($isPartiallyUploaded || !empty($anyEnrollment->promissory_note_path)) {
+                    $steps['online_docs'] = 'ongoing';
                 } else if ($steps['application'] === 'green') {
                     $steps['online_docs'] = 'yellow';
                 }

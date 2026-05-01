@@ -15,8 +15,15 @@ class StudentDashboardController extends Controller
         $user = Auth::user();
 
         // 1. Fetch currently ACTIVE Semester and Year
-        $activeSemester = Semester::where('is_active', true)->first();
         $activeYear = AcademicYear::where('is_active', true)->first();
+        
+        // Ensure the active semester actually belongs to the active year
+        $activeSemester = null;
+        if ($activeYear) {
+            $activeSemester = Semester::where('is_active', true)
+                ->where('academic_year', $activeYear->year_name)
+                ->first();
+        }
 
         // 2. Check if student has a PENDING application for the CURRENT ACTIVE SEMESTER
         $hasPendingApplication = false;
@@ -92,53 +99,65 @@ class StudentDashboardController extends Controller
         }
 
         // 8. Logic for Progress Bar Steps (to be used for button visibility)
-        $isOldStudent = false;
-        if ($myEnrollments > 1) {
-            $isOldStudent = true;
-        } else {
-            $hasArchivedEnrollment = Enrollment::where('user_id', $user->id)
-                ->whereNotNull('archived_at')
-                ->exists();
-            if ($hasArchivedEnrollment) {
-                $isOldStudent = true;
-            } else {
-                // Check if they have an Enrolled status from a PREVIOUS term
-                $previousEnrolled = Enrollment::where('user_id', $user->id)
-                    ->where('status', 'Enrolled')
-                    ->get()
-                    ->filter(function($enrollment) use ($activeYear, $activeSemester) {
-                        if (!$activeYear || !$activeSemester) return true;
-                        return !(stripos((string)$enrollment->year_level, $activeYear->year_name) !== false && 
-                                 stripos((string)$enrollment->year_level, $activeSemester->name) !== false);
-                    });
-                $isOldStudent = $previousEnrolled->count() > 0;
-            }
-        }
-        $isStep1Done = false;
-        $isStep2Done = false;
-        $isStep3Done = false;
+        // A student is old if they have ANY historical record other than the one they are currently processing
+        $isOldStudent = Enrollment::where('user_id', $user->id)
+            ->where('id', '!=', $currentYearEnrollment->id ?? 0)
+            ->exists();
 
-        if ($isOldStudent && $latestEnrollment) {
-            // Step 1: Online Docs
-            $docFields = $latestEnrollment->getDocumentFields();
-            $uploadedCount = 0;
-            foreach ($docFields as $field => $label) {
-                if (!empty($latestEnrollment->$field)) {
-                    $uploadedCount++;
+        $isStep3Done = false;
+        // For Old Students, clearance must be checked against the CURRENT TERM enrollment
+        if ($isOldStudent) {
+            if ($activeYear && $activeSemester) {
+                $currentRecord = Enrollment::where('user_id', $user->id)
+                    ->where(function($q) use ($activeYear, $activeSemester) {
+                        $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                          ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                    })
+                    ->latest()
+                    ->first();
+                
+                if ($currentRecord) {
+                    $isStep3Done = ($currentRecord->credentials_verified == 1);
                 }
             }
-            $isStep1Done = ($uploadedCount === count($docFields));
-
-            // Step 2: Physical Docs
-            $isStep2Done = ($latestEnrollment->physical_documents_received == 1);
-
-            // Step 3: Registrar Clearance
-            $isStep3Done = ($latestEnrollment->credentials_verified == 1);
         }
         
         // Final flag for dashboard button: 
         // New student can always enroll. Old student must finish Step 3 (Clearance).
         $canEnrollNow = !$isOldStudent || $isStep3Done;
+
+        // 11. Fetch Payment Assessment Details (for visibility)
+        $assessment = null;
+        if ($currentYearEnrollment && $activeYear && $activeSemester) {
+            $level = strtolower($currentYearEnrollment->level ?? 'college');
+            $program = $currentYearEnrollment->course_code ?? 'all';
+            
+            // Robust year level extraction (e.g., "1st Year" -> "1")
+            $yearLevelDigit = 'all';
+            if (preg_match('/(\d+)/', $currentYearEnrollment->year_level, $matches)) {
+                $yearLevelDigit = $matches[1];
+            }
+            
+            $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
+            $assessment = \Illuminate\Support\Facades\Cache::get($cacheKey);
+            
+            if (!$assessment) {
+                // Fallback to global
+                $assessment = \Illuminate\Support\Facades\Cache::get("payment_assessment_{$level}_all_all", [
+                    'tuitionFee' => 0,
+                    'miscellaneousFees' => 0,
+                    'discountPercentage' => 0,
+                    'discountAmount' => 0,
+                ]);
+            }
+            
+            // Calculate final total
+            $subtotal = ($assessment['tuitionFee'] ?? 0) + ($assessment['miscellaneousFees'] ?? 0);
+            $percDisc = $subtotal * (($assessment['discountPercentage'] ?? 0) / 100);
+            $totalDisc = $percDisc + ($assessment['discountAmount'] ?? 0);
+            $assessment['finalTotal'] = max(0, $subtotal - $totalDisc);
+            $assessment['totalDiscount'] = $totalDisc;
+        }
 
         return view('dashboard', compact(
             'activeSemester',
@@ -150,7 +169,9 @@ class StudentDashboardController extends Controller
             'isEnrolledInActiveYear',
             'hasSubmitted',
             'existingEnrollment',
-            'canEnrollNow'
+            'canEnrollNow',
+            'isOldStudent',
+            'assessment'
         ));
     }
 }

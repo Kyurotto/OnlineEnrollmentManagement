@@ -73,40 +73,71 @@ class StudentPaymentManager extends Component
 
     public function loadAssessment()
     {
-        // Load fees from cache using the same key as the cashier sets
-        $cacheKey = 'payment_assessment_' . $this->level;
-        $assessment = Cache::get($cacheKey, [
-            'tuitionFee' => 0,
-            'miscellaneousFees' => 0,
-        ]);
+        $user = Auth::user();
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
+        $currentEnrollment = Enrollment::where('user_id', $user->id)
+            ->when($activeYear, function($query) use ($activeYear) {
+                return $query->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%');
+            })
+            ->when($activeSemester, function($query) use ($activeSemester) {
+                return $query->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+            })
+            ->latest()
+            ->first();
+
+        $latestEnrollment = $currentEnrollment ?? Enrollment::where('user_id', $user->id)->latest()->first();
+        
+        $program = 'all';
+        $yearLevelNum = 'all';
+
+        if ($latestEnrollment) {
+            $program = $latestEnrollment->course_code;
+            // Extract the first number from year_level (e.g., "1st Year" -> 1, "11" -> 11)
+            if (preg_match('/\d+/', $latestEnrollment->year_level, $matches)) {
+                $yearLevelNum = $matches[0];
+            }
+        }
+
+        // Try specific cache key: payment_assessment_{level}_{program}_{yearLevel}
+        $cacheKey = "payment_assessment_{$this->level}_{$program}_{$yearLevelNum}";
+        $assessment = Cache::get($cacheKey);
+
+        if (!$assessment) {
+            // Fallback: Global for level
+            $assessment = Cache::get("payment_assessment_{$this->level}_all_all", [
+                'tuitionFee' => 0,
+                'miscellaneousFees' => 0,
+                'discountPercentage' => 0,
+                'discountAmount' => 0,
+            ]);
+        }
 
         $this->tuitionFee = (float)($assessment['tuitionFee'] ?? 0);
         $this->miscellaneousFees = (float)($assessment['miscellaneousFees'] ?? 0);
+        
+        // Calculate pre-set discounts from config
+        $subtotal = $this->tuitionFee + $this->miscellaneousFees;
+        $configDiscPerc = (float) ($assessment['discountPercentage'] ?? 0);
+        $configDiscFixed = (float) ($assessment['discountAmount'] ?? 0);
+        $presetDiscount = ($subtotal * ($configDiscPerc / 100)) + $configDiscFixed;
 
-// Load cashier-applied discount from enrollment
-$user = Auth::user();
-$activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
-$activeSemester = \App\Models\Semester::where('is_active', true)->first();
+        // Load cashier-applied discount from enrollment
+        $this->cashierDiscount = (float) ($latestEnrollment->cashier_discount ?? 0);
+        
+        // Use preset if no specific cashier discount is set
+        if ($this->cashierDiscount == 0 && $presetDiscount > 0) {
+            $this->cashierDiscount = $presetDiscount;
+        }
 
-$currentEnrollment = Enrollment::where('user_id', $user->id)
-    ->when($activeYear, function($query) use ($activeYear) {
-        return $query->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%');
-    })
-    ->when($activeSemester, function($query) use ($activeSemester) {
-        return $query->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
-    })
-    ->latest()
-    ->first();
+        $this->totalAssessment = max(0, $subtotal - $this->cashierDiscount);
 
-$latestEnrollment = $currentEnrollment ?? Enrollment::where('user_id', $user->id)->latest()->first();
-$this->cashierDiscount = (float) ($latestEnrollment->cashier_discount ?? 0);
-$this->totalAssessment = max(0, $this->tuitionFee + $this->miscellaneousFees - $this->cashierDiscount);
-
-// Calculate total payments made by student
+        // Calculate total payments made by student
         $this->totalPaymentsMade = (float)Payment::where('user_id', $user->id)
             ->where('status', 'Paid')
-            ->when($currentEnrollment, function($query) use ($currentEnrollment) {
-                return $query->where('application_id', $currentEnrollment->id);
+            ->when($latestEnrollment, function($query) use ($latestEnrollment) {
+                return $query->where('application_id', $latestEnrollment->id);
             })
             ->sum('amount');
     }

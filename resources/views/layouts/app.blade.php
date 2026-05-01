@@ -11,11 +11,10 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <!-- Fixed dark background with premium blurry glows -->
-        <div class="fixed inset-0 overflow-hidden pointer-events-none" style="background: linear-gradient(135deg, #060d1a 0%, #0d1f3c 40%, #1a3a6e 100%); z-index: -1;">
-            <div class="absolute top-[20%] left-[10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
-            <div class="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-emerald-500/10 blur-[120px] rounded-full"></div>
-            <div class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-purple-500/5 blur-[150px] rounded-full"></div>
+        <!-- Fixed light background with premium blurry glows -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none bg-slate-50" style="z-index: -1;">
+            <div class="absolute top-[10%] left-[5%] w-[40%] h-[40%] bg-blue-200/40 blur-[120px] rounded-full animate-pulse"></div>
+            <div class="absolute bottom-[10%] right-[5%] w-[40%] h-[40%] bg-blue-100/40 blur-[120px] rounded-full animate-pulse" style="animation-delay: 2s;"></div>
         </div>
         <div class="min-h-screen" style="position: relative; z-index: 1;">
             @include('layouts.navigation')

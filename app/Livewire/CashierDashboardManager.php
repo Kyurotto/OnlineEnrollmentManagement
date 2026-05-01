@@ -23,18 +23,20 @@ class CashierDashboardManager extends Component
             'students_paid_today' => Payment::where('status', 'Paid')->whereDate('payment_date', Carbon::today())->distinct('user_id')->count('user_id'),
         ];
 
-        // 2. Fetch Payments for Today (Paid only)
+        // 2. Fetch Payments for Today (Paid only) - Limit to latest 10 for dashboard performance
         $paymentsToday = Payment::with('user')
             ->where('status', 'Paid')
             ->whereDate('payment_date', Carbon::today())
             ->latest('updated_at')
+            ->take(10)
             ->get();
 
-        // 3. Fetch Payments for Yesterday (Paid only)
+        // 3. Fetch Payments for Yesterday (Paid only) - Limit to latest 10
         $paymentsYesterday = Payment::with('user')
             ->where('status', 'Paid')
             ->whereDate('payment_date', Carbon::yesterday())
             ->latest('updated_at')
+            ->take(10)
             ->get();
 
         return view('dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));

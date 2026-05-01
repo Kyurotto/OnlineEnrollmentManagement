@@ -79,22 +79,22 @@
                 <tbody class="divide-y divide-white/5">
                     @forelse($payments as $payment)
                     <tr class="hover:bg-emerald-500/[0.03] transition-all group">
-                        <td class="py-5 px-5 font-mono text-[10px] text-white/20 italic">#{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</td>
+                        <td class="py-5 px-5 font-mono text-[10px] text-white/20">#{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</td>
                         <td class="py-5 px-5">
                             <div class="font-black text-white uppercase tracking-tight group-hover:text-emerald-400 transition-colors text-xs">{{ optional($payment->user)->name ?? 'Unknown student' }}</div>
-                            <div class="text-[10px] text-white/20 font-bold uppercase tracking-widest mt-1 italic">{{ optional($payment->user)->email }}</div>
+                            <div class="text-[10px] text-white/20 font-bold uppercase tracking-widest mt-1">{{ optional($payment->user)->email }}</div>
                         </td>
                         <td class="py-5 px-5">
                             @if(optional($payment->application)->course_code)
                                 <span class="font-black text-white/60 uppercase tracking-widest text-[10px] block leading-tight">{{ $payment->application->course_code }}</span>
                                 <span class="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1 block leading-tight">{{ $payment->application->year_level }}</span>
                             @else
-                                <span class="text-white/10 italic text-[10px] font-black">NOT DOCUMENTED</span>
+                                <span class="text-white/10 text-[10px] font-black">NOT DOCUMENTED</span>
                             @endif
                         </td>
                         <td class="py-5 px-5">
                             <span class="text-white/60 font-black uppercase tracking-[0.1em] text-[10px] block">{{ $payment->created_at->format('M d, Y') }}</span>
-                            <span class="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1 italic">{{ $payment->payment_method ?? 'Cash' }}</span>
+                            <span class="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1">{{ $payment->payment_method ?? 'Cash' }}</span>
                         </td>
                         <td class="py-5 px-5 text-right">
                             <span class="text-emerald-400 font-black tracking-tighter text-sm">₱{{ number_format($payment->amount, 2) }}</span>
@@ -125,7 +125,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="py-24 text-center">
-                            <p class="text-xs font-black text-white/10 uppercase tracking-[0.4em] italic leading-loose">No payment records found.</p>
+                            <p class="text-xs font-black text-white/10 uppercase tracking-[0.4em] leading-loose">No payment records found.</p>
                         </td>
                     </tr>
                     @endforelse
@@ -148,7 +148,7 @@
             <div class="p-10">
                 <div class="mb-10 text-center">
                     <h3 class="text-xl font-black text-white uppercase tracking-tight leading-none">{{ $isEditMode ? 'Edit Payment' : 'New Payment' }}</h3>
-                    <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-2 italic shadow-sm leading-none">Payment Information</p>
+                    <p class="text-white/30 text-xs font-black uppercase tracking-[0.3em] mt-2 shadow-sm leading-none">Payment Information</p>
                 </div>
 
                 <form wire:submit.prevent="{{ $isEditMode ? 'update' : 'store' }}" class="space-y-6">
@@ -172,7 +172,7 @@
                         </div>
                         <div class="space-y-2 hover:translate-y-[-2px] transition-transform">
                             <label class="block text-xs font-black text-white/40 uppercase tracking-[0.2em] ml-1">Payment Method</label>
-                            <select wire:model="payment_type" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm font-bold tracking-wider focus:border-emerald-500/50 appearance-none transition-all cursor-pointer shadow-inner uppercase font-black tracking-widest" required>
+                            <select wire:model="payment_type" class="w-full bg-white/5 text-white border border-white/10 py-4 px-6 rounded-xl outline-none placeholder-white/10 text-sm focus:border-emerald-500/50 appearance-none transition-all cursor-pointer shadow-inner uppercase font-black tracking-widest" required>
                                 @foreach(['Cash', 'Gcash', 'PayMaya', 'Bank Transfer'] as $method)
                                     <option value="{{ $method }}" class="bg-[#0d1f3c]">{{ $method }}</option>
                                 @endforeach

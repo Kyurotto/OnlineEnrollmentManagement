@@ -14,17 +14,29 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // 0. Get Active Academic Year
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYearName = $activeYear ? $activeYear->year_name : null;
+
         // 1. Gather Overview Statistics
+        $studentsCountQuery = User::where('role', 'student')
+                             ->whereHas('application', function($q) use ($activeYearName) {
+                                 $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+                                 if ($activeYearName) {
+                                     $q->where('year_level', 'like', '%' . $activeYearName . '%');
+                                 }
+                             });
+        $studentsCount = $studentsCountQuery->count();
+
         $stats = [
             'active_courses' => Course::where('type', 'course')->count(),
-
-            'students'       => User::where('role', 'student')
-                                    ->whereIn('id', Enrollment::whereIn('status', ['Enrolled', 'Approved'])->pluck('user_id')->toArray())
-                                    ->count(),
-
+            'students'       => $studentsCount,
             'total_payments' => Payment::count(),
-            'applications'   => Enrollment::where('status', 'Pending')->count(),
-            'enrolled'       => Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count(),
+            'applications'   => Enrollment::where('status', 'Pending')
+                                        ->when($activeYearName, function($q) use ($activeYearName) {
+                                            $q->where('year_level', 'like', '%' . $activeYearName . '%');
+                                        })->count(),
+            'enrolled'       => $studentsCount,
         ];
 
         // 2. Get the Count for the Notification Badge (Only Pending)
@@ -77,9 +89,14 @@ class DashboardController extends Controller
 
         // Calculate SHS vs College enrollment counts
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-        $shs_count = Enrollment::whereIn('course_code', $shsStrands)->count();
-        $college_count = Enrollment::whereNotIn('course_code', $shsStrands)->count();
-        $total_count = Enrollment::count();
+        $baseQuery = Enrollment::whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
+            ->when($activeYearName, function($q) use ($activeYearName) {
+                $q->where('year_level', 'like', '%' . $activeYearName . '%');
+            });
+
+        $shs_count = (clone $baseQuery)->whereIn('course_code', $shsStrands)->count();
+        $college_count = (clone $baseQuery)->whereNotIn('course_code', $shsStrands)->count();
+        $total_count = (clone $baseQuery)->count();
 
         return view('dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange', 'shs_count', 'college_count', 'total_count'));
     }
@@ -90,23 +107,29 @@ class DashboardController extends Controller
     public function getPendingCounts()
     {
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYearName = $activeYear ? $activeYear->year_name : null;
+
+        $baseQuery = Enrollment::when($activeYearName, function($q) use ($activeYearName) {
+            $q->where('year_level', 'like', '%' . $activeYearName . '%');
+        });
 
         return response()->json([
-            'total_pending' => Enrollment::where('status', 'Pending')->count(),
-            'shs_pending' => Enrollment::whereIn('course_code', $shsStrands)
+            'total_pending' => (clone $baseQuery)->where('status', 'Pending')->count(),
+            'shs_pending' => (clone $baseQuery)->whereIn('course_code', $shsStrands)
                                        ->where('status', 'Pending')
                                        ->count(),
-            'college_pending' => Enrollment::whereNotIn('course_code', $shsStrands)
+            'college_pending' => (clone $baseQuery)->whereNotIn('course_code', $shsStrands)
                                           ->where('status', 'Pending')
                                           ->count(),
-            'shs_approved' => Enrollment::whereIn('course_code', $shsStrands)
+            'shs_approved' => (clone $baseQuery)->whereIn('course_code', $shsStrands)
                                         ->where('status', 'Approved')
                                         ->count(),
-            'college_approved' => Enrollment::whereNotIn('course_code', $shsStrands)
+            'college_approved' => (clone $baseQuery)->whereNotIn('course_code', $shsStrands)
                                            ->where('status', 'Approved')
                                            ->count(),
-            'shs_total' => Enrollment::whereIn('course_code', $shsStrands)->count(),
-            'college_total' => Enrollment::whereNotIn('course_code', $shsStrands)->count(),
+            'shs_total' => (clone $baseQuery)->whereIn('course_code', $shsStrands)->count(),
+            'college_total' => (clone $baseQuery)->whereNotIn('course_code', $shsStrands)->count(),
         ]);
     }
 
@@ -119,11 +142,18 @@ class DashboardController extends Controller
         $tvlStrands = ['HE', 'ICT'];
         $allShs = array_merge($acadStrands, $tvlStrands);
 
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYearName = $activeYear ? $activeYear->year_name : null;
+
+        $baseQuery = Enrollment::when($activeYearName, function($q) use ($activeYearName) {
+            $q->where('year_level', 'like', '%' . $activeYearName . '%');
+        });
+
         return [
-            'acad_count' => Enrollment::whereIn('course_code', $acadStrands)->count(),
-            'tvl_count' => Enrollment::whereIn('course_code', $tvlStrands)->count(),
-            'college_count' => Enrollment::whereNotIn('course_code', $allShs)->count(),
-            'shs_total' => Enrollment::whereIn('course_code', $allShs)->count(),
+            'acad_count' => (clone $baseQuery)->whereIn('course_code', $acadStrands)->count(),
+            'tvl_count' => (clone $baseQuery)->whereIn('course_code', $tvlStrands)->count(),
+            'college_count' => (clone $baseQuery)->whereNotIn('course_code', $allShs)->count(),
+            'shs_total' => (clone $baseQuery)->whereIn('course_code', $allShs)->count(),
         ];
     }
 }

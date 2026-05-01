@@ -1,16 +1,41 @@
+@php
+    $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+    $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+    
+    $isHistorical = !empty($application->archived_at);
+    
+    if (!$isHistorical && $activeYear && $activeSemester) {
+        // Check if it's a legacy record by comparing year_level parts
+        $isHistorical = !str_contains($application->year_level, $activeYear->year_name) || 
+                       !str_contains($application->year_level, $activeSemester->name);
+    }
+@endphp
 <x-layouts.registrar title="Application Details">
-    <div class="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
         <div class="mb-10 flex items-center justify-between">
             <div class="flex items-center gap-6">
-                <a href="{{ route('registrar.applications.index') }}" class="group/back flex items-center justify-center w-12 h-12 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all active:scale-95 shadow-xl">
+                @php
+                    $backUrl = route('registrar.applications.index');
+                    if ($isHistorical) {
+                        $parts = array_map('trim', explode('|', $application->year_level ?? ''));
+                        if (count($parts) >= 3) {
+                            $folder = $parts[1] . '|' . $parts[2];
+                            $backUrl = route('registrar.archives.index', ['selectedFolder' => $folder]);
+                        } else {
+                            $backUrl = route('registrar.archives.index');
+                        }
+                    }
+                @endphp
+                <a href="{{ $backUrl }}" class="group/back flex items-center justify-center w-12 h-12 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-cyan-400 hover:border-cyan-500/30 transition-all active:scale-95 shadow-xl">
                     <svg class="w-5 h-5 group-hover/back:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
                 </a>
                 <div>
-                    <h2 class="text-3xl font-black text-white tracking-tight uppercase italic">Application Details</h2>
-                    <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-1 italic">Review Process • ID #{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</p>
+                    <h2 class="text-3xl font-black text-white tracking-tight uppercase">Application Details</h2>
+                    <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-1">Review Process • ID #{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</p>
                 </div>
             </div>
-            @if (in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
+
+            @if (!$isHistorical && in_array(strtolower($application->status), ['pending', 'enrolled', 'paid']))
                 <div class="hidden md:flex items-center gap-4">
                     <!-- Voucher Button -->
                     <div class="relative group/voucher">
@@ -21,27 +46,24 @@
                         </button>
 
                         <!-- Voucher Dropdown Menu -->
-                        <div class="absolute right-0 mt-2 w-48 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl opacity-0 invisible group-hover/voucher:opacity-100 group-hover/voucher:visible transition-all duration-200 z-50">
+                        <div class="absolute right-0 mt-2 w-48 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl opacity-0 invisible group-hover/voucher:opacity-100 group-hover/voucher:visible transition-all duration-200 z-50 overflow-hidden">
                             @if($application->voucher_type)
-                                <div class="p-3 border-b border-white/5">
+                                <div class="p-3 bg-white/5 border-b border-white/5">
                                     <p class="text-[9px] font-black text-white/40 uppercase tracking-wider mb-2">Current Voucher</p>
-                                    <div class="flex items-center gap-2 p-3 rounded-xl {{ $application->voucher_type === 'free_tuition' ? 'bg-green-500/10 border border-green-500/20' : 'bg-yellow-500/10 border border-yellow-500/20' }}">
-                                        <svg class="w-4 h-4 {{ $application->voucher_type === 'free_tuition' ? 'text-green-400' : 'text-yellow-400' }}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
-                                        <span class="text-[10px] font-bold {{ $application->voucher_type === 'free_tuition' ? 'text-green-400' : 'text-yellow-400' }}">
+                                    <div class="flex items-center gap-2 p-2 rounded-xl {{ $application->voucher_type === 'free_tuition' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400' }}">
+                                        <span class="text-[10px] font-black uppercase tracking-widest">
                                             {{ $application->voucher_type === 'free_tuition' ? 'Free Tuition' : 'Discounted' }}
                                         </span>
                                     </div>
                                 </div>
                             @endif
-                            <button wire:click="removeVoucher({{ $application->id }})" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 transition-colors">
+                            <button onclick="applyVoucher('remove')" class="w-full text-left px-4 py-4 text-[10px] font-black uppercase tracking-widest text-rose-400 hover:bg-rose-500/10 transition-colors border-b border-white/5">
                                 Remove Voucher
                             </button>
-                            <button wire:click="applyVoucher({{ $application->id }}, 'free_tuition')" class="w-full text-left px-4 py-3 text-[10px] font-bold text-green-400 hover:bg-green-500/10 transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                            <button onclick="applyVoucher('free_tuition')" class="w-full text-left px-4 py-4 text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/10 transition-colors border-b border-white/5 flex items-center gap-2">
                                 Free Tuition
                             </button>
-                            <button wire:click="applyVoucher({{ $application->id }}, 'discounted')" class="w-full text-left px-4 py-3 text-[10px] font-bold text-yellow-400 hover:bg-yellow-500/10 transition-colors flex items-center gap-2 border-t border-white/5">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                            <button onclick="applyVoucher('discounted')" class="w-full text-left px-4 py-4 text-[10px] font-black uppercase tracking-widest text-amber-400 hover:bg-amber-500/10 transition-colors flex items-center gap-2">
                                 Discounted
                             </button>
                         </div>
@@ -63,6 +85,41 @@
                         </button>
                     </form>
                 </div>
+
+                <script>
+                    function applyVoucher(type) {
+                        const url = type === 'remove' 
+                            ? "{{ route('registrar.applications.remove-voucher', $application->id) }}"
+                            : "{{ route('registrar.applications.apply-voucher', $application->id) }}";
+                        
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: type !== 'remove' ? JSON.stringify({ voucher_type: type }) : null
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert(data.message || 'Something went wrong');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                    }
+                </script>
+            @elseif($isHistorical)
+                <div class="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Historical Record
+                </div>
             @endif
         </div>
 
@@ -80,11 +137,11 @@
                         <div class="grid grid-cols-1 gap-8 bg-white/[0.02] border border-white/5 rounded-[40px] p-10 space-y-6">
                             {{-- Full Name Section --}}
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Full Name</span>
+                                <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Full Name</span>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-xl font-black text-white uppercase italic tracking-tight">{{ $application->last_name ?? 'N/A' }}, {{ $application->first_name ?? 'N/A' }} {{ $application->middle_name ?? '' }}</span>
+                                    <span class="text-xl font-black text-white uppercase tracking-tight">{{ $application->last_name ?? 'N/A' }}, {{ $application->first_name ?? 'N/A' }} {{ $application->middle_name ?? '' }}</span>
                                     @if($application->extension)
-                                    <span class="text-sm font-bold text-white/40 italic">{{ $application->extension }}</span>
+                                    <span class="text-sm font-bold text-white/40">{{ $application->extension }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -92,19 +149,19 @@
                             {{-- Basic Information --}}
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-white/5">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Gender</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Gender</span>
                                     <span class="text-sm font-bold text-white/60 capitalize">{{ $application->gender ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Birth Date</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Birth Date</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->birth_date ? \Carbon\Carbon::parse($application->birth_date)->format('M d, Y') : 'N/A' }}</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Age</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Age</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->age ?? 'N/A' }} Years</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">LRN</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">LRN</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->lrn ?? 'N/A' }}</span>
                                 </div>
                             </div>
@@ -112,11 +169,11 @@
                             {{-- Religion & Church --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Religion</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Religion</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->religion ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Religious Affiliation</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Religious Affiliation</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->religion_church ?? 'N/A' }}</span>
                                 </div>
                             </div>
@@ -124,15 +181,15 @@
                             {{-- Contact & Email --}}
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/5">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Email Address</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Email Address</span>
                                     <span class="text-sm font-bold text-white/60 lowercase">{{ $application->email ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Contact Number</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Contact Number</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->contact ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Facebook Account</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Facebook Account</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->facebook_account ?? 'N/A' }}</span>
                                 </div>
                             </div>
@@ -140,11 +197,11 @@
                             {{-- Birth & Current Address --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Birthplace</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Birthplace</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->birthplace ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Current Address</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Current Address</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->address_full ?? 'N/A' }}</span>
                                 </div>
                             </div>
@@ -152,9 +209,9 @@
                             {{-- Educational Background (SHS Only) --}}
                             @if($application->level === 'shs')
                             <div class="pt-6 border-t border-white/5 space-y-6">
-                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic">Educational Background</h4>
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em]">Educational Background</h4>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Junior High School Attended</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Junior High School Attended</span>
                                     <span class="text-sm font-bold text-white/60">{{ $application->junior_high_school ?? 'N/A' }}</span>
                                 </div>
                             </div>
@@ -162,14 +219,14 @@
 
                             {{-- Family Information --}}
                             <div class="pt-6 border-t border-white/5 space-y-6">
-                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic">Family Background</h4>
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em]">Family Background</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Father's Name</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Father's Name</span>
                                         <span class="text-sm font-bold text-white/60">{{ $application->father_name ?? 'N/A' }}</span>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Mother's Maiden Name</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Mother's Maiden Name</span>
                                         <span class="text-sm font-bold text-white/60">{{ $application->mother_maiden_name ?? 'N/A' }}</span>
                                     </div>
                                 </div>
@@ -178,11 +235,11 @@
                                 @if($application->guardian_name)
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Guardian's Name</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Guardian's Name</span>
                                         <span class="text-sm font-bold text-white/60">{{ $application->guardian_name ?? 'N/A' }}</span>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Guardian's Contact</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Guardian's Contact</span>
                                         <span class="text-sm font-bold text-white/60">{{ $application->guardian_contact ?? 'N/A' }}</span>
                                     </div>
                                 </div>
@@ -192,9 +249,9 @@
                             {{-- Health Information --}}
                             @if($application->health_concerns)
                             <div class="pt-6 border-t border-white/5 space-y-6">
-                                <h4 class="text-[10px] font-black text-pink-400/60 uppercase tracking-[0.2em] italic">Health Information</h4>
+                                <h4 class="text-[10px] font-black text-pink-400/60 uppercase tracking-[0.2em]">Health Information</h4>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Health Concerns / Medical Issues</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Health Concerns / Medical Issues</span>
                                     <p class="text-sm font-bold text-white/60 leading-relaxed">{{ $application->health_concerns }}</p>
                                 </div>
                             </div>
@@ -211,14 +268,14 @@
                         <div class="bg-cyan-500/5 border border-cyan-500/10 rounded-[40px] p-10 space-y-10 h-full flex flex-col justify-start shadow-inner">
                             {{-- Strand/Program --}}
                             <div class="flex flex-col gap-2">
-                                <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest italic">Strand / Program</span>
-                                <span class="text-3xl font-black text-white uppercase italic tracking-tighter leading-tight">{{ $application->course_code ?? 'N/A' }}</span>
+                                <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest">Strand / Program</span>
+                                <span class="text-3xl font-black text-white uppercase tracking-tighter leading-tight">{{ $application->course_code ?? 'N/A' }}</span>
                                 <span class="text-[10px] font-bold text-white/30 uppercase tracking-wider">{{ $application->course?->course_description ?? '' }}</span>
                             </div>
 
                             {{-- Year Level --}}
                             <div class="pt-6 border-t border-cyan-500/10">
-                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic mb-4">Academic Information</h4>
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] mb-4">Academic Information</h4>
                                 <div class="grid grid-cols-1 gap-6">
                                     @php
                                         // Parse year_level which is formatted as "Year | Semester | Academic Year"
@@ -228,22 +285,22 @@
                                         $academicYear = $yearParts[2] ?? 'N/A';
                                     @endphp
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Year Level</span>
-                                        <span class="text-lg font-black text-white uppercase italic">{{ $yearLevel }}</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Year Level</span>
+                                        <span class="text-lg font-black text-white uppercase">{{ $yearLevel }}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Semester & Academic Year --}}
                             <div class="pt-6 border-t border-cyan-500/10">
-                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic mb-4">Schedule Information</h4>
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] mb-4">Schedule Information</h4>
                                 <div class="grid grid-cols-2 gap-6">
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Semester</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Semester</span>
                                         <span class="text-sm font-bold text-white/60">{{ $semester }}</span>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Academic Year</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Academic Year</span>
                                         <span class="text-sm font-bold text-white/60">{{ $academicYear }}</span>
                                     </div>
                                 </div>
@@ -251,17 +308,17 @@
 
                             {{-- Status --}}
                             <div class="pt-6 border-t border-cyan-500/10">
-                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic mb-4">Application Status</h4>
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] mb-4">Application Status</h4>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Status</span>
-                                    <span class="text-lg font-black text-cyan-400 uppercase tracking-[0.1em] italic">{{ $application->status ?? 'N/A' }}</span>
+                                    <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Status</span>
+                                    <span class="text-lg font-black text-cyan-400 uppercase tracking-[0.1em]">{{ $application->status ?? 'N/A' }}</span>
                                 </div>
                             </div>
 
                             {{-- Voucher Status --}}
                             @if($application->voucher_type)
                             <div class="pt-6 border-t border-cyan-500/10">
-                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic mb-4">Voucher Information</h4>
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] mb-4">Voucher Information</h4>
                                 <div class="flex items-center gap-3 p-4 rounded-2xl {{ $application->voucher_type === 'free_tuition' ? 'bg-green-500/10 border border-green-500/20' : 'bg-yellow-500/10 border border-yellow-500/20' }}">
                                     <svg class="w-6 h-6 flex-shrink-0 {{ $application->voucher_type === 'free_tuition' ? 'text-green-400' : 'text-yellow-400' }}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
                                     <div>
@@ -276,15 +333,15 @@
 
                             {{-- Application Timeline --}}
                             <div class="pt-6 border-t border-cyan-500/10">
-                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] italic mb-4">Timeline</h4>
+                                <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] mb-4">Timeline</h4>
                                 <div class="grid grid-cols-1 gap-4">
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Submitted Date</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Submitted Date</span>
                                         <span class="text-sm font-bold text-white/60">{{ $application->created_at ? $application->created_at->format('F d, Y - g:i A') : 'N/A' }}</span>
                                     </div>
                                     @if($application->updated_at && $application->updated_at->ne($application->created_at))
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">Last Updated</span>
+                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Last Updated</span>
                                         <span class="text-sm font-bold text-white/60">{{ $application->updated_at->format('F d, Y - g:i A') }}</span>
                                     </div>
                                     @endif
@@ -308,7 +365,7 @@
                             {{ $isSHS ? 'SHS Documents' : 'College Documents' }}
                         </span>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-8">
                         @php
                             $isSHS = in_array($application->course_code, ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
                             $docs = $isSHS
@@ -363,7 +420,7 @@
                                     </a>
                                 @else
                                     <div class="w-full h-44 rounded-[32px] bg-rose-500/5 border-2 border-dashed border-rose-500/10 flex flex-col items-center justify-center opacity-40">
-                                        <span class="text-[8px] font-black text-rose-500 tracking-[0.4em] italic uppercase">Missing</span>
+                                        <span class="text-[8px] font-black text-rose-500 tracking-[0.4em] uppercase">Missing</span>
                                     </div>
                                 @endif
                             </div>
@@ -381,7 +438,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-amber-500/5 border border-amber-500/10 rounded-[40px] p-10">
                         <div class="lg:col-span-1 space-y-4">
-                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Note Attachment</span>
+                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Note Attachment</span>
                             @if($application->promissory_note_path)
                                 @php
                                     $noteUrl = route('document.show', ['path' => $application->promissory_note_path]);
@@ -404,15 +461,15 @@
                                 </a>
                             @else
                                 <div class="p-6 rounded-3xl border border-dashed border-white/5 bg-white/[0.02] flex items-center justify-center">
-                                    <span class="text-[8px] font-black text-white/20 uppercase tracking-widest italic">No File Attached</span>
+                                    <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">No File Attached</span>
                                 </div>
                             @endif
                         </div>
 
                         <div class="lg:col-span-2 space-y-4">
-                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest italic">Student's Explanation</span>
+                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Student's Explanation</span>
                             <div class="p-8 rounded-3xl bg-white/[0.03] border border-white/5 min-h-[100px]">
-                                <p class="text-xs text-white/70 leading-relaxed italic">
+                                <p class="text-xs text-white/70 leading-relaxed">
                                     {{ $application->promissory_reason ?? 'No explanation provided.' }}
                                 </p>
                             </div>

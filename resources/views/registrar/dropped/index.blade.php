@@ -12,9 +12,16 @@
         @endif
 
         {{-- Page Header --}}
-        <div>
-            <h1 class="text-3xl font-black text-white uppercase italic tracking-tight">Dropped Students Report</h1>
-            <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Official Drop & Withdrawal Registry — Penalty & Financial Summary</p>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+                <h1 class="text-3xl font-black text-white uppercase tracking-tight">Dropped Students Report</h1>
+                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Official Drop & Withdrawal Registry — Penalty & Financial Summary</p>
+            </div>
+            <a href="{{ route($isAdmin ? 'admin.reports.dropped.print' : 'registrar.reports.dropped.print') }}" target="_blank"
+                class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-all text-[10px] font-black uppercase tracking-widest shadow-xl shadow-rose-500/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                Print PDF
+            </a>
         </div>
 
         {{-- Stats Row --}}
@@ -42,7 +49,7 @@
         <div class="glass-card rounded-[28px] border border-white/5 p-8">
             <div class="flex items-center gap-2 mb-6">
                 <span class="w-1 h-4 rounded-full bg-purple-400"></span>
-                <h2 class="text-xs font-black text-white uppercase tracking-[0.3em] italic">Drop Reason Breakdown</h2>
+                <h2 class="text-xs font-black text-white uppercase tracking-[0.3em]">Drop Reason Breakdown</h2>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 @foreach($reasonSummary as $item)
@@ -72,7 +79,7 @@
             <div class="px-8 py-6 border-b border-white/5 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-1 h-4 rounded-full bg-rose-400"></span>
-                    <h2 class="text-xs font-black text-white uppercase tracking-[0.3em] italic">Officially Dropped / Withdrawn</h2>
+                    <h2 class="text-xs font-black text-white uppercase tracking-[0.3em]">Officially Dropped / Withdrawn</h2>
                 </div>
                 <span class="text-[9px] font-black text-rose-400/60 uppercase tracking-widest">{{ $officiallyDropped->count() }} record(s)</span>
             </div>
@@ -178,7 +185,7 @@
             <div class="px-8 py-6 border-b border-white/5 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-1 h-4 rounded-full bg-orange-400"></span>
-                    <h2 class="text-xs font-black text-white uppercase tracking-[0.3em] italic">At-Risk Students</h2>
+                    <h2 class="text-xs font-black text-white uppercase tracking-[0.3em]">At-Risk Students</h2>
                     <span class="text-[9px] text-white/30 font-bold normal-case tracking-normal">≥5 absences or no payment in 30+ days</span>
                 </div>
                 <span class="text-[9px] font-black text-orange-400/60 uppercase tracking-widest">{{ $atRiskStudents->count() }} flagged</span>
@@ -244,7 +251,7 @@
                                             <div class="relative z-10 w-full max-w-sm bg-[#0f0f1a] border border-white/10 rounded-[28px] shadow-2xl p-8 space-y-5 animate-in fade-in zoom-in-95 duration-200">
                                                 <div>
                                                     <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Mark as Dropped</p>
-                                                    <h3 class="text-lg font-black text-white uppercase italic mt-0.5">{{ $s->name }}</h3>
+                                                    <h3 class="text-lg font-black text-white uppercase mt-0.5">{{ $s->name }}</h3>
                                                 </div>
 
                                                 <form action="{{ route('registrar.dropped.mark', $s->enrollment_id) }}" method="POST" class="space-y-4">
