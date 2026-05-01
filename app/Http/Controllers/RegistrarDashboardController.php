@@ -60,9 +60,10 @@ class RegistrarDashboardController extends Controller
             ->where('users.role', 'student')
             ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
 
-        if ($activeYearName) {
-            $baseStudentClassStats->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');
-        }
+        // No longer strictly filtering by year to maintain registry visibility during transitions
+        // if ($activeYearName) {
+        //     $baseStudentClassStats->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');
+        // }
 
         $registryTotalStudents = (clone $baseStudentClassStats)->count();
         $registryRegularCount = $hasIsRegular

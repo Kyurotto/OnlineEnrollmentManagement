@@ -98,31 +98,26 @@ class StudentDashboardController extends Controller
             $hasSubmitted = $existingEnrollment !== null;
         }
 
-        // 8. Logic for Progress Bar Steps (to be used for button visibility)
-        // A student is old if they have ANY historical record other than the one they are currently processing
-        $isOldStudent = Enrollment::where('user_id', $user->id)
-            ->where('id', '!=', $currentYearEnrollment->id ?? 0)
-            ->exists();
+        $anyEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
+        $allEnrollmentsCount = Enrollment::where('user_id', $user->id)->count();
+        
+        $isOldStudent = ($allEnrollmentsCount > 1) || 
+                        ($allEnrollmentsCount === 1 && $anyEnrollment && 
+                            $activeYear && $activeSemester && 
+                            (stripos((string)$anyEnrollment->year_level, $activeYear->year_name) === false || 
+                             stripos((string)$anyEnrollment->year_level, $activeSemester->name) === false));
 
         $isStep3Done = false;
-        // For Old Students, clearance must be checked against the CURRENT TERM enrollment
+        // For Old Students, clearance is checked against the latest available record
+        // until they have a record for the current term.
         if ($isOldStudent) {
-            if ($activeYear && $activeSemester) {
-                $currentRecord = Enrollment::where('user_id', $user->id)
-                    ->where(function($q) use ($activeYear, $activeSemester) {
-                        $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                          ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
-                    })
-                    ->latest()
-                    ->first();
-                
-                if ($currentRecord) {
-                    $isStep3Done = ($currentRecord->credentials_verified == 1);
-                }
+            $checkRecord = $currentYearEnrollment ?? $anyEnrollment;
+            if ($checkRecord) {
+                $isStep3Done = ($checkRecord->credentials_verified == 1);
             }
         }
         
-        // Final flag for dashboard button: 
+        // 7. Final flag for dashboard button: 
         // New student can always enroll. Old student must finish Step 3 (Clearance).
         $canEnrollNow = !$isOldStudent || $isStep3Done;
 

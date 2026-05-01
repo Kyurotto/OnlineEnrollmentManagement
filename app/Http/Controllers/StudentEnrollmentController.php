@@ -122,6 +122,11 @@ class StudentEnrollmentController extends Controller
         // Check for any previous balance carried over from prior terms
         $previousBalance = \Illuminate\Support\Facades\Cache::pull("student_previous_balance_" . Auth::id(), 0);
 
+        // Check if they already have clearance from a preliminary shell record or previous term
+        $latestAny = Enrollment::where('user_id', Auth::id())->latest()->first();
+        $isAlreadyCleared = $latestAny && $latestAny->credentials_verified == 1;
+        $isAlreadyReceived = $latestAny && $latestAny->physical_documents_received == 1;
+
         $enrollment = Enrollment::create([
             'user_id' => Auth::id(),
             'course_id' => $course->id,
@@ -153,7 +158,39 @@ class StudentEnrollmentController extends Controller
             'guardian_contact' => $request->guardian_contact,
             'status' => 'Pending',
             'previous_balance' => $previousBalance,
+            'credentials_verified' => $isAlreadyCleared ? 1 : 0,
+            'physical_documents_received' => $isAlreadyReceived ? 1 : 0,
         ]);
+
+        // ARCHIVE OLD RECORDS: Automatically archive all PREVIOUS non-archived records for this student
+        // Use direct DB update for maximum reliability
+        \Illuminate\Support\Facades\DB::table('enrollments')
+            ->where('user_id', Auth::id())
+            ->where('id', '!=', $enrollment->id)
+            ->whereNull('archived_at')
+            ->update([
+                'archived_at' => now(),
+                'status' => 'Enrolled', // Ensure they are marked as finished in archives
+                'updated_at' => now()
+            ]);
+
+        // Fix missing metadata for folders in archives (for old records that lack columns)
+        $archivedRecords = Enrollment::where('user_id', Auth::id())
+            ->where('id', '!=', $enrollment->id)
+            ->whereNotNull('archived_at')
+            ->get();
+
+        foreach ($archivedRecords as $archived) {
+            if (empty($archived->semester_name) || empty($archived->academic_year_name)) {
+                $parts = array_map('trim', explode('|', $archived->year_level));
+                if (count($parts) >= 3) {
+                    $archived->update([
+                        'semester_name' => $parts[1],
+                        'academic_year_name' => $parts[2]
+                    ]);
+                }
+            }
+        }
 
         // Clear draft on successful submission
         session()->forget('enrollment_draft_' . Auth::id());

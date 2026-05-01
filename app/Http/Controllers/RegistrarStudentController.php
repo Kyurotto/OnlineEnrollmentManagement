@@ -36,15 +36,16 @@ class RegistrarStudentController extends Controller
                      'courses.course_name')
             ->joinSub(
                 Enrollment::select($enrollmentSelect)
+                    ->whereNull('archived_at')
                     ->whereIn('id', function($q) {
-                        $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
+                        $q->selectRaw('MAX(id)')->from('enrollments')->whereNull('archived_at')->groupBy('user_id');
                     }),
                 'latest_enrollments',
                 'users.id', '=', 'latest_enrollments.user_id'
             )
             ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+            ->where('latest_enrollments.status', 'Enrolled');
 
         if ($level === 'shs') {
             $query->whereIn('latest_enrollments.course_code', $shsStrands);
@@ -52,13 +53,17 @@ class RegistrarStudentController extends Controller
             $query->whereNotIn('latest_enrollments.course_code', $shsStrands);
         }
 
-        // Removed strict year filter to allow students from previous terms to remain visible
-        // so they can be processed as returning students for the new active year.
-        /*
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
+        // Show only enrolled students for the active term
         if ($activeYear) {
             $query->where('latest_enrollments.year_level', 'like', '%' . $activeYear->year_name . '%');
         }
-        */
+        if ($activeSemester) {
+            $query->where('latest_enrollments.year_level', 'like', '%' . $activeSemester->name . '%');
+        }
+
+
 
         if ($filter === 'regular') {
             $query->where('latest_enrollments.is_regular', true);
@@ -80,12 +85,6 @@ class RegistrarStudentController extends Controller
         foreach ($students as $student) {
             $student->program = $student->course_code ?: 'N/A';
 
-            // Status Override Logic for Term Transitions
-            // If the student's latest enrollment is not for the current active year, mark them as Pending
-            // EXEMPTION: If they are already marked as "Enrolled", respect that status.
-            if ($activeYear && stripos((string)$student->year_level, $activeYear->year_name) === false && $student->status !== 'Enrolled') {
-                $student->status = 'Pending';
-            }
 
             if (!empty($student->year_level)) {
                 $parts = explode('|', $student->year_level);
