@@ -114,40 +114,6 @@
                 @error('miscellaneousFees') <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest ml-1">{{ $message }}</span> @enderror
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Discount Percentage -->
-                <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Discount (%)</label>
-                    <div class="relative group">
-                        <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 font-black text-sm">%</span>
-                        <input
-                            type="number"
-                            name="discountPercentage"
-                            value="{{ $discountPercentage ?? 0 }}"
-                            step="0.01"
-                            min="0"
-                            max="100"
-                            class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-4.5 px-6 rounded-2xl outline-none text-sm font-bold tracking-widest focus:border-blue-500/40 transition-all shadow-sm"
-                        />
-                    </div>
-                </div>
-                <!-- Discount Amount -->
-                <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fixed Discount (₱)</label>
-                    <div class="relative group">
-                        <span class="absolute left-6 top-1/2 -translate-y-1/2 text-blue-600 font-black text-sm">₱</span>
-                        <input
-                            type="number"
-                            name="discountAmount"
-                            value="{{ $discountAmount ?? 0 }}"
-                            step="0.01"
-                            min="0"
-                            class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-4.5 pl-12 pr-6 rounded-2xl outline-none text-sm font-bold tracking-widest focus:border-blue-500/40 transition-all shadow-sm"
-                        />
-                    </div>
-                </div>
-            </div>
-
             <!-- Summary -->
             <div class="p-8 rounded-[24px] bg-blue-50/50 border border-blue-500/10">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Fee Summary</p>
@@ -161,17 +127,8 @@
                         <span class="text-lg font-black text-blue-600 tracking-tighter">₱{{ number_format($miscellaneousFees, 2) }}</span>
                     </div>
                     @php
-                        $subtotal = $tuitionFee + $miscellaneousFees;
-                        $percDiscount = $subtotal * (($discountPercentage ?? 0) / 100);
-                        $totalDiscount = $percDiscount + ($discountAmount ?? 0);
-                        $finalTotal = max(0, $subtotal - $totalDiscount);
+                        $finalTotal = $tuitionFee + $miscellaneousFees;
                     @endphp
-                    @if($totalDiscount > 0)
-                    <div class="flex justify-between items-center py-4 border-t border-blue-500/5 mt-4">
-                        <span class="text-xs font-black text-rose-500 uppercase tracking-wider">Applied Discounts:</span>
-                        <span class="text-lg font-black text-rose-500 tracking-tighter">- ₱{{ number_format($totalDiscount, 2) }}</span>
-                    </div>
-                    @endif
                     <div class="flex justify-between items-center pt-6 border-t border-blue-500/10 mt-4">
                         <span class="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">Total Payable:</span>
                         <span class="text-3xl font-black text-blue-600 tracking-tighter">₱{{ number_format($finalTotal, 2) }}</span>

@@ -284,31 +284,6 @@
                             </div>
                             <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6">View outstanding balances and record
                                 secure financial transactions.</p>
-
-                            @if(isset($assessment) && $assessment)
-                                <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Assessment</span>
-                                        <span class="text-lg font-black text-blue-600">₱{{ number_format($assessment['finalTotal'], 2) }}</span>
-                                    </div>
-                                    <div class="flex flex-col gap-1">
-                                        <div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
-                                            <span>Tuition:</span>
-                                            <span>₱{{ number_format($assessment['tuitionFee'], 2) }}</span>
-                                        </div>
-                                        <div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
-                                            <span>Misc:</span>
-                                            <span>₱{{ number_format($assessment['miscellaneousFees'], 2) }}</span>
-                                        </div>
-                                        @if($assessment['totalDiscount'] > 0)
-                                            <div class="flex justify-between text-[9px] font-bold text-rose-500 uppercase tracking-tighter border-t border-slate-200 pt-1 mt-1">
-                                                <span>Discount:</span>
-                                                <span>- ₱{{ number_format($assessment['totalDiscount'], 2) }}</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                     </div>
 
