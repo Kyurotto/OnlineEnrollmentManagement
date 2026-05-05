@@ -195,8 +195,14 @@ class RegistrarApplicationManager extends Component
             });
         }
 
-        // ALWAYS exclude archived records from the main applications list
-        $query->whereNull('enrollments.archived_at');
+        // Include archived records only when they still need clearance
+        $query->where(function ($q) {
+            $q->whereNull('enrollments.archived_at')
+              ->orWhere(function ($sub) {
+                  $sub->whereNotNull('enrollments.archived_at')
+                      ->where('enrollments.credentials_verified', false);
+              });
+        });
 
         if ($this->status !== 'All statuses') {
             $query->where('enrollments.status', $this->status);
@@ -204,7 +210,7 @@ class RegistrarApplicationManager extends Component
             // ALSO hide currently active term 'Enrolled' students
             $query->where(function ($q) use ($activeYear, $activeSemester) {
                         $q->where('enrollments.status', '!=', 'Enrolled');
-                        
+
                         if ($activeYear && $activeSemester) {
                             $q->orWhere(function($sub) use ($activeYear, $activeSemester) {
                                 $sub->where('enrollments.status', 'Enrolled')
@@ -241,7 +247,7 @@ class RegistrarApplicationManager extends Component
         $courses = Course::whereIn('course_code', $courseCodes)->get()->keyBy('course_code');
 
         // Transform each item in the collection
-        $applications->getCollection()->transform(function ($application) use ($courses, $activeYear) {
+        $applications->getCollection()->transform(function ($application) use ($courses, $activeYear, $activeSemester) {
             if (isset($courses[$application->course_code])) {
                 $application->setRelation('course', $courses[$application->course_code]);
             }
@@ -259,22 +265,24 @@ class RegistrarApplicationManager extends Component
             $hasPreviousRecord = Enrollment::where('user_id', $application->user_id)
                 ->where('id', '<', $application->id)
                 ->exists();
-            
-            $isOldTermRecord = ($activeYear && stripos((string)$application->year_level, $activeYear->year_name) === false);
-            
+
+            $isOldTermRecord = $activeYear && $activeSemester
+                ? ($application->academic_year_name !== $activeYear->year_name || $application->semester_name !== $activeSemester->name)
+                : false;
+
             $isReturning = $hasPreviousRecord || $isOldTermRecord;
 
-            $application->classification = $application->student_type 
+            $application->classification = $application->student_type
                 ?? ($isReturning ? 'Returning' : 'New');
 
             // AUTO-INHERIT CLEARANCE: If this returning student was already cleared in a previous/archived record,
             // inherit that clearance to their current record so the APPROVE CLEARANCE button hides
-            if ($isReturning && !$application->credentials_verified) {
+            if ($isReturning && !$isOldTermRecord && !$application->credentials_verified) {
                 $wasCleared = Enrollment::where('user_id', $application->user_id)
                     ->where('id', '!=', $application->id)
                     ->where('credentials_verified', true)
                     ->exists();
-                    
+
                 if ($wasCleared) {
                     // Use direct DB update to avoid persisting dynamic attributes (year_display, classification)
                     \Illuminate\Support\Facades\DB::table('enrollments')
@@ -288,10 +296,13 @@ class RegistrarApplicationManager extends Component
                     $application->physical_documents_received = true;
                 }
             }
-            
+
             // Status Override for Term Transitions
-            // If the application is not for the current active year, mark as Pending
-            if ($activeYear && stripos((string)$application->year_level, $activeYear->year_name) === false) {
+            $isCurrentTerm = $activeYear && $activeSemester &&
+                $application->academic_year_name === $activeYear->year_name &&
+                $application->semester_name === $activeSemester->name;
+
+            if (!$isCurrentTerm && $activeYear && $activeSemester) {
                 $application->status = 'Pending';
             }
 

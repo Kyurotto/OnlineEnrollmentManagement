@@ -32,11 +32,22 @@
             color: #0f172a !important;
         }
         main .text-white\/20, main .text-white\/30, main .text-white\/40, main .text-white\/50, main .text-white\/60 {
-            color: #64748b !important;
+            color: #2563eb !important; /* Force Brand Blue for icons that were white */
+            opacity: 0.5;
         }
         main .text-blue-300, main .text-blue-400\/60, main .text-indigo-300 {
-            color: #2563eb !important;
+            color: #1d4ed8 !important;
         }
+        
+        /* Specific enhancement for Folder Icons and Navigation SVGs */
+        main svg {
+            transition: all 0.3s ease;
+        }
+        main .group:hover svg {
+            opacity: 1 !important;
+            transform: translateY(-2px);
+        }
+
 
         /* Adjust glass cards for light theme */
         .glass-card, main div[style*="background: rgba(255,255,255,0.05)"], main div[style*="background: rgba(255,255,255,0.06)"] {

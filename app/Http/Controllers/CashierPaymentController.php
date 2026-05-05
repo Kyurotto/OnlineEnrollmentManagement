@@ -148,4 +148,48 @@ class CashierPaymentController extends Controller
         Payment::findOrFail($id)->delete();
         return back()->with('success', 'Payment record deleted.');
     }
+
+    public function export(Request $request)
+    {
+        $level = $request->query('level', 'college');
+        $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+
+        $query = Payment::select('payments.*')
+            ->leftJoin('enrollments', 'payments.application_id', '=', 'enrollments.id')
+            ->with(['user', 'application'])
+            ->where('payments.status', 'Paid');
+
+        if ($level === 'shs') {
+            $query->whereIn('enrollments.course_code', $shsStrands);
+        } else {
+            $query->whereNotIn('enrollments.course_code', $shsStrands);
+        }
+
+        $payments = $query->orderBy('payments.payment_date', 'desc')->get();
+
+        $csv = [];
+        $csv[] = ['Date', 'Receipt #', 'Student Name', 'Program/Strand', 'Amount', 'Method'];
+
+        foreach ($payments as $payment) {
+            $studentName = $payment->user ? $payment->user->last_name . ', ' . $payment->user->first_name : 'N/A';
+            $program = $payment->application ? $payment->application->course_code : 'N/A';
+            $csv[] = [
+                $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') : $payment->created_at->format('Y-m-d'),
+                $payment->transaction_id,
+                $studentName,
+                $program,
+                number_format($payment->amount, 2),
+                $payment->payment_method
+            ];
+        }
+
+        $filename = "payment_backup_{$level}_" . now()->format('Ymd_His') . ".csv";
+        $handle = fopen('php://temp', 'r+');
+        foreach ($csv as $row) { fputcsv($handle, $row); }
+        rewind($handle);
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        return response()->streamDownload(function () use ($content) { echo $content; }, $filename);
+    }
 }

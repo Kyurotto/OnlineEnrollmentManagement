@@ -21,6 +21,7 @@ class StudentPaymentManager extends Component
     public $totalPaymentsMade = 0;
     public $voucherType = null;
     public $hasEnrollment = false;
+    public $previousBalance = 0;
 
     // Level comparison properties
     public $shsFees = ['tuitionFee' => 0, 'miscellaneousFees' => 0];
@@ -131,9 +132,18 @@ class StudentPaymentManager extends Component
             $this->cashierDiscount = $presetDiscount;
         }
 
-        $this->totalAssessment = max(0, $subtotal - $this->cashierDiscount);
+        // Add any existing previous_balance from prior terms
+        $this->previousBalance = (float) ($latestEnrollment->previous_balance ?? 0);
+        if ($this->previousBalance == 0) {
+            $cachedPreviousBalance = Cache::get("student_previous_balance_{$user->id}");
+            if (!is_null($cachedPreviousBalance)) {
+                $this->previousBalance = (float) $cachedPreviousBalance;
+            }
+        }
 
-        // Calculate total payments made by student
+        $this->totalAssessment = max(0, ($subtotal + $this->previousBalance) - $this->cashierDiscount);
+
+        // Calculate total payments made by student for current enrollment only
         $this->totalPaymentsMade = (float)Payment::where('user_id', $user->id)
             ->where('status', 'Paid')
             ->when($latestEnrollment, function($query) use ($latestEnrollment) {
@@ -178,6 +188,9 @@ class StudentPaymentManager extends Component
         // Fetch payment history for the student (only confirmed/paid)
         $paymentRecords = Payment::where('user_id', $user->id)
             ->where('status', 'Paid')
+            ->when($enrollment, function($query) use ($enrollment) {
+                return $query->where('application_id', $enrollment->id);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

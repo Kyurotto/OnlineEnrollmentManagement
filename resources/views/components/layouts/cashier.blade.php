@@ -31,8 +31,19 @@
             color: #0f172a !important;
         }
         main .text-white\/20, main .text-white\/30, main .text-white\/40, main .text-white\/50, main .text-white\/60 {
-            color: #64748b !important;
+            color: #2563eb !important; /* Force Brand Blue for icons that were white */
+            opacity: 0.5;
         }
+        
+        /* Specific enhancement for Folder Icons and Navigation SVGs */
+        main svg {
+            transition: all 0.3s ease;
+        }
+        main .group:hover svg {
+            opacity: 1 !important;
+            transform: translateY(-2px);
+        }
+
         /* Adjust glass cards for light theme */
         .glass-card {
             background: rgba(255, 255, 255, 0.7) !important;

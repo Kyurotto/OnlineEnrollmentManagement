@@ -17,7 +17,7 @@
 
             <div class="lg:col-span-2 p-10 rounded-[2.5rem] border bg-white shadow-2xl shadow-blue-900/5 h-fit"
                  style="border-color: rgba(37,99,235,0.1);">
-                
+
                 <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-[0.25em] mb-10 flex items-center gap-2">
                     <div class="w-1.5 h-4 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></div>
                     {{ __('Personal Information') }}
@@ -96,7 +96,7 @@
                         </div>
 
                         <div class="pt-8 border-t border-slate-100">
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6">Recent Ledger Activity</p>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6">Recent Pay Fees Activity</p>
 
                             @if (isset($payments) && count($payments) > 0)
                                 @foreach ($payments as $payment)
