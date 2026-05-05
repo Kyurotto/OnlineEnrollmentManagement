@@ -227,11 +227,11 @@
                                         </button>
                                     @endif
                                     @php
-                                        $isCurrentTerm = $activeYear && $activeSemester && 
-                                                         $application->academic_year_name === $activeYear->year_name && 
+                                        $isCurrentTerm = $activeYear && $activeSemester &&
+                                                         $application->academic_year_name === $activeYear->year_name &&
                                                          $application->semester_name === $activeSemester->name;
                                     @endphp
-                                    @if(($application->classification === 'Returning' || $application->student_type === 'Returning') && !$application->credentials_verified && $application->status !== 'Enrolled')
+                                    @if(($application->classification === 'Returning' || $application->student_type === 'Returning') && !$application->credentials_verified && (!$isCurrentTerm || $application->status !== 'Enrolled'))
                                         <button type="button" wire:click="grantClearance({{ $application->id }})"
                                             class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-blue-500/20 text-black hover:bg-blue-50 hover:border-blue-500/40 transition-all text-[9px] font-black uppercase tracking-widest group/btn shadow-sm whitespace-nowrap">
                                             <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>

@@ -204,6 +204,7 @@ Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')-
     Route::get('/payments', CashierPaymentManager::class)->name('payments.index');
     Route::get('/payments/college', CashierPaymentManager::class)->name('payments.college');
     Route::get('/payments/shs', CashierPaymentManager::class)->name('payments.shs');
+    Route::get('/payments/export', [\App\Http\Controllers\CashierPaymentController::class, 'export'])->name('payments.export');
     Route::get('/assessment/shs', [CashierAssessmentController::class, 'showSHS'])->name('assessment.shs');
     Route::get('/assessment/college', [CashierAssessmentController::class, 'showCollege'])->name('assessment.college');
     Route::post('/assessment/{level}', [CashierAssessmentController::class, 'store'])->name('assessment.store');

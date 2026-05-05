@@ -160,12 +160,14 @@
 
                     // 2. Check if they are an OLD student (Returning Student)
                     $allCount = \App\Models\Enrollment::where('user_id', $user->id)->count();
-                    $isOldStudentSidebar = ($allCount > 1) || 
-                                          ($allCount === 1 && $anyLatestEnrollment && 
-                                           stripos((string)$anyLatestEnrollment->year_level, $activeYear->year_name) === false);
-                    // 3. Check if they are CLEARED (using latest available record)
-                    $checkRecordSidebar = $currentEnrollmentSidebar ?? $anyLatestEnrollment;
-                    $isClearedSidebar = ($checkRecordSidebar && $checkRecordSidebar->credentials_verified == 1);
+                    $isOldStudentSidebar = ($allCount > 1) ||
+                                          ($allCount === 1 && $anyLatestEnrollment && $activeYear && $activeSemester &&
+                                           (stripos((string)$anyLatestEnrollment->year_level, $activeYear->year_name) === false ||
+                                            stripos((string)$anyLatestEnrollment->year_level, $activeSemester->name) === false));
+                    // 3. Check if they are CLEARED (match progress bar behavior)
+                    $isClearedSidebar = \App\Models\Enrollment::where('user_id', $user->id)
+                        ->where('credentials_verified', 1)
+                        ->exists();
 
                     // 4. Detect if it's a "Shell" record
                     $isShellRecord = ($currentEnrollmentSidebar && (empty($currentEnrollmentSidebar->course_code) || str_contains($currentEnrollmentSidebar->year_level, 'Returning Student')));
@@ -178,8 +180,10 @@
                     $canShowApplicationsLink = false;
 
                     if (!$hasSubmittedSidebar) {
-                        // New Students can always see it. Old students need clearance.
-                        if (!$isOldStudentSidebar || $isClearedSidebar) {
+                        // New Students can always see it. Old students need clearance (Step 4 unlock).
+                        if (!$isOldStudentSidebar) {
+                            $canShowApplicationsLink = true;
+                        } elseif ($isClearedSidebar) {
                             $canShowApplicationsLink = true;
                         }
                     } else {
@@ -203,7 +207,7 @@
                     <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Applications</span>
                 </a>
                 @else
-                
+
 {{-- Show disabled instead of hiding when they cannot click it --}}
                 <div class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold text-slate-300 cursor-not-allowed opacity-50 relative group">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>

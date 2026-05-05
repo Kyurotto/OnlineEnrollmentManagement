@@ -41,6 +41,7 @@ class PaymentManager extends Component
     public $currentBalance = 0;
     public $discountPercentage = 0;
     public $totalPaymentsMade = 0;
+    public $previousBalance = 0;
 
     // Form fields
     public $user_id;
@@ -119,6 +120,65 @@ class PaymentManager extends Component
         $this->reset(['user_id', 'amount', 'payment_type', 'reference_no', 'isEditMode', 'editingPaymentId']);
     }
 
+    // FIX: Added the Historical Balance Calculator to Admin
+    private function calculateHistoricalPreviousBalance($studentId, $currentEnrollmentId)
+    {
+        $pastEnrollments = Enrollment::where('user_id', $studentId)
+            ->where('id', '<', $currentEnrollmentId)
+            ->get();
+
+        $totalHistoricalAssessment = 0;
+        $totalHistoricalDiscount = 0;
+
+        foreach ($pastEnrollments as $pastEnv) {
+            $savedDbAssessment = (float) ($pastEnv->total_assessment ?? 0);
+            if ($savedDbAssessment == 0) {
+                $savedDbAssessment = (float) ($pastEnv->tuition_fee ?? 0) + (float) ($pastEnv->miscellaneous_fee ?? 0);
+            }
+
+            if ($savedDbAssessment > 0) {
+                $pastSubtotal = $savedDbAssessment;
+                $appDisc = (float) ($pastEnv->cashier_discount ?? 0);
+            } else {
+                $level = strtolower($pastEnv->level ?? 'college');
+                $program = $pastEnv->course_code ?? 'all';
+                $yearLevelDigit = preg_match('/\d+/', (string) $pastEnv->year_level, $matches)
+                    ? $matches[0]
+                    : filter_var((string) $pastEnv->year_level, FILTER_SANITIZE_NUMBER_INT);
+
+                $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
+                $assessment = Cache::get($cacheKey)
+                    ?? Cache::get("payment_assessment_{$level}_{$program}_all")
+                    ?? Cache::get("payment_assessment_{$level}_all_{$yearLevelDigit}")
+                    ?? ['tuitionFee' => 0, 'miscellaneousFees' => 0, 'discountPercentage' => 0, 'discountAmount' => 0];
+
+                $pastSubtotal = ((float)($assessment['tuitionFee'] ?? 0)) + ((float)($assessment['miscellaneousFees'] ?? 0));
+
+                $configDiscPerc = (float) ($assessment['discountPercentage'] ?? 0);
+                $configDiscFixed = (float) ($assessment['discountAmount'] ?? 0);
+                $presetDiscount = ($pastSubtotal * ($configDiscPerc / 100)) + $configDiscFixed;
+
+                $appDisc = (float) ($pastEnv->cashier_discount ?? 0);
+                if ($appDisc == 0 && $presetDiscount > 0) {
+                    $appDisc = $presetDiscount;
+                }
+            }
+
+            $totalHistoricalAssessment += $pastSubtotal;
+            $totalHistoricalDiscount += $appDisc;
+            $totalHistoricalAssessment += (float) ($pastEnv->previous_balance ?? 0);
+        }
+
+        $totalHistoricalPaid = Payment::where('user_id', $studentId)
+            ->where('application_id', '<', $currentEnrollmentId)
+            ->where('status', 'Paid')
+            ->sum('amount');
+
+        $calculatedBalance = ($totalHistoricalAssessment - $totalHistoricalDiscount) - $totalHistoricalPaid;
+
+        return max(0, $calculatedBalance);
+    }
+
     public function selectStudent($studentId, $enrollmentId = null)
     {
         $this->selectedStudentId = $studentId;
@@ -185,14 +245,29 @@ class PaymentManager extends Component
                 $this->appliedDiscount = $presetDiscount;
             }
 
-            // Get payment history
-            $this->paymentHistory = Payment::where('user_id', $studentId)->orderBy('created_at', 'desc')->get();
-            // Include previous balance carried from prior terms
-            $previousBalance = $this->enrollment->previous_balance ?? 0;
+            // Get payment history for current enrollment
+            $this->paymentHistory = Payment::where('user_id', $studentId)
+                ->where('application_id', $this->enrollment->id)
+                ->orderBy('created_at', 'desc')->get();
 
-            // Calculate balance (assessment - discount + previous balance - paid)
-            $totalPaid = Payment::where('user_id', $studentId)->where('status', 'Paid')->sum('amount');
-            $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $previousBalance) - $totalPaid);
+            // Include previous balance carried from prior terms
+            $this->previousBalance = $this->enrollment->previous_balance ?? 0;
+
+            // FIX: Run Historical Calculation for Admin
+            if (empty($this->previousBalance) || $this->previousBalance == 0) {
+                $cachedPreviousBalance = Cache::get("student_previous_balance_{$studentId}");
+                if (!is_null($cachedPreviousBalance)) {
+                    $this->previousBalance = (float) $cachedPreviousBalance;
+                } else {
+                    $this->previousBalance = $this->calculateHistoricalPreviousBalance($studentId, $this->enrollment->id);
+                }
+            }
+
+            // Calculate balance (assessment - discount + previous balance - paid for current enrollment)
+            $totalPaid = Payment::where('user_id', $studentId)
+                ->where('application_id', $this->enrollment->id)
+                ->where('status', 'Paid')->sum('amount');
+            $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $this->previousBalance) - $totalPaid);
         } else {
             // No enrollment found, reset all fields
             $this->tuitionFees = 0;
@@ -233,19 +308,33 @@ class PaymentManager extends Component
         }
 
         $this->appliedDiscount = $totalRequestedDiscount;
-        
+
         // Persist discount to enrollment
         if ($this->enrollment) {
             $this->enrollment->cashier_discount = $this->appliedDiscount;
             $this->enrollment->save();
         }
 
-        $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
-        $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
-        
+        $this->previousBalance = $this->enrollment ? ($this->enrollment->previous_balance ?? 0) : 0;
+
+        // FIX: Historical Calculation added to applyDiscount
+        if (empty($this->previousBalance) || $this->previousBalance == 0) {
+            $cachedPreviousBalance = Cache::get("student_previous_balance_{$this->selectedStudentId}");
+            if (!is_null($cachedPreviousBalance)) {
+                $this->previousBalance = (float) $cachedPreviousBalance;
+            } else if ($this->enrollment) {
+                $this->previousBalance = $this->calculateHistoricalPreviousBalance($this->selectedStudentId, $this->enrollment->id);
+            }
+        }
+
+        $totalPaid = Payment::where('user_id', $this->selectedStudentId)
+            ->when($this->enrollment, fn($q) => $q->where('application_id', $this->enrollment->id))
+            ->where('status', 'Paid')->sum('amount');
+        $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $this->previousBalance) - $totalPaid);
+
         // Reset input fields
         $this->discountPercentage = 0;
-        
+
         session()->flash('success', 'Discount applied successfully.');
     }
 
@@ -260,8 +349,22 @@ class PaymentManager extends Component
             $this->enrollment->save();
         }
 
-        $totalPaid = Payment::where('user_id', $this->selectedStudentId)->where('status', 'Paid')->sum('amount');
-        $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount) - $totalPaid);
+        $this->previousBalance = $this->enrollment ? ($this->enrollment->previous_balance ?? 0) : 0;
+
+        // FIX: Historical Calculation added to removeDiscount
+        if (empty($this->previousBalance) || $this->previousBalance == 0) {
+            $cachedPreviousBalance = Cache::get("student_previous_balance_{$this->selectedStudentId}");
+            if (!is_null($cachedPreviousBalance)) {
+                $this->previousBalance = (float) $cachedPreviousBalance;
+            } else if ($this->enrollment) {
+                $this->previousBalance = $this->calculateHistoricalPreviousBalance($this->selectedStudentId, $this->enrollment->id);
+            }
+        }
+
+        $totalPaid = Payment::where('user_id', $this->selectedStudentId)
+            ->when($this->enrollment, fn($q) => $q->where('application_id', $this->enrollment->id))
+            ->where('status', 'Paid')->sum('amount');
+        $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $this->previousBalance) - $totalPaid);
         session()->flash('success', 'Discount removed successfully.');
     }
 
@@ -339,13 +442,14 @@ class PaymentManager extends Component
         $latestEnrollment = Enrollment::where('user_id', $this->selectedStudentId)->latest()->first();
 
         $payment = Payment::create([
-            'user_id' => $this->selectedStudentId,
-            'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
-            'amount' => $this->amount,
-            'transaction_id' => $this->reference_no ?? 'CASH-' . time(),
-            'status' => 'Paid',
-            'payment_method' => $this->payment_type,
-            'payment_date' => now(),
+            'user_id'          => $this->selectedStudentId,
+            'application_id'   => $latestEnrollment ? $latestEnrollment->id : null,
+            'amount'           => $this->amount,
+            'transaction_id'   => $this->reference_no ?? 'CASH-' . time(),
+            'status'           => 'Paid',
+            'payment_method'   => $this->payment_type,
+            'payment_date'     => now(),
+            'is_drop_payment'  => $this->isDropPayMode,
         ]);
 
         if ($payment->application_id) {
@@ -357,7 +461,8 @@ class PaymentManager extends Component
 
         $this->amount = '';
         $this->reference_no = '';
-        session()->flash('success', 'Payment of ₱' . number_format($payment->amount, 2) . ' processed successfully.');
+        $label = $this->isDropPayMode ? 'Drop payment' : 'Payment';
+        session()->flash('success', "{$label} of ₱" . number_format($payment->amount, 2) . ' processed successfully.');
     }
 
     public function updateStatus($id, $status)
@@ -432,8 +537,9 @@ class PaymentManager extends Component
             $students = User::where('role', 'student')->orderBy('name')->get();
 
             return view('livewire.admin.admin-cashier-payment-manager', [
-                'enrolledStudents' => $enrolledStudents,
+                'payments' => $enrolledStudents,
                 'students' => $students,
+                'pageTitle' => 'Manage Payments',
                 'activeTab' => $this->activeTab,
                 'selectedStudentId' => $this->selectedStudentId,
                 'selectedStudent' => $this->selectedStudent,

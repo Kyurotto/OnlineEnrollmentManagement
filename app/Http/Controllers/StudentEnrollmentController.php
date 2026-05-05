@@ -227,6 +227,25 @@ class StudentEnrollmentController extends Controller
             $enrollment = $latestEnrollment;
         }
 
+        // Show previously uploaded documents for returning students without persisting changes
+        $docFields = $enrollment->level === 'shs'
+            ? ['form_137_path', 'sf10_path', 'good_moral_path', 'psa_path', 'id_picture_path']
+            : ['form_137_path', 'good_moral_path', 'psa_path', 'id_picture_path'];
+
+        foreach ($docFields as $field) {
+            if (empty($enrollment->{$field})) {
+                $fallback = Enrollment::where('user_id', $user->id)
+                    ->where('id', '!=', $enrollment->id)
+                    ->whereNotNull($field)
+                    ->orderBy('id', 'desc')
+                    ->value($field);
+
+                if (!empty($fallback)) {
+                    $enrollment->setAttribute($field, $fallback);
+                }
+            }
+        }
+
         return view('student.enrollment_upload', compact('enrollment'));
     }
 

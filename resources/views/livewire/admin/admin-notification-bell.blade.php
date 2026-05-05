@@ -25,12 +25,21 @@
             <div class="max-h-64 overflow-y-auto custom-scrollbar p-3 space-y-2 bg-white">
                 @if(count($notifications) > 0)
                     @foreach($notifications as $notification)
-                        <div class="block p-4 rounded-xl border transition group cursor-pointer hover:bg-blue-50/50 active:scale-[0.98] bg-blue-50/20 border-blue-500/5">
+                        @php
+                            $level = $notification->data['level'] ?? null;
+                            if (!$level && !empty($notification->data['enrollment_id'])) {
+                                $level = optional(\App\Models\Enrollment::find($notification->data['enrollment_id']))->level;
+                            }
+                            $targetRoute = $level === 'shs'
+                                ? route('admin.applications.index', ['level' => 'shs'])
+                                : route('admin.applications.index', ['level' => 'college']);
+                        @endphp
+                        <a href="{{ $targetRoute }}" class="block p-4 rounded-xl border transition group cursor-pointer hover:bg-blue-50/50 active:scale-[0.98] bg-blue-50/20 border-blue-500/5">
                             <p class="text-xs text-slate-800 font-medium tracking-tight leading-tight">
                                 {{ $notification->data['message'] ?? 'New activity recorded.' }}
                             </p>
                             <p class="text-[9px] mt-2 text-right text-slate-400 font-medium uppercase">{{ $notification->created_at->diffForHumans() }}</p>
-                        </div>
+                        </a>
                     @endforeach
                 @else
                     <div class="text-center py-12">
