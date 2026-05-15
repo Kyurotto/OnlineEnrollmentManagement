@@ -165,6 +165,7 @@ Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registr
 */
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', DashboardManager::class)->name('dashboard');
+    Route::get('/activity-logs', \App\Livewire\Admin\ActivityLogManager::class)->name('activity-logs.index');
     Route::get('/courses', [AdminCourseController::class, 'index'])->name('courses.index');
     Route::post('/courses', [AdminCourseController::class, 'store'])->name('courses.store');
     Route::get('/courses/{id}/edit', [AdminCourseController::class, 'edit'])->name('courses.edit');

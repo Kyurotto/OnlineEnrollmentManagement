@@ -8,6 +8,8 @@ use Livewire\Attributes\Layout;
 use App\Models\Enrollment;
 use App\Models\Course;
 use App\Models\User;
+use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.registrar')]
 class RegistrarApplicationManager extends Component
@@ -111,6 +113,19 @@ class RegistrarApplicationManager extends Component
         $enrollment->last_audited_at = now();
         $enrollment->save();
 
+        // Log the clearance approval
+        $adminUser = auth()->user();
+        if ($adminUser) {
+            $studentName = $enrollment->user ? $enrollment->user->first_name . ' ' . $enrollment->user->last_name : 'Unknown Student';
+            ActivityLog::create([
+                'user_id' => $adminUser->id,
+                'action' => 'clearance_approved',
+                'target_type' => 'Enrollment',
+                'target_id' => $enrollment->id,
+                'description' => 'Approved clearance for ' . $studentName . ' (' . $enrollment->course_code . ')',
+            ]);
+        }
+
         session()->flash('success', 'Clearance approved for student.');
         $this->dispatch('modal-reset');
     }
@@ -122,6 +137,19 @@ class RegistrarApplicationManager extends Component
         $enrollment->last_audited_at = now();
         $enrollment->save();
 
+        // Log the clearance approval
+        $adminUser = auth()->user();
+        if ($adminUser) {
+            $studentName = $enrollment->user ? $enrollment->user->first_name . ' ' . $enrollment->user->last_name : 'Unknown Student';
+            ActivityLog::create([
+                'user_id' => $adminUser->id,
+                'action' => 'clearance_approved',
+                'target_type' => 'Enrollment',
+                'target_id' => $enrollment->id,
+                'description' => 'Granted registrar clearance for ' . $studentName . ' (' . $enrollment->course_code . ')',
+            ]);
+        }
+
         session()->flash('success', 'Registrar clearance granted.');
         $this->dispatch('modal-reset');
     }
@@ -131,6 +159,19 @@ class RegistrarApplicationManager extends Component
         $enrollment = Enrollment::findOrFail($id);
         $enrollment->credentials_verified = false;
         $enrollment->save();
+
+        // Log the clearance revocation
+        $adminUser = auth()->user();
+        if ($adminUser) {
+            $studentName = $enrollment->user ? $enrollment->user->first_name . ' ' . $enrollment->user->last_name : 'Unknown Student';
+            ActivityLog::create([
+                'user_id' => $adminUser->id,
+                'action' => 'clearance_revoked',
+                'target_type' => 'Enrollment',
+                'target_id' => $enrollment->id,
+                'description' => 'Revoked clearance for ' . $studentName . ' (' . $enrollment->course_code . ')',
+            ]);
+        }
 
         session()->flash('success', 'Registrar clearance revoked.');
         $this->dispatch('modal-reset');

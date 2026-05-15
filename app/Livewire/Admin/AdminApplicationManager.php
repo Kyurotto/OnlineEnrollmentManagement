@@ -5,7 +5,9 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Enrollment;
+use App\Models\ActivityLog;
 use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.admin', ['title' => 'Applications'])]
 class AdminApplicationManager extends Component
@@ -67,6 +69,19 @@ class AdminApplicationManager extends Component
             $application->user->update(['status' => 'Enrolled']);
         }
 
+        // Log the application approval
+        $adminUser = auth()->user();
+        if ($adminUser) {
+            $studentName = $application->user ? $application->user->first_name . ' ' . $application->user->last_name : 'Unknown Student';
+            ActivityLog::create([
+                'user_id' => $adminUser->id,
+                'action' => 'application_approved',
+                'target_type' => 'Enrollment',
+                'target_id' => $application->id,
+                'description' => 'Approved application for ' . $studentName . ' (' . $application->course_code . ')',
+            ]);
+        }
+
         session()->flash('success', 'Application status updated to Enrolled (Paid).');
     }
 
@@ -75,6 +90,19 @@ class AdminApplicationManager extends Component
         $application = Enrollment::findOrFail($id);
         $application->status = 'Rejected';
         $application->save();
+
+        // Log the application rejection
+        $adminUser = auth()->user();
+        if ($adminUser) {
+            $studentName = $application->user ? $application->user->first_name . ' ' . $application->user->last_name : 'Unknown Student';
+            ActivityLog::create([
+                'user_id' => $adminUser->id,
+                'action' => 'application_rejected',
+                'target_type' => 'Enrollment',
+                'target_id' => $application->id,
+                'description' => 'Rejected application for ' . $studentName . ' (' . $application->course_code . ')',
+            ]);
+        }
 
         session()->flash('success', 'Application status updated to Rejected.');
     }
