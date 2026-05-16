@@ -102,7 +102,7 @@ Route::middleware([
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
-    Route::get('/dashboard', [RegistrarDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', \App\Livewire\RegistrarDashboardManager::class)->name('dashboard');
     Route::patch('/dashboard/applications/{id}/approve', [RegistrarDashboardController::class, 'approve'])->name('dashboard.approve');
     Route::patch('/dashboard/applications/{id}/reject', [RegistrarDashboardController::class, 'reject'])->name('dashboard.reject');
     Route::get('/students', [RegistrarStudentController::class, 'index'])->name('students.index');

@@ -84,7 +84,7 @@
         main .text-blue-300, main .text-blue-400\/60, main .text-indigo-300 {
             color: #1d4ed8 !important;
         }
-        
+
         /* Specific enhancement for Folder Icons and Navigation SVGs */
         main svg {
             transition: all 0.3s ease;
@@ -136,7 +136,7 @@
                 <div class="text-white font-black p-2.5 rounded-xl text-sm uppercase flex-shrink-0 tracking-widest"
                      style="background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 4px 12px rgba(37,99,235,0.2);">RD</div>
                 <div class="whitespace-nowrap">
-                    <div class="text-sm font-black leading-none text-slate-800 tracking-tight uppercase">Registrar Portal</div>
+                    <div class="text-sm font-black leading-none text-slate-800 tracking-tight">Registrar Panel</div>
                     <div class="text-[10px] mt-1 font-bold uppercase tracking-widest text-blue-600">Student Services</div>
                 </div>
             </div>
@@ -341,7 +341,7 @@
 
                 <div class="p-4 space-y-1">
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-300">Navigation</p>
-                    <a href="{{ route('registrar.dashboard') }}" 
+                    <a href="{{ route('registrar.dashboard') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('registrar.dashboard') ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Dashboard</span>
@@ -349,32 +349,32 @@
 
                     <div class="my-4 border-t border-slate-50"></div>
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-300">Management</p>
-                    
-                    <a href="{{ route('registrar.students.index', ['level' => 'college']) }}" 
+
+                    <a href="{{ route('registrar.students.index', ['level' => 'college']) }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request('level') === 'college' ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">College Enrolled</span>
                     </a>
 
-                    <a href="{{ route('registrar.students.index', ['level' => 'shs']) }}" 
+                    <a href="{{ route('registrar.students.index', ['level' => 'shs']) }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request('level') === 'shs' ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">SHS Enrolled</span>
                     </a>
 
-                    <a href="{{ route('registrar.dropped.index') }}" 
+                    <a href="{{ route('registrar.dropped.index') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('registrar.dropped.*') ? 'bg-rose-50 text-rose-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Dropped Students</span>
                     </a>
 
-                    <a href="{{ route('registrar.applications.college') }}" 
+                    <a href="{{ route('registrar.applications.college') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('registrar.applications.college') ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">College Applications</span>
                     </a>
 
-                    <a href="{{ route('registrar.applications.shs') }}" 
+                    <a href="{{ route('registrar.applications.shs') }}"
                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('registrar.applications.shs') ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">SHS Applications</span>
@@ -387,7 +387,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Programs</span>
                     </a>
-                    
+
                     <a href="{{ route('registrar.academic_years.index') }}" class="flex items-center gap-4 px-5 py-3.5 rounded-2xl text-slate-600 hover:bg-slate-50 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Academic Years</span>
@@ -405,7 +405,7 @@
         <footer class="py-12 border-t mt-auto" style="background: rgba(255,255,255,0.5); border-color: rgba(0,0,0,0.05);">
             <div class="text-center">
                 <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
-                    &copy; 2026 Your Institution &mdash; <span class="text-blue-600">Registrar Portal</span>
+                    &copy; 2026 Your Institution &mdash; <span class="text-blue-600">Registrar Panel</span>
                 </p>
                 <p class="text-[9px] font-bold text-slate-200 uppercase tracking-widest mt-2">
                     Certified Light Interface Environment — v4.5L
