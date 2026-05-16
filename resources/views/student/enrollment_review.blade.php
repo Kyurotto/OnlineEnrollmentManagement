@@ -54,6 +54,12 @@
             <h3 class="text-xl font-black text-slate-900 mb-10 flex items-center gap-4">
                 <div class="w-1.5 h-8 bg-blue-600 rounded-full shadow-lg shadow-blue-600/20"></div>
                 Academic Information
+                @php
+                    $isOldStudent = \App\Models\Enrollment::where('user_id', Auth::id())->count() > 1 || 
+                                    \App\Models\Enrollment::where('user_id', Auth::id())->whereNotNull('archived_at')->count() > 0 ||
+                                    stripos($enrollment->year_level, 'Returning') !== false;
+                    $canEdit = !in_array($enrollment->status, ['Enrolled', 'Paid']) || $isOldStudent;
+                @endphp
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -165,53 +171,33 @@
             </div>
         </div>
 
-        {{-- Edit Request Action --}}
-        @if(!in_array($enrollment->status, ['Enrolled', 'Paid']))
-        <div class="p-10 rounded-[2.5rem] border bg-white shadow-xl shadow-blue-900/5"
-             style="border-color: rgba(37,99,235,0.1);">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 mb-2">Request Edit Access</h3>
-                    <p class="text-sm text-slate-500 font-medium">Need to correct something? Request permission to unlock your application form.</p>
-                </div>
-                
-                @if($enrollment->edit_request_status === 'Approved')
-                    <a href="{{ route('student.enrollment.edit') }}" class="px-10 py-5 bg-blue-600 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl shadow-blue-600/30 hover:bg-blue-700 transition-all active:scale-95">
-                        Edit Application Now
-                    </a>
-                @elseif($enrollment->edit_request_status === 'Pending')
-                    <div class="px-10 py-5 bg-amber-50 text-amber-600 border border-amber-100 rounded-2xl font-black uppercase text-[11px] tracking-widest flex items-center gap-3">
-                        <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Request Pending
-                    </div>
-                @else
-                    <form action="{{ route('student.enrollment.request_edit') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/20">
-                            Submit Edit Request
-                        </button>
-                    </form>
-                @endif
-            </div>
-        </div>
-        @endif
+
 
         {{-- Action Buttons --}}
-        <div class="flex flex-col sm:flex-row gap-6 pt-6">
-            <a href="{{ route('student.dashboard') }}" class="flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white border border-slate-100 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] hover:bg-slate-50 transition-all shadow-xl shadow-blue-900/5 active:scale-95">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Dashboard
-            </a>
-            @if($enrollment->status === 'Pending')
-            <div class="flex-1 flex items-center justify-center px-10 py-5 rounded-2xl font-black bg-amber-50 text-amber-600 border border-amber-100 uppercase tracking-widest text-[11px]">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Awaiting Registrar Review
-            </div>
-            @elseif($enrollment->status === 'Approved')
-            <a href="{{ route('student.payment') }}" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 rounded-2xl font-black transition-all text-center uppercase tracking-widest text-[11px] shadow-xl shadow-emerald-600/30 active:scale-95">
-                Proceed to Payment Gate
+        <div class="space-y-4 pt-6">
+            @if($canEdit)
+            <a href="{{ route('student.enrollment.edit') }}" class="w-full flex items-center justify-center gap-3 px-10 py-5 rounded-2xl border-2 border-slate-900 text-[11px] font-black text-slate-900 uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-xl active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                Edit Application Information
             </a>
             @endif
+
+            <div class="flex flex-col sm:flex-row gap-6">
+                <a href="{{ route('student.dashboard') }}" class="flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white border border-slate-100 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] hover:bg-slate-50 transition-all shadow-xl shadow-blue-900/5 active:scale-95">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Dashboard
+                </a>
+                @if($enrollment->status === 'Pending')
+                <div class="flex-1 flex items-center justify-center px-10 py-5 rounded-2xl font-black bg-amber-50 text-amber-600 border border-amber-100 uppercase tracking-widest text-[11px]">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Awaiting Registrar Review
+                </div>
+                @elseif($enrollment->status === 'Approved')
+                <a href="{{ route('student.payment') }}" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 rounded-2xl font-black transition-all text-center uppercase tracking-widest text-[11px] shadow-xl shadow-emerald-600/30 active:scale-95">
+                    Proceed to Payment Gate
+                </a>
+                @endif
+            </div>
         </div>
 
     </div>

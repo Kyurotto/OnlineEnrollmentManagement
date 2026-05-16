@@ -1,4 +1,4 @@
-<div class="mt-10 pt-8 border-t border-white/5">
+<div wire:poll class="mt-10 pt-8 border-t border-white/5">
     <div class="relative">
         {{-- Connection Line --}}
         <div class="absolute top-5 left-0 w-full h-0.5 bg-white/5 -z-0"></div>
