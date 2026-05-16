@@ -360,6 +360,7 @@ class StudentEnrollmentController extends Controller
             $enrollment = Enrollment::where('user_id', $user->id)
                 ->whereIn('status', ['Pending', 'Approved', 'Enrolled', 'Rejected'])
                 ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                ->latest()
                 ->first();
         }
 
@@ -374,13 +375,17 @@ class StudentEnrollmentController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+        $enrollment = Enrollment::where('user_id', Auth::id())->latest()->first();
 
         if (!$enrollment) {
             return redirect()->route('student.dashboard')->with('error', 'No enrollment found.');
         }
 
-        if (in_array($enrollment->status, ['Enrolled', 'Paid'])) {
+        $isOldStudent = Enrollment::where('user_id', Auth::id())->count() > 1 || 
+                        Enrollment::where('user_id', Auth::id())->whereNotNull('archived_at')->count() > 0 ||
+                        stripos($enrollment->year_level, 'Returning') !== false;
+
+        if (in_array($enrollment->status, ['Enrolled', 'Paid']) && !$isOldStudent) {
             return redirect()->route('student.enrollment.review')->with('error', 'You cannot edit an application that has already been finalized/paid.');
         }
 
@@ -403,9 +408,9 @@ class StudentEnrollmentController extends Controller
 
     public function update(Request $request)
     {
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
+        $enrollment = Enrollment::where('user_id', Auth::id())->latest()->first();
 
-        if (!$enrollment || $enrollment->edit_request_status !== 'Approved') {
+        if (!$enrollment) {
              return redirect()->route('student.enrollment.review')->with('error', 'Unauthorized edit attempt.');
         }
 
@@ -492,30 +497,4 @@ class StudentEnrollmentController extends Controller
         return redirect()->route('student.enrollment.review')->with('success', 'Your application has been successfully updated and is pending review.');
     }
 
-    /**
-     * Request edit access for enrollment application
-     */
-    public function requestEdit(Request $request)
-    {
-        $enrollment = Enrollment::where('user_id', Auth::id())->first();
-
-        if (!$enrollment) {
-            return back()->with('error', 'No enrollment found.');
-        }
-
-        if (in_array($enrollment->status, ['Enrolled', 'Paid'])) {
-            return back()->with('error', 'You cannot edit a finalized enrollment.');
-        }
-
-        if ($enrollment->edit_request_status === 'Pending') {
-            return back()->with('info', 'Your edit request is already pending approval.');
-        }
-
-        $enrollment->update([
-            'edit_request_status' => 'Pending',
-            'edit_requested_at' => now(),
-        ]);
-
-        return back()->with('success', 'Edit request submitted. Please wait for registrar approval.');
-    }
 }

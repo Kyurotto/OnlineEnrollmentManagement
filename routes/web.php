@@ -224,7 +224,6 @@ Route::middleware(['auth', 'can:student'])->prefix('student')->name('student.')-
     Route::post('/enrollment/upload', [StudentEnrollmentController::class, 'storeUpload'])->name('enrollment.upload.store');
 
     // Edit workflows
-    Route::post('/enrollment/edit-request', [StudentEnrollmentController::class, 'requestEdit'])->name('enrollment.request_edit');
     Route::get('/enrollment/edit', [StudentEnrollmentController::class, 'edit'])->name('enrollment.edit');
     Route::put('/enrollment', [StudentEnrollmentController::class, 'update'])->name('enrollment.update');
 
