@@ -718,7 +718,6 @@
         </div>
     </div>
     @elseif($role === 'registrar')
-    <x-layouts.registrar title="Registrar Dashboard">
         <div class="w-full">
             <div class="space-y-8 animate-in fade-in duration-700" wire:poll.3s>
 
@@ -1193,7 +1192,6 @@
                 @endif
             </div>
         </div>
-    </x-layouts.registrar>
     @elseif($role === 'admin')
         <div class="w-full space-y-6">
 
@@ -1321,7 +1319,65 @@
                 </div>
             </div>
 
-            {{-- SECTION 3 — System Oversight --}}
+            {{-- SECTION 3 — Enrollment Reports --}}
+                <div class="space-y-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-2 h-8 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></div>
+                            <div>
+                                <h3 class="text-2xl font-black text-slate-900 tracking-tight">Enrollment Reports</h3>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-1">Official Student Registry</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('registrar.reports.students.print') }}" target="_blank"
+                            class="flex items-center gap-3 px-8 py-4 rounded-2xl bg-rose-600 text-white hover:bg-rose-700 transition-all text-[11px] font-black uppercase tracking-[0.15em] shadow-xl shadow-rose-600/20 active:scale-95">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            Print Student Registry
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white p-8 rounded-[2rem] border border-blue-100 shadow-xl shadow-blue-900/5 group transition-all hover:scale-[1.02]">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Total Students</p>
+                            <p class="text-5xl font-black text-slate-900 mt-3 tracking-tighter group-hover:text-blue-600 transition-colors">{{ $registryTotalStudents ?? 0 }}</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-[2rem] border border-emerald-100 shadow-xl shadow-emerald-900/5 group transition-all hover:scale-[1.02]">
+                            <p class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em]">✓ Regular Students</p>
+                            <p class="text-5xl font-black text-slate-900 mt-3 tracking-tighter group-hover:text-emerald-600 transition-colors">{{ $registryRegularCount ?? 0 }}</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-[2rem] border border-rose-100 shadow-xl shadow-rose-900/5 group transition-all hover:scale-[1.02]">
+                            <p class="text-[10px] font-black text-rose-600 uppercase tracking-[0.3em]">⚠ Irregular Students</p>
+                            <p class="text-5xl font-black text-slate-900 mt-3 tracking-tighter group-hover:text-rose-600 transition-colors">{{ $registryIrregularCount ?? 0 }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-[2rem] border border-blue-100 shadow-xl shadow-blue-900/5 group transition-all hover:scale-[1.02]">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">New Students</p>
+                                    <p class="text-5xl font-black text-slate-900 mt-3 tracking-tighter group-hover:text-blue-600 transition-colors">{{ $registryNewCount ?? 0 }}</p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-blue-50 text-blue-600 shadow-sm">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-8 rounded-[2rem] border border-indigo-100 shadow-xl shadow-indigo-900/5 group transition-all hover:scale-[1.02]">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em]">Returning Students</p>
+                                    <p class="text-5xl font-black text-slate-900 mt-3 tracking-tighter group-hover:text-indigo-600 transition-colors">{{ $registryReturningCount ?? 0 }}</p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {{-- SECTION 4 — System Oversight --}}
             <div class="space-y-8">
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
@@ -1373,7 +1429,7 @@
                 </div>
             </div>
 
-            {{-- SECTION 4 — Analytics Cluster --}}
+            {{-- SECTION 5 — Analytics Cluster --}}
             <div class="p-10 rounded-[2rem] border bg-white shadow-xl shadow-blue-900/5 border-blue-100">
                 <div class="flex items-center gap-4 mb-10 px-2">
                     <div class="w-2 h-8 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></div>
