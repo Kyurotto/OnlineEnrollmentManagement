@@ -96,7 +96,7 @@
                         </div>
 
                         <div class="pt-8 border-t border-slate-100">
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6">Recent Pay Fees Activity</p>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6">Recent Payment Activity</p>
 
                             @if (isset($payments) && count($payments) > 0)
                                 @foreach ($payments as $payment)
