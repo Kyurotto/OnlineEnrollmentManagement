@@ -449,14 +449,6 @@
                             </div>
                         </div>
                     </div>
-
-                    @if ($canEnroll && !$isEnrolledInActiveYear)
-                    <div class="relative z-10 flex justify-center pt-4">
-                        <a href="{{ route('student.enrollment.create') }}"
-                            class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-black py-5 px-12 rounded-2xl shadow-xl shadow-blue-600/30 transition-all active:scale-95 uppercase tracking-widest text-sm">Apply
-                            Now</a>
-                    </div>
-                    @endif
                 </div>
             </div>
         </div>
