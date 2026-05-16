@@ -20,53 +20,6 @@
                 <div class="flex items-center justify-between mb-8">
                     <h3 class="text-lg font-black text-slate-900 flex items-center gap-3">
                         <div class="w-1.5 h-6 bg-indigo-600 rounded-full"></div>
-                        Statement of Account
-                    </h3>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                            <span class="font-bold text-slate-600 text-xs uppercase">Tuition Fees</span>
-                            <span class="font-black text-black text-xs">₱ {{ number_format($tuitionFee, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                            <span class="font-bold text-slate-600 text-xs uppercase">Miscellaneous</span>
-                            <span class="font-black text-black text-xs">₱ {{ number_format($miscellaneousFees, 2) }}</span>
-                        </div>
-                        @if($cashierDiscount > 0)
-                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                            <span class="font-bold text-slate-600 text-xs uppercase">Discounted</span>
-                            <span class="font-black text-rose-600 text-xs">- ₱ {{ number_format($cashierDiscount, 2) }}</span>
-                        </div>
-                        @endif
-                        @if($previousBalance > 0)
-                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                            <span class="font-bold text-slate-600 text-xs uppercase">Previous Balance</span>
-                            <span class="font-black text-rose-600 text-xs">₱ {{ number_format($previousBalance, 2) }}</span>
-                        </div>
-                        @endif
-                        <div class="flex justify-between items-center pt-6 border-t-2 border-indigo-500/10">
-                            <div class="flex flex-col">
-                                <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase">Net Payable Amount</span>
-                            </div>
-                            <span class="font-black text-indigo-600 text-lg tracking-tighter">₱ {{ number_format((float)$totalAssessment, 2) }}</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-indigo-50/30 p-8 rounded-[32px] border border-indigo-500/10 flex flex-col items-center justify-center text-center">
-                        <p class="text-slate-400 text-[10px] font-black uppercase mb-3 tracking-[0.4em]">Current Balance</p>
-                        <p class="text-5xl font-black text-indigo-600 tracking-tighter">₱ {{ number_format(max(0, (float)$totalAssessment - (float)$totalPaymentsMade), 2) }}</p>
-                        <div class="mt-6">
-                            <span class="px-4 py-1 bg-white rounded-full text-[8px] font-black text-indigo-600 border border-indigo-100 uppercase tracking-widest shadow-sm">Total Paid: ₱ {{ number_format($totalPaymentsMade, 2) }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-lg font-black text-slate-900 flex items-center gap-3">
-                        <div class="w-1.5 h-6 bg-indigo-600 rounded-full"></div>
                         Payment History
                         <span class="text-slate-300 font-black tracking-widest ml-2">[{{ count($payments ?? []) }}]</span>
                     </h3>
