@@ -336,6 +336,108 @@
                         </div>
                     </div>
 
+                    {{-- Row 1.5: Student Classification Override --}}
+                    <div class="space-y-6" x-data="{
+                        classType: null,
+                        classReason: '',
+                        isSHS: false,
+                        showReasonDropdown: false,
+                        collegeReasons: @js(array_keys(\App\Models\Enrollment::CLASSIFICATION_REASONS)),
+                        shsReasons: @js(array_keys(\App\Models\Enrollment::SHS_CLASSIFICATION_REASONS)),
+                        get reasons() { return this.isSHS ? this.shsReasons : this.collegeReasons; },
+                        initClassification(isRegular, reason, isSHS) {
+                            this.isSHS = isSHS;
+                            if (isRegular === true || isRegular === 1) {
+                                this.classType = 'regular';
+                                this.classReason = '';
+                                this.showReasonDropdown = false;
+                            } else if (isRegular === false || isRegular === 0) {
+                                this.classType = 'irregular';
+                                this.classReason = reason || '';
+                                this.showReasonDropdown = true;
+                            } else {
+                                this.classType = null;
+                                this.classReason = '';
+                                this.showReasonDropdown = false;
+                            }
+                        },
+                        selectType(type) {
+                            this.classType = type;
+                            if (type === 'regular') {
+                                this.classReason = '';
+                                this.showReasonDropdown = false;
+                            } else {
+                                this.showReasonDropdown = true;
+                            }
+                        }
+                    }" id="classificationSection">
+                        <div class="flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-violet-600"></span>
+                            <h3 class="text-[10px] font-black text-black uppercase tracking-[0.3em]">Student Classification</h3>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-200 rounded-[32px] p-8">
+                            <div class="space-y-6">
+                                {{-- Current Status Display --}}
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[10px] font-black text-violet-600 uppercase tracking-widest">Current Status</span>
+                                    <div class="flex items-center gap-3">
+                                        <span x-show="classType === 'regular'" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Regular</span>
+                                        <span x-show="classType === 'irregular'" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border bg-amber-500/10 text-amber-500 border-amber-500/20">Irregular</span>
+                                        <span x-show="!classType" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-100 text-slate-400 border-slate-200">Not Set</span>
+                                        <span x-show="classType === 'irregular' && classReason" class="text-[9px] font-bold text-slate-500 uppercase tracking-wider" x-text="'— ' + classReason"></span>
+                                    </div>
+                                </div>
+
+                                {{-- Action Buttons --}}
+                                <div class="pt-4 border-t border-violet-100">
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-3">Set Classification</span>
+                                    <div class="flex flex-wrap items-start gap-4">
+                                        <button type="button"
+                                            @click="selectType('regular')"
+                                            :class="classType === 'regular' ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/20' : 'bg-white text-emerald-600 border-emerald-300 hover:bg-emerald-50'"
+                                            class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all active:scale-95">
+                                            ✓ Regular
+                                        </button>
+                                        <button type="button"
+                                            @click="selectType('irregular')"
+                                            :class="classType === 'irregular' ? 'bg-amber-600 text-white border-amber-600 shadow-lg shadow-amber-600/20' : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-50'"
+                                            class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all active:scale-95">
+                                            ✕ Irregular
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- Reason Dropdown (shown only when Irregular is selected) --}}
+                                <div x-show="showReasonDropdown" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="pt-4 border-t border-violet-100">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">Reason for Irregular Classification</label>
+                                    <select x-model="classReason"
+                                        class="w-full sm:w-80 bg-white border border-slate-200 rounded-xl px-5 py-3 text-[11px] font-bold text-black focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/40 appearance-none cursor-pointer transition-all shadow-sm">
+                                        <option value="">Select a reason...</option>
+                                        <template x-for="r in reasons" :key="r">
+                                            <option :value="r" x-text="r" :selected="r === classReason"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                {{-- Save Button --}}
+                                <div class="pt-4">
+                                    <button type="button"
+                                        x-show="classType"
+                                        :disabled="classType === 'irregular' && !classReason"
+                                        @click="
+                                            if (classType === 'irregular' && !classReason) return;
+                                            $wire.setClassification(selectedId, classType, classReason);
+                                            setTimeout(() => { location.reload(); }, 1000);
+                                        "
+                                        :class="(classType === 'irregular' && !classReason) ? 'opacity-40 cursor-not-allowed' : 'hover:bg-violet-500 active:scale-95 shadow-xl shadow-violet-600/10'"
+                                        class="bg-violet-600 text-white text-[10px] font-black py-3.5 px-8 rounded-xl uppercase tracking-[0.2em] transition-all">
+                                        Save Classification
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Row 2: Applicant Profile --}}
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
@@ -545,6 +647,22 @@
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         document.getElementById('modalStatus').innerText = app.status || 'N/A';
+
+        // Initialize Student Classification section
+        const shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+        const appIsSHS = shsStrands.includes(app.course_code);
+        const classSection = document.getElementById('classificationSection');
+        if (classSection && classSection.__x) {
+            classSection.__x.$data.initClassification(app.is_regular, app.classification_reason, appIsSHS);
+        } else if (classSection) {
+            // Fallback: wait for Alpine to initialize
+            setTimeout(() => {
+                const alpineData = Alpine.$data(classSection);
+                if (alpineData) {
+                    alpineData.initClassification(app.is_regular, app.classification_reason, appIsSHS);
+                }
+            }, 100);
+        }
 
         // Toggle Physical Documents Button Styling
         const toggleBtn = document.getElementById('togglePhysicalBtn');
