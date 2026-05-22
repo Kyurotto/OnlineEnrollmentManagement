@@ -274,7 +274,7 @@
     <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-blue-900/40 backdrop-blur-md" @click="modalOpen = false; selectedId = null"></div>
 
-        <div class="bg-white w-full max-w-7xl rounded-[40px] shadow-[0_32px_120px_rgba(30,58,138,0.2)] border border-blue-500/20 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent" wire:ignore>
+        <div class="bg-white w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(30,58,138,0.2)] border border-blue-500/20 overflow-hidden flex flex-col max-h-[95vh] relative z-10 transform transition-all duration-300" id="modalContent" wire:ignore>
 
             <div class="px-8 md:px-12 py-8 border-b border-blue-500/10 flex justify-between items-center gap-6 bg-blue-50/30">
                 <div>
@@ -589,7 +589,7 @@
 
             <!-- Modal Footer -->
             <div class="px-8 md:px-12 py-8 border-t border-slate-100 bg-slate-50 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
+                <div class="flex flex-wrap items-center gap-4 w-full" id="actionButtons">
                     <button type="button"
                         id="togglePhysicalBtn"
                         @click="$wire.togglePhysicalDocuments(selectedId); setTimeout(() => { location.reload(); }, 1000);"
@@ -607,9 +607,6 @@
                         Reject Application
                     </button>
                 </div>
-                <button @click="modalOpen = false; selectedId = null" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border border-slate-200 rounded-2xl hover:bg-white hover:text-black transition-all ml-auto">
-                    Close Protocol
-                </button>
             </div>
         </div>
     </div>

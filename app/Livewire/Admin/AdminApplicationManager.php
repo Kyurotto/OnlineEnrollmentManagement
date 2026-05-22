@@ -160,7 +160,7 @@ class AdminApplicationManager extends Component
         $applications = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
         // Simplify year level display for each item
-        $applications->getCollection()->transform(function ($application) use ($activeYear) {
+        $applications->getCollection()->transform(function ($application) use ($activeYear, $activeSemester) {
             // Simplify year level display (e.g., "1st Year | 2nd Semester" -> "1st Year")
             if (!empty($application->year_level)) {
                 $parts = explode('|', $application->year_level);
