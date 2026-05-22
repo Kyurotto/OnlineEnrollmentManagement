@@ -70,6 +70,10 @@
 <body x-data="{ sidebarOpen: localStorage.getItem('registrar_sidebar_open') === 'true', mobileOpen: false }"
       x-init="$watch('sidebarOpen', value => localStorage.setItem('registrar_sidebar_open', value))"
       class="text-slate-900 flex flex-row min-h-screen" style="background: #ffffff; min-height: 100vh;">
+
+    {{-- Skeleton Loading Screen --}}
+    <x-skeleton-loader />
+
     {{-- Global Styles for Content Visibility --}}
     <style>
         /* Force black text for elements that were white, but spare buttons and colored badges */
