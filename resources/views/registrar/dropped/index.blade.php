@@ -245,65 +245,83 @@
                                         </button>
 
                                         {{-- Drop Modal --}}
-                                        <div x-show="showModal" x-cloak
-                                             class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                                            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="showModal = false"></div>
-                                            <div class="relative z-10 w-full max-w-sm bg-[#0f0f1a] border border-white/10 rounded-[28px] shadow-2xl p-8 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-                                                <div>
-                                                    <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Mark as Dropped</p>
-                                                    <h3 class="text-lg font-black text-white uppercase mt-0.5">{{ $s->name }}</h3>
+                                        <template x-teleport="body">
+                                            <div x-show="showModal" x-cloak
+                                                 x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                                 x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                                                 class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                                <div class="absolute inset-0 bg-blue-900/40 backdrop-blur-md" @click="showModal = false"></div>
+                                                <div class="relative z-10 w-full max-w-md bg-white border border-blue-500/20 rounded-[32px] shadow-[0_32px_120px_rgba(30,58,138,0.2)] p-8 md:p-10 space-y-6"
+                                                     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+
+                                                    {{-- Modal Header --}}
+                                                    <div class="flex items-start justify-between">
+                                                        <div>
+                                                            <span class="text-[9px] font-black text-blue-600 uppercase tracking-[0.4em] block mb-1">Mark as Dropped</span>
+                                                            <h3 class="text-xl font-black text-black uppercase tracking-tight">{{ $s->name }}</h3>
+                                                            <p class="text-[10px] font-bold text-slate-400 mt-1">{{ $s->course }} · {{ $s->level }}</p>
+                                                        </div>
+                                                        <button @click="showModal = false" class="p-2 rounded-xl bg-slate-100 text-slate-400 hover:text-black hover:bg-slate-200 transition-all border border-slate-200">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <form action="{{ route('registrar.dropped.mark', $s->enrollment_id) }}" method="POST" class="space-y-5">
+                                                        @csrf
+                                                        @method('PATCH')
+
+                                                        {{-- Drop Period --}}
+                                                        <div class="space-y-1.5">
+                                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Drop Period <span class="text-rose-400">*</span></label>
+                                                            <select name="drop_period" required
+                                                                class="w-full bg-blue-50/50 text-black border border-slate-200 py-3 px-4 rounded-2xl outline-none text-[11px] font-bold cursor-pointer focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all shadow-sm appearance-none">
+                                                                @foreach(\App\Services\DroppedStudentReportService::getDropPeriods($s->level === 'SHS') as $key => $label)
+                                                                    <option value="{{ $key }}">{{ $label }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        {{-- Drop Reason --}}
+                                                        <div class="space-y-1.5">
+                                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Drop Reason <span class="text-rose-400">*</span></label>
+                                                            <select name="drop_reason" required
+                                                                class="w-full bg-blue-50/50 text-black border border-slate-200 py-3 px-4 rounded-2xl outline-none text-[11px] font-bold cursor-pointer focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all shadow-sm appearance-none">
+                                                                @foreach(['Financial','Personal','Transfer','Academic','Health','Other'] as $reason)
+                                                                    <option value="{{ $reason }}">{{ $reason }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        {{-- Base Tuition --}}
+                                                        <div class="space-y-1.5">
+                                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Base Tuition (₱) <span class="text-slate-300 normal-case font-bold">for half-tuition calculation</span></label>
+                                                            <input type="number" name="base_tuition" step="0.01" min="0" placeholder="0.00"
+                                                                class="w-full bg-blue-50/50 text-black border border-slate-200 py-3 px-4 rounded-2xl outline-none text-[11px] font-bold placeholder-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all shadow-sm">
+                                                        </div>
+
+                                                        {{-- Notes --}}
+                                                        <div class="space-y-1.5">
+                                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Notes <span class="text-slate-300 normal-case font-bold">(optional)</span></label>
+                                                            <textarea name="drop_notes" rows="2" placeholder="Additional notes..."
+                                                                class="w-full bg-blue-50/50 text-black border border-slate-200 py-3 px-4 rounded-2xl outline-none text-[11px] font-bold placeholder-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all shadow-sm resize-none"></textarea>
+                                                        </div>
+
+                                                        {{-- Action Buttons --}}
+                                                        <div class="flex gap-3 pt-2">
+                                                            <button type="button" @click="showModal = false"
+                                                                class="flex-1 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border border-slate-200 rounded-2xl hover:bg-slate-50 hover:text-black transition-all">
+                                                                Cancel
+                                                            </button>
+                                                            <button type="submit"
+                                                                class="flex-[2] bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black py-3.5 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-xl shadow-blue-600/20 active:scale-95">
+                                                                Confirm Drop
+                                                            </button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-
-                                                <form action="{{ route('registrar.dropped.mark', $s->enrollment_id) }}" method="POST" class="space-y-4">
-                                                    @csrf
-                                                    @method('PATCH')
-
-                                                    {{-- Drop Period --}}
-                                                    <div class="space-y-1">
-                                                        <label class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Drop Period *</label>
-                                                        <select name="drop_period" required
-                                                            class="w-full bg-white/[0.03] text-white border border-white/10 py-3 px-4 rounded-xl outline-none text-sm font-bold cursor-pointer">
-                                                            @foreach(\App\Services\DroppedStudentReportService::getDropPeriods($s->level === 'SHS') as $key => $label)
-                                                                <option value="{{ $key }}" style="background-color:#0d1b2e;color:#fff;">{{ $label }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="space-y-1">
-                                                        <label class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Drop Reason *</label>
-                                                        <select name="drop_reason" required
-                                                            class="w-full bg-white/[0.03] text-white border border-white/10 py-3 px-4 rounded-xl outline-none text-sm font-bold cursor-pointer">
-                                                            @foreach(['Financial','Personal','Transfer','Academic','Health','Other'] as $reason)
-                                                                <option value="{{ $reason }}" style="background-color:#0d1b2e;color:#fff;">{{ $reason }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="space-y-1">
-                                                        <label class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Base Tuition (₱) <span class="text-white/20 normal-case">for half-tuition calculation</span></label>
-                                                        <input type="number" name="base_tuition" step="0.01" min="0" placeholder="0.00"
-                                                            class="w-full bg-white/[0.03] text-white border border-white/10 py-3 px-4 rounded-xl outline-none text-sm font-bold placeholder-white/20">
-                                                    </div>
-
-                                                    <div class="space-y-1">
-                                                        <label class="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Notes (optional)</label>
-                                                        <textarea name="drop_notes" rows="2" placeholder="Additional notes..."
-                                                            class="w-full bg-white/[0.03] text-white border border-white/10 py-3 px-4 rounded-xl outline-none text-sm font-bold placeholder-white/20 resize-none"></textarea>
-                                                    </div>
-
-                                                    <div class="flex gap-3 pt-1">
-                                                        <button type="button" @click="showModal = false"
-                                                            class="flex-1 py-3 text-[9px] font-black text-white/40 uppercase tracking-[0.3em] border border-white/10 rounded-xl hover:bg-white/5 transition-all">
-                                                            Cancel
-                                                        </button>
-                                                        <button type="submit"
-                                                            class="flex-[2] bg-rose-500 hover:bg-rose-400 text-white text-[9px] font-black py-3 rounded-xl uppercase tracking-[0.3em] transition-all">
-                                                            Confirm Drop
-                                                        </button>
-                                                    </div>
-                                                </form>
                                             </div>
-                                        </div>
+                                        </template>
                                     </td>
                                     @endunless
                                 </tr>

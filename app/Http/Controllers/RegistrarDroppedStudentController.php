@@ -20,7 +20,7 @@ class RegistrarDroppedStudentController extends Controller
         $droppedCount  = $officiallyDropped->count();
         $withdrawnCount = $officiallyDropped->where('drop_status', 'Withdrawn')->count();
         $atRiskCount   = $atRiskStudents->count();
-        $totalPenalties = $officiallyDropped->sum('drop_penalty');
+        $totalPenalties = $officiallyDropped->sum('drop_charge');
 
         return view('registrar.dropped.index', compact(
             'officiallyDropped',
@@ -97,6 +97,7 @@ class RegistrarDroppedStudentController extends Controller
         $enrollment->status      = 'Enrolled';
         $enrollment->drop_date   = null;
         $enrollment->drop_reason = null;
+        $enrollment->drop_period = null;
         $enrollment->drop_notes  = null;
         $enrollment->save();
 
@@ -110,13 +111,13 @@ class RegistrarDroppedStudentController extends Controller
             'base_tuition'  => 'nullable|numeric|min:0',
         ]);
 
-        $enrollment  = Enrollment::findOrFail($request->enrollment_id);
-        $baseTuition = (float) ($request->base_tuition ?? $enrollment->base_tuition ?? 0);
-        $penalty     = $this->service->calculateDropPenalty(
-            $enrollment->created_at,
-            now(),
-            $baseTuition
-        );
+        $enrollment = Enrollment::findOrFail($request->enrollment_id);
+
+        if ($request->filled('base_tuition')) {
+            $enrollment->base_tuition = (float) $request->base_tuition;
+        }
+
+        $penalty = $this->service->calculateDropCharge($enrollment);
 
         return response()->json($penalty);
     }
