@@ -47,7 +47,7 @@ class RegistryExportController extends Controller
             )
             ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid']);
+            ->where('latest_enrollments.status', 'Enrolled');
 
         // Applying filters
         if ($courseFilter && $courseFilter !== 'All Programs') {

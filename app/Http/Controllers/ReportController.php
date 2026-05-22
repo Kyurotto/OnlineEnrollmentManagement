@@ -53,7 +53,7 @@ class ReportController extends Controller
             )
             ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+            ->where('latest_enrollments.status', 'Enrolled');
 
         if ($activeYearName) {
             $query->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');

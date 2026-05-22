@@ -820,7 +820,7 @@
                                                 <div class="flex flex-wrap items-center gap-2 mt-1">
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="w-1.5 h-1.5 rounded-full {{ $style['dot'] }}"></span>
-                                                        <span class="text-[9px] font-black uppercase tracking-widest {{ $style['text'] }}">{{ $status === 'Enrolled' ? 'Paid' : $status }}</span>
+                                                        <span class="text-[9px] font-black uppercase tracking-widest {{ $style['text'] }}">{{ in_array($status, ['Enrolled', 'Paid']) ? 'Fully Paid' : $status }}</span>
                                                     </div>
                                                     @php
                                                         $isReturningApp = \App\Models\Enrollment::where('user_id', $app['user_id'])
@@ -1007,7 +1007,7 @@
                                                 @php
                                                     $statusBase = ucfirst($selectedApp->status);
                                                     $statusLabel = in_array($statusBase, ['Enrolled', 'Paid'])
-                                                        ? 'PAID'
+                                                        ? 'FULLY PAID'
                                                         : strtoupper($statusBase);
                                                     $statusClass = match ($statusBase) {
                                                         'Approved',
@@ -1291,7 +1291,7 @@
                                                 <div class="flex flex-wrap items-center gap-2 mt-1">
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="w-1.5 h-1.5 rounded-full {{ $style['dot'] }}"></span>
-                                                        <span class="text-[9px] font-black uppercase tracking-widest {{ $style['text'] }}">{{ $status === 'Enrolled' ? 'Paid' : $status }}</span>
+                                                        <span class="text-[9px] font-black uppercase tracking-widest {{ $style['text'] }}">{{ in_array($status, ['Enrolled', 'Paid']) ? 'Fully Paid' : $status }}</span>
                                                     </div>
                                                     @php
                                                         $isReturningApp = \App\Models\Enrollment::where('user_id', $app['user_id'])
@@ -1498,7 +1498,7 @@
                                                 @php
                                                     $statusBase = ucfirst($selectedApp->status);
                                                     $statusLabel = in_array($statusBase, ['Enrolled', 'Paid'])
-                                                        ? 'PAID'
+                                                        ? 'FULLY PAID'
                                                         : strtoupper($statusBase);
                                                     $statusClass = match ($statusBase) {
                                                         'Approved',

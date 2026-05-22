@@ -99,7 +99,7 @@ class DashboardManager extends Component
             'active_courses' => Course::where('type', 'course')->count(),
             'students'       => User::where('role', 'student')
                                     ->whereHas('application', function($q) use ($activeYearName) {
-                                        $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+                                        $q->where('status', 'Enrolled');
                                         if ($activeYearName) {
                                             $q->where('year_level', 'like', '%' . $activeYearName . '%');
                                         }
@@ -179,7 +179,7 @@ class DashboardManager extends Component
                 'latest_enrollments.user_id'
             )
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
+            ->where('latest_enrollments.status', 'Enrolled')
             ->when($activeYearName, function($q) use ($activeYearName) {
                 $q->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');
             });
