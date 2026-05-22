@@ -169,6 +169,27 @@ class RegistrarApplicationManager extends Component
         $this->dispatch('modal-reset');
     }
 
+    public function setClassification($id, $type, $reason = null)
+    {
+        $enrollment = Enrollment::findOrFail($id);
+
+        if ($type === 'regular') {
+            $enrollment->is_regular = true;
+            $enrollment->classification_reason = null;
+        } elseif ($type === 'irregular') {
+            $enrollment->is_regular = false;
+            $enrollment->classification_reason = $reason;
+        }
+
+        $enrollment->last_audited_at = now();
+        $enrollment->save();
+
+        $label = $type === 'regular' ? 'Regular' : 'Irregular';
+        session()->flash('success', "Student classification set to {$label}.");
+
+        $this->dispatch('modal-reset');
+    }
+
     public function render()
     {
         $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
