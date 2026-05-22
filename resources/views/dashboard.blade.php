@@ -1329,7 +1329,7 @@
                                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-1">Official Student Registry</p>
                             </div>
                         </div>
-                        <a href="{{ route('registrar.reports.students.print') }}" target="_blank"
+                        <a href="{{ route('admin.reports.students.print') }}" target="_blank"
                             class="flex items-center gap-3 px-8 py-4 rounded-2xl bg-rose-600 text-white hover:bg-rose-700 transition-all text-[11px] font-black uppercase tracking-[0.15em] shadow-xl shadow-rose-600/20 active:scale-95">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             Print Student Registry
