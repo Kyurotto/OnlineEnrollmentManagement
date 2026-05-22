@@ -395,9 +395,7 @@
 
             <div class="px-8 md:px-12 py-8 border-t border-blue-500/10 bg-blue-50/20 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="hidden" id="actionButtons"></div>
-                <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-slate-400 hover:text-black uppercase tracking-[0.2em] border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all ml-auto">
-                    Close Details
-                </button>
+                
             </div>
         </div>
     </div>
