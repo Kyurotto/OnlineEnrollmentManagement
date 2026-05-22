@@ -25,7 +25,7 @@ class RegistrarDashboardManager extends Component
         // 1. Fetch Accurate Data Counts
         $studentsCountQuery = User::query()->where('role', '=', 'student', 'and')
                              ->whereHas('application', function($q) use ($activeYearName) {
-                                 $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'], 'and', false);
+                                 $q->where('status', '=', 'Enrolled', 'and');
                                  if ($activeYearName) {
                                      $q->where('year_level', 'like', '%' . $activeYearName . '%', 'and');
                                  }
@@ -36,7 +36,7 @@ class RegistrarDashboardManager extends Component
         $pendingCount = Enrollment::query()->where('status', '=', 'Pending', 'and')->count('*');
         $enrolledCount = Enrollment::query()->whereIn('status', ['Enrolled', 'Approved'], 'and', false)->count('*');
         $programsCount = Course::query()->where('type', '=', 'program', 'and')->count('*');
-        $strandsCount = Course::query()->where('type', '=', 'strand', 'and')->count('*');
+        $strandsCount = Course::query()->where('type', '=', 'shs', 'and')->count('*');
 
         // 2. CALCULATE EXTRA STATS
         $sectionsCount = \App\Models\Section::query()->count('*');
@@ -62,7 +62,7 @@ class RegistrarDashboardManager extends Component
                 false
             )
             ->where('users.role', '=', 'student', 'and')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending'], 'and', false);
+            ->where('latest_enrollments.status', '=', 'Enrolled', 'and');
 
         $registryTotalStudents = (clone $baseStudentClassStats)->count('*');
         $registryRegularCount = $hasIsRegular

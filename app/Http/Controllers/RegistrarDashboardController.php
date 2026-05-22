@@ -23,7 +23,7 @@ class RegistrarDashboardController extends Controller
         // 1. Fetch Accurate Data Counts
         $studentsCountQuery = User::where('role', 'student')
                              ->whereHas('application', function($q) use ($activeYearName) {
-                                 $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+                                 $q->where('status', 'Enrolled');
                                  if ($activeYearName) {
                                      $q->where('year_level', 'like', '%' . $activeYearName . '%');
                                  }
@@ -34,7 +34,7 @@ class RegistrarDashboardController extends Controller
         $pendingCount = Enrollment::where('status', 'Pending')->count();
         $enrolledCount = Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count();
         $programsCount = Course::where('type', 'program')->count();
-        $strandsCount = Course::where('type', 'strand')->count();
+        $strandsCount = Course::where('type', 'shs')->count();
 
         // 2. CALCULATE EXTRA STATS
         $sectionsCount = \App\Models\Section::count();
@@ -58,7 +58,7 @@ class RegistrarDashboardController extends Controller
                 'latest_enrollments.user_id'
             )
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+            ->where('latest_enrollments.status', 'Enrolled');
 
         // No longer strictly filtering by year to maintain registry visibility during transitions
         // if ($activeYearName) {

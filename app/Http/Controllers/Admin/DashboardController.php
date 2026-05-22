@@ -21,7 +21,7 @@ class DashboardController extends Controller
         // 1. Gather Overview Statistics
         $studentsCountQuery = User::where('role', 'student')
                              ->whereHas('application', function($q) use ($activeYearName) {
-                                 $q->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+                                 $q->where('status', 'Enrolled');
                                  if ($activeYearName) {
                                      $q->where('year_level', 'like', '%' . $activeYearName . '%');
                                  }

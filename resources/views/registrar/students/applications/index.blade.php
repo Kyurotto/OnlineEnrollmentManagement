@@ -64,7 +64,7 @@
                                     default => 'bg-white/5 text-white/40 border-white/10',
                                 };
                                 $displayText = ucfirst($application->status);
-                                if (in_array($displayText, ['Enrolled', 'Paid'])) { $displayText = 'Paid'; }
+                                if (in_array($displayText, ['Enrolled', 'Paid'])) { $displayText = 'Fully Paid'; }
                                 @endphp
                                 <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
                                     {{ $displayText }}

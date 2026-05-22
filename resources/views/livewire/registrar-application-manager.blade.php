@@ -60,7 +60,7 @@
                         <option value="Pending">Pending</option>
                         <option value="Approved">Approved</option>
                         <option value="Rejected">Rejected</option>
-                        <option value="Paid">Paid</option>
+                        <option value="Paid">Fully Paid</option>
                     </select>
                 </div>
                 <div class="w-full sm:w-44">
@@ -207,7 +207,7 @@
                                     };
                                     $displayText = match($application->status) {
                                         'Enrolled' => 'Enrolled',
-                                        'Paid' => 'Paid',
+                                        'Paid' => 'Fully Paid',
                                         'Approved' => 'Approved',
                                         'Pending' => 'Pending',
                                         default => $application->status
@@ -643,7 +643,27 @@
         // Program details
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
-        document.getElementById('modalStatus').innerText = app.status || 'N/A';
+        let statusText = app.status || 'N/A';
+        if (statusText === 'Paid' || statusText.toLowerCase() === 'paid') {
+            statusText = 'Fully Paid';
+        }
+        document.getElementById('modalStatus').innerText = statusText;
+
+        // Initialize Student Classification section
+        const shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+        const appIsSHS = shsStrands.includes(app.course_code);
+        const classSection = document.getElementById('classificationSection');
+        if (classSection && classSection.__x) {
+            classSection.__x.$data.initClassification(app.is_regular, app.classification_reason, appIsSHS);
+        } else if (classSection) {
+            // Fallback: wait for Alpine to initialize
+            setTimeout(() => {
+                const alpineData = Alpine.$data(classSection);
+                if (alpineData) {
+                    alpineData.initClassification(app.is_regular, app.classification_reason, appIsSHS);
+                }
+            }, 100);
+        }
 
         // Initialize Student Classification section
         const shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];

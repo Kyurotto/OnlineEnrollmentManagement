@@ -311,7 +311,13 @@
                                 <h4 class="text-[10px] font-black text-cyan-400/60 uppercase tracking-[0.2em] mb-4">Application Status</h4>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Status</span>
-                                    <span class="text-lg font-black text-cyan-400 uppercase tracking-[0.1em]">{{ $application->status ?? 'N/A' }}</span>
+                                    @php
+                                        $displayStatus = $application->status ?? 'N/A';
+                                        if (strtolower($displayStatus) === 'paid') {
+                                            $displayStatus = 'Fully Paid';
+                                        }
+                                    @endphp
+                                    <span class="text-lg font-black text-cyan-400 uppercase tracking-[0.1em]">{{ $displayStatus }}</span>
                                 </div>
                             </div>
 
