@@ -101,18 +101,22 @@ class StudentPaymentManager extends Component
             }
         }
 
-        // Try specific cache key: payment_assessment_{level}_{program}_{yearLevel}
-        $cacheKey = "payment_assessment_{$this->level}_{$program}_{$yearLevelNum}";
-        $assessment = Cache::get($cacheKey);
-
+        $overrideKey = "student_assessment_override_{$user->id}";
+        $assessment = Cache::get($overrideKey);
         if (!$assessment) {
-            // Fallback: Global for level
-            $assessment = Cache::get("payment_assessment_{$this->level}_all_all", [
-                'tuitionFee' => 0,
-                'miscellaneousFees' => 0,
-                'discountPercentage' => 0,
-                'discountAmount' => 0,
-            ]);
+            // Try specific cache key: payment_assessment_{level}_{program}_{yearLevel}
+            $cacheKey = "payment_assessment_{$this->level}_{$program}_{$yearLevelNum}";
+            $assessment = Cache::get($cacheKey);
+
+            if (!$assessment) {
+                // Fallback: Global for level
+                $assessment = Cache::get("payment_assessment_{$this->level}_all_all", [
+                    'tuitionFee' => 0,
+                    'miscellaneousFees' => 0,
+                    'discountPercentage' => 0,
+                    'discountAmount' => 0,
+                ]);
+            }
         }
 
         $this->tuitionFee = (float)($assessment['tuitionFee'] ?? 0);

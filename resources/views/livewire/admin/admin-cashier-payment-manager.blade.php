@@ -28,7 +28,7 @@
                     </div>
                     <div class="relative group">
                         <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" wire:model.live.debounce.500ms="search" class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-xs text-black focus:border-blue-500/40 outline-none transition-all placeholder-slate-300 font-bold uppercase tracking-tight shadow-sm" placeholder="SEARCH PROTOCOL...">
+                        <input type="text" wire:model.live.debounce.500ms="search" class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-xs text-black focus:border-blue-500/40 outline-none transition-all placeholder-slate-300 font-bold uppercase tracking-tight shadow-sm" placeholder="SEARCH STUDENTS...">
                     </div>
                 </div>
 
@@ -114,38 +114,181 @@
                                 @endif
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    <div class="space-y-4">
-                                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 tracking-widest">Statement of Account</h4>
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Tuition Fees</span>
-                                            <span class="font-black text-black text-xs">₱ {{ number_format($uiTuition, 2) }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Miscellaneous</span>
-                                            <span class="font-black text-black text-xs">₱ {{ number_format($uiMisc, 2) }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Discounted</span>
-                                            <span class="font-black {{ $uiDiscount > 0 ? 'text-rose-600' : 'text-slate-300' }} text-xs">{{ $uiDiscount > 0 ? '-' : '' }} ₱ {{ number_format($uiDiscount, 2) }}</span>
-                                        </div>
-
-                                        @if($actualRemainingPrevious > 0)
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Previous Balance</span>
-                                            <span class="font-black text-rose-600 text-xs">₱ {{ number_format($actualRemainingPrevious, 2) }}</span>
-                                        </div>
-                                        @endif
-
-                                        <div class="flex justify-between items-center pt-6 border-t-2 border-blue-500/10">
-                                            <div class="flex flex-col">
-                                                <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
-                                                <span class="text-[9px] font-bold text-slate-400 uppercase">Current Term Only</span>
+                                    @if($isEditingAssessment)
+                                        <div class="space-y-4">
+                                            <div class="flex justify-between items-center mb-6">
+                                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Edit Assessment</h4>
+                                                <button wire:click="cancelEditAssessment" class="text-[9px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest">Cancel</button>
                                             </div>
-                                            <span class="font-black text-blue-600 text-lg tracking-tighter">
-                                                ₱ {{ number_format($uiCurrentTermAssessment, 2) }}
-                                            </span>
+
+                                            <div class="space-y-3 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar border border-slate-100 rounded-2xl p-4 bg-slate-50/50 shadow-inner">
+                                                {{-- Registration Fee --}}
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Registration Fee</label>
+                                                    <div class="relative w-36">
+                                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                        <input type="number" wire:model="editRegistrationFee" step="0.01" min="0" class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                    </div>
+                                                </div>
+
+                                                {{-- Miscellaneous Items --}}
+                                                @php
+                                                    $editMiscFields = [
+                                                        'editGuidanceFee' => 'Guidance Fee',
+                                                        'editTrainingMaterials' => 'Testing Materials',
+                                                        'editHandbook' => 'Handbook',
+                                                        'editMailingFee' => 'Mailing Fee',
+                                                        'editMedicalDental' => 'Medical & Dental Service',
+                                                        'editStudentIdFee' => 'Student ID Card',
+                                                        'editSocioCultural' => 'Socio-Cultural & Sports Dev.',
+                                                        'editInsurance' => 'Insurance',
+                                                        'editSchoolPublication' => 'School Publication',
+                                                        'editStudentDevelopment' => 'Student Development',
+                                                        'editLibraryFee' => 'Library Fee',
+                                                        'editEnergyFee' => 'Energy Fee',
+                                                        'editPhysicalFacilities' => 'Physical/Facilities Dev.',
+                                                        'editResearchInnovation' => 'Research, Innovation & Ext.',
+                                                        'editInternetFee' => 'Internet Fee',
+                                                        'editAudioVisual' => 'Audio Visual',
+                                                        'editItDevelopment' => 'IT Development',
+                                                    ];
+                                                @endphp
+                                                @foreach($editMiscFields as $modelField => $label)
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">{{ $label }}</label>
+                                                    <div class="relative w-36">
+                                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                        <input type="number" wire:model="{{ $modelField }}" step="0.01" min="0" class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                    </div>
+                                                </div>
+                                                @endforeach
+
+                                                {{-- Laboratory Fee --}}
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Laboratory Fee</label>
+                                                    <div class="relative w-36">
+                                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                        <input type="number" wire:model="editLaboratoryFee" step="0.01" min="0" class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                    </div>
+                                                </div>
+
+                                                {{-- Tuition Fee --}}
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Tuition Fee</label>
+                                                    <div class="relative w-36">
+                                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                        <input type="number" wire:model="editTuitionFee" step="0.01" min="0" class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex gap-3 pt-4 border-t border-slate-100">
+                                                <button wire:click="saveAssessmentOverride" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl text-[9px] uppercase tracking-[0.2em] transition-all shadow-md active:scale-95">
+                                                    Save Changes
+                                                </button>
+                                                <button wire:click="cancelEditAssessment" class="bg-slate-50 hover:bg-slate-100 text-slate-400 border border-slate-200 font-black py-2.5 px-4 rounded-xl text-[9px] uppercase tracking-[0.2em] transition-all active:scale-95">
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @else
+                                        <div class="space-y-4">
+                                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 tracking-widest">Statement of Account</h4>
+
+                                            {{-- Registration Fee --}}
+                                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                <span class="font-black text-slate-800 text-xs uppercase">Registration Fee</span>
+                                                <span class="font-black text-black text-xs">₱ {{ number_format($registrationFee, 2) }}</span>
+                                            </div>
+
+                                            {{-- Miscellaneous Fees Section --}}
+                                            <div class="mt-4 mb-1">
+                                                <span class="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em]">Miscellaneous Fees</span>
+                                            </div>
+                                            @php
+                                                $miscBreakdown = [
+                                                    ['Guidance Fee', $guidanceFee],
+                                                    ['Training Materials', $trainingMaterials],
+                                                    ['Handbook', $handbook],
+                                                    ['Mailing Fee', $mailingFee],
+                                                    ['Medical & Dental Service', $medicalDental],
+                                                    ['Student ID Card', $studentIdFee],
+                                                    ['Socio-Cultural & Sports Dev.', $socioCultural],
+                                                    ['Insurance', $insurance],
+                                                    ['School Publication', $schoolPublication],
+                                                    ['Student Development', $studentDevelopment],
+                                                    ['Library Fee', $libraryFee],
+                                                    ['Energy Fee', $energyFee],
+                                                    ['Physical/Facilities Dev.', $physicalFacilities],
+                                                    ['Research, Innovation & Ext.', $researchInnovation],
+                                                    ['Internet Fee', $internetFee],
+                                                    ['Audio Visual', $audioVisual],
+                                                    ['IT Development', $itDevelopment],
+                                                ];
+                                                $miscSubtotal = collect($miscBreakdown)->sum(fn($item) => (float)$item[1]);
+                                            @endphp
+                                            @foreach($miscBreakdown as $item)
+                                                @if((float)$item[1] > 0)
+                                                <div class="flex justify-between items-center py-1.5 pl-4 border-b border-slate-50/80">
+                                                    <span class="font-bold text-slate-500 text-[11px] uppercase">{{ $item[0] }}</span>
+                                                    <span class="font-bold text-slate-700 text-[11px]">₱ {{ number_format($item[1], 2) }}</span>
+                                                </div>
+                                                @endif
+                                            @endforeach
+                                            <div class="flex justify-between items-center py-2 pl-4 border-b border-blue-100 bg-blue-50/30 rounded-lg px-3">
+                                                <span class="font-black text-blue-600 text-[11px] uppercase tracking-wider">Total Miscellaneous</span>
+                                                <span class="font-black text-blue-600 text-xs">₱ {{ number_format($miscSubtotal, 2) }}</span>
+                                            </div>
+
+                                            {{-- Laboratory Fee --}}
+                                            <div class="flex justify-between items-center py-2 border-b border-slate-50 mt-2">
+                                                <span class="font-black text-slate-800 text-xs uppercase">Laboratory Fee</span>
+                                                <span class="font-black text-black text-xs">₱ {{ number_format($laboratoryFee, 2) }}</span>
+                                            </div>
+
+                                            {{-- Tuition Fee --}}
+                                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                <span class="font-black text-slate-800 text-xs uppercase">Tuition Fee</span>
+                                                <span class="font-black text-black text-xs">₱ {{ number_format($uiTuition, 2) }}</span>
+                                            </div>
+
+                                            {{-- Discount --}}
+                                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                <span class="font-bold text-slate-600 text-xs uppercase">Discounted</span>
+                                                <span class="font-black {{ $uiDiscount > 0 ? 'text-rose-600' : 'text-slate-300' }} text-xs">{{ $uiDiscount > 0 ? '-' : '' }} ₱ {{ number_format($uiDiscount, 2) }}</span>
+                                            </div>
+
+                                            @if($actualRemainingPrevious > 0)
+                                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                <span class="font-bold text-slate-600 text-xs uppercase">Previous Balance</span>
+                                                <span class="font-black text-rose-600 text-xs">₱ {{ number_format($actualRemainingPrevious, 2) }}</span>
+                                            </div>
+                                            @endif
+
+                                            <div class="flex justify-between items-center pt-6 border-t-2 border-blue-500/10">
+                                                <div class="flex flex-col">
+                                                    <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
+                                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Current Term Only</span>
+                                                </div>
+                                                <span class="font-black text-blue-600 text-lg tracking-tighter">
+                                                    ₱ {{ number_format($uiCurrentTermAssessment, 2) }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex items-center gap-3 mt-4">
+                                                <button wire:click="editAssessment" class="text-[9px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 rounded-xl border border-blue-200/50 shadow-sm transition-all active:scale-95 flex items-center gap-1.5">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    Edit Assessment
+                                                </button>
+                                                @if(Cache::has("student_assessment_override_{$selectedStudentId}"))
+                                                    <button wire:click="resetAssessmentToDefault" class="text-[9px] font-black uppercase tracking-wider text-rose-600 bg-rose-50 hover:bg-rose-100 px-3.5 py-2.5 rounded-xl border border-rose-200/50 shadow-sm transition-all active:scale-95 flex items-center gap-1.5">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18v3z"></path></svg>
+                                                        Reset to Default
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
 
                                     <div class="bg-slate-50/50 p-8 rounded-[32px] border border-blue-500/10 flex flex-col items-center justify-center text-center">
                                         <div class="w-16 h-16 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-300 mb-4">

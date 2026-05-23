@@ -16,7 +16,7 @@ class StudentDashboardController extends Controller
 
         // 1. Fetch currently ACTIVE Semester and Year
         $activeYear = AcademicYear::where('is_active', true)->first();
-        
+
         // Ensure the active semester actually belongs to the active year
         $activeSemester = null;
         if ($activeYear) {
@@ -31,11 +31,11 @@ class StudentDashboardController extends Controller
         if ($activeYear && $activeSemester) {
             $hasPendingApplication = Enrollment::where('user_id', $user->id)
                 ->where('status', 'Pending')
-                ->where(function($q) use ($activeYear, $activeSemester) {
-                    $q->where(function($sub) use ($activeYear, $activeSemester) {
+                ->where(function ($q) use ($activeYear, $activeSemester) {
+                    $q->where(function ($sub) use ($activeYear, $activeSemester) {
                         $sub->where('semester_name', $activeSemester->name)
                             ->where('academic_year_name', $activeYear->year_name);
-                    })->orWhere(function($sub) use ($activeYear, $activeSemester) {
+                    })->orWhere(function ($sub) use ($activeYear, $activeSemester) {
                         $sub->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
                             ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
                     });
@@ -51,8 +51,9 @@ class StudentDashboardController extends Controller
         $currentYearEnrollment = null;
         if ($activeYear && $activeSemester && $latestEnrollment) {
             if (($latestEnrollment->academic_year_name === $activeYear->year_name && $latestEnrollment->semester_name === $activeSemester->name) ||
-                (stripos($latestEnrollment->year_level, $activeYear->year_name) !== false && 
-                 stripos($latestEnrollment->year_level, $activeSemester->name) !== false)) {
+                (stripos($latestEnrollment->year_level, $activeYear->year_name) !== false &&
+                    stripos($latestEnrollment->year_level, $activeSemester->name) !== false)
+            ) {
                 $currentYearEnrollment = $latestEnrollment;
             }
         }
@@ -62,11 +63,11 @@ class StudentDashboardController extends Controller
         if ($activeYear && $activeSemester) {
             $isEnrolledInActiveYear = Enrollment::where('user_id', $user->id)
                 ->whereIn('status', ['Enrolled', 'Approved', 'Pending', 'Paid'])
-                ->where(function($q) use ($activeYear, $activeSemester) {
-                    $q->where(function($sub) use ($activeYear, $activeSemester) {
+                ->where(function ($q) use ($activeYear, $activeSemester) {
+                    $q->where(function ($sub) use ($activeYear, $activeSemester) {
                         $sub->where('semester_name', $activeSemester->name)
                             ->where('academic_year_name', $activeYear->year_name);
-                    })->orWhere(function($sub) use ($activeYear, $activeSemester) {
+                    })->orWhere(function ($sub) use ($activeYear, $activeSemester) {
                         $sub->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
                             ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
                     });
@@ -80,18 +81,18 @@ class StudentDashboardController extends Controller
         $hasSubmitted = false;
         if ($activeYear && $activeSemester) {
             $existingEnrollment = Enrollment::where('user_id', $user->id)
-                ->where(function($query) use ($activeYear, $activeSemester) {
-                    $query->where(function($q) use ($activeYear, $activeSemester) {
+                ->where(function ($query) use ($activeYear, $activeSemester) {
+                    $query->where(function ($q) use ($activeYear, $activeSemester) {
                         $q->whereIn('status', ['Pending', 'Approved', 'Paid', 'Enrolled', 'Rejected'])
-                          ->where(function($sub) use ($activeYear, $activeSemester) {
-                              $sub->where(function($sub2) use ($activeYear, $activeSemester) {
-                                  $sub2->where('semester_name', $activeSemester->name)
-                                       ->where('academic_year_name', $activeYear->year_name);
-                              })->orWhere(function($sub2) use ($activeYear, $activeSemester) {
-                                  $sub2->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                                       ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
-                              });
-                          });
+                            ->where(function ($sub) use ($activeYear, $activeSemester) {
+                                $sub->where(function ($sub2) use ($activeYear, $activeSemester) {
+                                    $sub2->where('semester_name', $activeSemester->name)
+                                        ->where('academic_year_name', $activeYear->year_name);
+                                })->orWhere(function ($sub2) use ($activeYear, $activeSemester) {
+                                    $sub2->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                                        ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                                });
+                            });
                     })->orWhereIn('status', ['Pending', 'Approved', 'Paid']); // Block if they have ANY active processes
                 })
                 ->first();
@@ -100,12 +101,12 @@ class StudentDashboardController extends Controller
 
         $anyEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
         $allEnrollmentsCount = Enrollment::where('user_id', $user->id)->count();
-        
-        $isOldStudent = ($allEnrollmentsCount > 1) || 
-                        ($allEnrollmentsCount === 1 && $anyEnrollment && 
-                            $activeYear && $activeSemester && 
-                            (stripos((string)$anyEnrollment->year_level, $activeYear->year_name) === false || 
-                             stripos((string)$anyEnrollment->year_level, $activeSemester->name) === false));
+
+        $isOldStudent = ($allEnrollmentsCount > 1) ||
+            ($allEnrollmentsCount === 1 && $anyEnrollment &&
+                $activeYear && $activeSemester &&
+                (stripos((string)$anyEnrollment->year_level, $activeYear->year_name) === false ||
+                    stripos((string)$anyEnrollment->year_level, $activeSemester->name) === false));
 
         $isStep3Done = false;
         // For Old Students, clearance is checked against the latest available record
@@ -116,8 +117,8 @@ class StudentDashboardController extends Controller
                 $isStep3Done = ($checkRecord->credentials_verified == 1);
             }
         }
-        
-        // 7. Final flag for dashboard button: 
+
+        // 7. Final flag for dashboard button:
         // New student can always enroll. Old student must finish Step 3 (Clearance).
         $canEnrollNow = !$isOldStudent || $isStep3Done;
 
@@ -126,26 +127,30 @@ class StudentDashboardController extends Controller
         if ($currentYearEnrollment && $activeYear && $activeSemester) {
             $level = strtolower($currentYearEnrollment->level ?? 'college');
             $program = $currentYearEnrollment->course_code ?? 'all';
-            
+
             // Robust year level extraction (e.g., "1st Year" -> "1")
             $yearLevelDigit = 'all';
             if (preg_match('/(\d+)/', $currentYearEnrollment->year_level, $matches)) {
                 $yearLevelDigit = $matches[1];
             }
-            
-            $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
-            $assessment = \Illuminate\Support\Facades\Cache::get($cacheKey);
-            
+
+            $overrideKey = "student_assessment_override_{$user->id}";
+            $assessment = \Illuminate\Support\Facades\Cache::get($overrideKey);
             if (!$assessment) {
-                // Fallback to global
-                $assessment = \Illuminate\Support\Facades\Cache::get("payment_assessment_{$level}_all_all", [
-                    'tuitionFee' => 0,
-                    'miscellaneousFees' => 0,
-                    'discountPercentage' => 0,
-                    'discountAmount' => 0,
-                ]);
+                $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
+                $assessment = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+                if (!$assessment) {
+                    // Fallback to global
+                    $assessment = \Illuminate\Support\Facades\Cache::get("payment_assessment_{$level}_all_all", [
+                        'tuitionFee' => 0,
+                        'miscellaneousFees' => 0,
+                        'discountPercentage' => 0,
+                        'discountAmount' => 0,
+                    ]);
+                }
             }
-            
+
             // Calculate final total
             $subtotal = ($assessment['tuitionFee'] ?? 0) + ($assessment['miscellaneousFees'] ?? 0);
             $percDisc = $subtotal * (($assessment['discountPercentage'] ?? 0) / 100);
