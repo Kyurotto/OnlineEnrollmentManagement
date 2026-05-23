@@ -105,7 +105,7 @@ class DashboardManager extends Component
                                         }
                                     })->count(),
             'total_payments' => Payment::count(),
-            'applications'   => Enrollment::where('status', 'Pending')
+            'applications'   => Enrollment::whereNotIn('status', ['Enrolled', 'Rejected'])
                                         ->when($activeYearName, function($q) use ($activeYearName) {
                                             $q->where('year_level', 'like', '%' . $activeYearName . '%');
                                         })->count(),

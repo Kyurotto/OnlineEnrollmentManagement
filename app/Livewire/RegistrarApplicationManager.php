@@ -65,9 +65,18 @@ class RegistrarApplicationManager extends Component
         $this->selectedId = $id;
     }
 
-    public function approve($id)
+    public function approve($id, $classType = null, $classReason = null)
     {
         $application = Enrollment::findOrFail($id);
+
+        // Apply classification if provided
+        if ($classType === 'regular') {
+            $application->is_regular = true;
+            $application->classification_reason = null;
+        } elseif ($classType === 'irregular') {
+            $application->is_regular = false;
+            $application->classification_reason = $classReason;
+        }
 
         // Finalize enrollment status
         $application->status = 'Enrolled';

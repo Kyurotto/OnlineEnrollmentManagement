@@ -45,6 +45,7 @@
                             <th class="py-6 px-8">Email</th>
                             <th class="py-6 px-8 text-center">Academic Track</th>
                             <th class="py-6 px-8 text-center">Section</th>
+                            <th class="py-6 px-8 text-center">Classification</th>
                             <th class="py-6 px-8">Status</th>
                         </tr>
                     </thead>
@@ -67,6 +68,21 @@
                                 <td class="py-6 px-8 text-center">
                                     <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
                                 </td>
+                                <td class="py-6 px-8 text-center">
+                                    @if($student->is_regular === 1 || $student->is_regular === true)
+                                        <span class="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
+                                            Regular
+                                        </span>
+                                    @elseif($student->is_regular === 0 || $student->is_regular === false && $student->is_regular !== null)
+                                        <span class="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest" title="{{ $student->classification_reason }}">
+                                            Irregular
+                                        </span>
+                                    @else
+                                        <span class="bg-white/5 text-white/40 border-white/10 text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
+                                            Not Set
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="py-6 px-8">
                                     @php
                                         $status = $student->status ?? 'Enrolled';
@@ -83,7 +99,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="py-20 text-center">
+                                <td colspan="8" class="py-20 text-center">
                                     <div class="flex flex-col items-center opacity-20">
                                         <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                         <span class="text-[10px] font-black uppercase tracking-[0.3em]">No Students Documented</span>

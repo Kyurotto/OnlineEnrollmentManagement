@@ -211,10 +211,10 @@ class StudentEnrollmentController extends Controller
         $activeSemester = Semester::where('is_active', true)->first();
 
         $enrollment = Enrollment::where('user_id', $user->id)
-            ->where(function($q) use ($activeYear, $activeSemester) {
+            ->where(function ($q) use ($activeYear, $activeSemester) {
                 if (!$activeYear || !$activeSemester) return;
                 $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                  ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                    ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
             })
             ->latest()
             ->first();
@@ -256,10 +256,10 @@ class StudentEnrollmentController extends Controller
         $activeSemester = Semester::where('is_active', true)->first();
 
         $enrollment = Enrollment::where('user_id', $user->id)
-            ->where(function($q) use ($activeYear, $activeSemester) {
+            ->where(function ($q) use ($activeYear, $activeSemester) {
                 if (!$activeYear || !$activeSemester) return;
                 $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                  ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                    ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
             })
             ->latest()
             ->first();
@@ -298,11 +298,17 @@ class StudentEnrollmentController extends Controller
 
         $validationRules = [
             'id_picture' => 'nullable|image|max:2048',
-            'promissory_note' => 'nullable|file|mimes:doc,docx,pdf|max:5120',
+            'promissory_note' => 'nullable|array',
+            'promissory_note.*' => 'nullable|file|mimes:doc,docx,pdf|max:5120',
             'promissory_reason' => 'nullable|string|max:1000',
         ];
 
+        $requiredDocs = ['form_137', 'good_moral', 'psa', 'id_picture'];
+        $fileMap = ['form_137' => 'form_137_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path'];
+
         if ($level === 'shs') {
+            $requiredDocs[] = 'sf10';
+            $fileMap['sf10'] = 'sf10_path';
             $validationRules = array_merge($validationRules, [
                 'form_137' => 'nullable|file|max:5120',
                 'sf10' => 'nullable|file|max:5120',
@@ -317,11 +323,29 @@ class StudentEnrollmentController extends Controller
             ]);
         }
 
-        $request->validate($validationRules);
+        $hasAllDocs = true;
+        foreach ($requiredDocs as $doc) {
+            $dbField = $fileMap[$doc];
+            if (empty($enrollment->$dbField) && !$request->hasFile($doc)) {
+                $hasAllDocs = false;
+                break;
+            }
+        }
 
-        $fileMap = $level === 'shs'
-            ? ['form_137' => 'form_137_path', 'sf10' => 'sf10_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path']
-            : ['form_137' => 'form_137_path', 'good_moral' => 'good_moral_path', 'psa' => 'psa_path', 'id_picture' => 'id_picture_path'];
+        if (!$hasAllDocs) {
+            if (empty($enrollment->promissory_note_path) && !$request->hasFile('promissory_note')) {
+                $validationRules['promissory_note'] = 'required|array|min:1';
+                $validationRules['promissory_note.*'] = 'required|file|mimes:doc,docx,pdf|max:5120';
+            }
+            if (empty($enrollment->promissory_reason) && empty($request->input('promissory_reason'))) {
+                $validationRules['promissory_reason'] = 'required|string|max:1000';
+            }
+        }
+
+        $request->validate($validationRules, [
+            'promissory_note.required' => 'A Promissory Note is required because you have incomplete documents.',
+            'promissory_reason.required' => 'Please provide a reason for the missing documents.',
+        ]);
 
         $updatedData = [];
         foreach ($fileMap as $field => $dbField) {
@@ -330,9 +354,16 @@ class StudentEnrollmentController extends Controller
             }
         }
 
-        // Handle Promissory Note
+        // Handle Promissory Note (Multiple Files)
         if ($request->hasFile('promissory_note')) {
-            $updatedData['promissory_note_path'] = $request->file('promissory_note')->store('enrollments/promissory', 'local');
+            $paths = [];
+            // If they are uploading new files, we can either append or replace.
+            // Let's replace the old ones with the new uploaded files to be safe, or just append. Let's merge them if they want to upgrade.
+            // Actually, replacing is safer so they don't bloat the DB, or appending. Since it's a file input, uploading overwrites the selection.
+            foreach ($request->file('promissory_note') as $file) {
+                $paths[] = $file->store('enrollments/promissory', 'local');
+            }
+            $updatedData['promissory_note_path'] = json_encode($paths);
         }
 
         if ($request->has('promissory_reason')) {
@@ -381,9 +412,9 @@ class StudentEnrollmentController extends Controller
             return redirect()->route('student.dashboard')->with('error', 'No enrollment found.');
         }
 
-        $isOldStudent = Enrollment::where('user_id', Auth::id())->count() > 1 || 
-                        Enrollment::where('user_id', Auth::id())->whereNotNull('archived_at')->count() > 0 ||
-                        stripos($enrollment->year_level, 'Returning') !== false;
+        $isOldStudent = Enrollment::where('user_id', Auth::id())->count() > 1 ||
+            Enrollment::where('user_id', Auth::id())->whereNotNull('archived_at')->count() > 0 ||
+            stripos($enrollment->year_level, 'Returning') !== false;
 
         if (in_array($enrollment->status, ['Enrolled', 'Paid']) && !$isOldStudent) {
             return redirect()->route('student.enrollment.review')->with('error', 'You cannot edit an application that has already been finalized/paid.');
@@ -411,7 +442,7 @@ class StudentEnrollmentController extends Controller
         $enrollment = Enrollment::where('user_id', Auth::id())->latest()->first();
 
         if (!$enrollment) {
-             return redirect()->route('student.enrollment.review')->with('error', 'Unauthorized edit attempt.');
+            return redirect()->route('student.enrollment.review')->with('error', 'Unauthorized edit attempt.');
         }
 
         $level = $request->input('level', $enrollment->level);
@@ -461,8 +492,8 @@ class StudentEnrollmentController extends Controller
         $unifiedYearLevel = "{$request->year_level} | {$semesterName} | {$academicYearName}";
 
         $address = $request->address_full;
-        if(empty($address)){
-             $address = implode(', ', array_filter([$request->prk_blk_lot_vill, $request->barangay, $request->city, $request->province, $request->zip]));
+        if (empty($address)) {
+            $address = implode(', ', array_filter([$request->prk_blk_lot_vill, $request->barangay, $request->city, $request->province, $request->zip]));
         }
 
         $enrollment->update([
@@ -496,5 +527,4 @@ class StudentEnrollmentController extends Controller
 
         return redirect()->route('student.enrollment.review')->with('success', 'Your application has been successfully updated and is pending review.');
     }
-
 }

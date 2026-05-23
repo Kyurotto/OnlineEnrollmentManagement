@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Prevent 30 seconds timeout error globally
+        set_time_limit(0);
+        ini_set('max_execution_time', 0);
+
         // 0. SUPER ADMIN BYPASS
         Gate::before(function (User $user, string $ability) {
             // FIX 3: Prevent Super Admin from bypassing strictly role-scoped capabilities

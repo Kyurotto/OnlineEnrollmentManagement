@@ -11,6 +11,8 @@ class Enrollment extends Model
 
     protected $guarded = [];
 
+    protected $appends = ['is_fully_paid'];
+
     protected $casts = [
         'is_regular'             => 'boolean',
         'credentials_verified'   => 'boolean',
@@ -221,6 +223,25 @@ class Enrollment extends Model
             'psa_path' => 'PSA Birth Certificate',
             'id_picture_path' => '2x2 ID Portrait'
         ];
+    }
+
+    /**
+     * Check if the enrollment has been fully paid based on assessment and payments.
+     */
+    public function getIsFullyPaidAttribute(): bool
+    {
+        $assessment = (float)($this->total_assessment ?? (($this->tuition_fee ?? 0) + ($this->miscellaneous_fee ?? 0)));
+        if ($assessment <= 0) {
+            // Cannot be fully paid if there's no assessment yet
+            return false;
+        }
+
+        $paid = $this->payments()->where('status', 'Paid')->sum('amount');
+        $discount = (float)($this->cashier_discount ?? 0);
+        $prevBalance = (float)($this->previous_balance ?? 0);
+
+        $balance = max(0, ($assessment - $discount + $prevBalance) - $paid);
+        return $balance <= 0;
     }
 
 }

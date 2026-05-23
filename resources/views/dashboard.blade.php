@@ -543,7 +543,7 @@
 </x-layouts.student>
 @elseif($role === 'cashier')
 <div class="w-full">
-    <div class="space-y-8 animate-in fade-in duration-700" wire:poll.3s>
+    <div class="space-y-8 animate-in fade-in duration-700">
 
         {{-- SECTION 1 — Header Node --}}
         <div class="p-10 rounded-[2rem] border relative overflow-hidden group shadow-xl shadow-blue-900/5 bg-white"
@@ -837,7 +837,7 @@
 </div>
 @elseif($role === 'registrar')
 <div class="w-full">
-    <div class="space-y-8 animate-in fade-in duration-700" wire:poll.3s>
+    <div class="space-y-8 animate-in fade-in duration-700">
 
         {{-- SECTION 1 — Header Node --}}
         <div class="p-10 rounded-[2rem] border relative overflow-hidden group shadow-xl shadow-blue-900/5 bg-white"

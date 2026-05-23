@@ -75,19 +75,6 @@ class DroppedStudentReportService
         return Enrollment::with(['user', 'payments'])
             ->whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
             ->get()
-            ->filter(function ($enrollment) use ($absenceThreshold, $cutoffDate) {
-                $hasAbsenceRisk = ($enrollment->consecutive_absences ?? 0) >= $absenceThreshold;
-
-                $lastPayment = $enrollment->payments
-                    ->where('status', 'Paid')
-                    ->sortByDesc('payment_date')
-                    ->first();
-
-                $hasPaymentRisk = !$lastPayment ||
-                    Carbon::parse($lastPayment->payment_date)->lt($cutoffDate);
-
-                return $hasAbsenceRisk || $hasPaymentRisk;
-            })
             ->map(function ($enrollment) use ($paymentGapDays) {
                 $lastPayment = $enrollment->payments
                     ->where('status', 'Paid')
@@ -106,6 +93,10 @@ class DroppedStudentReportService
                     $flags[] = 'No payment on record';
                 } elseif ($daysSincePayment >= $paymentGapDays) {
                     $flags[] = "No payment in {$daysSincePayment} days";
+                }
+
+                if (empty($flags)) {
+                    $flags[] = 'Normal';
                 }
 
                 return (object) [

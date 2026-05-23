@@ -33,10 +33,10 @@ class RegistrarDashboardManager extends Component
         $studentsCount = $studentsCountQuery->count();
 
         $totalApplicationsCount = Enrollment::query()->count('*');
-        $pendingCount = Enrollment::query()->where('status', '=', 'Pending', 'and')->count('*');
-        $enrolledCount = Enrollment::query()->whereIn('status', ['Enrolled', 'Approved'], 'and', false)->count('*');
-        $programsCount = Course::query()->where('type', '=', 'program', 'and')->count('*');
-        $strandsCount = Course::query()->where('type', '=', 'shs', 'and')->count('*');
+        $activeApplicationsCount = Enrollment::query()->whereNotIn('status', ['Enrolled', 'Rejected'])->count('*');
+        $enrolledCount = Enrollment::query()->whereIn('status', ['Enrolled', 'Approved'])->count('*');
+        $programsCount = Course::query()->where('type', '=', 'program')->count('*');
+        $strandsCount = Course::query()->where('type', '=', 'shs')->count('*');
 
         // 2. CALCULATE EXTRA STATS
         $sectionsCount = \App\Models\Section::query()->count('*');
@@ -53,16 +53,15 @@ class RegistrarDashboardManager extends Component
                 ])
                     ->whereIn('id', function ($q) {
                         $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
-                    }, 'and', false),
+                    }),
                 'latest_enrollments',
                 'users.id',
                 '=',
                 'latest_enrollments.user_id',
-                'inner',
-                false
+                'inner'
             )
-            ->where('users.role', '=', 'student', 'and')
-            ->where('latest_enrollments.status', '=', 'Enrolled', 'and');
+            ->where('users.role', '=', 'student')
+            ->where('latest_enrollments.status', '=', 'Enrolled');
 
         $registryTotalStudents = (clone $baseStudentClassStats)->count('*');
         $registryRegularCount = $hasIsRegular
@@ -87,7 +86,7 @@ class RegistrarDashboardManager extends Component
         // 3. MAP THE STATS EXACTLY FOR THE HTML VIEW
         $stats = [
             'students'     => $studentsCount,
-            'applications' => $pendingCount,
+            'applications' => $activeApplicationsCount,
             'programs'     => $programsCount,
             'strands'      => $strandsCount,
             'sections'     => $sectionsCount,
