@@ -180,20 +180,20 @@
             @endif
         </div>
 
-        {{-- ── AT-RISK TABLE ── --}}
+        {{-- ── ENROLLED STUDENTS TABLE ── --}}
         <div class="glass-card rounded-[28px] border border-white/5 overflow-hidden">
             <div class="px-8 py-6 border-b border-white/5 flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <span class="w-1 h-4 rounded-full bg-orange-400"></span>
-                    <h2 class="text-xs font-black text-white uppercase tracking-[0.3em]">At-Risk Students</h2>
-                    <span class="text-[9px] text-white/30 font-bold normal-case tracking-normal">≥5 absences or no payment in 30+ days</span>
+                    <span class="w-1 h-4 rounded-full bg-blue-400"></span>
+                    <h2 class="text-xs font-black text-white uppercase tracking-[0.3em]">Enrolled Students</h2>
+                    <span class="text-[9px] text-white/30 font-bold normal-case tracking-normal">Candidates for dropping</span>
                 </div>
-                <span class="text-[9px] font-black text-orange-400/60 uppercase tracking-widest">{{ $atRiskStudents->count() }} flagged</span>
+                <span class="text-[9px] font-black text-blue-400/60 uppercase tracking-widest">{{ $atRiskStudents->count() }} active</span>
             </div>
 
             @if($atRiskStudents->isEmpty())
                 <div class="py-16 text-center text-white/20 text-[10px] font-black uppercase tracking-widest">
-                    No at-risk students detected.
+                    No active students detected.
                 </div>
             @else
                 <div class="overflow-x-auto">
@@ -231,7 +231,11 @@
                                     <td class="py-4 px-6">
                                         <div class="flex flex-wrap gap-1">
                                             @foreach($s->risk_flags as $flag)
-                                                <span class="text-[8px] font-black px-2 py-0.5 rounded-full bg-orange-400/10 border border-orange-400/20 text-orange-400 uppercase tracking-widest whitespace-nowrap">
+                                                @php
+                                                    $isNormal = $flag === 'Normal';
+                                                    $flagColor = $isNormal ? 'emerald-500' : 'orange-400';
+                                                @endphp
+                                                <span class="text-[8px] font-black px-2 py-0.5 rounded-full bg-{{ $flagColor }}/10 border border-{{ $flagColor }}/20 text-{{ $flagColor }} uppercase tracking-widest whitespace-nowrap">
                                                     {{ $flag }}
                                                 </span>
                                             @endforeach

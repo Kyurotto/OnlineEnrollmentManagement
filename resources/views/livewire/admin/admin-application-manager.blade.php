@@ -194,19 +194,22 @@
                             <td class="py-6 px-8 text-slate-500 font-medium tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
                             <td class="py-6 px-8">
                                 @php
-                                    $badgeColor = match(ucfirst($application->status)) {
-                                        'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        'Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                                        'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                        'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                    $isFullyPaid = $application->status === 'Paid' && $application->is_fully_paid;
+                                    $badgeColor = match(true) {
+                                        $application->status === 'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        $isFullyPaid => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                        $application->status === 'Paid' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        $application->status === 'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        $application->status === 'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                        $application->status === 'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
                                         default => 'bg-white/5 text-white/40 border-white/10',
                                     };
-                                    $displayText = match($application->status) {
-                                        'Enrolled' => 'Enrolled',
-                                        'Paid' => 'Fully Paid',
-                                        'Approved' => 'Approved',
-                                        'Pending' => 'Pending',
+                                    $displayText = match(true) {
+                                        $application->status === 'Enrolled' => 'Enrolled',
+                                        $isFullyPaid => 'Fully Paid',
+                                        $application->status === 'Paid' => 'Partially Paid',
+                                        $application->status === 'Approved' => 'Approved',
+                                        $application->status === 'Pending' => 'Pending',
                                         default => $application->status
                                     };
                                 @endphp
@@ -421,7 +424,7 @@
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
         let statusText = app.status || 'N/A';
         if (statusText === 'Paid' || statusText.toLowerCase() === 'paid') {
-            statusText = 'Fully Paid';
+            statusText = (app.is_fully_paid) ? 'Fully Paid' : 'Partially Paid';
         }
         document.getElementById('modalStatus').innerText = statusText;
 
@@ -503,23 +506,36 @@
             promissoryReason.innerText = app.promissory_reason || 'No explanation provided.';
 
             if (app.promissory_note_path) {
-                const noteUrl = storageBase + app.promissory_note_path;
-                const isPdf = app.promissory_note_path.toLowerCase().endsWith('.pdf');
+                let paths = [];
+                try {
+                    paths = JSON.parse(app.promissory_note_path);
+                    if (!Array.isArray(paths)) {
+                        paths = [app.promissory_note_path];
+                    }
+                } catch (e) {
+                    paths = [app.promissory_note_path];
+                }
 
-                promissoryFile.innerHTML = `
-                    <div class="space-y-3">
-                        <span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment<\/span>
+                let fileHtml = '<div class="space-y-3"><span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment(s)</span><div class="space-y-2">';
+                
+                paths.forEach((path, index) => {
+                    const noteUrl = storageBase + path;
+                    const isPdf = path.toLowerCase().endsWith('.pdf');
+                    fileHtml += `
                         <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-50/50 hover:bg-amber-50 transition-all">
                             <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
-                            <\/div>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            </div>
                             <div>
-                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-wider">Download Note<\/p>
-                                <p class="text-[8px] text-amber-600/80 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}<\/p>
-                            <\/div>
-                        <\/a>
-                    <\/div>
-                `;
+                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-wider">Download Note ${paths.length > 1 ? '#' + (index + 1) : ''}</p>
+                                <p class="text-[8px] text-amber-600/80 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}</p>
+                            </div>
+                        </a>
+                    `;
+                });
+                
+                fileHtml += '</div></div>';
+                promissoryFile.innerHTML = fileHtml;
             } else {
                 promissoryFile.innerHTML = `
                     <div class="space-y-3">

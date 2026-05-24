@@ -703,12 +703,6 @@
     </div>
 
     @livewireScripts
-    <script>
-        setInterval(function() {
-            Livewire.dispatch('refresh-stats');
-            Livewire.dispatch('refreshNotifications');
-        }, 5000);
-    </script>
 </body>
 
 </html>
