@@ -18,6 +18,7 @@ class RegistrarApplicationController extends Controller
         // 1. Fetch applications with Student (user) and Course details
         // We use 'with' to prevent "Attempt to read property on null" errors
         $applications = Enrollment::with(['user'])
+            ->whereNotIn('status', ['Dropped', 'Withdrawn'])
             ->latest() // Show newest first
             ->paginate(10);
 

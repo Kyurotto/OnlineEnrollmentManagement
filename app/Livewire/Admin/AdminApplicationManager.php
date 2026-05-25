@@ -2,10 +2,15 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\AcademicYear;
+use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Section;
+use App\Models\Semester;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\Enrollment;
-use Livewire\Attributes\Layout;
 
 #[Layout('components.layouts.admin', ['title' => 'Applications'])]
 class AdminApplicationManager extends Component
@@ -13,13 +18,21 @@ class AdminApplicationManager extends Component
     use WithPagination;
 
     public $search = '';
+
     public $status = 'All statuses';
+
     public $sortField = 'enrollments.id';
+
     public $sortDirection = 'desc';
+
     public $year_level = 'All Years';
+
     public $course_filter = 'All Programs';
+
     public $section_filter = 'All Sections';
+
     public $level = 'All Levels';
+
     public $selectedId;
 
     protected $queryString = [
@@ -30,15 +43,40 @@ class AdminApplicationManager extends Component
         'section_filter' => ['except' => 'All Sections'],
         'level' => ['except' => 'All Levels'],
         'sortField' => ['except' => 'enrollments.id'],
-        'sortDirection' => ['except' => 'desc']
+        'sortDirection' => ['except' => 'desc'],
     ];
 
-    public function updatingSearch() { $this->resetPage(); }
-    public function updatingStatus() { $this->resetPage(); }
-    public function updatingYearLevel() { $this->resetPage(); }
-    public function updatingCourseFilter() { $this->resetPage(); $this->section_filter = 'All Sections'; }
-    public function updatingSectionFilter() { $this->resetPage(); }
-    public function updatingLevel() { $this->resetPage(); $this->course_filter = 'All Programs'; }
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingStatus()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingYearLevel()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingCourseFilter()
+    {
+        $this->resetPage();
+        $this->section_filter = 'All Sections';
+    }
+
+    public function updatingSectionFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingLevel()
+    {
+        $this->resetPage();
+        $this->course_filter = 'All Programs';
+    }
 
     public function sortBy($field)
     {
@@ -89,32 +127,33 @@ class AdminApplicationManager extends Component
 
     public function render()
     {
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
-        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
 
         $query = Enrollment::with('user')
             ->join('users', 'enrollments.user_id', '=', 'users.id')
+            ->whereNotIn('enrollments.status', ['Dropped', 'Withdrawn'])
             ->select('enrollments.*');
 
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
                 $q->whereHas('user', function ($sub) {
                     $sub->where('first_name', 'like', "%{$this->search}%")
                         ->orWhere('last_name', 'like', "%{$this->search}%")
                         ->orWhere('email', 'like', "%{$this->search}%");
                 })
-                ->orWhere('enrollments.course_code', 'like', "%{$this->search}%")
-                ->orWhere('enrollments.promissory_reason', 'like', "%{$this->search}%");
+                    ->orWhere('enrollments.course_code', 'like', "%{$this->search}%")
+                    ->orWhere('enrollments.promissory_reason', 'like', "%{$this->search}%");
             });
         }
 
         // Include archived records only when they still need clearance
         $query->where(function ($q) {
             $q->whereNull('enrollments.archived_at')
-              ->orWhere(function ($sub) {
-                  $sub->whereNotNull('enrollments.archived_at')
-                      ->where('enrollments.credentials_verified', false);
-              });
+                ->orWhere(function ($sub) {
+                    $sub->whereNotNull('enrollments.archived_at')
+                        ->where('enrollments.credentials_verified', false);
+                });
         });
 
         if ($this->status !== 'All statuses') {
@@ -122,18 +161,18 @@ class AdminApplicationManager extends Component
         } else {
             // ALSO hide currently active term 'Enrolled' students
             $query->where(function ($q) use ($activeYear, $activeSemester) {
-                        $q->where('enrollments.status', '!=', 'Enrolled');
+                $q->where('enrollments.status', '!=', 'Enrolled');
 
-                        if ($activeYear && $activeSemester) {
-                            $q->orWhere(function($sub) use ($activeYear, $activeSemester) {
-                                $sub->where('enrollments.status', 'Enrolled')
-                                    ->where(function($termQuery) use ($activeYear, $activeSemester) {
-                                        $termQuery->where('enrollments.year_level', 'NOT LIKE', "%{$activeYear->year_name}%")
-                                                  ->orWhere('enrollments.year_level', 'NOT LIKE', "%{$activeSemester->name}%");
-                                    });
+                if ($activeYear && $activeSemester) {
+                    $q->orWhere(function ($sub) use ($activeYear, $activeSemester) {
+                        $sub->where('enrollments.status', 'Enrolled')
+                            ->where(function ($termQuery) use ($activeYear, $activeSemester) {
+                                $termQuery->where('enrollments.year_level', 'NOT LIKE', "%{$activeYear->year_name}%")
+                                    ->orWhere('enrollments.year_level', 'NOT LIKE', "%{$activeSemester->name}%");
                             });
-                        }
-                  });
+                    });
+                }
+            });
         }
 
         if ($this->year_level !== 'All Years') {
@@ -151,7 +190,7 @@ class AdminApplicationManager extends Component
         if ($this->section_filter !== 'All Sections') {
             // Find the numeric year from section name (e.g. "1A" -> "1")
             preg_match('/\d+/', $this->section_filter, $matches);
-            if (!empty($matches)) {
+            if (! empty($matches)) {
                 $yearNum = $matches[0];
                 $query->where('enrollments.year_level', 'like', "{$yearNum}%");
             }
@@ -162,7 +201,7 @@ class AdminApplicationManager extends Component
         // Simplify year level display for each item
         $applications->getCollection()->transform(function ($application) use ($activeYear, $activeSemester) {
             // Simplify year level display (e.g., "1st Year | 2nd Semester" -> "1st Year")
-            if (!empty($application->year_level)) {
+            if (! empty($application->year_level)) {
                 $parts = explode('|', $application->year_level);
                 $application->year_display = trim($parts[0]);
             } else {
@@ -183,7 +222,7 @@ class AdminApplicationManager extends Component
 
             // AUTO-INHERIT CLEARANCE: If this returning student was already cleared in a previous/archived record,
             // inherit that clearance to their current record so the APPROVE CLEARANCE button hides
-            if ($isReturning && !$isOldTermRecord && !$application->credentials_verified) {
+            if ($isReturning && ! $isOldTermRecord && ! $application->credentials_verified) {
                 $wasCleared = Enrollment::where('user_id', $application->user_id)
                     ->where('id', '!=', $application->id)
                     ->where('credentials_verified', true)
@@ -191,7 +230,7 @@ class AdminApplicationManager extends Component
 
                 if ($wasCleared) {
                     // Use direct DB update to avoid persisting dynamic attributes (year_display, classification)
-                    \Illuminate\Support\Facades\DB::table('enrollments')
+                    DB::table('enrollments')
                         ->where('id', $application->id)
                         ->update([
                             'credentials_verified' => true,
@@ -208,7 +247,7 @@ class AdminApplicationManager extends Component
                 $application->academic_year_name === $activeYear->year_name &&
                 $application->semester_name === $activeSemester->name;
 
-            if (!$isCurrentTerm && $activeYear && $activeSemester) {
+            if (! $isCurrentTerm && $activeYear && $activeSemester) {
                 $application->status = 'Pending';
             }
 
@@ -216,15 +255,15 @@ class AdminApplicationManager extends Component
         });
 
         // Fetch College Programs and SHS Strands separately for grouping
-        $collegePrograms = \App\Models\Course::where('type', 'program')->get();
-        $shsStrands = \App\Models\Course::where('type', 'shs')->get();
+        $collegePrograms = Course::where('type', 'program')->get();
+        $shsStrands = Course::where('type', 'shs')->get();
 
         // Fetch Sections for the selected course
         $sections = collect();
         if ($this->course_filter !== 'All Programs') {
-            $course = \App\Models\Course::where('course_code', $this->course_filter)->first();
+            $course = Course::where('course_code', $this->course_filter)->first();
             if ($course) {
-                $sections = \App\Models\Section::where('course_id', $course->id)->get();
+                $sections = Section::where('course_id', $course->id)->get();
             }
         }
 
@@ -232,7 +271,7 @@ class AdminApplicationManager extends Component
             'applications' => $applications,
             'collegePrograms' => $collegePrograms,
             'shsStrands' => $shsStrands,
-            'sections' => $sections
+            'sections' => $sections,
         ]);
     }
 }
