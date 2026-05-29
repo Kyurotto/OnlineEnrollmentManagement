@@ -59,7 +59,6 @@
                             @foreach($shsStrands as $course)
                                 <option value="{{ $course->course_code }}">{{ $course->course_code }}</option>
                                 @endforeach
-                            </optgroup>
                         @endif
                     </select>
                 </div>
@@ -137,7 +136,6 @@
                                 </span>
                             </div>
                         </th>
-                        <th class="py-6 px-8 text-right text-slate-400">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-slate-100 bg-white">
@@ -516,7 +514,7 @@
                     paths = [app.promissory_note_path];
                 }
 
-                let fileHtml = '<div class="space-y-3"><span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment(s)</span><div class="space-y-2">';
+                let fileHtml = '<div class="space-y-3"><span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment(s)<\/span><div class="space-y-2">';
                 
                 paths.forEach((path, index) => {
                     const noteUrl = storageBase + path;
@@ -524,17 +522,17 @@
                     fileHtml += `
                         <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-50/50 hover:bg-amber-50 transition-all">
                             <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                            </div>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
+                            <\/div>
                             <div>
-                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-wider">Download Note ${paths.length > 1 ? '#' + (index + 1) : ''}</p>
-                                <p class="text-[8px] text-amber-600/80 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}</p>
-                            </div>
-                        </a>
+                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-wider">Download Note ${paths.length > 1 ? '#' + (index + 1) : ''}<\/p>
+                                <p class="text-[8px] text-amber-600/80 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}<\/p>
+                            <\/div>
+                        <\/a>
                     `;
                 });
                 
-                fileHtml += '</div></div>';
+                fileHtml += '<\/div><\/div>';
                 promissoryFile.innerHTML = fileHtml;
             } else {
                 promissoryFile.innerHTML = `
