@@ -2,17 +2,18 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\AcademicYear;
 use App\Models\Course;
-use App\Models\Payment;
 use App\Models\Enrollment;
+use App\Models\Payment;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.admin')]
@@ -21,8 +22,11 @@ class DashboardManager extends Component
     use WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
+
     public $showModal = false;
+
     public $selectedApp = null;
 
     protected $queryString = [
@@ -75,21 +79,21 @@ class DashboardManager extends Component
 
     public function render()
     {
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
         // 1. Applications Query for Table
-        $query = Enrollment::query()->with(['user'])->whereNotIn('status', ['Enrolled', 'Rejected'])->latest();
+        $query = Enrollment::query()->with(['user'])->whereNotIn('status', ['Enrolled', 'Rejected', 'Dropped', 'Withdrawn'])->latest();
 
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->whereHas('user', function ($q) {
-                $q->where('first_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
+                $q->where('first_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('last_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
             });
         }
 
-        if (!empty($this->statusFilter)) {
+        if (! empty($this->statusFilter)) {
             $query->where('status', $this->statusFilter);
         }
 
@@ -97,18 +101,18 @@ class DashboardManager extends Component
 
         $stats = [
             'active_courses' => Course::where('type', 'course')->count(),
-            'students'       => User::where('role', 'student')
-                                    ->whereHas('application', function($q) use ($activeYearName) {
-                                        $q->where('status', 'Enrolled');
-                                        if ($activeYearName) {
-                                            $q->where('year_level', 'like', '%' . $activeYearName . '%');
-                                        }
-                                    })->count(),
+            'students' => User::where('role', 'student')
+                ->whereHas('application', function ($q) use ($activeYearName) {
+                    $q->where('status', 'Enrolled');
+                    if ($activeYearName) {
+                        $q->where('year_level', 'like', '%'.$activeYearName.'%');
+                    }
+                })->count(),
             'total_payments' => Payment::count(),
-            'applications'   => Enrollment::whereNotIn('status', ['Enrolled', 'Rejected'])
-                                        ->when($activeYearName, function($q) use ($activeYearName) {
-                                            $q->where('year_level', 'like', '%' . $activeYearName . '%');
-                                        })->count(),
+            'applications' => Enrollment::whereNotIn('status', ['Enrolled', 'Rejected', 'Dropped', 'Withdrawn'])
+                ->when($activeYearName, function ($q) use ($activeYearName) {
+                    $q->where('year_level', 'like', '%'.$activeYearName.'%');
+                })->count(),
         ];
 
         // 3. ROLLING 5 DAYS
@@ -123,7 +127,7 @@ class DashboardManager extends Component
             ->take(20)
             ->get();
 
-        $appsByDate = $weeklyApplications->groupBy(function($date) {
+        $appsByDate = $weeklyApplications->groupBy(function ($date) {
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
 
@@ -132,9 +136,9 @@ class DashboardManager extends Component
             $date = $startDate->copy()->addDays($i);
             $weekDates[] = [
                 'date_string' => $date->format('Y-m-d'),
-                'day_name'    => $date->format('l'),
-                'day_num'     => $date->format('d'),
-                'is_today'    => $date->isToday(),
+                'day_name' => $date->format('l'),
+                'day_num' => $date->format('d'),
+                'is_today' => $date->isToday(),
             ];
         }
 
@@ -150,9 +154,9 @@ class DashboardManager extends Component
 
         // 4. CALCULATE SHS vs COLLEGE ENROLLMENT COUNTS
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-        $baseEnrollmentQuery = Enrollment::whereIn('status', ['Enrolled', 'Approved', 'Paid', 'Pending'])
-            ->when($activeYearName, function($q) use ($activeYearName) {
-                $q->where('year_level', 'like', '%' . $activeYearName . '%');
+        $baseEnrollmentQuery = Enrollment::whereNotIn('status', ['Enrolled', 'Rejected', 'Dropped', 'Withdrawn'])
+            ->when($activeYearName, function ($q) use ($activeYearName) {
+                $q->where('year_level', 'like', '%'.$activeYearName.'%');
             });
 
         $shs_count = (clone $baseEnrollmentQuery)->whereIn('course_code', $shsStrands)->count();
@@ -180,8 +184,8 @@ class DashboardManager extends Component
             )
             ->where('users.role', 'student')
             ->where('latest_enrollments.status', 'Enrolled')
-            ->when($activeYearName, function($q) use ($activeYearName) {
-                $q->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');
+            ->when($activeYearName, function ($q) use ($activeYearName) {
+                $q->where('latest_enrollments.year_level', 'like', '%'.$activeYearName.'%');
             });
 
         $registryTotalStudents = (clone $baseStudentClassStats)->count();
@@ -216,9 +220,9 @@ class DashboardManager extends Component
             'college_count' => $college_count,
             'total_count' => $total_count,
             'registryTotalStudents' => $registryTotalStudents,
-            'registryRegularCount'  => $registryRegularCount,
+            'registryRegularCount' => $registryRegularCount,
             'registryIrregularCount' => $registryIrregularCount,
-            'registryNewCount'      => $registryNewCount,
+            'registryNewCount' => $registryNewCount,
             'registryReturningCount' => $registryReturningCount,
         ]);
     }

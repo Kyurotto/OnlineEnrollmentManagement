@@ -292,22 +292,27 @@
                             <td class="py-6 px-8">
                                 @php
                                     $isFullyPaid = $application->status === 'Paid' && $application->is_fully_paid;
-                                    $badgeColor = match(true) {
-                                        $application->status === 'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                    $badgeColor = match (true) {
+                                        $application->status === 'Enrolled'
+                                            => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
                                         $isFullyPaid => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                                        $application->status === 'Paid' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                        $application->status === 'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        $application->status === 'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                        $application->status === 'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        $application->status === 'Paid'
+                                            => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        $application->status === 'Approved'
+                                            => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        $application->status === 'Rejected'
+                                            => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                        $application->status === 'Pending'
+                                            => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
                                         default => 'bg-white/5 text-white/40 border-white/10',
                                     };
-                                    $displayText = match(true) {
+                                    $displayText = match (true) {
                                         $application->status === 'Enrolled' => 'Enrolled',
                                         $isFullyPaid => 'Fully Paid',
                                         $application->status === 'Paid' => 'Partially Paid',
                                         $application->status === 'Approved' => 'Approved',
                                         $application->status === 'Pending' => 'Pending',
-                                        default => $application->status
+                                        default => $application->status,
                                     };
                                 @endphp
                                 <span
@@ -943,49 +948,49 @@
                     const isImage = app[key].match(/\.(jpeg|jpg|png|gif|webp)$/i);
 
                     headerHtml = `
-                    <div class="flex items-center gap-2 mb-3">
-                        <div class="flex items-center justify-center w-5 h-5 bg-emerald-500/20 border-2 border-emerald-500 rounded-full shrink-0">
-                            <span class="text-emerald-500 font-black text-xs">✓<\/span>
-                        <\/div>
-                        <span class="text-[9px] font-black uppercase text-slate-700 tracking-widest">${label}<\/span>
-                    <\/div>
+                    \x3cdiv class="flex items-center gap-2 mb-3">
+                        \x3cdiv class="flex items-center justify-center w-5 h-5 bg-emerald-500/20 border-2 border-emerald-500 rounded-full shrink-0">
+                            \x3cspan class="text-emerald-500 font-black text-xs">✓\x3c/span\x3e
+                        \x3c/div\x3e
+                        \x3cspan class="text-[9px] font-black uppercase text-slate-700 tracking-widest">${label}\x3c/span\x3e
+                    \x3c/div\x3e
                 `;
 
                     if (isImage) {
                         boxHtml = `
-                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-                            <img src="${fileUrl}" class="w-full h-32 object-cover transition-transform duration-500 group-hover/asset:scale-110">
-                            <div class="absolute inset-0 bg-blue-500/20 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"><\/path><\/svg>
-                            <\/div>
-                        <\/a>
+                        \x3ca href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                            \x3cimg src="${fileUrl}" class="w-full h-32 object-cover transition-transform duration-500 group-hover/asset:scale-110">
+                            \x3cdiv class="absolute inset-0 bg-blue-500/20 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
+                                \x3csvg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">\x3cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7">\x3c/path\x3e\x3c/svg\x3e
+                            \x3c/div\x3e
+                        \x3c/a\x3e
                     `;
                     } else {
                         boxHtml = `
-                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 h-32 flex flex-col items-center justify-center">
-                            <svg class="w-10 h-10 text-blue-500 opacity-40 group-hover/asset:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
-                            <span class="text-[8px] font-black text-blue-600 mt-2 tracking-[0.3em]">VIEW FILE<\/span>
-                        <\/a>
+                        \x3ca href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 h-32 flex flex-col items-center justify-center">
+                            \x3csvg class="w-10 h-10 text-blue-500 opacity-40 group-hover/asset:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">\x3cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">\x3c/path\x3e\x3c/svg\x3e
+                            \x3cspan class="text-[8px] font-black text-blue-600 mt-2 tracking-[0.3em]">VIEW FILE\x3c/span\x3e
+                        \x3c/a\x3e
                     `;
                     }
                 } else {
                     headerHtml = `
-                    <div class="flex items-center gap-2 mb-3">
-                        <div class="flex items-center justify-center w-5 h-5 bg-rose-500/20 border-2 border-rose-500 rounded-full shrink-0">
-                            <span class="text-rose-500 font-black text-xs">!<\/span>
-                        <\/div>
-                        <span class="text-[9px] font-black uppercase text-rose-500 tracking-widest">${label}<\/span>
-                    <\/div>
+                    \x3cdiv class="flex items-center gap-2 mb-3">
+                        \x3cdiv class="flex items-center justify-center w-5 h-5 bg-rose-500/20 border-2 border-rose-500 rounded-full shrink-0">
+                            \x3cspan class="text-rose-500 font-black text-xs">!\x3c/span\x3e
+                        \x3c/div\x3e
+                        \x3cspan class="text-[9px] font-black uppercase text-rose-500 tracking-widest">${label}\x3c/span\x3e
+                    \x3c/div\x3e
                 `;
 
                     boxHtml = `
-                    <div class="w-full h-32 rounded-2xl border-2 border-dashed border-rose-500/10 bg-rose-500/5 flex flex-col items-center justify-center opacity-40">
-                        <span class="text-[8px] font-black text-rose-500 tracking-[0.3em]">MISSING<\/span>
-                    <\/div>
+                    \x3cdiv class="w-full h-32 rounded-2xl border-2 border-dashed border-rose-500/10 bg-rose-500/5 flex flex-col items-center justify-center opacity-40">
+                        \x3cspan class="text-[8px] font-black text-rose-500 tracking-[0.3em]">MISSING\x3c/span\x3e
+                    \x3c/div\x3e
                 `;
                 }
 
-                docsContainer.innerHTML += `<div>${headerHtml}${boxHtml}<\/div>`;
+                docsContainer.innerHTML += `\x3cdiv>${headerHtml}${boxHtml}\x3c/div\x3e`;
             });
 
             // Promissory Note Handling
@@ -1008,34 +1013,35 @@
                         paths = [app.promissory_note_path];
                     }
 
-                    let fileHtml = '<div class="space-y-3"><span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment(s)</span><div class="space-y-2">';
-                    
+                    let fileHtml =
+                        '\x3cdiv class="space-y-3">\x3cspan class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment(s)\x3c/span\x3e\x3cdiv class="space-y-2">';
+
                     paths.forEach((path, index) => {
                         const noteUrl = storageBase + path;
                         const isPdf = path.toLowerCase().endsWith('.pdf');
                         fileHtml += `
-                            <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-50/50 hover:bg-amber-50 transition-all">
-                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] font-black text-slate-800 uppercase tracking-wider">Download Note ${paths.length > 1 ? '#' + (index + 1) : ''}</p>
-                                    <p class="text-[8px] text-amber-600/80 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}</p>
-                                </div>
-                            </a>
+                            \x3ca href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-50/50 hover:bg-amber-50 transition-all">
+                                \x3cdiv class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                                    \x3csvg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\x3cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">\x3c/path\x3e\x3c/svg\x3e
+                                \x3c/div\x3e
+                                \x3cdiv>
+                                    \x3cp class="text-[10px] font-black text-slate-800 uppercase tracking-wider">Download Note ${paths.length > 1 ? '#' + (index + 1) : ''}\x3c/p\x3e
+                                    \x3cp class="text-[8px] text-amber-600/80 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}\x3c/p\x3e
+                                \x3c/div\x3e
+                            \x3c/a\x3e
                         `;
                     });
-                    
-                    fileHtml += '</div></div>';
+
+                    fileHtml += '\x3c/div\x3e\x3c/div\x3e';
                     promissoryFile.innerHTML = fileHtml;
                 } else {
                     promissoryFile.innerHTML = `
-                    <div class="space-y-3">
-                        <span class="text-[9px] font-black text-amber-600/60 uppercase tracking-widest">Note Attachment<\/span>
-                        <div class="p-4 rounded-2xl border border-dashed border-amber-200 bg-white/50 flex items-center justify-center opacity-60">
-                            <span class="text-[8px] font-black text-amber-600 uppercase tracking-widest">No File<\/span>
-                        <\/div>
-                    <\/div>
+                    \x3cdiv class="space-y-3">
+                        \x3cspan class="text-[9px] font-black text-amber-600/60 uppercase tracking-widest">Note Attachment\x3c/span\x3e
+                        \x3cdiv class="p-4 rounded-2xl border border-dashed border-amber-200 bg-white/50 flex items-center justify-center opacity-60">
+                            \x3cspan class="text-[8px] font-black text-amber-600 uppercase tracking-widest">No File\x3c/span\x3e
+                        \x3c/div\x3e
+                    \x3c/div\x3e
                 `;
                 }
             } else {
@@ -1168,4 +1174,3 @@
             window.dispatchEvent(event);
         });
     </script>
-</div>

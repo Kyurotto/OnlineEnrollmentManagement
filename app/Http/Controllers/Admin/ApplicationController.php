@@ -12,7 +12,10 @@ class ApplicationController extends Controller
     public function index()
     {
         // 1. Fetch main list for the table
-        $applications = Enrollment::with(['user'])->latest()->paginate(10);
+        $applications = Enrollment::with(['user'])
+            ->whereNotIn('status', ['Dropped', 'Withdrawn'])
+            ->latest()
+            ->paginate(10);
 
         // 2. Notification Logic (Count strictly 'Pending' for badge count)
         $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();

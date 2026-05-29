@@ -2,14 +2,13 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\WithPagination;
+use App\Models\Enrollment;
 use App\Models\Payment;
 use App\Models\User;
-use App\Models\Enrollment;
 use App\Notifications\StudentPaymentConfirmed;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class PaymentManager extends Component
 {
@@ -18,79 +17,139 @@ class PaymentManager extends Component
     protected $listeners = ['assessmentUpdated' => 'refreshStudentData'];
 
     public $search = '';
+
     public $filterCourse = 'ALL';
+
     public $statusFilter = 'All statuses';
+
     public $level = null;
 
     public $showModal = false;
+
     public $isEditMode = false;
+
     public $editingPaymentId = null;
 
     // New properties for sidebar layout
     public $activeTab = 'assessment';
+
     public $isDropPayMode = false;
+
     public $selectedStudentId = null;
+
     public $selectedStudent = null;
+
     public $enrollment = null;
+
     public $selectedVoucherType = null;
+
     public $paymentHistory = [];
+
     public $tuitionFees = 0;
+
     public $miscellaneousFees = 0;
+
     public $appliedDiscount = 0;
+
     public $totalAssessment = 0;
+
     public $currentBalance = 0;
+
     public $discountPercentage = 0;
+
     public $totalPaymentsMade = 0;
+
     public $previousBalance = 0;
 
     // Itemized fee breakdown (for display only — does NOT affect payment logic)
     public $registrationFee = 0;
+
     public $guidanceFee = 0;
+
     public $trainingMaterials = 0;
+
     public $handbook = 0;
+
     public $mailingFee = 0;
+
     public $medicalDental = 0;
+
     public $studentIdFee = 0;
+
     public $socioCultural = 0;
+
     public $insurance = 0;
+
     public $schoolPublication = 0;
+
     public $studentDevelopment = 0;
+
     public $libraryFee = 0;
+
     public $energyFee = 0;
+
     public $physicalFacilities = 0;
+
     public $researchInnovation = 0;
+
     public $internetFee = 0;
+
     public $audioVisual = 0;
+
     public $itDevelopment = 0;
+
     public $laboratoryFee = 0;
 
     // Override State and Form properties
     public $isEditingAssessment = false;
+
     public $editRegistrationFee = 0;
+
     public $editGuidanceFee = 0;
+
     public $editTrainingMaterials = 0;
+
     public $editHandbook = 0;
+
     public $editMailingFee = 0;
+
     public $editMedicalDental = 0;
+
     public $editStudentIdFee = 0;
+
     public $editSocioCultural = 0;
+
     public $editInsurance = 0;
+
     public $editSchoolPublication = 0;
+
     public $editStudentDevelopment = 0;
+
     public $editLibraryFee = 0;
+
     public $editEnergyFee = 0;
+
     public $editPhysicalFacilities = 0;
+
     public $editResearchInnovation = 0;
+
     public $editInternetFee = 0;
+
     public $editAudioVisual = 0;
+
     public $editItDevelopment = 0;
+
     public $editLaboratoryFee = 0;
+
     public $editTuitionFee = 0;
 
     // Form fields
     public $user_id;
+
     public $amount;
+
     public $payment_type = 'Cash';
+
     public $reference_no;
 
     protected $queryString = [
@@ -173,7 +232,7 @@ class PaymentManager extends Component
             ->orderBy('id', 'desc')
             ->first();
 
-        if (!$pastEnrollment) {
+        if (! $pastEnrollment) {
             return 0;
         }
 
@@ -194,7 +253,7 @@ class PaymentManager extends Component
 
             $overrideKey = "student_assessment_override_{$studentId}";
             $assessment = Cache::get($overrideKey);
-            if (!$assessment) {
+            if (! $assessment) {
                 $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
                 $assessment = Cache::get($cacheKey)
                     ?? Cache::get("payment_assessment_{$level}_{$program}_all")
@@ -226,7 +285,7 @@ class PaymentManager extends Component
         $this->selectedStudent = User::findOrFail($studentId);
         $this->appliedDiscount = 0;
         $this->discountPercentage = 0;
-        $this->isDropPayMode   = false;
+        $this->isDropPayMode = false;
 
         if ($enrollmentId) {
             $this->enrollment = Enrollment::findOrFail($enrollmentId);
@@ -248,7 +307,7 @@ class PaymentManager extends Component
                     ->get();
 
                 foreach ($fallbackEnrollments as $record) {
-                    if (!empty($record->course_code) && preg_match('/\d+/', (string) $record->year_level)) {
+                    if (! empty($record->course_code) && preg_match('/\d+/', (string) $record->year_level)) {
                         $assessmentEnrollment = $record;
                         break;
                     }
@@ -265,19 +324,19 @@ class PaymentManager extends Component
 
             $overrideKey = "student_assessment_override_{$studentId}";
             $assessment = Cache::get($overrideKey);
-            if (!$assessment) {
+            if (! $assessment) {
                 $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
                 $assessment = Cache::get($cacheKey);
 
-                if (!$assessment && $yearLevelDigit !== 'all') {
+                if (! $assessment && $yearLevelDigit !== 'all') {
                     $assessment = Cache::get("payment_assessment_{$level}_{$program}_all");
                 }
 
-                if (!$assessment && $program !== 'all') {
+                if (! $assessment && $program !== 'all') {
                     $assessment = Cache::get("payment_assessment_{$level}_all_{$yearLevelDigit}");
                 }
 
-                if (!$assessment) {
+                if (! $assessment) {
                     $assessment = Cache::get("payment_assessment_{$level}_all_all", [
                         'tuitionFee' => 0,
                         'miscellaneousFees' => 0,
@@ -334,7 +393,7 @@ class PaymentManager extends Component
             // FIX: If the previous balance evaluates to 0, strictly load the historical data
             if (empty($this->previousBalance) || $this->previousBalance == 0) {
                 $cachedPreviousBalance = Cache::get("student_previous_balance_{$studentId}");
-                if (!is_null($cachedPreviousBalance)) {
+                if (! is_null($cachedPreviousBalance)) {
                     $this->previousBalance = (float) $cachedPreviousBalance;
                 } else {
                     $this->previousBalance = $this->calculateHistoricalPreviousBalance($studentId, $this->enrollment->id);
@@ -391,7 +450,7 @@ class PaymentManager extends Component
 
     public function saveAssessmentOverride()
     {
-        if (!$this->selectedStudentId) {
+        if (! $this->selectedStudentId) {
             return;
         }
 
@@ -401,13 +460,14 @@ class PaymentManager extends Component
             'editMailingFee', 'editMedicalDental', 'editStudentIdFee', 'editSocioCultural',
             'editInsurance', 'editSchoolPublication', 'editStudentDevelopment', 'editLibraryFee',
             'editEnergyFee', 'editPhysicalFacilities', 'editResearchInnovation', 'editInternetFee',
-            'editAudioVisual', 'editItDevelopment', 'editLaboratoryFee', 'editTuitionFee'
+            'editAudioVisual', 'editItDevelopment', 'editLaboratoryFee', 'editTuitionFee',
         ];
 
         foreach ($inputs as $input) {
             $this->$input = (float) $this->$input;
             if ($this->$input < 0) {
                 session()->flash('error', 'All fee inputs must be non-negative values.');
+
                 return;
             }
         }
@@ -455,7 +515,7 @@ class PaymentManager extends Component
 
     public function resetAssessmentToDefault()
     {
-        if (!$this->selectedStudentId) {
+        if (! $this->selectedStudentId) {
             return;
         }
 
@@ -485,18 +545,21 @@ class PaymentManager extends Component
 
         if ($perc <= 0) {
             session()->flash('error', 'Please enter a valid discount percentage (e.g., 50 for 50%).');
+
             return;
         }
 
         if ($perc > 100) {
-             session()->flash('error', 'Discount percentage cannot exceed 100%.');
-             return;
+            session()->flash('error', 'Discount percentage cannot exceed 100%.');
+
+            return;
         }
 
         $totalRequestedDiscount = ($subtotal * ($perc / 100));
 
         if ($totalRequestedDiscount > $this->totalAssessment) {
-            session()->flash('error', 'Calculated discount (₱' . number_format($totalRequestedDiscount, 2) . ') cannot exceed the total assessment.');
+            session()->flash('error', 'Calculated discount (₱'.number_format($totalRequestedDiscount, 2).') cannot exceed the total assessment.');
+
             return;
         }
 
@@ -512,20 +575,20 @@ class PaymentManager extends Component
         // Ensure discount calculations also use the rigorous fallback
         if (empty($this->previousBalance) || $this->previousBalance == 0) {
             $cachedPreviousBalance = Cache::get("student_previous_balance_{$this->selectedStudentId}");
-            if (!is_null($cachedPreviousBalance)) {
+            if (! is_null($cachedPreviousBalance)) {
                 $this->previousBalance = (float) $cachedPreviousBalance;
-            } else if ($this->enrollment) {
+            } elseif ($this->enrollment) {
                 $this->previousBalance = $this->calculateHistoricalPreviousBalance($this->selectedStudentId, $this->enrollment->id);
             }
         }
 
         $totalPaid = Payment::where('user_id', $this->selectedStudentId)
-            ->when($this->enrollment, fn($q) => $q->where('application_id', $this->enrollment->id))
+            ->when($this->enrollment, fn ($q) => $q->where('application_id', $this->enrollment->id))
             ->where('status', 'Paid')->sum('amount');
         $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $this->previousBalance) - $totalPaid);
 
         $this->discountPercentage = 0;
-        session()->flash('success', 'Discount of ₱' . number_format($this->appliedDiscount, 2) . ' applied successfully.');
+        session()->flash('success', 'Discount of ₱'.number_format($this->appliedDiscount, 2).' applied successfully.');
     }
 
     public function removeDiscount()
@@ -543,15 +606,15 @@ class PaymentManager extends Component
         // Ensure discount removals also use the rigorous fallback
         if (empty($this->previousBalance) || $this->previousBalance == 0) {
             $cachedPreviousBalance = Cache::get("student_previous_balance_{$this->selectedStudentId}");
-            if (!is_null($cachedPreviousBalance)) {
+            if (! is_null($cachedPreviousBalance)) {
                 $this->previousBalance = (float) $cachedPreviousBalance;
-            } else if ($this->enrollment) {
+            } elseif ($this->enrollment) {
                 $this->previousBalance = $this->calculateHistoricalPreviousBalance($this->selectedStudentId, $this->enrollment->id);
             }
         }
 
         $totalPaid = Payment::where('user_id', $this->selectedStudentId)
-            ->when($this->enrollment, fn($q) => $q->where('application_id', $this->enrollment->id))
+            ->when($this->enrollment, fn ($q) => $q->where('application_id', $this->enrollment->id))
             ->where('status', 'Paid')->sum('amount');
         $this->currentBalance = max(0, ($this->totalAssessment - $this->appliedDiscount + $this->previousBalance) - $totalPaid);
         session()->flash('success', 'Discount removed successfully.');
@@ -579,7 +642,7 @@ class PaymentManager extends Component
             'user_id' => $this->user_id,
             'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
             'amount' => $this->amount,
-            'transaction_id' => $this->reference_no ?? 'CASH-' . time(),
+            'transaction_id' => $this->reference_no ?? 'CASH-'.time(),
             'status' => 'Paid',
             'payment_method' => $this->payment_type,
             'payment_date' => now(),
@@ -592,7 +655,7 @@ class PaymentManager extends Component
         $this->notifyRecipients($payment);
 
         $this->closeModal();
-        session()->flash('success', 'Payment of ₱' . number_format($this->amount, 2) . ' processed successfully.');
+        session()->flash('success', 'Payment of ₱'.number_format($this->amount, 2).' processed successfully.');
     }
 
     public function update()
@@ -618,27 +681,29 @@ class PaymentManager extends Component
 
     public function submitPayment()
     {
-        if (!$this->amount || $this->amount <= 0) {
+        if (! $this->amount || $this->amount <= 0) {
             session()->flash('error', 'Please enter a valid amount paid.');
+
             return;
         }
 
-        if (!$this->selectedStudentId) {
+        if (! $this->selectedStudentId) {
             session()->flash('error', 'Please select a student.');
+
             return;
         }
 
         $latestEnrollment = Enrollment::where('user_id', $this->selectedStudentId)->latest()->first();
 
         $payment = Payment::create([
-            'user_id'          => $this->selectedStudentId,
-            'application_id'   => $latestEnrollment ? $latestEnrollment->id : null,
-            'amount'           => $this->amount,
-            'transaction_id'   => $this->reference_no ?? 'CASH-' . time(),
-            'status'           => 'Paid',
-            'payment_method'   => $this->payment_type,
-            'payment_date'     => now(),
-            'is_drop_payment'  => $this->isDropPayMode,
+            'user_id' => $this->selectedStudentId,
+            'application_id' => $latestEnrollment ? $latestEnrollment->id : null,
+            'amount' => $this->amount,
+            'transaction_id' => $this->reference_no ?? 'CASH-'.time(),
+            'status' => 'Paid',
+            'payment_method' => $this->payment_type,
+            'payment_date' => now(),
+            'is_drop_payment' => $this->isDropPayMode,
         ]);
 
         if ($payment->application_id) {
@@ -652,18 +717,20 @@ class PaymentManager extends Component
         $this->amount = '';
         $this->reference_no = '';
         $label = $this->isDropPayMode ? 'Drop payment' : 'Payment';
-        session()->flash('success', "{$label} of ₱" . number_format($payment->amount, 2) . ' processed successfully.');
+        session()->flash('success', "{$label} of ₱".number_format($payment->amount, 2).' processed successfully.');
     }
 
     public function updateStatus($id, $status)
     {
-        if (!in_array($status, ['Paid', 'Rejected'])) return;
+        if (! in_array($status, ['Paid', 'Rejected'])) {
+            return;
+        }
 
         $payment = Payment::findOrFail($id);
 
         $payment->update([
             'status' => $status,
-            'payment_date' => $status === 'Paid' ? now() : $payment->payment_date
+            'payment_date' => $status === 'Paid' ? now() : $payment->payment_date,
         ]);
 
         if ($status === 'Paid') {
@@ -673,7 +740,7 @@ class PaymentManager extends Component
             $this->notifyRecipients($payment);
         }
 
-        session()->flash('success', 'Payment status updated to ' . $status);
+        session()->flash('success', 'Payment status updated to '.$status);
     }
 
     public function destroy($id)
@@ -686,7 +753,7 @@ class PaymentManager extends Component
     {
         $student = User::find($payment->user_id);
 
-        if($student){
+        if ($student) {
             $student->notify(new StudentPaymentConfirmed($payment));
         }
     }
@@ -705,11 +772,11 @@ class PaymentManager extends Component
 
         // Separate logs by level (College vs SHS)
         if ($this->level === 'shs') {
-            $query->whereHas('application', function($q) {
+            $query->whereHas('application', function ($q) {
                 $q->whereIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
             });
         } elseif ($this->level === 'college') {
-            $query->whereHas('application', function($q) {
+            $query->whereHas('application', function ($q) {
                 $q->whereNotIn('course_code', ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT']);
             });
         }
@@ -718,13 +785,15 @@ class PaymentManager extends Component
             $filter = $this->filterCourse;
             if (str_contains($filter, '-')) {
                 $parts = explode('-', $filter);
-                if(count($parts) >= 2) {
+                if (count($parts) >= 2) {
                     $courseCode = $parts[0];
                     $yearDigit = $parts[1];
-                    $suffix = match($yearDigit) { '1' => 'st', '2' => 'nd', '3' => 'rd', default => 'th' };
-                    $yearString = $yearDigit . $suffix . ' Year';
+                    $suffix = match ($yearDigit) {
+                        '1' => 'st', '2' => 'nd', '3' => 'rd', default => 'th'
+                    };
+                    $yearString = $yearDigit.$suffix.' Year';
                     $query->where('enrollments.course_code', $courseCode)
-                          ->where('enrollments.year_level', 'like', $yearString . '%');
+                        ->where('enrollments.year_level', 'like', $yearString.'%');
                 }
             } else {
                 $query->where('enrollments.course_code', $filter);
@@ -732,20 +801,20 @@ class PaymentManager extends Component
         }
 
         if ($this->search != '') {
-            $searchTerm = '%' . $this->search . '%';
-            $query->where(function($q) use ($searchTerm) {
+            $searchTerm = '%'.$this->search.'%';
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('payments.id', 'like', $searchTerm)
-                  ->orWhere('payments.transaction_id', 'like', $searchTerm)
-                  ->orWhereHas('user', function($u) use ($searchTerm) {
-                      $u->where('name', 'like', $searchTerm)
-                        ->orWhere('email', 'like', $searchTerm);
-                  });
+                    ->orWhere('payments.transaction_id', 'like', $searchTerm)
+                    ->orWhereHas('user', function ($u) use ($searchTerm) {
+                        $u->where('name', 'like', $searchTerm)
+                            ->orWhere('email', 'like', $searchTerm);
+                    });
             });
         }
 
         $paymentLogs = $query->orderBy('payments.id', 'desc')->paginate(15);
 
-        $enrollmentQuery = Enrollment::query();
+        $enrollmentQuery = Enrollment::query()->whereNotIn('status', ['Dropped', 'Withdrawn']);
         $branch = 'all';
 
         if ($this->level === 'shs') {
@@ -766,41 +835,41 @@ class PaymentManager extends Component
         $students = User::where('role', 'student')->orderBy('name')->get();
 
         return view('livewire.cashier-payment-manager-new', [
-            'payments'           => $enrolledStudents,
-            'paymentLogs'        => $paymentLogs,
-            'students'           => $students,
-            'activeTab'          => $this->activeTab,
-            'isDropPayMode'      => $this->isDropPayMode,
-            'selectedStudentId'  => $this->selectedStudentId,
-            'selectedStudent'    => $this->selectedStudent,
-            'enrollment'         => $this->enrollment,
-            'selectedVoucherType'=> $this->selectedVoucherType,
-            'paymentHistory'     => $this->paymentHistory,
-            'tuitionFees'        => $this->tuitionFees,
-            'miscellaneousFees'  => $this->miscellaneousFees,
-            'appliedDiscount'    => $this->appliedDiscount,
-            'totalAssessment'    => $this->totalAssessment,
-            'currentBalance'     => $this->currentBalance,
+            'payments' => $enrolledStudents,
+            'paymentLogs' => $paymentLogs,
+            'students' => $students,
+            'activeTab' => $this->activeTab,
+            'isDropPayMode' => $this->isDropPayMode,
+            'selectedStudentId' => $this->selectedStudentId,
+            'selectedStudent' => $this->selectedStudent,
+            'enrollment' => $this->enrollment,
+            'selectedVoucherType' => $this->selectedVoucherType,
+            'paymentHistory' => $this->paymentHistory,
+            'tuitionFees' => $this->tuitionFees,
+            'miscellaneousFees' => $this->miscellaneousFees,
+            'appliedDiscount' => $this->appliedDiscount,
+            'totalAssessment' => $this->totalAssessment,
+            'currentBalance' => $this->currentBalance,
             // Itemized fee breakdown
-            'registrationFee'    => $this->registrationFee,
-            'guidanceFee'        => $this->guidanceFee,
-            'trainingMaterials'  => $this->trainingMaterials,
-            'handbook'           => $this->handbook,
-            'mailingFee'         => $this->mailingFee,
-            'medicalDental'      => $this->medicalDental,
-            'studentIdFee'       => $this->studentIdFee,
-            'socioCultural'      => $this->socioCultural,
-            'insurance'          => $this->insurance,
-            'schoolPublication'  => $this->schoolPublication,
+            'registrationFee' => $this->registrationFee,
+            'guidanceFee' => $this->guidanceFee,
+            'trainingMaterials' => $this->trainingMaterials,
+            'handbook' => $this->handbook,
+            'mailingFee' => $this->mailingFee,
+            'medicalDental' => $this->medicalDental,
+            'studentIdFee' => $this->studentIdFee,
+            'socioCultural' => $this->socioCultural,
+            'insurance' => $this->insurance,
+            'schoolPublication' => $this->schoolPublication,
             'studentDevelopment' => $this->studentDevelopment,
-            'libraryFee'         => $this->libraryFee,
-            'energyFee'          => $this->energyFee,
+            'libraryFee' => $this->libraryFee,
+            'energyFee' => $this->energyFee,
             'physicalFacilities' => $this->physicalFacilities,
             'researchInnovation' => $this->researchInnovation,
-            'internetFee'        => $this->internetFee,
-            'audioVisual'        => $this->audioVisual,
-            'itDevelopment'      => $this->itDevelopment,
-            'laboratoryFee'      => $this->laboratoryFee,
+            'internetFee' => $this->internetFee,
+            'audioVisual' => $this->audioVisual,
+            'itDevelopment' => $this->itDevelopment,
+            'laboratoryFee' => $this->laboratoryFee,
         ])->layout('components.layouts.cashier', ['title' => 'Manage Payments']);
     }
 }

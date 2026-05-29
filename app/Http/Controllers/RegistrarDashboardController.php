@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\AcademicYear;
+use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Section;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Enrollment;
-use App\Models\Course;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -17,17 +18,17 @@ class RegistrarDashboardController extends Controller
     public function index(Request $request)
     {
         // 0. Get Active Academic Year
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
         // 1. Fetch Accurate Data Counts
         $studentsCountQuery = User::where('role', 'student')
-                             ->whereHas('application', function($q) use ($activeYearName) {
-                                 $q->where('status', 'Enrolled');
-                                 if ($activeYearName) {
-                                     $q->where('year_level', 'like', '%' . $activeYearName . '%');
-                                 }
-                             });
+            ->whereHas('application', function ($q) use ($activeYearName) {
+                $q->where('status', 'Enrolled');
+                if ($activeYearName) {
+                    $q->where('year_level', 'like', '%'.$activeYearName.'%');
+                }
+            });
         $studentsCount = $studentsCountQuery->count();
 
         $totalApplicationsCount = Enrollment::count();
@@ -37,7 +38,7 @@ class RegistrarDashboardController extends Controller
         $strandsCount = Course::where('type', 'shs')->count();
 
         // 2. CALCULATE EXTRA STATS
-        $sectionsCount = \App\Models\Section::count();
+        $sectionsCount = Section::count();
         $hasIsRegular = Schema::hasColumn('enrollments', 'is_regular');
 
         $baseStudentClassStats = User::query()
@@ -87,21 +88,21 @@ class RegistrarDashboardController extends Controller
 
         // 3. MAP THE STATS EXACTLY FOR THE HTML VIEW
         $stats = [
-            'students'     => $studentsCount,
+            'students' => $studentsCount,
             'applications' => $pendingCount,
-            'programs'     => $programsCount,
-            'strands'      => $strandsCount,
-            'sections'     => $sectionsCount,
+            'programs' => $programsCount,
+            'strands' => $strandsCount,
+            'sections' => $sectionsCount,
         ];
 
         // 4. NOTIFICATIONS (Dropdown)
         $newEnrolleesCount = Auth::user()->unreadNotifications->count();
 
         $notifications = Enrollment::whereIn('status', ['Pending', 'Paid', 'Enrolled'])
-                            ->with('user')
-                            ->orderBy('updated_at', 'desc')
-                            ->take(5)
-                            ->get();
+            ->with('user')
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get();
 
         // 5. ROLLING 5 DAYS (Always includes Today as the last card)
         $endDate = Carbon::now()->endOfDay();
@@ -116,7 +117,7 @@ class RegistrarDashboardController extends Controller
             ->get();
 
         // Group applications by date (Y-m-d)
-        $appsByDate = $weeklyApplications->groupBy(function($date) {
+        $appsByDate = $weeklyApplications->groupBy(function ($date) {
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
 
@@ -126,9 +127,9 @@ class RegistrarDashboardController extends Controller
             $date = $startDate->copy()->addDays($i);
             $weekDates[] = [
                 'date_string' => $date->format('Y-m-d'),
-                'day_name'    => $date->format('l'),
-                'day_num'     => $date->format('d'),
-                'is_today'    => $date->isToday(),
+                'day_name' => $date->format('l'),
+                'day_num' => $date->format('d'),
+                'is_today' => $date->isToday(),
             ];
         }
 
@@ -143,9 +144,10 @@ class RegistrarDashboardController extends Controller
 
         // 6. CALCULATE SHS vs COLLEGE ENROLLMENT COUNTS
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-        $shs_count = Enrollment::whereIn('course_code', $shsStrands)->count();
-        $college_count = Enrollment::whereNotIn('course_code', $shsStrands)->count();
-        $total_count = Enrollment::count();
+        $baseQuery = Enrollment::whereNotIn('status', ['Enrolled', 'Rejected', 'Dropped', 'Withdrawn']);
+        $shs_count = (clone $baseQuery)->whereIn('course_code', $shsStrands)->count();
+        $college_count = (clone $baseQuery)->whereNotIn('course_code', $shsStrands)->count();
+        $total_count = (clone $baseQuery)->count();
 
         return view('dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications',
