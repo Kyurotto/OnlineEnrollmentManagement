@@ -202,18 +202,7 @@
                         Operational Nodes</p>
 
                     <div class="space-y-1">
-                        {{-- Manage Courses --}}
-                        <a href="{{ route('admin.courses.index') }}"
-                            class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 relative"
-                            style="{{ request()->routeIs('admin.courses.*') ? 'background: #eff6ff; color: #2563eb;' : 'color: #64748b;' }}">
-                            <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('admin.courses.*') ? 'text-blue-600' : 'text-slate-400' }}"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25">
-                                </path>
-                            </svg>
-                            <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Courses</span>
-                        </a>
+
 
                         {{-- Enrollment Dropdown --}}
                         @php
@@ -483,15 +472,7 @@
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-300">Operational
                         Nodes</p>
 
-                    <a href="{{ route('admin.courses.index') }}"
-                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('admin.courses.*') ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25">
-                            </path>
-                        </svg>
-                        <span class="font-bold text-[13px] uppercase tracking-wider">Courses</span>
-                    </a>
+
 
                     {{-- Mobile Enrollment Dropdown --}}
                     @php

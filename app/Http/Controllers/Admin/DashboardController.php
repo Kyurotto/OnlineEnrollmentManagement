@@ -29,7 +29,6 @@ class DashboardController extends Controller
         $studentsCount = $studentsCountQuery->count();
 
         $stats = [
-            'active_courses' => Course::where('type', 'course')->count(),
             'students'       => $studentsCount,
             'total_payments' => Payment::count(),
             'applications'   => Enrollment::where('status', 'Pending')

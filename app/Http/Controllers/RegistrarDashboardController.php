@@ -55,7 +55,9 @@ class RegistrarDashboardController extends Controller
                 'latest_enrollments',
                 'users.id',
                 '=',
-                'latest_enrollments.user_id'
+                'latest_enrollments.user_id',
+                'inner',
+                false
             )
             ->where('users.role', 'student')
             ->where('latest_enrollments.status', 'Enrolled');

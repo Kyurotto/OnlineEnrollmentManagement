@@ -96,7 +96,6 @@ class DashboardManager extends Component
         $applications = $query->paginate(10);
 
         $stats = [
-            'active_courses' => Course::where('type', 'course')->count(),
             'students'       => User::where('role', 'student')
                                     ->whereHas('application', function($q) use ($activeYearName) {
                                         $q->where('status', 'Enrolled');
@@ -176,7 +175,9 @@ class DashboardManager extends Component
                 'latest_enrollments',
                 'users.id',
                 '=',
-                'latest_enrollments.user_id'
+                'latest_enrollments.user_id',
+                'inner',
+                false
             )
             ->where('users.role', 'student')
             ->where('latest_enrollments.status', 'Enrolled')
