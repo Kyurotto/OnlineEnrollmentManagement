@@ -1,4 +1,4 @@
-<div class="w-full">
+<div wire:poll.60s class="w-full">
     <div class="space-y-8 animate-in fade-in duration-700">
 
         {{-- SECTION 1 — Header Node --}}

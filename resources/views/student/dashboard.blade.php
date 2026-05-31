@@ -535,4 +535,10 @@
 </div>
 </div>
 </div>
+
+    <script>
+        setTimeout(function() {
+            window.location.reload();
+        }, 60000);
+    </script>
 </x-layouts.student>

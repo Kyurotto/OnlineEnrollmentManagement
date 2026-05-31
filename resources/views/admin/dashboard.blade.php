@@ -1,4 +1,4 @@
-<div class="w-full space-y-6">
+<div wire:poll.60s class="w-full space-y-6">
 
     {{-- SECTION 1 — Header Node --}}
     <div class="p-10 rounded-[2rem] border relative overflow-hidden group shadow-xl shadow-blue-900/5 bg-white"
