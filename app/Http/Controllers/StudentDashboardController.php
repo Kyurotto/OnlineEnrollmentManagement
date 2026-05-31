@@ -159,7 +159,7 @@ class StudentDashboardController extends Controller
             $assessment['totalDiscount'] = $totalDisc;
         }
 
-        return view('dashboard', compact(
+        return view('student.dashboard', compact(
             'activeSemester',
             'activeYear',
             'hasPendingApplication',

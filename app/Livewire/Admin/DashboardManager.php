@@ -204,7 +204,7 @@ class DashboardManager extends Component
 
         $registryNewCount = $registryTotalStudents - $registryReturningCount;
 
-        return view('dashboard', [
+        return view('admin.dashboard', [
             'stats' => $stats,
             'appsByDate' => $appsByDate,
             'weekDates' => $weekDates,

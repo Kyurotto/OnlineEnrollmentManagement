@@ -63,6 +63,6 @@ class CashierDashboardManager extends Component
             ->take(10)
             ->get();
 
-        return view('dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
+        return view('cashier.dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
     }
 }

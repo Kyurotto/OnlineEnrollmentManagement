@@ -146,7 +146,7 @@ class RegistrarDashboardManager extends Component
         $college_count = Enrollment::query()->whereNotIn('course_code', $shsStrands, 'and', false)->count('*');
         $total_count = Enrollment::query()->count('*');
 
-        return view('dashboard', compact(
+        return view('registrar.dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications',
             'appsByDate', 'weekDates', 'weekRange', 'selectedApp',
             'shs_count', 'college_count', 'total_count',
