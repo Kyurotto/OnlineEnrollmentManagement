@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Sanctum\HasApiTokens; // Added based on your use trait
 
 /**
@@ -30,7 +30,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'status'
+        'status',
     ];
 
     // Link to Application (Legacy/Latest)
@@ -48,9 +48,10 @@ class User extends Authenticatable
     // Helper for Real Status
     public function getDisplayStatusAttribute()
     {
-        if (in_array($this->role, ['admin', 'registrar', 'cashier'])) {
+        if (in_array($this->role, ['admin', 'registrar', 'cashier', 'teacher'])) {
             return 'Active';
         }
+
         return $this->application?->status ?? 'Not Enrolled';
     }
 

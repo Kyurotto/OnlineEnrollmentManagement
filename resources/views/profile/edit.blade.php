@@ -11,6 +11,10 @@
     <x-layouts.registrar :title="$title">
         @include('profile.partials.edit-content')
     </x-layouts.registrar>
+@elseif($role === 'teacher')
+    <x-layouts.teacher :title="$title">
+        @include('profile.partials.edit-content')
+    </x-layouts.teacher>
 @else
     <x-layouts.admin :title="$title">
         @include('profile.partials.edit-content')

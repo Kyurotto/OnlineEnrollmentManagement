@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Employee; // Import the Employee model
+use App\Models\Employee;
+use Illuminate\Database\Seeder; // Import the Employee model
 
 class EmployeeSeeder extends Seeder
 {
@@ -38,6 +37,15 @@ class EmployeeSeeder extends Seeder
             'phone' => '09001112222',
             'address' => '789 Pine Rd, Anytown',
             'role' => 'cashier',
+        ]);
+
+        Employee::create([
+            'last_name' => 'Davis',
+            'first_name' => 'Robert',
+            'email' => 'teacher@example.com',
+            'phone' => '09112233445',
+            'address' => '321 Elm St, Anytown',
+            'role' => 'teacher',
         ]);
     }
 }

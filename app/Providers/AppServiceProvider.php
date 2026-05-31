@@ -2,16 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Employee;
+use App\Models\Enrollment;
+use App\Models\Payment;
+use App\Models\User;
+use App\Notifications\NewEnrollmentSubmitted;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use App\Models\User;
-use App\Models\Enrollment;
-use App\Models\Payment;
-use App\Models\Employee;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,13 +35,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(function (User $user, string $ability) {
             // FIX 3: Prevent Super Admin from bypassing strictly role-scoped capabilities
             // This prevents crashes where a route explicitly requires a cashier/registrar context.
-            if (in_array($ability, ['cashier', 'registrar', 'student'])) {
+            if (in_array($ability, ['cashier', 'registrar', 'student', 'teacher'])) {
                 return null;
             }
 
             // FIX 1: Secure Email Fallback (Prevents Privilege Escalation)
             $employee = $user->employee;
-            if (!$employee) {
+            if (! $employee) {
                 $employee = Employee::where('email', $user->email)->first();
                 // Ensure this employee record isn't already claimed by another user ID
                 if ($employee && $employee->user_id !== null && $employee->user_id !== $user->id) {
@@ -58,35 +56,50 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('admin', function (User $user) {
             $employee = $user->employee;
-            if (!$employee) {
+            if (! $employee) {
                 $employee = Employee::where('email', $user->email)->first();
                 if ($employee && $employee->user_id !== null && $employee->user_id !== $user->id) {
                     $employee = null;
                 }
             }
+
             return $employee && $employee->role === 'admin';
         });
 
         Gate::define('cashier', function (User $user) {
             $employee = $user->employee;
-            if (!$employee) {
+            if (! $employee) {
                 $employee = Employee::where('email', $user->email)->first();
                 if ($employee && $employee->user_id !== null && $employee->user_id !== $user->id) {
                     $employee = null;
                 }
             }
+
             return $employee && $employee->role === 'cashier';
         });
 
         Gate::define('registrar', function (User $user) {
             $employee = $user->employee;
-            if (!$employee) {
+            if (! $employee) {
                 $employee = Employee::where('email', $user->email)->first();
                 if ($employee && $employee->user_id !== null && $employee->user_id !== $user->id) {
                     $employee = null;
                 }
             }
+
             return $employee && $employee->role === 'registrar';
+        });
+
+        Gate::define('teacher', function (User $user) {
+            $employee = $user->employee;
+            if (! $employee) {
+                $employee = Employee::where('email', $user->email)->first();
+                if ($employee && $employee->user_id !== null && $employee->user_id !== $user->id) {
+                    $employee = null;
+                }
+            }
+
+            return $employee && $employee->role === 'teacher';
         });
 
         Gate::define('student', function (User $user) {
@@ -99,7 +112,7 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
             try {
                 // FIX 2: Correctly isolate "New Enrollee" notifications from all other notifications
-                $unreadNotifCount = $user ? $user->unreadNotifications()->where('type', \App\Notifications\NewEnrollmentSubmitted::class)->count() : 0;
+                $unreadNotifCount = $user ? $user->unreadNotifications()->where('type', NewEnrollmentSubmitted::class)->count() : 0;
                 $dbNotifications = $user ? $user->unreadNotifications()->latest()->take(10)->get() : collect();
             } catch (\Exception $e) {
                 $unreadNotifCount = 0;
@@ -108,8 +121,8 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with([
                 'newEnrolleesCount' => $unreadNotifCount,
-                'dbNotifications'   => $dbNotifications,
-                'currentRoute'      => request()->route() ? request()->route()->getName() : null,
+                'dbNotifications' => $dbNotifications,
+                'currentRoute' => request()->route() ? request()->route()->getName() : null,
             ]);
         });
 
@@ -118,7 +131,7 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
             try {
                 // FIX 2: Correctly isolate "New Enrollee" notifications from all other notifications
-                $unreadNotifCount = $user ? $user->unreadNotifications()->where('type', \App\Notifications\NewEnrollmentSubmitted::class)->count() : 0;
+                $unreadNotifCount = $user ? $user->unreadNotifications()->where('type', NewEnrollmentSubmitted::class)->count() : 0;
                 $dbNotifications = $user ? $user->unreadNotifications()->latest()->take(10)->get() : collect();
             } catch (\Exception $e) {
                 $unreadNotifCount = 0;
@@ -127,8 +140,8 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with([
                 'newEnrolleesCount' => $unreadNotifCount,
-                'dbNotifications'   => $dbNotifications,
-                'currentRoute'      => request()->route() ? request()->route()->getName() : null,
+                'dbNotifications' => $dbNotifications,
+                'currentRoute' => request()->route() ? request()->route()->getName() : null,
             ]);
         });
 

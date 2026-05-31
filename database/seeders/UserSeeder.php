@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // 1. Admin
-        if (!User::where('email', 'admin@example.com')->exists()) {
+        if (! User::where('email', 'admin@example.com')->exists()) {
             User::forceCreate([
                 'name' => 'admin',
                 'username' => 'admin',
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
         }
 
         // 2. Registrar
-        if (!User::where('email', 'registrar@example.com')->exists()) {
+        if (! User::where('email', 'registrar@example.com')->exists()) {
             User::forceCreate([
                 'name' => 'registrar',
                 'username' => 'registrar',
@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
         }
 
         // 3. Cashier
-        if (!User::where('email', 'cashier@example.com')->exists()) {
+        if (! User::where('email', 'cashier@example.com')->exists()) {
             User::forceCreate([
                 'name' => 'cashier',
                 'username' => 'cashier',
@@ -52,8 +52,22 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        // 4. Test Student
-        if (!User::where('email', 'student@example.com')->exists()) {
+        // 4. Teacher
+        if (! User::where('email', 'teacher@example.com')->exists()) {
+            User::forceCreate([
+                'name' => 'teacher',
+                'username' => 'teacher',
+                'email' => 'teacher@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'teacher',
+                'first_name' => 'Robert',
+                'last_name' => 'Davis',
+                'status' => 'Active',
+            ]);
+        }
+
+        // 5. Test Student
+        if (! User::where('email', 'student@example.com')->exists()) {
             User::forceCreate([
                 'name' => 'student',
                 'username' => 'student',
