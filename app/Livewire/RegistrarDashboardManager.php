@@ -2,16 +2,17 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\Layout;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Enrollment;
+use App\Models\AcademicYear;
 use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Section;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Http\Request;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('components.layouts.registrar')]
 class RegistrarDashboardManager extends Component
@@ -19,17 +20,17 @@ class RegistrarDashboardManager extends Component
     public function render()
     {
         // 0. Get Active Academic Year
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
         // 1. Fetch Accurate Data Counts
         $studentsCountQuery = User::query()->where('role', '=', 'student', 'and')
-                             ->whereHas('application', function($q) use ($activeYearName) {
-                                 $q->where('status', '=', 'Enrolled', 'and');
-                                 if ($activeYearName) {
-                                     $q->where('year_level', 'like', '%' . $activeYearName . '%', 'and');
-                                 }
-                             });
+            ->whereHas('application', function ($q) use ($activeYearName) {
+                $q->where('status', '=', 'Enrolled', 'and');
+                if ($activeYearName) {
+                    $q->where('year_level', 'like', '%'.$activeYearName.'%', 'and');
+                }
+            });
         $studentsCount = $studentsCountQuery->count();
 
         $totalApplicationsCount = Enrollment::query()->count('*');
@@ -39,7 +40,7 @@ class RegistrarDashboardManager extends Component
         $strandsCount = Course::query()->where('type', '=', 'shs')->count('*');
 
         // 2. CALCULATE EXTRA STATS
-        $sectionsCount = \App\Models\Section::query()->count('*');
+        $sectionsCount = Section::query()->count('*');
         $hasIsRegular = Schema::hasColumn('enrollments', 'is_regular');
 
         $baseStudentClassStats = User::query()
@@ -49,7 +50,7 @@ class RegistrarDashboardManager extends Component
                     'id',
                     'status',
                     'year_level',
-                    $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular')
+                    $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular'),
                 ])
                     ->whereIn('id', function ($q) {
                         $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
@@ -85,21 +86,21 @@ class RegistrarDashboardManager extends Component
 
         // 3. MAP THE STATS EXACTLY FOR THE HTML VIEW
         $stats = [
-            'students'     => $studentsCount,
+            'students' => $studentsCount,
             'applications' => $activeApplicationsCount,
-            'programs'     => $programsCount,
-            'strands'      => $strandsCount,
-            'sections'     => $sectionsCount,
+            'programs' => $programsCount,
+            'strands' => $strandsCount,
+            'sections' => $sectionsCount,
         ];
 
         // 4. NOTIFICATIONS (Dropdown)
         $newEnrolleesCount = Auth::user() ? Auth::user()->unreadNotifications->count() : 0;
 
         $notifications = Enrollment::query()->whereIn('status', ['Pending', 'Paid', 'Enrolled'], 'and', false)
-                            ->with('user')
-                            ->orderBy('updated_at', 'desc')
-                            ->take(5)
-                            ->get();
+            ->with('user')
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get();
 
         // 5. ROLLING 5 DAYS (Always includes Today as the last card)
         $endDate = Carbon::now()->endOfDay();
@@ -114,7 +115,7 @@ class RegistrarDashboardManager extends Component
             ->get();
 
         // Group applications by date (Y-m-d)
-        $appsByDate = $weeklyApplications->groupBy(function($date) {
+        $appsByDate = $weeklyApplications->groupBy(function ($date) {
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
 
@@ -124,9 +125,9 @@ class RegistrarDashboardManager extends Component
             $date = $startDate->copy()->addDays($i);
             $weekDates[] = [
                 'date_string' => $date->format('Y-m-d'),
-                'day_name'    => $date->format('l'),
-                'day_num'     => $date->format('d'),
-                'is_today'    => $date->isToday(),
+                'day_name' => $date->format('l'),
+                'day_num' => $date->format('d'),
+                'is_today' => $date->isToday(),
             ];
         }
 
@@ -146,7 +147,7 @@ class RegistrarDashboardManager extends Component
         $college_count = Enrollment::query()->whereNotIn('course_code', $shsStrands, 'and', false)->count('*');
         $total_count = Enrollment::query()->count('*');
 
-        return view('dashboard', compact(
+        return view('registrar.dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications',
             'appsByDate', 'weekDates', 'weekRange', 'selectedApp',
             'shs_count', 'college_count', 'total_count',

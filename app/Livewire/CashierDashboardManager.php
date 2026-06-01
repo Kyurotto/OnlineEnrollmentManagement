@@ -2,14 +2,10 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\Layout;
-use App\Models\User;
 use App\Models\Payment;
-use App\Models\Enrollment;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Notification;
-use App\Notifications\StudentPaymentConfirmed;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('components.layouts.cashier')]
 class CashierDashboardManager extends Component
@@ -18,23 +14,23 @@ class CashierDashboardManager extends Component
     {
         // 1. Calculate Stats (Filtered by Active/Non-Archived Term)
         $stats = [
-            'daily_collection'    => Payment::where('status', 'Paid')
+            'daily_collection' => Payment::where('status', 'Paid')
                 ->whereDate('payment_date', Carbon::today())
-                ->whereHas('application', function($query) {
+                ->whereHas('application', function ($query) {
                     $query->whereNull('archived_at');
                 })
                 ->sum('amount'),
 
-            'transactions_today'  => Payment::where('status', 'Paid')
+            'transactions_today' => Payment::where('status', 'Paid')
                 ->whereDate('payment_date', Carbon::today())
-                ->whereHas('application', function($query) {
+                ->whereHas('application', function ($query) {
                     $query->whereNull('archived_at');
                 })
                 ->count(),
 
             'students_paid_today' => Payment::where('status', 'Paid')
                 ->whereDate('payment_date', Carbon::today())
-                ->whereHas('application', function($query) {
+                ->whereHas('application', function ($query) {
                     $query->whereNull('archived_at');
                 })
                 ->distinct('user_id')
@@ -45,7 +41,7 @@ class CashierDashboardManager extends Component
         $paymentsToday = Payment::with('user')
             ->where('status', 'Paid')
             ->whereDate('payment_date', Carbon::today())
-            ->whereHas('application', function($query) {
+            ->whereHas('application', function ($query) {
                 $query->whereNull('archived_at');
             })
             ->latest('updated_at')
@@ -56,13 +52,13 @@ class CashierDashboardManager extends Component
         $paymentsYesterday = Payment::with('user')
             ->where('status', 'Paid')
             ->whereDate('payment_date', Carbon::yesterday())
-            ->whereHas('application', function($query) {
+            ->whereHas('application', function ($query) {
                 $query->whereNull('archived_at');
             })
             ->latest('updated_at')
             ->take(10)
             ->get();
 
-        return view('dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
+        return view('cashier.dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
     }
 }
