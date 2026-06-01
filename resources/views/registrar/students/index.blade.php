@@ -52,23 +52,23 @@
                     <tbody class="text-xs divide-y divide-white/5">
                         @forelse($students as $student)
                             <tr class="hover:bg-white/[0.02] transition-colors group">
-                                <td class="py-6 px-8 text-white/20 font-mono tracking-tighter">#{{ str_pad($student->id, 5, '0', STR_PAD_LEFT) }}</td>
-                                <td class="py-6 px-8">
+                                <td class="py-6 px-8 text-white/20 font-mono tracking-tighter whitespace-nowrap">#{{ str_pad($student->id, 5, '0', STR_PAD_LEFT) }}</td>
+                                <td class="py-6 px-8 whitespace-nowrap">
                                     <div class="flex flex-col">
                                         <span class="text-white group-hover:text-purple-400 transition-colors uppercase tracking-wider block">{{ $student->last_name }}, {{ $student->first_name }}</span>
                                         <span class="text-[9px] text-white/20 uppercase tracking-widest mt-0.5">Verified Profile</span>
                                     </div>
                                 </td>
-                                <td class="py-6 px-8">
+                                <td class="py-6 px-8 whitespace-nowrap">
                                     <span class="text-white/40 lowercase tracking-tight">{{ $student->email }}</span>
                                 </td>
-                                <td class="py-6 px-8 text-center">
+                                <td class="py-6 px-8 text-center whitespace-nowrap">
                                     <span class="text-purple-400 uppercase tracking-widest font-black text-[10px]">{{ $student->program }}</span>
                                 </td>
-                                <td class="py-6 px-8 text-center">
+                                <td class="py-6 px-8 text-center whitespace-nowrap">
                                     <span class="text-white/40 uppercase tracking-widest font-black text-[10px]">{{ $student->year_display }}</span>
                                 </td>
-                                <td class="py-6 px-8 text-center">
+                                <td class="py-6 px-8 text-center whitespace-nowrap">
                                     @if($student->is_regular === 1 || $student->is_regular === true)
                                         <span class="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] font-black px-4 py-1.5 rounded-full border uppercase tracking-widest">
                                             Regular
@@ -83,7 +83,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="py-6 px-8">
+                                <td class="py-6 px-8 whitespace-nowrap">
                                     @php
                                         $status = $student->status ?? 'Enrolled';
                                         $statusColor = match(ucfirst($status)) {

@@ -141,8 +141,8 @@
                 <tbody class="text-xs divide-y divide-slate-100 bg-white">
                     @forelse($applications as $application)
                         <tr class="hover:bg-blue-50/30 transition-all group">
-                            <td class="py-6 px-8 text-slate-400 font-mono tracking-tighter">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
-                            <td class="py-6 px-8">
+                            <td class="py-6 px-8 text-slate-400 font-mono tracking-tighter whitespace-nowrap">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
                                 <div class="flex flex-col">
                                     <div class="flex items-baseline gap-2">
                                         <span class="text-black group-hover:text-blue-600 transition-colors uppercase tracking-wider font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
@@ -153,7 +153,7 @@
                                     <span class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">Applicant Profile</span>
                                 </div>
                             </td>
-                            <td class="py-6 px-8 text-slate-500 lowercase tracking-tight">{{ $application->email }}</td>
+                            <td class="py-6 px-8 text-slate-500 lowercase tracking-tight whitespace-nowrap">{{ $application->email }}</td>
                             <td class="py-6 px-8 whitespace-nowrap">
                                 @php
                                     $classification = $application->classification ?? 'New';
@@ -189,8 +189,8 @@
                                 <span class="text-blue-600 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
                                 <span class="text-slate-400 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
                             </td>
-                            <td class="py-6 px-8 text-slate-500 font-medium tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
-                            <td class="py-6 px-8">
+                            <td class="py-6 px-8 text-slate-500 font-medium tracking-tight whitespace-nowrap">{{ $application->created_at->format('M d, Y') }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
                                 @php
                                     $isFullyPaid = $application->status === 'Paid' && $application->is_fully_paid;
                                     $badgeColor = match(true) {
@@ -215,7 +215,7 @@
                                     {{ $displayText }}
                                 </span>
                             </td>
-                            <td class="py-6 px-8">
+                            <td class="py-6 px-8 whitespace-nowrap">
                                 <div class="flex justify-end items-center gap-3">
                                     <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
                                         class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-blue-500/30 text-black hover:bg-blue-50 hover:border-blue-500 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-blue-500/10 whitespace-nowrap">

@@ -228,227 +228,229 @@
                 </thead>
                 <tbody class="text-xs divide-y divide-slate-100 bg-white">
                     @forelse($applications as $application)
-                                            <tr class="hover:bg-blue-50/30 transition-colors group">
-                                                <td class="py-6 px-8 text-slate-400 font-mono tracking-tighter">
-                                                    #{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
-                                                <td class="py-6 px-8">
-                                                    <div class="flex flex-col">
-                                                        <span
-                                                            class="text-black group-hover:text-blue-600 transition-colors uppercase tracking-wider block font-bold">{{ $application->user->last_name }},
-                                                            {{ $application->user->first_name }}
-                                                            {{ $application->user->middle_name }}</span>
-                                                        <span class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">Applicant
-                                                            Profile</span>
-                                                    </div>
-                                                </td>
-                                                <td class="py-6 px-8 text-slate-500 lowercase tracking-tight">
-                                                    {{ $application->user->email }}
-                                                </td>
-                                                <td class="py-6 px-8 whitespace-nowrap">
-                                                    @php
-                                                        $classification = $application->classification ?? 'New';
-                                                        $classColor = match (strtolower($classification)) {
-                                                            'new' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                                            'returning' => 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-                                                            'transferee' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                                            'shifter' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                                            default => 'bg-white/5 text-white/40 border-white/10',
-                                                        };
-                                                    @endphp
-                                                    <span
-                                                        class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter {{ $classColor }} rounded-lg">
-                                                        {{ $classification }}
-                                                    </span>
-                                                </td>
-                                                <td class="py-6 px-8 whitespace-nowrap">
-                                                    @php
-                                                        $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-                                                        $isSHS = in_array($application->course_code, $shsStrands);
-                                                    @endphp
+                        <tr class="hover:bg-blue-50/30 transition-colors group">
+                            <td class="py-6 px-8 text-slate-400 font-mono tracking-tighter whitespace-nowrap">
+                                #{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-black group-hover:text-blue-600 transition-colors uppercase tracking-wider block font-bold">{{ $application->user->last_name }},
+                                        {{ $application->user->first_name }}
+                                        {{ $application->user->middle_name }}</span>
+                                    <span class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">Applicant
+                                        Profile</span>
+                                </div>
+                            </td>
+                            <td class="py-6 px-8 text-slate-500 lowercase tracking-tight whitespace-nowrap">
+                                {{ $application->user->email }}
+                            </td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                @php
+                                    $classification = $application->classification ?? 'New';
+                                    $classColor = match (strtolower($classification)) {
+                                        'new' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                                        'returning' => 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                                        'transferee' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        'shifter' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                                        default => 'bg-white/5 text-white/40 border-white/10',
+                                    };
+                                @endphp
+                                <span
+                                    class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter {{ $classColor }} rounded-lg">
+                                    {{ $classification }}
+                                </span>
+                            </td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                @php
+                                    $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+                                    $isSHS = in_array($application->course_code, $shsStrands);
+                                @endphp
 
-                                                    @if ($isSHS)
-                                                        <span
-                                                            class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">
-                                                            Senior High
-                                                        </span>
-                                                    @else
-                                                        <span
-                                                            class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg">
-                                                            College
-                                                        </span>
-                                                    @endif
-                                                </td>
-                                                <td class="py-6 px-8 whitespace-nowrap">
-                                                    <span
-                                                        class="text-blue-600 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
-                                                    <span
-                                                        class="text-slate-400 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
-                                                </td>
-                                                <td class="py-6 px-8 text-slate-500 font-medium tracking-tight">
-                                                    {{ $application->created_at->format('M d, Y') }}
-                                                </td>
-                                                <td class="py-6 px-8">
-                                                    @php
-                                                        $isFullyPaid = $application->status === 'Paid' && $application->is_fully_paid;
-                                                        $badgeColor = match (true) {
-                                                            $application->status === 'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                                            $isFullyPaid => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                                                            $application->status === 'Paid' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                                            $application->status === 'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                                            $application->status === 'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                                            $application->status === 'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                                            default => 'bg-white/5 text-white/40 border-white/10',
-                                                        };
-                                                        $displayText = match (true) {
-                                                            $application->status === 'Enrolled' => 'Enrolled',
-                                                            $isFullyPaid => 'Fully Paid',
-                                                            $application->status === 'Paid' => 'Partially Paid',
-                                                            $application->status === 'Approved' => 'Approved',
-                                                            $application->status === 'Pending' => 'Pending',
-                                                            default => $application->status
-                                                        };
-                                                    @endphp
-                                                    <span
-                                                        class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
-                                                        {{ $displayText }}
-                                                    </span>
-                                                </td>
-                                                <td class="py-6 px-8">
-                                                    <div class="flex justify-end items-center gap-3">
-                                                        @if (
-                                                                $application->credentials_verified &&
-                                                                !($application->classification === 'Returning' || $application->student_type === 'Returning')
-                                                            )
-                                                            <button type="button" wire:click="revokeClearance({{ $application->id }})"
-                                                                class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 text-black hover:bg-rose-50 hover:border-rose-500/30 transition-all text-[9px] font-black uppercase tracking-widest group/btn shadow-sm whitespace-nowrap">
-                                                                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                                        d="M6 18L18 6M6 6l12 12"></path>
-                                                                </svg>
-                                                                REJECT CLEARANCE
-                                                            </button>
-                                                        @endif
-                                                        @php
-                                                            $isCurrentTerm =
-                                                                $activeYear &&
-                                                                $activeSemester &&
-                                                                $application->academic_year_name === $activeYear->year_name &&
-                                                                $application->semester_name === $activeSemester->name;
-                                                        @endphp
-                                                        @if (
-                                                                ($application->classification === 'Returning' || $application->student_type === 'Returning') &&
-                                                                !$application->credentials_verified &&
-                                                                (!$isCurrentTerm || $application->status !== 'Enrolled')
-                                                            )
-                                                            <button type="button" wire:click="grantClearance({{ $application->id }})"
-                                                                class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-blue-500/20 text-black hover:bg-blue-50 hover:border-blue-500/40 transition-all text-[9px] font-black uppercase tracking-widest group/btn shadow-sm whitespace-nowrap">
-                                                                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                                                        d="M5 13l4 4L19 7"></path>
-                                                                </svg>
-                                                                APPROVE CLEARANCE
-                                                            </button>
-                                                        @endif
-                                                        <div x-data="{
-                            classType: '{{ $application->is_regular === null ? '' : ($application->is_regular ? 'regular' : 'irregular') }}',
-                            classReason: '{{ $application->classification_reason ?? '' }}',
-                            isSHS: {{ $application->isSHS() ? 'true' : 'false' }},
-                            showDropdown: false,
-                            dropdownStyle: '',
-                            collegeReasons: @js(array_keys(\App\Models\Enrollment::CLASSIFICATION_REASONS)),
-                            shsReasons: @js(array_keys(\App\Models\Enrollment::SHS_CLASSIFICATION_REASONS)),
-                            get reasons() { return this.isSHS ? this.shsReasons : this.collegeReasons; },
-                            positionDropdown(btn) {
-                                const rect = btn.getBoundingClientRect();
-                                const spaceBelow = window.innerHeight - rect.bottom;
-                                const dropdownH = 300;
-                                if (spaceBelow < dropdownH) {
-                                    this.dropdownStyle = `position:fixed;bottom:${window.innerHeight - rect.top + 8}px;right:${window.innerWidth - rect.right}px;`;
-                                } else {
-                                    this.dropdownStyle = `position:fixed;top:${rect.bottom + 8}px;right:${window.innerWidth - rect.right}px;`;
-                                }
-                            }
-                        }" class="relative">
-                                                            <button type="button" @click="positionDropdown($el); showDropdown = !showDropdown"
-                                                                :class="classType === 'regular' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : (classType === 'irregular' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-50 text-slate-400 border-slate-200')"
-                                                                class="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95 flex items-center gap-1.5 whitespace-nowrap">
-                                                                <span
-                                                                    x-text="classType === 'regular' ? '✓ Regular' : (classType === 'irregular' ? '✕ Irregular' : 'Set Classification')"></span>
-                                                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                                                        d="M19 9l-7 7-7-7"></path>
-                                                                </svg>
-                                                            </button>
-                                                            <div x-show="showDropdown" @click.away="showDropdown = false" x-cloak
-                                                                :style="dropdownStyle"
-                                                                class="w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-[9999] space-y-3 text-left">
-                                                                <span
-                                                                    class="text-[9px] font-black text-slate-400 uppercase tracking-widest block border-b border-slate-100 pb-2">Select
-                                                                    Classification</span>
-                                                                <div class="space-y-1">
-                                                                    <button type="button" @click="
-                                            classType = 'regular';
-                                            classReason = '';
-                                            $wire.setClassification({{ $application->id }}, 'regular', '').then(() => { location.reload(); });
-                                        " :class="classType === 'regular' ? 'bg-emerald-50 text-emerald-600' : 'hover:bg-slate-50 text-slate-700'"
-                                                                        class="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-colors flex items-center justify-between">
-                                                                        <span>✓ Regular</span>
-                                                                        <span x-show="classType === 'regular'"
-                                                                            class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                                    </button>
-                                                                    <button type="button" @click="classType = 'irregular'"
-                                                                        :class="classType === 'irregular' ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-700'"
-                                                                        class="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-colors flex items-center justify-between">
-                                                                        <span>✕ Irregular</span>
-                                                                        <span x-show="classType === 'irregular'"
-                                                                            class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                                                    </button>
-                                                                </div>
-                                                                <div x-show="classType === 'irregular'"
-                                                                    x-transition:enter="transition ease-out duration-100"
-                                                                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                                                                    class="pt-2 border-t border-slate-100 space-y-2">
-                                                                    <label
-                                                                        class="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Reason
-                                                                        for Irregular</label>
-                                                                    <select x-model="classReason"
-                                                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[10px] font-bold text-black focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500/40">
-                                                                        <option value="">Select a reason...</option>
-                                                                        <template x-for="r in reasons" :key="r">
-                                                                            <option :value="r" x-text="r" :selected="r === classReason">
-                                                                            </option>
-                                                                        </template>
-                                                                    </select>
-                                                                    <button type="button" @click="
-                                            if (!classReason) return;
-                                            $wire.setClassification({{ $application->id }}, 'irregular', classReason).then(() => { location.reload(); });
-                                        " :disabled="!classReason" :class="!classReason ? 'opacity-40 cursor-not-allowed' : 'hover:bg-amber-600'"
-                                                                        class="w-full bg-amber-500 text-white text-[9px] font-black py-2.5 rounded-xl uppercase tracking-widest transition-all">
-                                                                        Save Reason
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                @if ($isSHS)
+                                    <span
+                                        class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">
+                                        Senior High
+                                    </span>
+                                @else
+                                    <span
+                                        class="px-3 py-1 text-[10px] font-black uppercase tracking-tighter bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg">
+                                        College
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                <span
+                                    class="text-blue-600 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
+                                <span
+                                    class="text-slate-400 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
+                            </td>
+                            <td class="py-6 px-8 text-slate-500 font-medium tracking-tight whitespace-nowrap">
+                                {{ $application->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                @php
+                                    $isFullyPaid = $application->status === 'Paid' && $application->is_fully_paid;
+                                    $badgeColor = match (true) {
+                                        $application->status === 'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        $isFullyPaid => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                        $application->status === 'Paid' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        $application->status === 'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        $application->status === 'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                        $application->status === 'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        default => 'bg-white/5 text-white/40 border-white/10',
+                                    };
+                                    $displayText = match (true) {
+                                        $application->status === 'Enrolled' => 'Enrolled',
+                                        $isFullyPaid => 'Fully Paid',
+                                        $application->status === 'Paid' => 'Partially Paid',
+                                        $application->status === 'Approved' => 'Approved',
+                                        $application->status === 'Pending' => 'Pending',
+                                        default => $application->status
+                                    };
+                                @endphp
+                                <span
+                                    class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $badgeColor }}">
+                                    {{ $displayText }}
+                                </span>
+                            </td>
+                            <td class="py-6 px-8">
+                                <div class="flex justify-end items-center gap-3">
+                                    @if (
+                                            $application->credentials_verified &&
+                                            !($application->classification === 'Returning' || $application->student_type === 'Returning')
+                                        )
+                                        <button type="button" wire:click="revokeClearance({{ $application->id }})"
+                                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 text-black hover:bg-rose-50 hover:border-rose-500/30 transition-all text-[9px] font-black uppercase tracking-widest group/btn shadow-sm whitespace-nowrap">
+                                            <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            REJECT CLEARANCE
+                                        </button>
+                                    @endif
+                                    @php
+                                        $isCurrentTerm =
+                                            $activeYear &&
+                                            $activeSemester &&
+                                            $application->academic_year_name === $activeYear->year_name &&
+                                            $application->semester_name === $activeSemester->name;
+                                    @endphp
+                                    @if (
+                                            ($application->classification === 'Returning' || $application->student_type === 'Returning') &&
+                                            !$application->credentials_verified &&
+                                            (!$isCurrentTerm || $application->status !== 'Enrolled')
+                                        )
+                                        <button type="button" wire:click="grantClearance({{ $application->id }})"
+                                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-blue-500/20 text-black hover:bg-blue-50 hover:border-blue-500/40 transition-all text-[9px] font-black uppercase tracking-widest group/btn shadow-sm whitespace-nowrap">
+                                            <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                    d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            APPROVE CLEARANCE
+                                        </button>
+                                    @endif
+                                    <div x-data="{
+                                        classType: '{{ $application->is_regular === null ? '' : ($application->is_regular ? 'regular' : 'irregular') }}',
+                                        classReason: '{{ $application->classification_reason ?? '' }}',
+                                        isSHS: {{ $application->isSHS() ? 'true' : 'false' }},
+                                        showDropdown: false,
+                                        dropdownStyle: '',
+                                        collegeReasons: @js(array_keys(\App\Models\Enrollment::CLASSIFICATION_REASONS)),
+                                        shsReasons: @js(array_keys(\App\Models\Enrollment::SHS_CLASSIFICATION_REASONS)),
+                                        get reasons() { return this.isSHS ? this.shsReasons : this.collegeReasons; },
+                                        positionDropdown(btn) {
+                                            const rect = btn.getBoundingClientRect();
+                                            const spaceBelow = window.innerHeight - rect.bottom;
+                                            const dropdownH = 300;
+                                            if (spaceBelow < dropdownH) {
+                                                this.dropdownStyle = `position:fixed;bottom:${window.innerHeight - rect.top + 8}px;right:${window.innerWidth - rect.right}px;`;
+                                            } else {
+                                                this.dropdownStyle = `position:fixed;top:${rect.bottom + 8}px;right:${window.innerWidth - rect.right}px;`;
+                                            }
+                                        }
+                                    }" class="relative">
+                                        <button type="button" @click="positionDropdown($el); showDropdown = !showDropdown"
+                                            :class="classType === 'regular' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : (classType === 'irregular' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-50 text-slate-400 border-slate-200')"
+                                            class="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95 flex items-center gap-1.5 whitespace-nowrap">
+                                            <span
+                                                x-text="classType === 'regular' ? '✓ Regular' : (classType === 'irregular' ? '✕ Irregular' : 'Set Classification')"></span>
+                                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                    d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </button>
+                                        <div x-show="showDropdown" @click.away="showDropdown = false" x-cloak
+                                            :style="dropdownStyle"
+                                            class="w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-[9999] space-y-3 text-left">
+                                            <span
+                                                class="text-[9px] font-black text-slate-400 uppercase tracking-widest block border-b border-slate-100 pb-2">Select
+                                                Classification</span>
+                                            <div class="space-y-1">
+                                                <button type="button" @click="
+                                                        classType = 'regular';
+                                                        classReason = '';
+                                                        $wire.setClassification({{ $application->id }}, 'regular', '').then(() => { location.reload(); });
+                                                    "
+                                                    :class="classType === 'regular' ? 'bg-emerald-50 text-emerald-600' : 'hover:bg-slate-50 text-slate-700'"
+                                                    class="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-colors flex items-center justify-between">
+                                                    <span>✓ Regular</span>
+                                                    <span x-show="classType === 'regular'"
+                                                        class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                </button>
+                                                <button type="button" @click="classType = 'irregular'"
+                                                    :class="classType === 'irregular' ? 'bg-amber-50 text-amber-600' : 'hover:bg-slate-50 text-slate-700'"
+                                                    class="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-colors flex items-center justify-between">
+                                                    <span>✕ Irregular</span>
+                                                    <span x-show="classType === 'irregular'"
+                                                        class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                </button>
+                                            </div>
+                                            <div x-show="classType === 'irregular'"
+                                                x-transition:enter="transition ease-out duration-100"
+                                                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                                class="pt-2 border-t border-slate-100 space-y-2">
+                                                <label
+                                                    class="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Reason
+                                                    for Irregular</label>
+                                                <select x-model="classReason"
+                                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[10px] font-bold text-black focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500/40">
+                                                    <option value="">Select a reason...</option>
+                                                    <template x-for="r in reasons" :key="r">
+                                                        <option :value="r" x-text="r" :selected="r === classReason">
+                                                        </option>
+                                                    </template>
+                                                </select>
+                                                <button type="button" @click="
+                                                        if (!classReason) return;
+                                                        $wire.setClassification({{ $application->id }}, 'irregular', classReason).then(() => { location.reload(); });
+                                                    " :disabled="!classReason"
+                                                    :class="!classReason ? 'opacity-40 cursor-not-allowed' : 'hover:bg-amber-600'"
+                                                    class="w-full bg-amber-500 text-white text-[9px] font-black py-2.5 rounded-xl uppercase tracking-widest transition-all">
+                                                    Save Reason
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                                        <button type="button"
-                                                            @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
-                                                            class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-blue-500/30 text-black hover:bg-blue-50 hover:border-blue-500 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-blue-500/10 whitespace-nowrap">
-                                                            <svg class="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform"
-                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                                                </path>
-                                                            </svg>
-                                                            View Details
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                    <button type="button"
+                                        @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
+                                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-blue-500/30 text-black hover:bg-blue-50 hover:border-blue-500 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-blue-500/10 whitespace-nowrap">
+                                        <svg class="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                            </path>
+                                        </svg>
+                                        View Details
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                     @empty
                         <tr>
                             <td colspan="8" class="py-24 text-center">
