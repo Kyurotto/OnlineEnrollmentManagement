@@ -32,7 +32,7 @@ class RegistrarDashboardController extends Controller
         $studentsCount = $studentsCountQuery->count();
 
         $totalApplicationsCount = Enrollment::count();
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        $pendingCount = Enrollment::where('status', 'Pending')->hasUploadsOrVerified()->count();
         $enrolledCount = Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count();
         $programsCount = Course::where('type', 'program')->count();
         $strandsCount = Course::where('type', 'shs')->count();
@@ -101,6 +101,7 @@ class RegistrarDashboardController extends Controller
         $newEnrolleesCount = Auth::user()->unreadNotifications->count();
 
         $notifications = Enrollment::whereIn('status', ['Pending', 'Paid', 'Enrolled'])
+            ->hasUploadsOrVerified()
             ->with('user')
             ->orderBy('updated_at', 'desc')
             ->take(5)
@@ -110,9 +111,9 @@ class RegistrarDashboardController extends Controller
         $endDate = Carbon::now()->endOfDay();
         $startDate = Carbon::now()->subDays(4)->startOfDay();
 
-        // Limit to latest 50 applications to prevent massive rendering overhead
         $weeklyApplications = Enrollment::with('user')
             ->whereIn('status', ['Pending', 'Paid'])
+            ->hasUploadsOrVerified()
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->take(50)

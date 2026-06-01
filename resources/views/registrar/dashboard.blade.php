@@ -153,7 +153,7 @@
                             Student Registry</p>
                     </div>
                 </div>
-                <a href="{{ route($role === 'admin' ? 'admin.reports.students.print' : 'registrar.reports.students.print') }}"
+                <a href="{{ route(auth()->user()->role === 'admin' ? 'admin.reports.students.print' : 'registrar.reports.students.print') }}"
                     target="_blank"
                     class="flex items-center gap-3 px-8 py-4 rounded-2xl bg-rose-600 text-white hover:bg-rose-700 transition-all text-[11px] font-black uppercase tracking-[0.15em] shadow-xl shadow-rose-600/20 active:scale-95">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

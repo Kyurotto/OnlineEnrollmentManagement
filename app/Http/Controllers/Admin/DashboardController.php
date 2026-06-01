@@ -32,6 +32,7 @@ class DashboardController extends Controller
             'students' => $studentsCount,
             'total_payments' => Payment::count(),
             'applications' => Enrollment::where('status', 'Pending')
+                ->hasUploadsOrVerified()
                 ->when($activeYearName, function ($q) use ($activeYearName) {
                     $q->where('year_level', 'like', '%'.$activeYearName.'%');
                 })->count(),
@@ -39,10 +40,11 @@ class DashboardController extends Controller
         ];
 
         // 2. Get the Count for the Notification Badge (Only Pending)
-        $pendingCount = Enrollment::where('status', 'Pending')->count();
+        $pendingCount = Enrollment::where('status', 'Pending')->hasUploadsOrVerified()->count();
 
         // 3. Get the Actual Records (Latest 5 for the dropdown list)
         $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+            ->hasUploadsOrVerified()
             ->with('user')
             ->whereHas('user')
             ->orderBy('updated_at', 'desc')
@@ -62,6 +64,7 @@ class DashboardController extends Controller
 
         $weeklyApplications = Enrollment::with(['user', 'course'])
             ->whereHas('user')
+            ->hasUploadsOrVerified()
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -106,7 +109,7 @@ class DashboardController extends Controller
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
-        $baseQuery = Enrollment::when($activeYearName, function ($q) use ($activeYearName) {
+        $baseQuery = Enrollment::hasUploadsOrVerified()->when($activeYearName, function ($q) use ($activeYearName) {
             $q->where('year_level', 'like', '%'.$activeYearName.'%');
         });
 
@@ -141,7 +144,7 @@ class DashboardController extends Controller
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
-        $baseQuery = Enrollment::when($activeYearName, function ($q) use ($activeYearName) {
+        $baseQuery = Enrollment::hasUploadsOrVerified()->when($activeYearName, function ($q) use ($activeYearName) {
             $q->where('year_level', 'like', '%'.$activeYearName.'%');
         });
 
