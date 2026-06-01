@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use App\Models\Employee; // Import the Employee model
 
 class EmployeeSeeder extends Seeder
 {
@@ -13,6 +13,7 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminUser = User::where('role', 'admin')->first();
         Employee::create([
             'last_name' => 'Doe',
             'first_name' => 'John',
@@ -20,8 +21,10 @@ class EmployeeSeeder extends Seeder
             'phone' => '09123456789',
             'address' => '123 Main St, Anytown',
             'role' => 'admin',
+            'user_id' => $adminUser ? $adminUser->id : null,
         ]);
 
+        $registrarUser = User::where('role', 'registrar')->first();
         Employee::create([
             'last_name' => 'Smith',
             'first_name' => 'Jane',
@@ -29,8 +32,10 @@ class EmployeeSeeder extends Seeder
             'phone' => '09987654321',
             'address' => '456 Oak Ave, Anytown',
             'role' => 'registrar',
+            'user_id' => $registrarUser ? $registrarUser->id : null,
         ]);
 
+        $cashierUser = User::where('role', 'cashier')->first();
         Employee::create([
             'last_name' => 'Brown',
             'first_name' => 'Alice',
@@ -38,6 +43,7 @@ class EmployeeSeeder extends Seeder
             'phone' => '09001112222',
             'address' => '789 Pine Rd, Anytown',
             'role' => 'cashier',
+            'user_id' => $cashierUser ? $cashierUser->id : null,
         ]);
     }
 }
