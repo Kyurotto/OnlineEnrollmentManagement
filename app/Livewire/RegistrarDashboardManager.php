@@ -34,7 +34,7 @@ class RegistrarDashboardManager extends Component
         $studentsCount = $studentsCountQuery->count();
 
         $totalApplicationsCount = Enrollment::query()->count('*');
-        $activeApplicationsCount = Enrollment::query()->whereNotIn('status', ['Enrolled', 'Rejected'])->count('*');
+        $activeApplicationsCount = Enrollment::query()->whereNotIn('status', ['Enrolled', 'Rejected'])->hasUploadsOrVerified()->count('*');
         $enrolledCount = Enrollment::query()->whereIn('status', ['Enrolled', 'Approved'])->count('*');
         $programsCount = Course::query()->where('type', '=', 'program')->count('*');
         $strandsCount = Course::query()->where('type', '=', 'shs')->count('*');
@@ -97,6 +97,7 @@ class RegistrarDashboardManager extends Component
         $newEnrolleesCount = Auth::user() ? Auth::user()->unreadNotifications->count() : 0;
 
         $notifications = Enrollment::query()->whereIn('status', ['Pending', 'Paid', 'Enrolled'], 'and', false)
+            ->hasUploadsOrVerified()
             ->with('user')
             ->orderBy('updated_at', 'desc')
             ->take(5)
@@ -109,6 +110,7 @@ class RegistrarDashboardManager extends Component
         // Limit to latest 50 applications to prevent massive rendering overhead
         $weeklyApplications = Enrollment::query()->with('user')
             ->whereIn('status', ['Pending', 'Paid'], 'and', false)
+            ->hasUploadsOrVerified()
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->take(50)

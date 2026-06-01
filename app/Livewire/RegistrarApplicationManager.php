@@ -207,6 +207,7 @@ class RegistrarApplicationManager extends Component
         $query = Enrollment::query()
             ->select('enrollments.*')
             ->join('users', 'enrollments.user_id', '=', 'users.id')
+            ->hasUploadsOrVerified()
             ->with(['user']);
 
         if ($this->level) {
@@ -340,7 +341,7 @@ class RegistrarApplicationManager extends Component
         });
 
         // 2. Count pending applications for the header badge (respecting the current level)
-        $pendingCountQuery = Enrollment::where('status', 'Pending');
+        $pendingCountQuery = Enrollment::where('status', 'Pending')->hasUploadsOrVerified();
         if ($this->level) {
             $pendingCountQuery->where('level', $this->level);
         }

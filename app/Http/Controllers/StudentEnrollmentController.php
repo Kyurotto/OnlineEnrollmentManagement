@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\AcademicYear;
+use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Semester;
+use App\Models\User;
+use App\Notifications\NewEnrollmentSubmitted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Semester;
-use App\Models\AcademicYear;
-use App\Models\Enrollment;
-use App\Models\Course;
-use App\Models\User;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\NewEnrollmentSubmitted;
 
 class StudentEnrollmentController extends Controller
 {
@@ -20,12 +21,12 @@ class StudentEnrollmentController extends Controller
         $level = $request->query('level');
 
         // If no level provided, show the selection screen
-        if (!$level) {
+        if (! $level) {
             return view('student.enrollment_choice');
         }
 
         // Validate level parameter
-        if (!in_array($level, ['shs', 'college'])) {
+        if (! in_array($level, ['shs', 'college'])) {
             return redirect()->route('student.enrollment.create')->with('error', 'Invalid enrollment level selected.');
         }
 
@@ -47,7 +48,7 @@ class StudentEnrollmentController extends Controller
         ];
 
         // Restore draft from session
-        $draft = session()->get('enrollment_draft_' . Auth::id(), []);
+        $draft = session()->get('enrollment_draft_'.Auth::id(), []);
         $data = array_merge($data, $draft);
 
         $activeSemester = Semester::where('is_active', true)->first();
@@ -64,7 +65,7 @@ class StudentEnrollmentController extends Controller
         $level = $request->input('level');
 
         // Validate level parameter
-        if (!in_array($level, ['shs', 'college'])) {
+        if (! in_array($level, ['shs', 'college'])) {
             return back()->with('error', 'Invalid enrollment level.')->withInput();
         }
 
@@ -101,7 +102,7 @@ class StudentEnrollmentController extends Controller
 
         $course = Course::where('course_code', $request->course_code)->first();
 
-        if (!$course) {
+        if (! $course) {
             return back()->with('error', 'Selected program is invalid or not registered in the system.')->withInput();
         }
 
@@ -109,7 +110,7 @@ class StudentEnrollmentController extends Controller
         $activeSemester = Semester::where('is_active', true)->first();
         $activeYear = AcademicYear::where('is_active', true)->first();
 
-        if (!$activeSemester || !$activeYear) {
+        if (! $activeSemester || ! $activeYear) {
             return back()->with('error', 'No active semester or academic year set by the registrar. Please contact the registrar.')->withInput();
         }
 
@@ -120,7 +121,7 @@ class StudentEnrollmentController extends Controller
         $unifiedYearLevel = "{$request->year_level} | {$semesterName} | {$academicYearName}";
 
         // Check for any previous balance carried over from prior terms
-        $previousBalance = \Illuminate\Support\Facades\Cache::pull("student_previous_balance_" . Auth::id(), 0);
+        $previousBalance = Cache::pull('student_previous_balance_'.Auth::id(), 0);
 
         // Check if they already have clearance from a preliminary shell record or previous term
         $latestAny = Enrollment::where('user_id', Auth::id())->latest()->first();
@@ -164,14 +165,14 @@ class StudentEnrollmentController extends Controller
 
         // ARCHIVE OLD RECORDS: Automatically archive all PREVIOUS non-archived records for this student
         // Use direct DB update for maximum reliability
-        \Illuminate\Support\Facades\DB::table('enrollments')
+        DB::table('enrollments')
             ->where('user_id', Auth::id())
             ->where('id', '!=', $enrollment->id)
             ->whereNull('archived_at')
             ->update([
                 'archived_at' => now(),
                 'status' => 'Enrolled', // Ensure they are marked as finished in archives
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
         // Fix missing metadata for folders in archives (for old records that lack columns)
@@ -186,20 +187,14 @@ class StudentEnrollmentController extends Controller
                 if (count($parts) >= 3) {
                     $archived->update([
                         'semester_name' => $parts[1],
-                        'academic_year_name' => $parts[2]
+                        'academic_year_name' => $parts[2],
                     ]);
                 }
             }
         }
 
         // Clear draft on successful submission
-        session()->forget('enrollment_draft_' . Auth::id());
-
-        // 5. Notify Admins and Registrars
-        $staff = User::whereIn('role', ['admin', 'registrar'])->get();
-        if ($staff->count() > 0) {
-            Notification::send($staff, new NewEnrollmentSubmitted($enrollment));
-        }
+        session()->forget('enrollment_draft_'.Auth::id());
 
         return redirect()->route('student.enrollment.upload')->with('success', 'Information saved. Please upload your documents to proceed.');
     }
@@ -212,16 +207,18 @@ class StudentEnrollmentController extends Controller
 
         $enrollment = Enrollment::where('user_id', $user->id)
             ->where(function ($q) use ($activeYear, $activeSemester) {
-                if (!$activeYear || !$activeSemester) return;
-                $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                    ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                if (! $activeYear || ! $activeSemester) {
+                    return;
+                }
+                $q->where('year_level', 'LIKE', '%'.$activeYear->year_name.'%')
+                    ->where('year_level', 'LIKE', '%'.$activeSemester->name.'%');
             })
             ->latest()
             ->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             $latestEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
-            if (!$latestEnrollment) {
+            if (! $latestEnrollment) {
                 return redirect()->route('student.enrollment.create')->with('info', 'Please submit your enrollment application first.');
             }
             $enrollment = $latestEnrollment;
@@ -240,7 +237,7 @@ class StudentEnrollmentController extends Controller
                     ->orderBy('id', 'desc')
                     ->value($field);
 
-                if (!empty($fallback)) {
+                if (! empty($fallback)) {
                     $enrollment->setAttribute($field, $fallback);
                 }
             }
@@ -257,16 +254,18 @@ class StudentEnrollmentController extends Controller
 
         $enrollment = Enrollment::where('user_id', $user->id)
             ->where(function ($q) use ($activeYear, $activeSemester) {
-                if (!$activeYear || !$activeSemester) return;
-                $q->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                    ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                if (! $activeYear || ! $activeSemester) {
+                    return;
+                }
+                $q->where('year_level', 'LIKE', '%'.$activeYear->year_name.'%')
+                    ->where('year_level', 'LIKE', '%'.$activeSemester->name.'%');
             })
             ->latest()
             ->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             $lastEnrollment = Enrollment::where('user_id', $user->id)->latest()->first();
-            if (!$lastEnrollment) {
+            if (! $lastEnrollment) {
                 return redirect()->route('student.enrollment.create')->with('error', 'No active enrollment record found.');
             }
 
@@ -288,7 +287,7 @@ class StudentEnrollmentController extends Controller
                 'contact' => $lastEnrollment->contact,
                 'address_full' => $lastEnrollment->address_full,
                 'status' => 'Pending',
-                'year_level' => "Returning Student | " . ($activeSemester->name ?? 'New Semester') . " | " . ($activeYear->year_name ?? 'New Year'),
+                'year_level' => 'Returning Student | '.($activeSemester->name ?? 'New Semester').' | '.($activeYear->year_name ?? 'New Year'),
                 'semester_name' => $activeSemester->name ?? '',
                 'academic_year_name' => $activeYear->year_name ?? '',
             ]);
@@ -326,14 +325,14 @@ class StudentEnrollmentController extends Controller
         $hasAllDocs = true;
         foreach ($requiredDocs as $doc) {
             $dbField = $fileMap[$doc];
-            if (empty($enrollment->$dbField) && !$request->hasFile($doc)) {
+            if (empty($enrollment->$dbField) && ! $request->hasFile($doc)) {
                 $hasAllDocs = false;
                 break;
             }
         }
 
-        if (!$hasAllDocs) {
-            if (empty($enrollment->promissory_note_path) && !$request->hasFile('promissory_note')) {
+        if (! $hasAllDocs) {
+            if (empty($enrollment->promissory_note_path) && ! $request->hasFile('promissory_note')) {
                 $validationRules['promissory_note'] = 'required|array|min:1';
                 $validationRules['promissory_note.*'] = 'required|file|mimes:doc,docx,pdf|max:5120';
             }
@@ -370,8 +369,30 @@ class StudentEnrollmentController extends Controller
             $updatedData['promissory_reason'] = $request->promissory_reason;
         }
 
-        if (!empty($updatedData)) {
+        $hadUploadBefore = ! empty($enrollment->form_137_path) ||
+                           ! empty($enrollment->sf10_path) ||
+                           ! empty($enrollment->good_moral_path) ||
+                           ! empty($enrollment->psa_path) ||
+                           ! empty($enrollment->id_picture_path) ||
+                           ! empty($enrollment->promissory_note_path);
+
+        if (! empty($updatedData)) {
             $enrollment->update($updatedData);
+        }
+
+        $hasUploadNow = ! empty($enrollment->form_137_path) ||
+                        ! empty($enrollment->sf10_path) ||
+                        ! empty($enrollment->good_moral_path) ||
+                        ! empty($enrollment->psa_path) ||
+                        ! empty($enrollment->id_picture_path) ||
+                        ! empty($enrollment->promissory_note_path);
+
+        if (! $hadUploadBefore && $hasUploadNow) {
+            // Notify Admins and Registrars
+            $staff = User::whereIn('role', ['admin', 'registrar'])->get();
+            if ($staff->count() > 0) {
+                Notification::send($staff, new NewEnrollmentSubmitted($enrollment));
+            }
         }
 
         return back()->with('success', 'Information and documents updated successfully.');
@@ -390,13 +411,13 @@ class StudentEnrollmentController extends Controller
         if ($activeYear) {
             $enrollment = Enrollment::where('user_id', $user->id)
                 ->whereIn('status', ['Pending', 'Approved', 'Enrolled', 'Rejected'])
-                ->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
+                ->where('year_level', 'LIKE', '%'.$activeYear->year_name.'%')
                 ->latest()
                 ->first();
         }
 
         // If no enrollment found, redirect to dashboard
-        if (!$enrollment) {
+        if (! $enrollment) {
             return redirect()->route('student.dashboard')->with('error', 'No enrollment application found for review.');
         }
 
@@ -408,7 +429,7 @@ class StudentEnrollmentController extends Controller
         $user = Auth::user();
         $enrollment = Enrollment::where('user_id', Auth::id())->latest()->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             return redirect()->route('student.dashboard')->with('error', 'No enrollment found.');
         }
 
@@ -416,7 +437,7 @@ class StudentEnrollmentController extends Controller
             Enrollment::where('user_id', Auth::id())->whereNotNull('archived_at')->count() > 0 ||
             stripos($enrollment->year_level, 'Returning') !== false;
 
-        if (in_array($enrollment->status, ['Enrolled', 'Paid']) && !$isOldStudent) {
+        if (in_array($enrollment->status, ['Enrolled', 'Paid']) && ! $isOldStudent) {
             return redirect()->route('student.enrollment.review')->with('error', 'You cannot edit an application that has already been finalized/paid.');
         }
 
@@ -441,7 +462,7 @@ class StudentEnrollmentController extends Controller
     {
         $enrollment = Enrollment::where('user_id', Auth::id())->latest()->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             return redirect()->route('student.enrollment.review')->with('error', 'Unauthorized edit attempt.');
         }
 
@@ -479,7 +500,7 @@ class StudentEnrollmentController extends Controller
 
         $course = Course::where('course_code', $request->course_code)->first();
 
-        if (!$course) {
+        if (! $course) {
             return back()->with('error', 'Selected program is invalid or not registered in the system.')->withInput();
         }
 

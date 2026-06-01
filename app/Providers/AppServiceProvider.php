@@ -135,7 +135,7 @@ class AppServiceProvider extends ServiceProvider
         // Current Notification Logic (Existing)
         View::composer(['admin.*', 'registrar.*'], function ($view) {
             try {
-                $pendingCount = Enrollment::where('status', 'Pending')->count();
+                $pendingCount = Enrollment::where('status', 'Pending')->hasUploadsOrVerified()->count();
             } catch (\Exception $e) {
                 $pendingCount = 0;
             }

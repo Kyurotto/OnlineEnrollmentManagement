@@ -14,12 +14,12 @@ class Enrollment extends Model
     protected $appends = ['is_fully_paid'];
 
     protected $casts = [
-        'is_regular'             => 'boolean',
-        'credentials_verified'   => 'boolean',
+        'is_regular' => 'boolean',
+        'credentials_verified' => 'boolean',
         'physical_documents_received' => 'boolean',
-        'last_audited_at'        => 'datetime',
-        'archived_at'            => 'datetime',
-        'previous_balance'       => 'decimal:2',
+        'last_audited_at' => 'datetime',
+        'archived_at' => 'datetime',
+        'previous_balance' => 'decimal:2',
     ];
 
     /**
@@ -42,25 +42,25 @@ class Enrollment extends Model
      * Valid classification reasons for irregular students.
      */
     public const CLASSIFICATION_REASONS = [
-        'Academic Deficiency'       => 'Academic Deficiency (due to failed grades)',
-        'Transferee Credit Gap'     => 'Transferee Credit Gap (missing credentials or unmatched subjects)',
-        'Shifter/Bridging'          => 'Shifter/Bridging (changing strands/courses)',
-        'Financial Underloading'    => 'Financial Underloading (requesting fewer units due to tuition)',
-        'Personal/Health Reasons'   => 'Personal/Health Reasons (requested light load)',
-        'Graduating Special Load'   => 'Graduating Special Load (customized final year schedule)',
+        'Academic Deficiency' => 'Academic Deficiency (due to failed grades)',
+        'Transferee Credit Gap' => 'Transferee Credit Gap (missing credentials or unmatched subjects)',
+        'Shifter/Bridging' => 'Shifter/Bridging (changing strands/courses)',
+        'Financial Underloading' => 'Financial Underloading (requesting fewer units due to tuition)',
+        'Personal/Health Reasons' => 'Personal/Health Reasons (requested light load)',
+        'Graduating Special Load' => 'Graduating Special Load (customized final year schedule)',
     ];
 
     /**
      * SHS-specific classification reasons.
      */
     public const SHS_CLASSIFICATION_REASONS = [
-        'Academic Deficiency'       => 'Academic Deficiency (failed/incomplete subjects)',
-        'Strand Shifter'            => 'Strand Shifter (changing to a different SHS strand)',
-        'Transferee Credit Gap'     => 'Transferee Credit Gap (missing JHS credentials or unmatched subjects)',
-        'Financial Underloading'    => 'Financial Underloading (requesting fewer subjects due to tuition)',
-        'Personal/Health Reasons'   => 'Personal/Health Reasons (requested light load)',
-        'Repeater'                  => 'Repeater (retaking a grade level or subject)',
-        'Graduating Special Load'   => 'Graduating Special Load (customized final semester schedule)',
+        'Academic Deficiency' => 'Academic Deficiency (failed/incomplete subjects)',
+        'Strand Shifter' => 'Strand Shifter (changing to a different SHS strand)',
+        'Transferee Credit Gap' => 'Transferee Credit Gap (missing JHS credentials or unmatched subjects)',
+        'Financial Underloading' => 'Financial Underloading (requesting fewer subjects due to tuition)',
+        'Personal/Health Reasons' => 'Personal/Health Reasons (requested light load)',
+        'Repeater' => 'Repeater (retaking a grade level or subject)',
+        'Graduating Special Load' => 'Graduating Special Load (customized final semester schedule)',
     ];
 
     /**
@@ -72,24 +72,26 @@ class Enrollment extends Model
         $changed = false;
 
         // Rule 1 — Transferee is Irregular by default until credentials are verified
-        if ($this->student_type === 'Transferee' && !$this->credentials_verified) {
+        if ($this->student_type === 'Transferee' && ! $this->credentials_verified) {
             if ($this->is_regular !== false || $this->classification_reason !== 'Transferee Credit Gap') {
-                $this->is_regular             = false;
-                $this->classification_reason  = 'Transferee Credit Gap';
-                $this->last_audited_at        = now();
+                $this->is_regular = false;
+                $this->classification_reason = 'Transferee Credit Gap';
+                $this->last_audited_at = now();
                 $changed = true;
             }
+
             return $changed;
         }
 
         // Rule 2 — Shifter is Irregular by default
         if ($this->student_type === 'Shifter') {
             if ($this->is_regular !== false || $this->classification_reason !== 'Shifter/Bridging') {
-                $this->is_regular             = false;
-                $this->classification_reason  = 'Shifter/Bridging';
-                $this->last_audited_at        = now();
+                $this->is_regular = false;
+                $this->classification_reason = 'Shifter/Bridging';
+                $this->last_audited_at = now();
                 $changed = true;
             }
+
             return $changed;
         }
 
@@ -99,19 +101,20 @@ class Enrollment extends Model
         $hasAcademicDeficiency = $this->hasAcademicDeficiency();
         if ($hasAcademicDeficiency) {
             if ($this->is_regular !== false || $this->classification_reason !== 'Academic Deficiency') {
-                $this->is_regular             = false;
-                $this->classification_reason  = 'Academic Deficiency';
-                $this->last_audited_at        = now();
+                $this->is_regular = false;
+                $this->classification_reason = 'Academic Deficiency';
+                $this->last_audited_at = now();
                 $changed = true;
             }
+
             return $changed;
         }
 
         // If none of the above triggered, mark as Regular (only if not already set)
         if ($this->is_regular !== true) {
-            $this->is_regular             = true;
-            $this->classification_reason  = null;
-            $this->last_audited_at        = now();
+            $this->is_regular = true;
+            $this->classification_reason = null;
+            $this->last_audited_at = now();
             $changed = true;
         }
 
@@ -133,6 +136,7 @@ class Enrollment extends Model
                 }
             }
         }
+
         return false;
     }
 
@@ -147,6 +151,7 @@ class Enrollment extends Model
         if ($this->is_regular === false) {
             return 'Irregular';
         }
+
         return 'Not Audited';
     }
 
@@ -156,7 +161,7 @@ class Enrollment extends Model
     public function hasWarningFlags(): bool
     {
         // Unverified transferee credentials
-        if ($this->student_type === 'Transferee' && !$this->credentials_verified) {
+        if ($this->student_type === 'Transferee' && ! $this->credentials_verified) {
             return true;
         }
         // Academic deficiency
@@ -164,9 +169,10 @@ class Enrollment extends Model
             return true;
         }
         // Missing required documents
-        if (!$this->physical_documents_received) {
+        if (! $this->physical_documents_received) {
             return true;
         }
+
         return false;
     }
 
@@ -176,6 +182,7 @@ class Enrollment extends Model
         // This tells Laravel that "Enrollment" belongs to a "User"
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function payments()
     {
         return $this->hasMany(Payment::class, 'application_id');
@@ -192,6 +199,7 @@ class Enrollment extends Model
     public function isSHS()
     {
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
+
         return in_array($this->course_code, $shsStrands);
     }
 
@@ -214,14 +222,15 @@ class Enrollment extends Model
                 'sf10_path' => 'SF10 (Permanent Record)',
                 'good_moral_path' => 'Certificate of Good Moral',
                 'psa_path' => 'PSA Birth Certificate',
-                'id_picture_path' => '2x2 ID Portrait'
+                'id_picture_path' => '2x2 ID Portrait',
             ];
         }
+
         return [
             'form_137_path' => 'Form 137 (Report Card)',
             'good_moral_path' => 'Certificate of Good Moral',
             'psa_path' => 'PSA Birth Certificate',
-            'id_picture_path' => '2x2 ID Portrait'
+            'id_picture_path' => '2x2 ID Portrait',
         ];
     }
 
@@ -230,18 +239,36 @@ class Enrollment extends Model
      */
     public function getIsFullyPaidAttribute(): bool
     {
-        $assessment = (float)($this->total_assessment ?? (($this->tuition_fee ?? 0) + ($this->miscellaneous_fee ?? 0)));
+        $assessment = (float) ($this->total_assessment ?? (($this->tuition_fee ?? 0) + ($this->miscellaneous_fee ?? 0)));
         if ($assessment <= 0) {
             // Cannot be fully paid if there's no assessment yet
             return false;
         }
 
         $paid = $this->payments()->where('status', 'Paid')->sum('amount');
-        $discount = (float)($this->cashier_discount ?? 0);
-        $prevBalance = (float)($this->previous_balance ?? 0);
+        $discount = (float) ($this->cashier_discount ?? 0);
+        $prevBalance = (float) ($this->previous_balance ?? 0);
 
         $balance = max(0, ($assessment - $discount + $prevBalance) - $paid);
+
         return $balance <= 0;
     }
 
+    /**
+     * Scope query to only include applications that have at least one upload/promissory note
+     * or are already verified, filtering out early-stage Pending shell applications.
+     */
+    public function scopeHasUploadsOrVerified($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('enrollments.status', '!=', 'Pending')
+                ->orWhereNotNull('enrollments.form_137_path')
+                ->orWhereNotNull('enrollments.sf10_path')
+                ->orWhereNotNull('enrollments.good_moral_path')
+                ->orWhereNotNull('enrollments.psa_path')
+                ->orWhereNotNull('enrollments.id_picture_path')
+                ->orWhereNotNull('enrollments.promissory_note_path')
+                ->orWhere('enrollments.credentials_verified', true);
+        });
+    }
 }
