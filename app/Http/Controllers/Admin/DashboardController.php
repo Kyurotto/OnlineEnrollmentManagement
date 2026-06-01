@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\AcademicYear;
 use App\Models\Course;
-use App\Models\Payment;
 use App\Models\Enrollment;
+use App\Models\Payment;
+use App\Models\User;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -15,27 +15,27 @@ class DashboardController extends Controller
     public function index()
     {
         // 0. Get Active Academic Year
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
         // 1. Gather Overview Statistics
         $studentsCountQuery = User::where('role', 'student')
-                             ->whereHas('application', function($q) use ($activeYearName) {
-                                 $q->where('status', 'Enrolled');
-                                 if ($activeYearName) {
-                                     $q->where('year_level', 'like', '%' . $activeYearName . '%');
-                                 }
-                             });
+            ->whereHas('application', function ($q) use ($activeYearName) {
+                $q->where('status', 'Enrolled');
+                if ($activeYearName) {
+                    $q->where('year_level', 'like', '%'.$activeYearName.'%');
+                }
+            });
         $studentsCount = $studentsCountQuery->count();
 
         $stats = [
-            'students'       => $studentsCount,
+            'students' => $studentsCount,
             'total_payments' => Payment::count(),
-            'applications'   => Enrollment::where('status', 'Pending')
-                                        ->when($activeYearName, function($q) use ($activeYearName) {
-                                            $q->where('year_level', 'like', '%' . $activeYearName . '%');
-                                        })->count(),
-            'enrolled'       => $studentsCount,
+            'applications' => Enrollment::where('status', 'Pending')
+                ->when($activeYearName, function ($q) use ($activeYearName) {
+                    $q->where('year_level', 'like', '%'.$activeYearName.'%');
+                })->count(),
+            'enrolled' => $studentsCount,
         ];
 
         // 2. Get the Count for the Notification Badge (Only Pending)
@@ -43,14 +43,14 @@ class DashboardController extends Controller
 
         // 3. Get the Actual Records (Latest 5 for the dropdown list)
         $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
-                        ->with('user')
-                        ->whereHas('user')
-                        ->orderBy('updated_at', 'desc')
-                        ->take(5)
-                        ->get();
+            ->with('user')
+            ->whereHas('user')
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get();
 
-        foreach($notifications as $notif) {
-            if($notif->status === 'Enrolled') {
+        foreach ($notifications as $notif) {
+            if ($notif->status === 'Enrolled') {
                 $payment = Payment::where('application_id', $notif->id)->first();
                 $notif->paid_amount = $payment ? $payment->amount : 0;
             }
@@ -67,7 +67,7 @@ class DashboardController extends Controller
             ->get();
 
         // Group applications by date (Y-m-d)
-        $appsByDate = $weeklyApplications->groupBy(function($date) {
+        $appsByDate = $weeklyApplications->groupBy(function ($date) {
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
 
@@ -77,9 +77,9 @@ class DashboardController extends Controller
             $date = $startDate->copy()->addDays($i);
             $weekDates[] = [
                 'date_string' => $date->format('Y-m-d'),
-                'day_name'    => $date->format('l'),
-                'day_num'     => $date->format('d'),
-                'is_today'    => $date->isToday(),
+                'day_name' => $date->format('l'),
+                'day_num' => $date->format('d'),
+                'is_today' => $date->isToday(),
             ];
         }
 
@@ -94,7 +94,7 @@ class DashboardController extends Controller
         $college_count = (clone $baseQuery)->whereNotIn('course_code', $shsStrands)->count();
         $total_count = (clone $baseQuery)->count();
 
-        return view('dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange', 'shs_count', 'college_count', 'total_count'));
+        return view('admin.dashboard', compact('stats', 'pendingCount', 'notifications', 'appsByDate', 'weekDates', 'weekRange', 'shs_count', 'college_count', 'total_count'));
     }
 
     /**
@@ -103,27 +103,27 @@ class DashboardController extends Controller
     public function getPendingCounts()
     {
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
-        $baseQuery = Enrollment::when($activeYearName, function($q) use ($activeYearName) {
-            $q->where('year_level', 'like', '%' . $activeYearName . '%');
+        $baseQuery = Enrollment::when($activeYearName, function ($q) use ($activeYearName) {
+            $q->where('year_level', 'like', '%'.$activeYearName.'%');
         });
 
         return response()->json([
             'total_pending' => (clone $baseQuery)->where('status', 'Pending')->count(),
             'shs_pending' => (clone $baseQuery)->whereIn('course_code', $shsStrands)
-                                       ->where('status', 'Pending')
-                                       ->count(),
+                ->where('status', 'Pending')
+                ->count(),
             'college_pending' => (clone $baseQuery)->whereNotIn('course_code', $shsStrands)
-                                          ->where('status', 'Pending')
-                                          ->count(),
+                ->where('status', 'Pending')
+                ->count(),
             'shs_approved' => (clone $baseQuery)->whereIn('course_code', $shsStrands)
-                                        ->where('status', 'Approved')
-                                        ->count(),
+                ->where('status', 'Approved')
+                ->count(),
             'college_approved' => (clone $baseQuery)->whereNotIn('course_code', $shsStrands)
-                                           ->where('status', 'Approved')
-                                           ->count(),
+                ->where('status', 'Approved')
+                ->count(),
             'shs_total' => (clone $baseQuery)->whereIn('course_code', $shsStrands)->count(),
             'college_total' => (clone $baseQuery)->whereNotIn('course_code', $shsStrands)->count(),
         ]);
@@ -138,11 +138,11 @@ class DashboardController extends Controller
         $tvlStrands = ['HE', 'ICT'];
         $allShs = array_merge($acadStrands, $tvlStrands);
 
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
-        $baseQuery = Enrollment::when($activeYearName, function($q) use ($activeYearName) {
-            $q->where('year_level', 'like', '%' . $activeYearName . '%');
+        $baseQuery = Enrollment::when($activeYearName, function ($q) use ($activeYearName) {
+            $q->where('year_level', 'like', '%'.$activeYearName.'%');
         });
 
         return [

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Models\AcademicYear;
 use App\Models\Enrollment;
 use App\Models\Semester;
-use App\Models\AcademicYear;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class StudentDashboardController extends Controller
 {
@@ -36,8 +36,8 @@ class StudentDashboardController extends Controller
                         $sub->where('semester_name', $activeSemester->name)
                             ->where('academic_year_name', $activeYear->year_name);
                     })->orWhere(function ($sub) use ($activeYear, $activeSemester) {
-                        $sub->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                            ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                        $sub->where('year_level', 'LIKE', '%'.$activeYear->year_name.'%')
+                            ->where('year_level', 'LIKE', '%'.$activeSemester->name.'%');
                     });
                 })
                 ->exists();
@@ -68,13 +68,12 @@ class StudentDashboardController extends Controller
                         $sub->where('semester_name', $activeSemester->name)
                             ->where('academic_year_name', $activeYear->year_name);
                     })->orWhere(function ($sub) use ($activeYear, $activeSemester) {
-                        $sub->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                            ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                        $sub->where('year_level', 'LIKE', '%'.$activeYear->year_name.'%')
+                            ->where('year_level', 'LIKE', '%'.$activeSemester->name.'%');
                     });
                 })
                 ->exists();
         }
-
 
         // 7. Check if an enrollment record already exists for this user in the active year, or if they have unresolved applications
         $existingEnrollment = null;
@@ -89,8 +88,8 @@ class StudentDashboardController extends Controller
                                     $sub2->where('semester_name', $activeSemester->name)
                                         ->where('academic_year_name', $activeYear->year_name);
                                 })->orWhere(function ($sub2) use ($activeYear, $activeSemester) {
-                                    $sub2->where('year_level', 'LIKE', '%' . $activeYear->year_name . '%')
-                                        ->where('year_level', 'LIKE', '%' . $activeSemester->name . '%');
+                                    $sub2->where('year_level', 'LIKE', '%'.$activeYear->year_name.'%')
+                                        ->where('year_level', 'LIKE', '%'.$activeSemester->name.'%');
                                 });
                             });
                     })->orWhereIn('status', ['Pending', 'Approved', 'Paid']); // Block if they have ANY active processes
@@ -105,8 +104,8 @@ class StudentDashboardController extends Controller
         $isOldStudent = ($allEnrollmentsCount > 1) ||
             ($allEnrollmentsCount === 1 && $anyEnrollment &&
                 $activeYear && $activeSemester &&
-                (stripos((string)$anyEnrollment->year_level, $activeYear->year_name) === false ||
-                    stripos((string)$anyEnrollment->year_level, $activeSemester->name) === false));
+                (stripos((string) $anyEnrollment->year_level, $activeYear->year_name) === false ||
+                    stripos((string) $anyEnrollment->year_level, $activeSemester->name) === false));
 
         $isStep3Done = false;
         // For Old Students, clearance is checked against the latest available record
@@ -120,7 +119,7 @@ class StudentDashboardController extends Controller
 
         // 7. Final flag for dashboard button:
         // New student can always enroll. Old student must finish Step 3 (Clearance).
-        $canEnrollNow = !$isOldStudent || $isStep3Done;
+        $canEnrollNow = ! $isOldStudent || $isStep3Done;
 
         // 11. Fetch Payment Assessment Details (for visibility)
         $assessment = null;
@@ -135,14 +134,14 @@ class StudentDashboardController extends Controller
             }
 
             $overrideKey = "student_assessment_override_{$user->id}";
-            $assessment = \Illuminate\Support\Facades\Cache::get($overrideKey);
-            if (!$assessment) {
+            $assessment = Cache::get($overrideKey);
+            if (! $assessment) {
                 $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
-                $assessment = \Illuminate\Support\Facades\Cache::get($cacheKey);
+                $assessment = Cache::get($cacheKey);
 
-                if (!$assessment) {
+                if (! $assessment) {
                     // Fallback to global
-                    $assessment = \Illuminate\Support\Facades\Cache::get("payment_assessment_{$level}_all_all", [
+                    $assessment = Cache::get("payment_assessment_{$level}_all_all", [
                         'tuitionFee' => 0,
                         'miscellaneousFees' => 0,
                         'discountPercentage' => 0,
@@ -159,7 +158,7 @@ class StudentDashboardController extends Controller
             $assessment['totalDiscount'] = $totalDisc;
         }
 
-        return view('dashboard', compact(
+        return view('student.dashboard', compact(
             'activeSemester',
             'activeYear',
             'hasPendingApplication',

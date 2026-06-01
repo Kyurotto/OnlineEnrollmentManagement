@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Payment;
-use App\Models\Enrollment;
 use Carbon\Carbon;
 
 class CashierDashboardController extends Controller
@@ -21,7 +18,7 @@ class CashierDashboardController extends Controller
         $transactionsToday = Payment::where('status', 'Paid')
             ->whereDate('updated_at', Carbon::today())
             ->count();
-            
+
         $stats = [
             'daily_collection' => $dailyCollection,
             'transactions_today' => $transactionsToday,
@@ -39,6 +36,6 @@ class CashierDashboardController extends Controller
             ->latest()
             ->get();
 
-        return view('dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
+        return view('cashier.dashboard', compact('stats', 'paymentsToday', 'paymentsYesterday'));
     }
 }
