@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Livewire;
 
 use App\Models\AcademicYear;
 use App\Models\Course;
@@ -8,48 +8,50 @@ use App\Models\Enrollment;
 use App\Models\Section;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
-class RegistrarDashboardController extends Controller
+#[Layout('components.layouts.registrar')]
+class RegistrarDashboardManager extends Component
 {
-    public function index(Request $request)
+    public function render()
     {
         // 0. Get Active Academic Year
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeYearName = $activeYear ? $activeYear->year_name : null;
 
         // 1. Fetch Accurate Data Counts
-        $studentsCountQuery = User::where('role', 'student')
+        $studentsCountQuery = User::query()->where('role', '=', 'student', 'and')
             ->whereHas('application', function ($q) use ($activeYearName) {
-                $q->where('status', 'Enrolled');
+                $q->where('status', '=', 'Enrolled', 'and');
                 if ($activeYearName) {
-                    $q->where('year_level', 'like', '%'.$activeYearName.'%');
+                    $q->where('year_level', 'like', '%'.$activeYearName.'%', 'and');
                 }
             });
         $studentsCount = $studentsCountQuery->count();
 
-        $totalApplicationsCount = Enrollment::count();
-        $pendingCount = Enrollment::where('status', 'Pending')->hasUploadsOrVerified()->count();
-        $enrolledCount = Enrollment::whereIn('status', ['Enrolled', 'Approved'])->count();
-        $programsCount = Course::where('type', 'program')->count();
-        $strandsCount = Course::where('type', 'shs')->count();
+        $totalApplicationsCount = Enrollment::query()->count('*');
+        $activeApplicationsCount = Enrollment::query()->whereNotIn('status', ['Enrolled', 'Rejected'])->hasUploadsOrVerified()->count('*');
+        $enrolledCount = Enrollment::query()->whereIn('status', ['Enrolled', 'Approved'])->count('*');
+        $programsCount = Course::query()->where('type', '=', 'program')->count('*');
+        $strandsCount = Course::query()->where('type', '=', 'shs')->count('*');
 
         // 2. CALCULATE EXTRA STATS
-        $sectionsCount = Section::count();
+        $sectionsCount = Section::query()->count('*');
         $hasIsRegular = Schema::hasColumn('enrollments', 'is_regular');
 
         $baseStudentClassStats = User::query()
             ->joinSub(
-                Enrollment::select(
+                Enrollment::query()->select([
                     'user_id',
                     'id',
                     'status',
                     'year_level',
-                    $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular')
-                )
+                    $hasIsRegular ? 'is_regular' : DB::raw('NULL as is_regular'),
+                ])
                     ->whereIn('id', function ($q) {
                         $q->selectRaw('MAX(id)')->from('enrollments')->groupBy('user_id');
                     }),
@@ -57,23 +59,17 @@ class RegistrarDashboardController extends Controller
                 'users.id',
                 '=',
                 'latest_enrollments.user_id',
-                'inner',
-                false
+                'inner'
             )
-            ->where('users.role', 'student')
-            ->where('latest_enrollments.status', 'Enrolled');
+            ->where('users.role', '=', 'student')
+            ->where('latest_enrollments.status', '=', 'Enrolled');
 
-        // No longer strictly filtering by year to maintain registry visibility during transitions
-        // if ($activeYearName) {
-        //     $baseStudentClassStats->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');
-        // }
-
-        $registryTotalStudents = (clone $baseStudentClassStats)->count();
+        $registryTotalStudents = (clone $baseStudentClassStats)->count('*');
         $registryRegularCount = $hasIsRegular
-            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 1')->count()
+            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 1')->count('*')
             : 0;
         $registryIrregularCount = $hasIsRegular
-            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 0')->count()
+            ? (clone $baseStudentClassStats)->whereRaw('latest_enrollments.is_regular = 0')->count('*')
             : 0;
 
         // Calculate New vs Returning Students
@@ -84,23 +80,23 @@ class RegistrarDashboardController extends Controller
                     ->whereColumn('enrollments.user_id', 'users.id')
                     ->whereColumn('enrollments.id', '<>', 'latest_enrollments.id');
             })
-            ->count();
+            ->count('*');
 
         $registryNewCount = $registryTotalStudents - $registryReturningCount;
 
         // 3. MAP THE STATS EXACTLY FOR THE HTML VIEW
         $stats = [
             'students' => $studentsCount,
-            'applications' => $pendingCount,
+            'applications' => $activeApplicationsCount,
             'programs' => $programsCount,
             'strands' => $strandsCount,
             'sections' => $sectionsCount,
         ];
 
         // 4. NOTIFICATIONS (Dropdown)
-        $newEnrolleesCount = Auth::user()->unreadNotifications->count();
+        $newEnrolleesCount = Auth::user() ? Auth::user()->unreadNotifications->count() : 0;
 
-        $notifications = Enrollment::whereIn('status', ['Pending', 'Paid', 'Enrolled'])
+        $notifications = Enrollment::query()->whereIn('status', ['Pending', 'Paid', 'Enrolled'], 'and', false)
             ->hasUploadsOrVerified()
             ->with('user')
             ->orderBy('updated_at', 'desc')
@@ -111,8 +107,9 @@ class RegistrarDashboardController extends Controller
         $endDate = Carbon::now()->endOfDay();
         $startDate = Carbon::now()->subDays(4)->startOfDay();
 
-        $weeklyApplications = Enrollment::with('user')
-            ->whereIn('status', ['Pending', 'Paid'])
+        // Limit to latest 50 applications to prevent massive rendering overhead
+        $weeklyApplications = Enrollment::query()->with('user')
+            ->whereIn('status', ['Pending', 'Paid'], 'and', false)
             ->hasUploadsOrVerified()
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
@@ -139,17 +136,18 @@ class RegistrarDashboardController extends Controller
         // Displays the current Month and Year (e.g. "February 2026")
         $weekRange = Carbon::now()->format('F Y');
 
-        // Modal Handling
+        // Modal Handling is usually done via traditional routes in the controller,
+        // but we pass selectedApp as null unless handled via Livewire state later.
         $selectedApp = null;
-        if ($request->has('app_id')) {
-            $selectedApp = Enrollment::with('user')->find($request->app_id);
+        if (request()->has('app_id')) {
+            $selectedApp = Enrollment::query()->with('user')->find(request()->app_id);
         }
 
         // 6. CALCULATE SHS vs COLLEGE ENROLLMENT COUNTS
         $shsStrands = ['STEM', 'HUMMS', 'HUMSS', 'GAS', 'ABM', 'HE', 'ICT'];
-        $shs_count = Enrollment::whereIn('course_code', $shsStrands)->count();
-        $college_count = Enrollment::whereNotIn('course_code', $shsStrands)->count();
-        $total_count = Enrollment::count();
+        $shs_count = Enrollment::query()->whereIn('course_code', $shsStrands, 'and', false)->count('*');
+        $college_count = Enrollment::query()->whereNotIn('course_code', $shsStrands, 'and', false)->count('*');
+        $total_count = Enrollment::query()->count('*');
 
         return view('registrar.dashboard', compact(
             'stats', 'newEnrolleesCount', 'notifications',
@@ -158,22 +156,5 @@ class RegistrarDashboardController extends Controller
             'registryTotalStudents', 'registryRegularCount', 'registryIrregularCount',
             'registryNewCount', 'registryReturningCount'
         ));
-    }
-
-    public function approve($id)
-    {
-        $application = Enrollment::findOrFail($id);
-        $application->update(['status' => 'Approved']);
-        $application->user->update(['status' => 'Enrolled']);
-
-        return redirect()->route('registrar.dashboard')->with('success', 'Application approved successfully.');
-    }
-
-    public function reject($id)
-    {
-        $application = Enrollment::findOrFail($id);
-        $application->update(['status' => 'Rejected']);
-
-        return redirect()->route('registrar.dashboard')->with('success', 'Application rejected.');
     }
 }

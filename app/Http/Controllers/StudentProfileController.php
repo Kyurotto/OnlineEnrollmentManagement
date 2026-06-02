@@ -8,24 +8,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Payment;
+use Illuminate\Validation\Rules\Password;
 
 class StudentProfileController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
-        
+
         $payments = Payment::where('user_id', $user->id)
-                    ->latest()
-                    ->take(3)
-                    ->get()
-                    ->map(function ($record) {
-                        return [
-                            'amount' => $record->amount,
-                            'date' => $record->created_at->format('M d, Y h:i A'),
-                            'status' => $record->status,
-                        ];
-                    });
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(function ($record) {
+                return [
+                    'amount' => $record->amount,
+                    'date' => $record->created_at->format('M d, Y h:i A'),
+                    'status' => $record->status,
+                ];
+            });
 
         return view('student.profile.index', compact('user', 'payments'));
     }
@@ -53,7 +54,7 @@ class StudentProfileController extends Controller
     {
         $request->validate([
             'current_password' => 'required|current_password',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
         $user = Auth::user();

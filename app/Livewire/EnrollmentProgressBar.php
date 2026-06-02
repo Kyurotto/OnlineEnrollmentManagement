@@ -148,7 +148,7 @@ class EnrollmentProgressBar extends Component
             // 5. Payment
             // Requirement: Must have filled form (Step 4 = green)
             if ($steps['application'] === 'green') {
-                $isPaid = ($latestEnrollment && $latestEnrollment->status === 'Paid');
+                $isPaid = ($latestEnrollment && in_array($latestEnrollment->status, ['Paid', 'Enrolled']));
                 $steps['payment'] = $isPaid ? 'green' : 'yellow';
             } else {
                 $steps['payment'] = 'grey';

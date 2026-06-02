@@ -1,65 +1,92 @@
 <div> <!-- SINGLE ROOT WRAPPER FOR LIVEWIRE -->
 
     <div class="space-y-6 animate-in fade-in duration-500">
-        @if(session('success'))
-            <div class="bg-blue-50 border border-blue-200 text-blue-600 px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        @if (session('success'))
+            <div
+                class="bg-blue-50 border border-blue-200 text-blue-600 px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
                 {{ session('success') }}
             </div>
         @endif
 
-        @if(session('error'))
-            <div class="bg-rose-50 border border-rose-200 text-rose-600 px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
-                <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        @if (session('error'))
+            <div
+                class="bg-rose-50 border border-rose-200 text-rose-600 px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 mb-6 font-bold animate-in fade-in duration-300">
+                <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
                 {{ session('error') }}
             </div>
         @endif
 
         <div class="h-[calc(100vh-200px)] flex gap-6">
             <!-- LEFT SIDEBAR: STUDENT LIST -->
-            <div class="w-80 flex flex-col bg-white border border-blue-500/10 rounded-[32px] shadow-xl shadow-blue-900/5 overflow-hidden">
+            <div
+                class="w-80 flex flex-col bg-white border border-blue-500/10 rounded-[32px] shadow-xl shadow-blue-900/5 overflow-hidden">
                 <!-- Header -->
                 <div class="px-6 py-8 border-b border-blue-500/10 bg-blue-50/30">
                     <div class="flex items-center gap-3 mb-5 text-black font-black uppercase text-sm tracking-tight">
                         <div class="p-2 bg-white rounded-lg border border-blue-100 text-blue-600 shadow-sm">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                            </svg>
                         </div>
                         <h3>Student Directory</h3>
                     </div>
                     <div class="relative group">
-                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" wire:model.live.debounce.500ms="search" class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-xs text-black focus:border-blue-500/40 outline-none transition-all placeholder-slate-300 font-bold uppercase tracking-tight shadow-sm" placeholder="SEARCH PROTOCOL...">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-blue-600 transition-colors"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" wire:model.live.debounce.500ms="search"
+                            class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-xs text-black focus:border-blue-500/40 outline-none transition-all placeholder-slate-300 font-bold uppercase tracking-tight shadow-sm"
+                            placeholder="SEARCH STUDENTS...">
                     </div>
                 </div>
 
                 <div class="flex-grow overflow-y-auto custom-scrollbar divide-y divide-slate-100 bg-white">
                     @forelse($payments as $enrollment)
                         @php $isSelected = $selectedStudentId === $enrollment->user_id; @endphp
-                        <button wire:click="selectStudent({{ $enrollment->user_id }}, {{ $enrollment->id }})" class="w-full text-left px-6 py-5 hover:bg-blue-50/50 transition-all {{ $isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent' }}">
-                            <div class="text-xs font-black text-blue-600 uppercase tracking-wider">{{ optional($enrollment->user)->last_name }}, {{ optional($enrollment->user)->first_name }}</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{{ $enrollment->course_code ?? 'N/A' }} • {{ $enrollment->year_level ?? 'N/A' }}</div>
+                        <button wire:click="selectStudent({{ $enrollment->user_id }}, {{ $enrollment->id }})"
+                            class="w-full text-left px-6 py-5 hover:bg-blue-50/50 transition-all {{ $isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent' }}">
+                            <div class="text-xs font-black text-blue-600 uppercase tracking-wider">
+                                {{ optional($enrollment->user)->last_name }},
+                                {{ optional($enrollment->user)->first_name }}</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                {{ $enrollment->course_code ?? 'N/A' }} • {{ $enrollment->year_level ?? 'N/A' }}</div>
                         </button>
                     @empty
-                        <div class="px-6 py-20 text-center"><p class="text-[10px] font-black text-slate-200 uppercase tracking-[0.4em]">No active records</p></div>
+                        <div class="px-6 py-20 text-center">
+                            <p class="text-[10px] font-black text-slate-200 uppercase tracking-[0.4em]">No active
+                                records</p>
+                        </div>
                     @endforelse
                 </div>
             </div>
 
             <!-- RIGHT SIDE: VIEW ONLY DETAILS -->
-            <div class="flex-grow flex flex-col bg-white border border-blue-500/10 rounded-[32px] shadow-xl shadow-blue-900/5 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                @if($selectedStudentId)
+            <div
+                class="flex-grow flex flex-col bg-white border border-blue-500/10 rounded-[32px] shadow-xl shadow-blue-900/5 overflow-y-auto overflow-x-hidden custom-scrollbar">
+                @if ($selectedStudentId)
 
                     <!-- BLADE DYNAMIC CALCULATION (DOES NOT TOUCH PHP LOGIC) -->
                     @php
-                        $isNewTermActive = (float)($totalAssessment ?? 0) > 0;
+                        $isNewTermActive = (float) ($totalAssessment ?? 0) > 0;
 
-                        $uiTuition = (float)($tuitionFees ?? 0);
-                        $uiMisc = (float)($miscellaneousFees ?? 0);
-                        $uiDiscount = (float)($appliedDiscount ?? 0);
-                        $uiCurrentTermAssessment = max(0, ($uiTuition + $uiMisc) - $uiDiscount);
+                        $uiTuition = (float) ($tuitionFees ?? 0);
+                        $uiMisc = (float) ($miscellaneousFees ?? 0);
+                        $uiDiscount = (float) ($appliedDiscount ?? 0);
+                        $uiCurrentTermAssessment = max(0, $uiTuition + $uiMisc - $uiDiscount);
 
-                        $paidSoFar = isset($paymentHistory) ? collect($paymentHistory)->where('status', 'Paid')->sum('amount') : 0;
-                        $prevDebt = (float)($previousBalance ?? 0);
+                        $paidSoFar = isset($paymentHistory)
+                            ? collect($paymentHistory)->where('status', 'Paid')->sum('amount')
+                            : 0;
+                        $prevDebt = (float) ($previousBalance ?? 0);
 
                         $actualRemainingPrevious = max(0, $prevDebt - $paidSoFar);
                         $actualRemainingCurrent = max(0, $uiCurrentTermAssessment - max(0, $paidSoFar - $prevDebt));
@@ -69,162 +96,447 @@
 
                     <div class="px-8 py-8 border-b border-blue-500/10 bg-blue-50/30 flex justify-between items-center">
                         <div>
-                            <h3 class="font-black text-black text-xl uppercase tracking-tight">{{ optional($selectedStudent)->last_name }}, {{ optional($selectedStudent)->first_name }}</h3>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">ID: #{{ str_pad(optional($selectedStudent)->id, 3, '0', STR_PAD_LEFT) }} • Administrator Access</p>
+                            <h3 class="font-black text-black text-xl uppercase tracking-tight">
+                                {{ optional($selectedStudent)->last_name }},
+                                {{ optional($selectedStudent)->first_name }}</h3>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">ID:
+                                #{{ str_pad(optional($selectedStudent)->id, 3, '0', STR_PAD_LEFT) }} • Administrator
+                                Access</p>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap">
-                            @if($selectedVoucherType)
-                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-blue-600 text-white shadow-lg">
+                            @if ($selectedVoucherType)
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-blue-600 text-white shadow-lg">
                                     {{ $selectedVoucherType === 'free_tuition' ? 'Free Tuition' : 'Discounted' }}
                                 </span>
                             @endif
                             @php $stype = ucfirst(strtolower(optional($enrollment)->student_type ?? 'New')); @endphp
-                            <span class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest bg-white border-blue-100 text-blue-600">
+                            <span
+                                class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest bg-white border-blue-100 text-blue-600">
                                 {{ $stype }}
                             </span>
-                            <span class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest {{ optional($enrollment)->is_regular ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100' }}">
+                            <span
+                                class="text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest {{ optional($enrollment)->is_regular ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100' }}">
                                 {{ optional($enrollment)->is_regular ? 'REGULAR' : 'IRREGULAR' }}
                             </span>
                         </div>
                     </div>
 
                     <div class="px-8 py-2 border-b border-blue-500/10 bg-white flex gap-10">
-                        <button wire:click="$set('activeTab', 'assessment')" class="text-[10px] font-black uppercase tracking-[0.2em] pb-4 border-b-2 transition-all {{ $activeTab === 'assessment' ? 'text-blue-600 border-blue-600' : 'text-slate-300 border-transparent hover:text-slate-400' }}">
+                        <button wire:click="$set('activeTab', 'assessment')"
+                            class="text-[10px] font-black uppercase tracking-[0.2em] pb-4 border-b-2 transition-all {{ $activeTab === 'assessment' ? 'text-blue-600 border-blue-600' : 'text-slate-300 border-transparent hover:text-slate-400' }}">
                             Assessment
                         </button>
-                        <button wire:click="$set('activeTab', 'balance')" class="text-[10px] font-black uppercase tracking-[0.2em] pb-4 border-b-2 transition-all {{ $activeTab === 'balance' ? 'text-blue-600 border-blue-600' : 'text-slate-300 border-transparent hover:text-slate-400' }}">
+                        <button wire:click="$set('activeTab', 'balance')"
+                            class="text-[10px] font-black uppercase tracking-[0.2em] pb-4 border-b-2 transition-all {{ $activeTab === 'balance' ? 'text-blue-600 border-blue-600' : 'text-slate-300 border-transparent hover:text-slate-400' }}">
                             Pay Fees
                         </button>
-                        <button wire:click="$set('activeTab', 'history')" class="text-[10px] font-black uppercase tracking-[0.2em] pb-4 border-b-2 transition-all {{ $activeTab === 'history' ? 'text-blue-600 border-blue-600' : 'text-slate-300 border-transparent hover:text-slate-400' }}">
+                        <button wire:click="$set('activeTab', 'history')"
+                            class="text-[10px] font-black uppercase tracking-[0.2em] pb-4 border-b-2 transition-all {{ $activeTab === 'history' ? 'text-blue-600 border-blue-600' : 'text-slate-300 border-transparent hover:text-slate-400' }}">
                             Transactions
                         </button>
                     </div>
 
                     <div class="px-10 py-8 flex-grow">
-                        @if($activeTab === 'assessment')
+                        @if ($activeTab === 'assessment')
                             <div class="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
-                                @if($enrollment && in_array($enrollment->status, ['Dropped', 'Withdrawn']))
-                                    <div class="flex items-center gap-4 px-6 py-4 rounded-2xl bg-rose-50 border border-rose-100">
-                                        <svg class="w-5 h-5 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                @if ($enrollment && in_array($enrollment->status, ['Dropped', 'Withdrawn']))
+                                    <div
+                                        class="flex items-center gap-4 px-6 py-4 rounded-2xl bg-rose-50 border border-rose-100">
+                                        <svg class="w-5 h-5 text-rose-500 flex-shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
+                                            </path>
+                                        </svg>
                                         <div>
-                                            <p class="text-rose-600 text-[10px] font-black uppercase tracking-widest">{{ $enrollment->status }} STATUS ACTIVE</p>
-                                            <p class="text-rose-400/60 text-[9px] font-bold mt-1">Protocol deviation recorded by registrar.</p>
+                                            <p class="text-rose-600 text-[10px] font-black uppercase tracking-widest">
+                                                {{ $enrollment->status }} STATUS ACTIVE</p>
+                                            <p class="text-rose-400/60 text-[9px] font-bold mt-1">Protocol deviation
+                                                recorded by registrar.</p>
                                         </div>
                                     </div>
                                 @endif
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    <div class="space-y-4">
-                                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 tracking-widest">Statement of Account</h4>
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Tuition Fees</span>
-                                            <span class="font-black text-black text-xs">₱ {{ number_format($uiTuition, 2) }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Miscellaneous</span>
-                                            <span class="font-black text-black text-xs">₱ {{ number_format($uiMisc, 2) }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Discounted</span>
-                                            <span class="font-black {{ $uiDiscount > 0 ? 'text-rose-600' : 'text-slate-300' }} text-xs">{{ $uiDiscount > 0 ? '-' : '' }} ₱ {{ number_format($uiDiscount, 2) }}</span>
-                                        </div>
-
-                                        @if($actualRemainingPrevious > 0)
-                                        <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                            <span class="font-bold text-slate-600 text-xs uppercase">Previous Balance</span>
-                                            <span class="font-black text-rose-600 text-xs">₱ {{ number_format($actualRemainingPrevious, 2) }}</span>
-                                        </div>
-                                        @endif
-
-                                        <div class="flex justify-between items-center pt-6 border-t-2 border-blue-500/10">
-                                            <div class="flex flex-col">
-                                                <span class="font-black text-black text-xs uppercase tracking-widest">Total Assessment</span>
-                                                <span class="text-[9px] font-bold text-slate-400 uppercase">Current Term Only</span>
+                                    @if ($isEditingAssessment)
+                                        <div class="space-y-4">
+                                            <div class="flex justify-between items-center mb-6">
+                                                <h4
+                                                    class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                                    Edit Assessment</h4>
+                                                <button wire:click="cancelEditAssessment"
+                                                    class="text-[9px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest">Cancel</button>
                                             </div>
-                                            <span class="font-black text-blue-600 text-lg tracking-tighter">
-                                                ₱ {{ number_format($uiCurrentTermAssessment, 2) }}
-                                            </span>
-                                        </div>
-                                    </div>
 
-                                    <div class="bg-slate-50/50 p-8 rounded-[32px] border border-blue-500/10 flex flex-col items-center justify-center text-center">
-                                        <div class="w-16 h-16 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                            <div
+                                                class="space-y-3 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar border border-slate-100 rounded-2xl p-4 bg-slate-50/50 shadow-inner">
+                                                {{-- Registration Fee --}}
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <label
+                                                        class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Registration
+                                                        Fee</label>
+                                                    <div class="relative w-36">
+                                                        <span
+                                                            class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                        <input type="number" wire:model="editRegistrationFee"
+                                                            step="0.01" min="0"
+                                                            class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                    </div>
+                                                </div>
+
+                                                {{-- Miscellaneous Items --}}
+                                                @php
+                                                    $editMiscFields = [
+                                                        'editGuidanceFee' => 'Guidance Fee',
+                                                        'editTrainingMaterials' => 'Testing Materials',
+                                                        'editHandbook' => 'Handbook',
+                                                        'editMailingFee' => 'Mailing Fee',
+                                                        'editMedicalDental' => 'Medical & Dental Service',
+                                                        'editStudentIdFee' => 'Student ID Card',
+                                                        'editSocioCultural' => 'Socio-Cultural & Sports Dev.',
+                                                        'editInsurance' => 'Insurance',
+                                                        'editSchoolPublication' => 'School Publication',
+                                                        'editStudentDevelopment' => 'Student Development',
+                                                        'editLibraryFee' => 'Library Fee',
+                                                        'editEnergyFee' => 'Energy Fee',
+                                                        'editPhysicalFacilities' => 'Physical/Facilities Dev.',
+                                                        'editResearchInnovation' => 'Research, Innovation & Ext.',
+                                                        'editInternetFee' => 'Internet Fee',
+                                                        'editAudioVisual' => 'Audio Visual',
+                                                        'editItDevelopment' => 'IT Development',
+                                                    ];
+                                                @endphp
+                                                @foreach ($editMiscFields as $modelField => $label)
+                                                    <div class="flex items-center justify-between gap-4">
+                                                        <label
+                                                            class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">{{ $label }}</label>
+                                                        <div class="relative w-36">
+                                                            <span
+                                                                class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                            <input type="number" wire:model="{{ $modelField }}"
+                                                                step="0.01" min="0"
+                                                                class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+
+                                                {{-- Laboratory Fee --}}
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <label
+                                                        class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Laboratory
+                                                        Fee</label>
+                                                    <div class="relative w-36">
+                                                        <span
+                                                            class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                        <input type="number" wire:model="editLaboratoryFee"
+                                                            step="0.01" min="0"
+                                                            class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                    </div>
+                                                </div>
+
+                                                {{-- Tuition Fee --}}
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <label
+                                                        class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Tuition
+                                                        Fee</label>
+                                                    <div class="relative w-36">
+                                                        <span
+                                                            class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-black text-[10px]">₱</span>
+                                                        <input type="number" wire:model="editTuitionFee"
+                                                            step="0.01" min="0"
+                                                            class="w-full bg-white text-slate-800 border border-slate-200 py-1.5 pl-6 pr-3 rounded-lg outline-none text-[11px] font-bold tracking-widest text-right focus:border-blue-500/40" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex gap-3 pt-4 border-t border-slate-100">
+                                                <button wire:click="saveAssessmentOverride"
+                                                    class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl text-[9px] uppercase tracking-[0.2em] transition-all shadow-md active:scale-95">
+                                                    Save Changes
+                                                </button>
+                                                <button wire:click="cancelEditAssessment"
+                                                    class="bg-slate-50 hover:bg-slate-100 text-slate-400 border border-slate-200 font-black py-2.5 px-4 rounded-xl text-[9px] uppercase tracking-[0.2em] transition-all active:scale-95">
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         </div>
-                                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">View Only Mode</h4>
-                                        <p class="text-[9px] font-bold text-slate-400 mt-2 uppercase tracking-widest">Transaction controls disabled for Admin</p>
+                                    @else
+                                        <div class="space-y-4">
+                                            <h4
+                                                class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 tracking-widest">
+                                                Statement of Account</h4>
+
+                                            {{-- Registration Fee --}}
+                                            <div
+                                                class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                <span class="font-black text-slate-800 text-xs uppercase">Registration
+                                                    Fee</span>
+                                                <span class="font-black text-black text-xs">₱
+                                                    {{ number_format($registrationFee, 2) }}</span>
+                                            </div>
+
+                                            {{-- Miscellaneous Fees Section --}}
+                                            <div class="mt-4 mb-1">
+                                                <span
+                                                    class="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em]">Miscellaneous
+                                                    Fees</span>
+                                            </div>
+                                            @php
+                                                $miscBreakdown = [
+                                                    ['Guidance Fee', $guidanceFee],
+                                                    ['Training Materials', $trainingMaterials],
+                                                    ['Handbook', $handbook],
+                                                    ['Mailing Fee', $mailingFee],
+                                                    ['Medical & Dental Service', $medicalDental],
+                                                    ['Student ID Card', $studentIdFee],
+                                                    ['Socio-Cultural & Sports Dev.', $socioCultural],
+                                                    ['Insurance', $insurance],
+                                                    ['School Publication', $schoolPublication],
+                                                    ['Student Development', $studentDevelopment],
+                                                    ['Library Fee', $libraryFee],
+                                                    ['Energy Fee', $energyFee],
+                                                    ['Physical/Facilities Dev.', $physicalFacilities],
+                                                    ['Research, Innovation & Ext.', $researchInnovation],
+                                                    ['Internet Fee', $internetFee],
+                                                    ['Audio Visual', $audioVisual],
+                                                    ['IT Development', $itDevelopment],
+                                                ];
+                                                $miscSubtotal = collect($miscBreakdown)->sum(
+                                                    fn($item) => (float) $item[1],
+                                                );
+                                            @endphp
+                                            @foreach ($miscBreakdown as $item)
+                                                @if ((float) $item[1] > 0)
+                                                    <div
+                                                        class="flex justify-between items-center py-1.5 pl-4 border-b border-slate-50/80">
+                                                        <span
+                                                            class="font-bold text-slate-500 text-[11px] uppercase">{{ $item[0] }}</span>
+                                                        <span class="font-bold text-slate-700 text-[11px]">₱
+                                                            {{ number_format($item[1], 2) }}</span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                            <div
+                                                class="flex justify-between items-center py-2 pl-4 border-b border-blue-100 bg-blue-50/30 rounded-lg px-3">
+                                                <span
+                                                    class="font-black text-blue-600 text-[11px] uppercase tracking-wider">Total
+                                                    Miscellaneous</span>
+                                                <span class="font-black text-blue-600 text-xs">₱
+                                                    {{ number_format($miscSubtotal, 2) }}</span>
+                                            </div>
+
+                                            {{-- Laboratory Fee --}}
+                                            <div
+                                                class="flex justify-between items-center py-2 border-b border-slate-50 mt-2">
+                                                <span class="font-black text-slate-800 text-xs uppercase">Laboratory
+                                                    Fee</span>
+                                                <span class="font-black text-black text-xs">₱
+                                                    {{ number_format($laboratoryFee, 2) }}</span>
+                                            </div>
+
+                                            {{-- Tuition Fee --}}
+                                            <div
+                                                class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                <span class="font-black text-slate-800 text-xs uppercase">Tuition
+                                                    Fee</span>
+                                                <span class="font-black text-black text-xs">₱
+                                                    {{ number_format($uiTuition, 2) }}</span>
+                                            </div>
+
+                                            {{-- Discount --}}
+                                            <div
+                                                class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                <span
+                                                    class="font-bold text-slate-600 text-xs uppercase">Discounted</span>
+                                                <span
+                                                    class="font-black {{ $uiDiscount > 0 ? 'text-rose-600' : 'text-slate-300' }} text-xs">{{ $uiDiscount > 0 ? '-' : '' }}
+                                                    ₱ {{ number_format($uiDiscount, 2) }}</span>
+                                            </div>
+
+                                            @if ($actualRemainingPrevious > 0)
+                                                <div
+                                                    class="flex justify-between items-center py-2 border-b border-slate-50">
+                                                    <span class="font-bold text-slate-600 text-xs uppercase">Previous
+                                                        Balance</span>
+                                                    <span class="font-black text-rose-600 text-xs">₱
+                                                        {{ number_format($actualRemainingPrevious, 2) }}</span>
+                                                </div>
+                                            @endif
+
+                                            <div
+                                                class="flex justify-between items-center pt-6 border-t-2 border-blue-500/10">
+                                                <div class="flex flex-col">
+                                                    <span
+                                                        class="font-black text-black text-xs uppercase tracking-widest">Total
+                                                        Assessment</span>
+                                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Current
+                                                        Term Only</span>
+                                                </div>
+                                                <span class="font-black text-blue-600 text-lg tracking-tighter">
+                                                    ₱ {{ number_format($uiCurrentTermAssessment, 2) }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex items-center gap-3 mt-4">
+                                                <button wire:click="editAssessment"
+                                                    class="text-[9px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 rounded-xl border border-blue-200/50 shadow-sm transition-all active:scale-95 flex items-center gap-1.5">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                        </path>
+                                                    </svg>
+                                                    Edit Assessment
+                                                </button>
+                                                @if (Cache::has("student_assessment_override_{$selectedStudentId}"))
+                                                    <button wire:click="resetAssessmentToDefault"
+                                                        class="text-[9px] font-black uppercase tracking-wider text-rose-600 bg-rose-50 hover:bg-rose-100 px-3.5 py-2.5 rounded-xl border border-rose-200/50 shadow-sm transition-all active:scale-95 flex items-center gap-1.5">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18v3z">
+                                                            </path>
+                                                        </svg>
+                                                        Reset to Default
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div
+                                        class="bg-slate-50/50 p-8 rounded-[32px] border border-blue-500/10 flex flex-col items-center justify-center text-center">
+                                        <div
+                                            class="w-16 h-16 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                                            <svg class="w-8 h-8" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="1.5"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">
+                                            View Only Mode</h4>
+                                        <p class="text-[9px] font-bold text-slate-400 mt-2 uppercase tracking-widest">
+                                            Transaction controls disabled for Admin</p>
                                     </div>
                                 </div>
                             </div>
-
                         @elseif($activeTab === 'balance')
                             <div class="space-y-6 animate-in zoom-in-95 duration-300">
 
                                 <!-- SEPARATED SUMMARY CARDS -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <!-- PREVIOUS BALANCE CARD -->
-                                    <div class="bg-rose-50/50 border border-rose-100 rounded-[32px] p-6 shadow-sm relative overflow-hidden">
+                                    <div
+                                        class="bg-rose-50/50 border border-rose-100 rounded-[32px] p-6 shadow-sm relative overflow-hidden">
                                         <div class="relative z-10">
-                                            <h4 class="text-[10px] font-black text-rose-600 uppercase tracking-[0.2em] mb-1">Previous Balance</h4>
-                                            <span class="text-3xl font-black text-rose-600 tracking-tighter block mb-3">₱ {{ number_format($actualRemainingPrevious, 2) }}</span>
+                                            <h4
+                                                class="text-[10px] font-black text-rose-600 uppercase tracking-[0.2em] mb-1">
+                                                Previous Balance</h4>
+                                            <span
+                                                class="text-3xl font-black text-rose-600 tracking-tighter block mb-3">₱
+                                                {{ number_format($actualRemainingPrevious, 2) }}</span>
 
                                             <div class="space-y-1 mt-4 pt-4 border-t border-rose-200/50">
-                                                <div class="flex justify-between text-[9px] font-black text-rose-800/60 uppercase">
-                                                    <span>Original Debt:</span><span>₱ {{ number_format($prevDebt, 2) }}</span>
+                                                <div
+                                                    class="flex justify-between text-[9px] font-black text-rose-800/60 uppercase">
+                                                    <span>Original Debt:</span><span>₱
+                                                        {{ number_format($prevDebt, 2) }}</span>
                                                 </div>
-                                                <div class="flex justify-between text-[9px] font-black text-rose-800/60 uppercase">
-                                                    <span>Paid:</span><span>₱ {{ number_format(min($paidSoFar, $prevDebt), 2) }}</span>
+                                                <div
+                                                    class="flex justify-between text-[9px] font-black text-rose-800/60 uppercase">
+                                                    <span>Paid:</span><span>₱
+                                                        {{ number_format(min($paidSoFar, $prevDebt), 2) }}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        @if($actualRemainingPrevious <= 0 && $prevDebt > 0)
-                                            <div class="absolute inset-0 bg-emerald-500/90 flex flex-col items-center justify-center z-20 transition-all">
-                                                <svg class="w-8 h-8 text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                                <span class="text-white font-black text-[10px] uppercase tracking-widest">Fully Settled</span>
+                                        @if ($actualRemainingPrevious <= 0 && $prevDebt > 0)
+                                            <div
+                                                class="absolute inset-0 bg-emerald-500/90 flex flex-col items-center justify-center z-20 transition-all">
+                                                <svg class="w-8 h-8 text-white mb-2" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                <span
+                                                    class="text-white font-black text-[10px] uppercase tracking-widest">Fully
+                                                    Settled</span>
                                             </div>
                                         @endif
                                     </div>
 
                                     <!-- CURRENT ASSESSMENT CARD -->
-                                    <div class="bg-blue-50/50 border border-blue-100 rounded-[32px] p-6 shadow-sm relative overflow-hidden">
+                                    <div
+                                        class="bg-blue-50/50 border border-blue-100 rounded-[32px] p-6 shadow-sm relative overflow-hidden">
                                         <div class="relative z-10">
-                                            <h4 class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1">Current Assessment</h4>
-                                            <span class="text-3xl font-black text-blue-600 tracking-tighter block mb-3">₱ {{ number_format($actualRemainingCurrent, 2) }}</span>
+                                            <h4
+                                                class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1">
+                                                Current Assessment</h4>
+                                            <span
+                                                class="text-3xl font-black text-blue-600 tracking-tighter block mb-3">₱
+                                                {{ number_format($actualRemainingCurrent, 2) }}</span>
 
                                             <div class="space-y-1 mt-4 pt-4 border-t border-blue-200/50">
-                                                <div class="flex justify-between text-[9px] font-black text-blue-800/60 uppercase">
-                                                    <span>Net Payable:</span><span>₱ {{ number_format($uiCurrentTermAssessment, 2) }}</span>
+                                                <div
+                                                    class="flex justify-between text-[9px] font-black text-blue-800/60 uppercase">
+                                                    <span>Net Payable:</span><span>₱
+                                                        {{ number_format($uiCurrentTermAssessment, 2) }}</span>
                                                 </div>
-                                                <div class="flex justify-between text-[9px] font-black text-blue-800/60 uppercase">
-                                                    <span>Paid:</span><span>₱ {{ number_format(max(0, $paidSoFar - $prevDebt), 2) }}</span>
+                                                <div
+                                                    class="flex justify-between text-[9px] font-black text-blue-800/60 uppercase">
+                                                    <span>Paid:</span><span>₱
+                                                        {{ number_format(max(0, $paidSoFar - $prevDebt), 2) }}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        @if($actualRemainingCurrent <= 0 && $uiCurrentTermAssessment > 0)
-                                            <div class="absolute inset-0 bg-emerald-500/90 flex flex-col items-center justify-center z-20 transition-all">
-                                                <svg class="w-8 h-8 text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                                <span class="text-white font-black text-[10px] uppercase tracking-widest">Fully Settled</span>
+                                        @if ($actualRemainingCurrent <= 0 && $uiCurrentTermAssessment > 0)
+                                            <div
+                                                class="absolute inset-0 bg-emerald-500/90 flex flex-col items-center justify-center z-20 transition-all">
+                                                <svg class="w-8 h-8 text-white mb-2" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                <span
+                                                    class="text-white font-black text-[10px] uppercase tracking-widest">Fully
+                                                    Settled</span>
                                             </div>
                                         @endif
                                     </div>
                                 </div>
 
                                 <!-- THE CHRONOLOGICAL HISTORY TABLE -->
-                                <div class="bg-white border border-blue-500/10 rounded-[32px] shadow-sm overflow-hidden">
-                                    <div class="bg-blue-50/30 border-b border-blue-500/10 px-8 py-6 flex justify-between items-center">
+                                <div
+                                    class="bg-white border border-blue-500/10 rounded-[32px] shadow-sm overflow-hidden">
+                                    <div
+                                        class="bg-blue-50/30 border-b border-blue-500/10 px-8 py-6 flex justify-between items-center">
                                         <div>
-                                            <h3 class="text-lg font-black text-black tracking-tight uppercase">Statement of Accounts</h3>
-                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Chronological history of assessments and payments</p>
+                                            <h3 class="text-lg font-black text-black tracking-tight uppercase">
+                                                Statement of Accounts</h3>
+                                            <p
+                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                                Chronological history of assessments and payments</p>
                                         </div>
                                         <div class="text-right">
-                                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-1">Total Outstanding</span>
-                                            <span class="text-2xl font-black text-blue-600 tracking-tighter">₱ {{ number_format($totalOutstanding, 2) }}</span>
+                                            <span
+                                                class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-1">Total
+                                                Outstanding</span>
+                                            <span class="text-2xl font-black text-blue-600 tracking-tighter">₱
+                                                {{ number_format($totalOutstanding, 2) }}</span>
                                         </div>
                                     </div>
 
                                     <div class="overflow-x-auto custom-scrollbar p-2">
                                         <table class="w-full text-left font-medium text-sm">
-                                            <thead class="text-[9px] text-slate-400 uppercase tracking-[0.2em] border-b-2 border-slate-50">
+                                            <thead
+                                                class="text-[9px] text-slate-400 uppercase tracking-[0.2em] border-b-2 border-slate-50">
                                                 <tr>
                                                     <th class="px-6 py-4 font-black">Date</th>
                                                     <th class="px-6 py-4 font-black">Particulars</th>
@@ -234,63 +546,112 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-slate-50">
-                                                @if($prevDebt > 0)
-                                                <tr class="hover:bg-slate-50/50 transition-colors group">
-                                                    <td class="px-6 py-5 text-slate-400 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">{{ isset($enrollment) && $enrollment ? $enrollment->created_at->format('M d, Y') : '-' }}</td>
-                                                    <td class="px-6 py-5 font-black text-slate-700 uppercase tracking-tight text-xs">Previous Balance Carried Over</td>
-                                                    <td class="px-6 py-5 text-right text-rose-500 font-black tracking-tighter">₱ {{ number_format($prevDebt, 2) }}</td>
-                                                    <td class="px-6 py-5 text-right text-slate-300 font-bold">-</td>
-                                                    <td class="px-6 py-5 text-right font-black text-black tracking-tighter">₱ {{ number_format($prevDebt, 2) }}</td>
-                                                </tr>
+                                                @if ($prevDebt > 0)
+                                                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                                                        <td
+                                                            class="px-6 py-5 text-slate-400 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">
+                                                            {{ isset($enrollment) && $enrollment ? $enrollment->created_at->format('M d, Y') : '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-5 font-black text-slate-700 uppercase tracking-tight text-xs">
+                                                            Previous Balance Carried Over</td>
+                                                        <td
+                                                            class="px-6 py-5 text-right text-rose-500 font-black tracking-tighter">
+                                                            ₱ {{ number_format($prevDebt, 2) }}</td>
+                                                        <td class="px-6 py-5 text-right text-slate-300 font-bold">-
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-5 text-right font-black text-black tracking-tighter">
+                                                            ₱ {{ number_format($prevDebt, 2) }}</td>
+                                                    </tr>
                                                 @endif
 
-                                                @if(($uiTuition + $uiMisc) > 0)
-                                                <tr class="hover:bg-slate-50/50 transition-colors group">
-                                                    <td class="px-6 py-5 text-slate-400 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">{{ isset($enrollment) && $enrollment ? $enrollment->created_at->format('M d, Y') : '-' }}</td>
-                                                    <td class="px-6 py-5 font-black text-slate-700 uppercase tracking-tight text-xs">
-                                                        Term Assessment
-                                                        <span class="text-[9px] text-slate-400 font-bold tracking-widest block mt-1">Tuition & Miscellaneous Fees</span>
-                                                    </td>
-                                                    <td class="px-6 py-5 text-right text-rose-500 font-black tracking-tighter">₱ {{ number_format($uiTuition + $uiMisc, 2) }}</td>
-                                                    <td class="px-6 py-5 text-right text-slate-300 font-bold">-</td>
-                                                    <td class="px-6 py-5 text-right font-black text-black tracking-tighter">₱ {{ number_format($prevDebt + $uiTuition + $uiMisc, 2) }}</td>
-                                                </tr>
+                                                @if ($uiTuition + $uiMisc > 0)
+                                                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                                                        <td
+                                                            class="px-6 py-5 text-slate-400 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">
+                                                            {{ isset($enrollment) && $enrollment ? $enrollment->created_at->format('M d, Y') : '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-5 font-black text-slate-700 uppercase tracking-tight text-xs">
+                                                            Term Assessment
+                                                            <span
+                                                                class="text-[9px] text-slate-400 font-bold tracking-widest block mt-1">Tuition
+                                                                & Miscellaneous Fees</span>
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-5 text-right text-rose-500 font-black tracking-tighter">
+                                                            ₱ {{ number_format($uiTuition + $uiMisc, 2) }}</td>
+                                                        <td class="px-6 py-5 text-right text-slate-300 font-bold">-
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-5 text-right font-black text-black tracking-tighter">
+                                                            ₱ {{ number_format($prevDebt + $uiTuition + $uiMisc, 2) }}
+                                                        </td>
+                                                    </tr>
                                                 @endif
 
-                                                @if($uiDiscount > 0)
-                                                <tr class="bg-emerald-50/30 hover:bg-emerald-50/50 transition-colors group">
-                                                    <td class="px-6 py-5 text-emerald-600/60 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">{{ isset($enrollment) && $enrollment ? $enrollment->created_at->format('M d, Y') : '-' }}</td>
-                                                    <td class="px-6 py-5 font-black text-emerald-600 uppercase tracking-tight text-xs">Discount Applied</td>
-                                                    <td class="px-6 py-5 text-right text-emerald-300 font-bold">-</td>
-                                                    <td class="px-6 py-5 text-right text-emerald-500 font-black tracking-tighter">₱ {{ number_format($uiDiscount, 2) }}</td>
-                                                    <td class="px-6 py-5 text-right font-black text-black tracking-tighter">₱ {{ number_format($prevDebt + $uiTuition + $uiMisc - $uiDiscount, 2) }}</td>
-                                                </tr>
+                                                @if ($uiDiscount > 0)
+                                                    <tr
+                                                        class="bg-emerald-50/30 hover:bg-emerald-50/50 transition-colors group">
+                                                        <td
+                                                            class="px-6 py-5 text-emerald-600/60 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">
+                                                            {{ isset($enrollment) && $enrollment ? $enrollment->created_at->format('M d, Y') : '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-5 font-black text-emerald-600 uppercase tracking-tight text-xs">
+                                                            Discount Applied</td>
+                                                        <td class="px-6 py-5 text-right text-emerald-300 font-bold">-
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-5 text-right text-emerald-500 font-black tracking-tighter">
+                                                            ₱ {{ number_format($uiDiscount, 2) }}</td>
+                                                        <td
+                                                            class="px-6 py-5 text-right font-black text-black tracking-tighter">
+                                                            ₱
+                                                            {{ number_format($prevDebt + $uiTuition + $uiMisc - $uiDiscount, 2) }}
+                                                        </td>
+                                                    </tr>
                                                 @endif
 
                                                 @php
                                                     $runningBalance = $prevDebt + $uiTuition + $uiMisc - $uiDiscount;
                                                 @endphp
 
-                                                @if(isset($paymentHistory))
+                                                @if (isset($paymentHistory))
                                                     @forelse(collect($paymentHistory)->where('status', 'Paid')->sortBy('payment_date') as $payment)
                                                         @php
-                                                            $runningBalance -= (float)$payment->amount;
+                                                            $runningBalance -= (float) $payment->amount;
                                                         @endphp
                                                         <tr class="hover:bg-blue-50/30 transition-colors group">
-                                                            <td class="px-6 py-5 text-slate-400 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">{{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') : $payment->created_at->format('M d, Y') }}</td>
-                                                            <td class="px-6 py-5 font-black text-slate-700 uppercase tracking-tight text-xs">
-                                                                Payment Received
-                                                                <span class="block text-[9px] text-slate-400 font-bold tracking-widest mt-1">Method: {{ $payment->payment_method }} | Ref: {{ $payment->transaction_id ?? 'N/A' }}</span>
+                                                            <td
+                                                                class="px-6 py-5 text-slate-400 font-bold whitespace-nowrap text-[11px] uppercase tracking-wider">
+                                                                {{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') : $payment->created_at->format('M d, Y') }}
                                                             </td>
-                                                            <td class="px-6 py-5 text-right text-slate-300 font-bold">-</td>
-                                                            <td class="px-6 py-5 text-right text-emerald-500 font-black tracking-tighter">₱ {{ number_format($payment->amount, 2) }}</td>
-                                                            <td class="px-6 py-5 text-right font-black text-black tracking-tighter">₱ {{ number_format(max(0, $runningBalance), 2) }}</td>
+                                                            <td
+                                                                class="px-6 py-5 font-black text-slate-700 uppercase tracking-tight text-xs">
+                                                                Payment Received
+                                                                <span
+                                                                    class="block text-[9px] text-slate-400 font-bold tracking-widest mt-1">Method:
+                                                                    {{ $payment->payment_method }} | Ref:
+                                                                    {{ $payment->transaction_id ?? 'N/A' }}</span>
+                                                            </td>
+                                                            <td class="px-6 py-5 text-right text-slate-300 font-bold">-
+                                                            </td>
+                                                            <td
+                                                                class="px-6 py-5 text-right text-emerald-500 font-black tracking-tighter">
+                                                                ₱ {{ number_format($payment->amount, 2) }}</td>
+                                                            <td
+                                                                class="px-6 py-5 text-right font-black text-black tracking-tighter">
+                                                                ₱ {{ number_format(max(0, $runningBalance), 2) }}</td>
                                                         </tr>
                                                     @empty
-                                                        @if(($uiTuition + $uiMisc) == 0 && $prevDebt == 0)
+                                                        @if ($uiTuition + $uiMisc == 0 && $prevDebt == 0)
                                                             <tr>
                                                                 <td colspan="5" class="py-16 text-center">
-                                                                    <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">No Payment records found</p>
+                                                                    <p
+                                                                        class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
+                                                                        No Payment records found</p>
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -301,48 +662,66 @@
                                     </div>
                                 </div>
                             </div>
-
                         @elseif($activeTab === 'history')
                             <!-- TRANSACTIONS TAB -->
                             <div class="space-y-4 animate-in fade-in duration-300">
-                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Historical Transaction</h4>
+                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">
+                                    Historical Transaction</h4>
                                 @forelse($paymentHistory as $transaction)
-                                    <div class="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-4 hover:shadow-md transition-all">
+                                    <div
+                                        class="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-4 hover:shadow-md transition-all">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-4">
                                                 <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
                                                 </div>
                                                 <div>
-                                                    <span class="font-black text-black text-xs uppercase">TXN #{{ str_pad($transaction->id, 5, '0', STR_PAD_LEFT) }}</span>
-                                                    <p class="text-[10px] text-slate-400 font-bold">{{ $transaction->created_at->format('M d, Y • h:i A') }}</p>
+                                                    <span class="font-black text-black text-xs uppercase">TXN
+                                                        #{{ str_pad($transaction->id, 5, '0', STR_PAD_LEFT) }}</span>
+                                                    <p class="text-[10px] text-slate-400 font-bold">
+                                                        {{ $transaction->created_at->format('M d, Y • h:i A') }}</p>
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-3">
-                                                @if($transaction->is_drop_payment)
-                                                    <span class="text-[8px] font-black px-3 py-1 rounded-full bg-amber-50 text-amber-500 border border-amber-100 uppercase tracking-widest">PROTOCOL: DROP</span>
+                                                @if ($transaction->is_drop_payment)
+                                                    <span
+                                                        class="text-[8px] font-black px-3 py-1 rounded-full bg-amber-50 text-amber-500 border border-amber-100 uppercase tracking-widest">PROTOCOL:
+                                                        DROP</span>
                                                 @endif
-                                                <span class="text-[9px] font-black {{ $transaction->status === 'Paid' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-amber-500 bg-amber-50 border-amber-100' }} px-4 py-1.5 rounded-full border uppercase tracking-widest">
+                                                <span
+                                                    class="text-[9px] font-black {{ $transaction->status === 'Paid' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-amber-500 bg-amber-50 border-amber-100' }} px-4 py-1.5 rounded-full border uppercase tracking-widest">
                                                     {{ $transaction->status }}
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
                                             <div>
-                                                <p class="text-[9px] text-slate-400 font-black uppercase">Amount Settled</p>
-                                                <p class="text-sm font-black text-blue-600">₱ {{ number_format($transaction->amount, 2) }}</p>
+                                                <p class="text-[9px] text-slate-400 font-black uppercase">Amount
+                                                    Settled</p>
+                                                <p class="text-sm font-black text-blue-600">₱
+                                                    {{ number_format($transaction->amount, 2) }}</p>
                                             </div>
-                                            @if($transaction->reference_no)
-                                            <div class="text-right">
-                                                <p class="text-[9px] text-slate-400 font-black uppercase">Reference #</p>
-                                                <p class="text-[10px] font-mono text-slate-700 font-bold uppercase">{{ $transaction->reference_no }}</p>
-                                            </div>
+                                            @if ($transaction->reference_no)
+                                                <div class="text-right">
+                                                    <p class="text-[9px] text-slate-400 font-black uppercase">Reference
+                                                        #</p>
+                                                    <p
+                                                        class="text-[10px] font-mono text-slate-700 font-bold uppercase">
+                                                        {{ $transaction->reference_no }}</p>
+                                                </div>
                                             @endif
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="py-20 text-center bg-slate-50 border border-dashed border-slate-200 rounded-[32px]">
-                                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">No transaction records found</p>
+                                    <div
+                                        class="py-20 text-center bg-slate-50 border border-dashed border-slate-200 rounded-[32px]">
+                                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">No
+                                            transaction records found</p>
                                     </div>
                                 @endforelse
                             </div>
@@ -350,12 +729,18 @@
                     </div>
                 @else
                     <div class="flex-grow flex flex-col items-center justify-center p-20 text-center space-y-6">
-                        <div class="w-24 h-24 bg-blue-50 rounded-[40px] flex items-center justify-center text-blue-200">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <div
+                            class="w-24 h-24 bg-blue-50 rounded-[40px] flex items-center justify-center text-blue-200">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
                         </div>
                         <div class="space-y-2">
-                            <p class="text-xs font-black text-slate-200 uppercase tracking-[0.4em]">Terminal Standby</p>
-                            <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Select student from directory to view records</p>
+                            <p class="text-xs font-black text-slate-200 uppercase tracking-[0.4em]">Terminal Standby
+                            </p>
+                            <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Select student
+                                from directory to view records</p>
                         </div>
                     </div>
                 @endif
@@ -365,16 +750,25 @@
 
     <!-- BOTTOM SECTION: SECONDARY TABLE LAYOUT -->
     <div class="space-y-6 animate-in fade-in duration-500 mt-10">
-        <div class="bg-white rounded-2xl border border-blue-500/10 overflow-hidden relative shadow-xl shadow-blue-900/5">
+        <div
+            class="bg-white rounded-2xl border border-blue-500/10 overflow-hidden relative shadow-xl shadow-blue-900/5">
 
-            <div class="px-8 py-6 border-b border-blue-500/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-blue-50/30">
+            <div
+                class="px-8 py-6 border-b border-blue-500/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-blue-50/30">
                 <div class="flex items-center gap-4">
-                    <div class="p-3 rounded-2xl bg-white text-blue-600 border border-blue-500/10 shadow-sm transition-transform hover:scale-105">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    <div
+                        class="p-3 rounded-2xl bg-white text-blue-600 border border-blue-500/10 shadow-sm transition-transform hover:scale-105">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                            </path>
+                        </svg>
                     </div>
                     <div>
-                        <h3 class="font-black text-black text-xl leading-none uppercase tracking-tight">{{ $pageTitle ?? 'PAYMENT LOGS' }}</h3>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Manage and Verify Student Collections</p>
+                        <h3 class="font-black text-black text-xl leading-none uppercase tracking-tight">
+                            {{ $pageTitle ?? 'PAYMENT LOGS' }}</h3>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Manage and
+                            Verify Student Collections</p>
                     </div>
                 </div>
             </div>
@@ -382,8 +776,13 @@
             <div class="bg-white px-8 py-5 border-b border-blue-500/10">
                 <div class="flex flex-col lg:flex-row gap-4">
                     <div class="relative flex-grow group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-600">
-                            <svg class="h-4 w-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        <div
+                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-600">
+                            <svg class="h-4 w-4 text-slate-300" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
                         </div>
                         <input type="text" wire:model.live.debounce.500ms="search"
                             class="pl-11 w-full bg-slate-50 border border-slate-200 rounded-xl py-3 text-sm text-black focus:border-blue-500/40 outline-none transition-all placeholder-slate-300 font-bold uppercase tracking-tight shadow-sm"
@@ -391,32 +790,42 @@
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <div class="w-full sm:w-48 relative">
-                            <select wire:model.live="filter_course" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-5 text-xs text-black font-black uppercase tracking-widest focus:border-blue-500/40 outline-none cursor-pointer appearance-none transition-all shadow-sm">
+                            <select wire:model.live="filter_course"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-5 text-xs text-black font-black uppercase tracking-widest focus:border-blue-500/40 outline-none cursor-pointer appearance-none transition-all shadow-sm">
                                 <option value="ALL">All Programs</option>
                             </select>
                             <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-blue-600">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
                             </div>
                         </div>
                         <div class="w-full sm:w-40 relative">
-                            <select wire:model.live="status" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-5 text-xs text-black font-black uppercase tracking-widest focus:border-blue-500/40 outline-none cursor-pointer appearance-none transition-all shadow-sm">
+                            <select wire:model.live="status"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-5 text-xs text-black font-black uppercase tracking-widest focus:border-blue-500/40 outline-none cursor-pointer appearance-none transition-all shadow-sm">
                                 <option value="All statuses">All Statuses</option>
-                                @foreach(['Paid', 'Pending', 'Rejected'] as $s)
+                                @foreach (['Paid', 'Pending', 'Rejected'] as $s)
                                     <option value="{{ $s }}">{{ $s }}</option>
                                 @endforeach
                             </select>
                             <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-blue-600">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
                             </div>
                         </div>
-                        <button wire:click="resetFilters" class="bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-500/40 text-xs font-black uppercase tracking-widest px-6 flex items-center justify-center rounded-xl transition-all active:scale-95 shadow-sm">Reset</button>
+                        <button wire:click="resetFilters"
+                            class="bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-500/40 text-xs font-black uppercase tracking-widest px-6 flex items-center justify-center rounded-xl transition-all active:scale-95 shadow-sm">Reset</button>
                     </div>
                 </div>
             </div>
 
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left font-medium text-sm">
-                    <thead class="text-[10px] text-slate-400 uppercase tracking-[0.2em] border-b border-blue-500/10 bg-blue-50/20">
+                    <thead
+                        class="text-[10px] text-slate-400 uppercase tracking-[0.2em] border-b border-blue-500/10 bg-blue-50/20">
                         <tr>
                             <th class="py-5 px-8 font-black">ID</th>
                             <th class="py-5 px-5 font-black">Student Details</th>
@@ -429,14 +838,16 @@
                     <tbody class="divide-y divide-slate-100 bg-white">
                         <tr>
                             <td colspan="7" class="py-10 text-center bg-white">
-                                <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] leading-loose">Detailed table records handled by internal process.</p>
+                                <p
+                                    class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] leading-loose">
+                                    Detailed table records handled by internal process.</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            @if(isset($payments) && method_exists($payments, 'hasPages') && $payments->hasPages())
+            @if (isset($payments) && method_exists($payments, 'hasPages') && $payments->hasPages())
                 <div class="px-8 py-6 border-t border-blue-500/10 bg-white">
                     {{ $payments->links('pagination') }}
                 </div>
@@ -445,9 +856,22 @@
     </div> <!-- END OF BOTTOM SECTION -->
 
     <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
     </style>
 </div> <!-- END OF SINGLE ROOT WRAPPER -->

@@ -25,7 +25,7 @@ use App\Http\Controllers\RegistrarSectionController;
 use App\Http\Controllers\CashierPaymentController;
 use App\Livewire\CashierDashboardManager;
 use App\Livewire\PaymentManager as CashierPaymentManager;
-use App\Livewire\PaymentAssessmentManager;
+// Note: PaymentAssessmentManager class does not exist — removed unused import
 
 // Student Controllers
 use App\Http\Controllers\StudentDashboardController;
@@ -43,10 +43,8 @@ use App\Livewire\StudentPaymentManager;
 
 // Registrar Livewire Components
 use App\Livewire\RegistrarApplicationManager;
-use App\Livewire\RegistrarStudentManager;
 
 // Admin Livewire Components
-use App\Livewire\Admin\AdminStudentManager;
 use App\Livewire\Admin\AdminApplicationManager;
 
 
@@ -69,10 +67,11 @@ Route::middleware([
     $user = Auth::user();
     if (!$user) return redirect()->route('login');
 
-    // Look for the user in the employees table strictly by user_id OR email
-    $employee = DB::table('employees')->where('user_id', $user->id)
-                  ->orWhere('email', $user->email)
-                  ->first();
+    // Look for the user in the employees table strictly by user_id or email
+    $employee = DB::table('employees')
+                  ->where('user_id', $user->id)
+                  ->first()
+                  ?? DB::table('employees')->where('email', $user->email)->first();
 
     // STAFF roles MUST be verified against the employees table
     if ($employee) {
@@ -102,7 +101,7 @@ Route::middleware([
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'can:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
-    Route::get('/dashboard', [RegistrarDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', \App\Livewire\RegistrarDashboardManager::class)->name('dashboard');
     Route::patch('/dashboard/applications/{id}/approve', [RegistrarDashboardController::class, 'approve'])->name('dashboard.approve');
     Route::patch('/dashboard/applications/{id}/reject', [RegistrarDashboardController::class, 'reject'])->name('dashboard.reject');
     Route::get('/students', [RegistrarStudentController::class, 'index'])->name('students.index');
@@ -225,7 +224,6 @@ Route::middleware(['auth', 'can:student'])->prefix('student')->name('student.')-
     Route::post('/enrollment/upload', [StudentEnrollmentController::class, 'storeUpload'])->name('enrollment.upload.store');
 
     // Edit workflows
-    Route::post('/enrollment/edit-request', [StudentEnrollmentController::class, 'requestEdit'])->name('enrollment.request_edit');
     Route::get('/enrollment/edit', [StudentEnrollmentController::class, 'edit'])->name('enrollment.edit');
     Route::put('/enrollment', [StudentEnrollmentController::class, 'update'])->name('enrollment.update');
 

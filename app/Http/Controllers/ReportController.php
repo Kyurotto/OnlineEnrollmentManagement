@@ -19,6 +19,19 @@ class ReportController extends Controller
         $filter = $request->query('filter', 'all');
         $sortField = $request->query('sortField', 'users.id');
         $sortDirection = $request->query('sortDirection', 'desc');
+
+        // Whitelist allowed sort fields to prevent SQL injection
+        $allowedSortFields = [
+            'users.id', 'users.last_name', 'users.first_name', 'users.email',
+            'latest_enrollments.course_code', 'latest_enrollments.year_level'
+        ];
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'users.id';
+        }
+
+        // Whitelist allowed sort directions
+        $sortDirection = in_array(strtolower($sortDirection), ['asc', 'desc']) ? $sortDirection : 'desc';
+
         $courseFilter = $request->query('course_filter', 'All Programs');
         $levelFilter = $request->query('level', 'All Levels');
         $yearFilter = $request->query('year_level', 'All Years');
@@ -53,7 +66,7 @@ class ReportController extends Controller
             )
             ->leftJoin('courses', 'latest_enrollments.course_code', '=', 'courses.course_code')
             ->where('users.role', 'student')
-            ->whereIn('latest_enrollments.status', ['Enrolled', 'Approved', 'Paid', 'Pending']);
+            ->where('latest_enrollments.status', 'Enrolled');
 
         if ($activeYearName) {
             $query->where('latest_enrollments.year_level', 'like', '%' . $activeYearName . '%');

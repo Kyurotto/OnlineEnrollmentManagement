@@ -45,6 +45,50 @@ class PaymentManager extends Component
     public $totalPaymentsMade = 0;
     public $previousBalance = 0;
 
+    // Itemized fee breakdown (for display only — does NOT affect payment logic)
+    public $registrationFee = 0;
+    public $guidanceFee = 0;
+    public $trainingMaterials = 0;
+    public $handbook = 0;
+    public $mailingFee = 0;
+    public $medicalDental = 0;
+    public $studentIdFee = 0;
+    public $socioCultural = 0;
+    public $insurance = 0;
+    public $schoolPublication = 0;
+    public $studentDevelopment = 0;
+    public $libraryFee = 0;
+    public $energyFee = 0;
+    public $physicalFacilities = 0;
+    public $researchInnovation = 0;
+    public $internetFee = 0;
+    public $audioVisual = 0;
+    public $itDevelopment = 0;
+    public $laboratoryFee = 0;
+
+    // Override State and Form properties
+    public $isEditingAssessment = false;
+    public $editRegistrationFee = 0;
+    public $editGuidanceFee = 0;
+    public $editTrainingMaterials = 0;
+    public $editHandbook = 0;
+    public $editMailingFee = 0;
+    public $editMedicalDental = 0;
+    public $editStudentIdFee = 0;
+    public $editSocioCultural = 0;
+    public $editInsurance = 0;
+    public $editSchoolPublication = 0;
+    public $editStudentDevelopment = 0;
+    public $editLibraryFee = 0;
+    public $editEnergyFee = 0;
+    public $editPhysicalFacilities = 0;
+    public $editResearchInnovation = 0;
+    public $editInternetFee = 0;
+    public $editAudioVisual = 0;
+    public $editItDevelopment = 0;
+    public $editLaboratoryFee = 0;
+    public $editTuitionFee = 0;
+
     // Form fields
     public $user_id;
     public $amount;
@@ -148,11 +192,15 @@ class PaymentManager extends Component
                     ? $matches[0]
                     : filter_var((string) $pastEnv->year_level, FILTER_SANITIZE_NUMBER_INT);
 
-                $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
-                $assessment = Cache::get($cacheKey)
-                    ?? Cache::get("payment_assessment_{$level}_{$program}_all")
-                    ?? Cache::get("payment_assessment_{$level}_all_{$yearLevelDigit}")
-                    ?? ['tuitionFee' => 0, 'miscellaneousFees' => 0, 'discountPercentage' => 0, 'discountAmount' => 0];
+                $overrideKey = "student_assessment_override_{$studentId}";
+                $assessment = Cache::get($overrideKey);
+                if (!$assessment) {
+                    $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
+                    $assessment = Cache::get($cacheKey)
+                        ?? Cache::get("payment_assessment_{$level}_{$program}_all")
+                        ?? Cache::get("payment_assessment_{$level}_all_{$yearLevelDigit}")
+                        ?? ['tuitionFee' => 0, 'miscellaneousFees' => 0, 'discountPercentage' => 0, 'discountAmount' => 0];
+                }
 
                 $pastSubtotal = ((float)($assessment['tuitionFee'] ?? 0)) + ((float)($assessment['miscellaneousFees'] ?? 0));
 
@@ -203,31 +251,56 @@ class PaymentManager extends Component
             $program = $this->enrollment->course_code ?? 'all';
             $yearLevelDigit = preg_match('/\d+/', $this->enrollment->year_level, $matches) ? $matches[0] : filter_var($this->enrollment->year_level, FILTER_SANITIZE_NUMBER_INT);
 
-            $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
-            $assessment = Cache::get($cacheKey);
-
-            if (!$assessment && $yearLevelDigit !== 'all') {
-                // Try program-wide default (e.g., ICT All Levels)
-                $assessment = Cache::get("payment_assessment_{$level}_{$program}_all");
-            }
-
-            if (!$assessment && $program !== 'all') {
-                // Try level-wide default (e.g., All Strands Grade 11)
-                $assessment = Cache::get("payment_assessment_{$level}_all_{$yearLevelDigit}");
-            }
-
+            $overrideKey = "student_assessment_override_{$studentId}";
+            $assessment = Cache::get($overrideKey);
             if (!$assessment) {
-                // Fallback to global if specific not found
-                $assessment = Cache::get("payment_assessment_{$level}_all_all", [
-                    'tuitionFee' => 0,
-                    'miscellaneousFees' => 0,
-                    'discountPercentage' => 0,
-                    'discountAmount' => 0,
-                ]);
+                $cacheKey = "payment_assessment_{$level}_{$program}_{$yearLevelDigit}";
+                $assessment = Cache::get($cacheKey);
+
+                if (!$assessment && $yearLevelDigit !== 'all') {
+                    // Try program-wide default (e.g., ICT All Levels)
+                    $assessment = Cache::get("payment_assessment_{$level}_{$program}_all");
+                }
+
+                if (!$assessment && $program !== 'all') {
+                    // Try level-wide default (e.g., All Strands Grade 11)
+                    $assessment = Cache::get("payment_assessment_{$level}_all_{$yearLevelDigit}");
+                }
+
+                if (!$assessment) {
+                    // Fallback to global if specific not found
+                    $assessment = Cache::get("payment_assessment_{$level}_all_all", [
+                        'tuitionFee' => 0,
+                        'miscellaneousFees' => 0,
+                        'discountPercentage' => 0,
+                        'discountAmount' => 0,
+                    ]);
+                }
             }
 
             $this->tuitionFees = $assessment['tuitionFee'] ?? 0;
             $this->miscellaneousFees = $assessment['miscellaneousFees'] ?? 0;
+
+            // Populate itemized fee breakdown for display
+            $this->registrationFee = $assessment['registrationFee'] ?? 0;
+            $this->guidanceFee = $assessment['guidanceFee'] ?? 0;
+            $this->trainingMaterials = $assessment['trainingMaterials'] ?? 0;
+            $this->handbook = $assessment['handbook'] ?? 0;
+            $this->mailingFee = $assessment['mailingFee'] ?? 0;
+            $this->medicalDental = $assessment['medicalDental'] ?? 0;
+            $this->studentIdFee = $assessment['studentId'] ?? 0;
+            $this->socioCultural = $assessment['socioCultural'] ?? 0;
+            $this->insurance = $assessment['insurance'] ?? 0;
+            $this->schoolPublication = $assessment['schoolPublication'] ?? 0;
+            $this->studentDevelopment = $assessment['studentDevelopment'] ?? 0;
+            $this->libraryFee = $assessment['libraryFee'] ?? 0;
+            $this->energyFee = $assessment['energyFee'] ?? 0;
+            $this->physicalFacilities = $assessment['physicalFacilities'] ?? 0;
+            $this->researchInnovation = $assessment['researchInnovation'] ?? 0;
+            $this->internetFee = $assessment['internetFee'] ?? 0;
+            $this->audioVisual = $assessment['audioVisual'] ?? 0;
+            $this->itDevelopment = $assessment['itDevelopment'] ?? 0;
+            $this->laboratoryFee = $assessment['laboratoryFee'] ?? 0;
 
             // Calculate base assessment
             $subtotal = $this->tuitionFees + $this->miscellaneousFees;
@@ -278,9 +351,140 @@ class PaymentManager extends Component
             $this->appliedDiscount = 0;
             $this->currentBalance = 0;
             $this->paymentHistory = [];
+
+            // Reset itemized fee breakdown
+            $this->registrationFee = 0;
+            $this->guidanceFee = 0;
+            $this->trainingMaterials = 0;
+            $this->handbook = 0;
+            $this->mailingFee = 0;
+            $this->medicalDental = 0;
+            $this->studentIdFee = 0;
+            $this->socioCultural = 0;
+            $this->insurance = 0;
+            $this->schoolPublication = 0;
+            $this->studentDevelopment = 0;
+            $this->libraryFee = 0;
+            $this->energyFee = 0;
+            $this->physicalFacilities = 0;
+            $this->researchInnovation = 0;
+            $this->internetFee = 0;
+            $this->audioVisual = 0;
+            $this->itDevelopment = 0;
+            $this->laboratoryFee = 0;
         }
 
         $this->activeTab = 'assessment';
+    }
+
+    public function editAssessment()
+    {
+        $this->editRegistrationFee = (float) $this->registrationFee;
+        $this->editGuidanceFee = (float) $this->guidanceFee;
+        $this->editTrainingMaterials = (float) $this->trainingMaterials;
+        $this->editHandbook = (float) $this->handbook;
+        $this->editMailingFee = (float) $this->mailingFee;
+        $this->editMedicalDental = (float) $this->medicalDental;
+        $this->editStudentIdFee = (float) $this->studentIdFee;
+        $this->editSocioCultural = (float) $this->socioCultural;
+        $this->editInsurance = (float) $this->insurance;
+        $this->editSchoolPublication = (float) $this->schoolPublication;
+        $this->editStudentDevelopment = (float) $this->studentDevelopment;
+        $this->editLibraryFee = (float) $this->libraryFee;
+        $this->editEnergyFee = (float) $this->energyFee;
+        $this->editPhysicalFacilities = (float) $this->physicalFacilities;
+        $this->editResearchInnovation = (float) $this->researchInnovation;
+        $this->editInternetFee = (float) $this->internetFee;
+        $this->editAudioVisual = (float) $this->audioVisual;
+        $this->editItDevelopment = (float) $this->itDevelopment;
+        $this->editLaboratoryFee = (float) $this->laboratoryFee;
+        $this->editTuitionFee = (float) $this->tuitionFees;
+
+        $this->isEditingAssessment = true;
+    }
+
+    public function cancelEditAssessment()
+    {
+        $this->isEditingAssessment = false;
+    }
+
+    public function saveAssessmentOverride()
+    {
+        if (!$this->selectedStudentId) {
+            return;
+        }
+
+        // Validate override inputs are numeric and non-negative
+        $inputs = [
+            'editRegistrationFee', 'editGuidanceFee', 'editTrainingMaterials', 'editHandbook',
+            'editMailingFee', 'editMedicalDental', 'editStudentIdFee', 'editSocioCultural',
+            'editInsurance', 'editSchoolPublication', 'editStudentDevelopment', 'editLibraryFee',
+            'editEnergyFee', 'editPhysicalFacilities', 'editResearchInnovation', 'editInternetFee',
+            'editAudioVisual', 'editItDevelopment', 'editLaboratoryFee', 'editTuitionFee'
+        ];
+
+        foreach ($inputs as $input) {
+            $this->$input = (float) $this->$input;
+            if ($this->$input < 0) {
+                session()->flash('error', 'All fee inputs must be non-negative values.');
+                return;
+            }
+        }
+
+        $miscSum = $this->editGuidanceFee + $this->editTrainingMaterials + $this->editHandbook +
+                   $this->editMailingFee + $this->editMedicalDental + $this->editStudentIdFee +
+                   $this->editSocioCultural + $this->editInsurance + $this->editSchoolPublication +
+                   $this->editStudentDevelopment + $this->editLibraryFee + $this->editEnergyFee +
+                   $this->editPhysicalFacilities + $this->editResearchInnovation + $this->editInternetFee +
+                   $this->editAudioVisual + $this->editItDevelopment;
+
+        $assessment = [
+            'registrationFee' => $this->editRegistrationFee,
+            'guidanceFee' => $this->editGuidanceFee,
+            'trainingMaterials' => $this->editTrainingMaterials,
+            'handbook' => $this->editHandbook,
+            'mailingFee' => $this->editMailingFee,
+            'medicalDental' => $this->editMedicalDental,
+            'studentId' => $this->editStudentIdFee,
+            'socioCultural' => $this->editSocioCultural,
+            'insurance' => $this->editInsurance,
+            'schoolPublication' => $this->editSchoolPublication,
+            'studentDevelopment' => $this->editStudentDevelopment,
+            'libraryFee' => $this->editLibraryFee,
+            'energyFee' => $this->editEnergyFee,
+            'physicalFacilities' => $this->editPhysicalFacilities,
+            'researchInnovation' => $this->editResearchInnovation,
+            'internetFee' => $this->editInternetFee,
+            'audioVisual' => $this->editAudioVisual,
+            'itDevelopment' => $this->editItDevelopment,
+            'laboratoryFee' => $this->editLaboratoryFee,
+            'tuitionFee' => $this->editTuitionFee,
+            // Calculate sum for backwards compatibility
+            'miscellaneousFees' => $miscSum + $this->editRegistrationFee + $this->editLaboratoryFee,
+        ];
+
+        $overrideKey = "student_assessment_override_{$this->selectedStudentId}";
+        Cache::put($overrideKey, $assessment, now()->addYears(1));
+
+        $this->isEditingAssessment = false;
+        $this->selectStudent($this->selectedStudentId);
+
+        session()->flash('success', 'Custom student assessment saved successfully!');
+    }
+
+    public function resetAssessmentToDefault()
+    {
+        if (!$this->selectedStudentId) {
+            return;
+        }
+
+        $overrideKey = "student_assessment_override_{$this->selectedStudentId}";
+        Cache::forget($overrideKey);
+
+        $this->isEditingAssessment = false;
+        $this->selectStudent($this->selectedStudentId);
+
+        session()->flash('success', 'Assessment reverted to program defaults.');
     }
 
     public function setPaymentMode()
@@ -571,6 +775,26 @@ class PaymentManager extends Component
                 'appliedDiscount' => $this->appliedDiscount,
                 'totalAssessment' => $this->totalAssessment,
                 'currentBalance' => $this->currentBalance,
+                // Itemized fee breakdown
+                'registrationFee'    => $this->registrationFee,
+                'guidanceFee'        => $this->guidanceFee,
+                'trainingMaterials'  => $this->trainingMaterials,
+                'handbook'           => $this->handbook,
+                'mailingFee'         => $this->mailingFee,
+                'medicalDental'      => $this->medicalDental,
+                'studentIdFee'       => $this->studentIdFee,
+                'socioCultural'      => $this->socioCultural,
+                'insurance'          => $this->insurance,
+                'schoolPublication'  => $this->schoolPublication,
+                'studentDevelopment' => $this->studentDevelopment,
+                'libraryFee'         => $this->libraryFee,
+                'energyFee'          => $this->energyFee,
+                'physicalFacilities' => $this->physicalFacilities,
+                'researchInnovation' => $this->researchInnovation,
+                'internetFee'        => $this->internetFee,
+                'audioVisual'        => $this->audioVisual,
+                'itDevelopment'      => $this->itDevelopment,
+                'laboratoryFee'      => $this->laboratoryFee,
             ])->layout('components.layouts.admin', ['title' => 'Manage Payments']);
         }
 

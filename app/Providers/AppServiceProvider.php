@@ -12,6 +12,7 @@ use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Prevent 30 seconds timeout error globally
+        set_time_limit(0);
+        ini_set('max_execution_time', 0);
+
         // 0. SUPER ADMIN BYPASS
         Gate::before(function (User $user, string $ability) {
             // FIX 3: Prevent Super Admin from bypassing strictly role-scoped capabilities
@@ -130,7 +135,7 @@ class AppServiceProvider extends ServiceProvider
         // Current Notification Logic (Existing)
         View::composer(['admin.*', 'registrar.*'], function ($view) {
             try {
-                $pendingCount = Enrollment::where('status', 'Pending')->count();
+                $pendingCount = Enrollment::where('status', 'Pending')->hasUploadsOrVerified()->count();
             } catch (\Exception $e) {
                 $pendingCount = 0;
             }
@@ -145,6 +150,15 @@ class AppServiceProvider extends ServiceProvider
                 $pendingPaymentsCount = 0;
             }
             $view->with('pendingPaymentsCount', $pendingPaymentsCount);
+        });
+
+        // 5. PASSWORD COMPLEXITY DEFAULTS
+        Password::defaults(function () {
+            return Password::min(8)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols();
         });
     }
 }

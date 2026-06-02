@@ -1,4 +1,4 @@
-<div class="space-y-6 animate-in fade-in duration-500" x-data="{ modalOpen: false }">
+<div class="space-y-6 animate-in fade-in duration-500" x-data="{ modalOpen: false, selectedId: null }">
     <style>
         /* Global scrollbar hide */
         * { -ms-overflow-style: none; scrollbar-width: none; }
@@ -39,7 +39,7 @@
                         <option value="Pending">Pending</option>
                         <option value="Approved">Approved</option>
                         <option value="Rejected">Rejected</option>
-                        <option value="Paid">Paid</option>
+                        <option value="Paid">Fully Paid</option>
                     </select>
                 </div>
                 <div class="w-full sm:w-44">
@@ -59,7 +59,6 @@
                             @foreach($shsStrands as $course)
                                 <option value="{{ $course->course_code }}">{{ $course->course_code }}</option>
                                 @endforeach
-                            </optgroup>
                         @endif
                     </select>
                 </div>
@@ -137,14 +136,13 @@
                                 </span>
                             </div>
                         </th>
-
                     </tr>
                 </thead>
                 <tbody class="text-xs divide-y divide-slate-100 bg-white">
                     @forelse($applications as $application)
                         <tr class="hover:bg-blue-50/30 transition-all group">
-                            <td class="py-6 px-8 text-slate-400 font-mono tracking-tighter">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
-                            <td class="py-6 px-8">
+                            <td class="py-6 px-8 text-slate-400 font-mono tracking-tighter whitespace-nowrap">#{{ str_pad($application->id, 5, '0', STR_PAD_LEFT) }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
                                 <div class="flex flex-col">
                                     <div class="flex items-baseline gap-2">
                                         <span class="text-black group-hover:text-blue-600 transition-colors uppercase tracking-wider font-bold">{{ $application->last_name }}, {{ $application->first_name }} {{ $application->middle_name }}</span>
@@ -155,7 +153,7 @@
                                     <span class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">Applicant Profile</span>
                                 </div>
                             </td>
-                            <td class="py-6 px-8 text-slate-500 lowercase tracking-tight">{{ $application->email }}</td>
+                            <td class="py-6 px-8 text-slate-500 lowercase tracking-tight whitespace-nowrap">{{ $application->email }}</td>
                             <td class="py-6 px-8 whitespace-nowrap">
                                 @php
                                     $classification = $application->classification ?? 'New';
@@ -191,22 +189,25 @@
                                 <span class="text-blue-600 font-black uppercase text-[10px] tracking-widest">{{ $application->course_code }}</span>
                                 <span class="text-slate-400 text-[9px] ml-1 font-bold">({{ $application->year_display }})</span>
                             </td>
-                            <td class="py-6 px-8 text-slate-500 font-medium tracking-tight">{{ $application->created_at->format('M d, Y') }}</td>
-                            <td class="py-6 px-8">
+                            <td class="py-6 px-8 text-slate-500 font-medium tracking-tight whitespace-nowrap">{{ $application->created_at->format('M d, Y') }}</td>
+                            <td class="py-6 px-8 whitespace-nowrap">
                                 @php
-                                    $badgeColor = match(ucfirst($application->status)) {
-                                        'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        'Paid' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                                        'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                        'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                    $isFullyPaid = $application->status === 'Paid' && $application->is_fully_paid;
+                                    $badgeColor = match(true) {
+                                        $application->status === 'Enrolled' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        $isFullyPaid => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                                        $application->status === 'Paid' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                        $application->status === 'Approved' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        $application->status === 'Rejected' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                        $application->status === 'Pending' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
                                         default => 'bg-white/5 text-white/40 border-white/10',
                                     };
-                                    $displayText = match($application->status) {
-                                        'Enrolled' => 'Enrolled',
-                                        'Paid' => 'Paid',
-                                        'Approved' => 'Approved',
-                                        'Pending' => 'Pending',
+                                    $displayText = match(true) {
+                                        $application->status === 'Enrolled' => 'Enrolled',
+                                        $isFullyPaid => 'Fully Paid',
+                                        $application->status === 'Paid' => 'Partially Paid',
+                                        $application->status === 'Approved' => 'Approved',
+                                        $application->status === 'Pending' => 'Pending',
                                         default => $application->status
                                     };
                                 @endphp
@@ -214,11 +215,22 @@
                                     {{ $displayText }}
                                 </span>
                             </td>
-
+                            <td class="py-6 px-8 whitespace-nowrap">
+                                <div class="flex justify-end items-center gap-3">
+                                    <button type="button" @click="modalOpen = true; selectedId = {{ $application->id }}; openModal(@js($application), @js($application->getDocumentFields()))"
+                                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-blue-500/30 text-black hover:bg-blue-50 hover:border-blue-500 transition-all text-[10px] font-black uppercase tracking-widest group/btn shadow-lg shadow-blue-500/10 whitespace-nowrap">
+                                        <svg class="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        View Details
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="py-24 text-center">
+                        <td colspan="9" class="py-24 text-center">
                             <div class="flex flex-col items-center opacity-20">
                                 <svg class="w-16 h-16 mb-6 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                 <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">No applications found in the review pipeline</span>
@@ -241,14 +253,14 @@
     <div x-show="modalOpen" class="fixed inset-0 z-50 p-4 flex items-center justify-center transition-all duration-300" x-cloak>
         <div class="absolute inset-0 bg-blue-900/40 backdrop-blur-md" @click="modalOpen = false"></div>
 
-        <div class="bg-white w-full max-w-7xl rounded-[40px] shadow-[0_32px_120px_rgba(30,58,138,0.2)] border border-blue-500/20 overflow-hidden flex flex-col max-h-[95vh] relative z-10" id="modalContent" wire:ignore>
-            <div class="px-8 md:px-12 py-8 border-b border-blue-500/10 flex justify-between items-center bg-blue-50/30">
+        <div class="bg-white/85 w-full max-w-5xl rounded-[40px] shadow-[0_32px_120px_rgba(30,58,138,0.15)] border border-blue-500/10 overflow-hidden flex flex-col max-h-[95vh] relative z-10 backdrop-blur-2xl" id="modalContent" wire:ignore>
+            <div class="px-8 md:px-12 py-8 border-b border-blue-500/10 flex justify-between items-center bg-blue-50/20">
                 <div>
                     <span class="text-[9px] font-black text-blue-600 uppercase tracking-[0.4em] mb-1 block">Analysis Protocol</span>
-                    <h2 class="text-2xl font-black text-black uppercase tracking-tight" id="modalTitle">Application Details</h2>
+                    <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tight" id="modalTitle">Application Details</h2>
                 </div>
-                <button @click="modalOpen = false" class="p-4 rounded-2xl bg-slate-100 text-slate-400 hover:text-black transition-all border border-slate-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button @click="modalOpen = false" class="p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-800 transition-all border border-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
@@ -258,41 +270,41 @@
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
                             <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-                            <h3 class="text-[10px] font-black text-black uppercase tracking-[0.3em]">Applicant Profile</h3>
+                            <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">Applicant Profile</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-6 bg-white border border-blue-500/10 rounded-[32px] p-8">
+                        <div class="grid grid-cols-1 gap-6 bg-white/50 border border-blue-500/10 rounded-[32px] p-8">
                             <div class="grid grid-cols-2 gap-8">
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Full Name</span>
-                                    <span class="text-xs font-bold text-black uppercase" id="modalNameValue"></span>
+                                    <span class="text-xs font-bold text-blue-600 uppercase" id="modalNameValue"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Email Address</span>
-                                    <span class="text-xs font-bold text-black lowercase" id="modalEmail"></span>
+                                    <span class="text-xs font-bold text-slate-600 lowercase" id="modalEmail"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Reference ID</span>
-                                    <span class="text-xs font-bold text-blue-600 uppercase" id="modalAppId"></span>
+                                    <span class="text-xs font-bold text-blue-500 uppercase" id="modalAppId"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Applied On</span>
-                                    <span class="text-xs font-bold text-black uppercase" id="modalSubmitted"></span>
+                                    <span class="text-xs font-bold text-slate-600 uppercase" id="modalSubmitted"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Birth Date</span>
-                                    <span class="text-xs font-bold text-black uppercase" id="modalDob"></span>
+                                    <span class="text-xs font-bold text-slate-600 uppercase" id="modalDob"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Age</span>
-                                    <span class="text-xs font-bold text-black uppercase" id="modalAge"></span>
+                                    <span class="text-xs font-bold text-slate-600 uppercase" id="modalAge"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gender</span>
-                                    <span class="text-xs font-bold text-black uppercase" id="modalGender"></span>
+                                    <span class="text-xs font-bold text-slate-600 uppercase" id="modalGender"></span>
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Address</span>
-                                    <span class="text-xs font-bold text-black uppercase" id="modalAddress"></span>
+                                    <span class="text-xs font-bold text-slate-600 uppercase" id="modalAddress"></span>
                                 </div>
                             </div>
                         </div>
@@ -301,23 +313,23 @@
                     <!-- Program & Lifecycle -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
-                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Program Details</h3>
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                            <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">Program Details</h3>
                         </div>
                         <div class="bg-blue-500/5 border border-blue-500/10 rounded-[32px] p-8 h-full flex flex-col justify-center">
                             <div class="space-y-4">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Applied Program</span>
-                                    <span class="text-2xl font-black text-white uppercase tracking-tighter" id="modalCourse"></span>
+                                    <span class="text-[9px] font-black text-blue-500/70 uppercase tracking-widest">Applied Program</span>
+                                    <span class="text-2xl font-black text-blue-600 uppercase tracking-tighter" id="modalCourse"></span>
                                 </div>
-                                <div class="grid grid-cols-2 gap-8 pt-6 border-t border-white/5">
+                                <div class="grid grid-cols-2 gap-8 pt-6 border-t border-slate-200">
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Academic Level</span>
-                                        <span class="text-xs font-bold text-white uppercase" id="modalYear"></span>
+                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Academic Level</span>
+                                        <span class="text-xs font-bold text-slate-700 uppercase" id="modalYear"></span>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Status Now</span>
-                                        <span class="text-xs font-black text-cyan-400 uppercase tracking-widest" id="modalStatus"></span>
+                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Status Now</span>
+                                        <span class="text-xs font-black text-blue-600 uppercase tracking-widest" id="modalStatus"></span>
                                     </div>
                                 </div>
                             </div>
@@ -328,25 +340,25 @@
                 <!-- Guardian Records -->
                 <div class="space-y-6 pt-6">
                     <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Guardian Information</h3>
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                        <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">Guardian Information</h3>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 bg-white/50 border border-blue-500/10 rounded-[32px] p-8">
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Father's Name</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalFather"></span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Father's Name</span>
+                            <span class="text-xs font-bold text-slate-700 uppercase" id="modalFather"></span>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Mother's Name</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalMother"></span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Mother's Name</span>
+                            <span class="text-xs font-bold text-slate-700 uppercase" id="modalMother"></span>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Guardian Name</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalGuardian"></span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Guardian Name</span>
+                            <span class="text-xs font-bold text-slate-700 uppercase" id="modalGuardian"></span>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Emergency Contact</span>
-                            <span class="text-xs font-bold text-white uppercase" id="modalContact"></span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Emergency Contact</span>
+                            <span class="text-xs font-bold text-slate-700 uppercase" id="modalContact"></span>
                         </div>
                     </div>
                 </div>
@@ -354,8 +366,8 @@
                 <!-- Document Assets -->
                 <div class="space-y-6 pt-6">
                     <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Required Documents</h3>
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                        <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">Required Documents</h3>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="modalDocuments">
                         <!-- Injected via JS -->
@@ -365,41 +377,26 @@
                 <!-- Promissory Note Asset -->
                 <div class="space-y-6 pt-6 hidden" id="modalPromissorySection">
                     <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Promissory Note & Reason</h3>
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">Promissory Note & Reason</h3>
                     </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-amber-500/5 border border-amber-500/15 rounded-[32px] p-8">
                         <div id="modalPromissoryFile" class="lg:col-span-1">
                             <!-- Injected via JS -->
                         </div>
                         <div class="lg:col-span-2 space-y-2">
-                            <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Student's Explanation</span>
-                            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[80px]">
-                                <p class="text-[11px] text-white/60 leading-relaxed" id="modalPromissoryReason"></p>
+                            <span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Student's Explanation</span>
+                            <div class="p-6 rounded-2xl bg-white/50 border border-amber-500/10 min-h-[80px]">
+                                <p class="text-[11px] text-slate-700 leading-relaxed" id="modalPromissoryReason"></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="px-8 md:px-12 py-8 border-t border-blue-500/10 bg-blue-50/30 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" id="actionButtons">
-                    <button type="button"
-                        @click="modalOpen = false; @this.approve(selectedId)"
-                        class="flex items-center gap-2 bg-white border-2 border-blue-500/20 text-black text-[10px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-lg shadow-blue-500/10 hover:bg-blue-50 hover:border-blue-500/40 active:scale-95 shrink-0">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                        Approve Enrollment
-                    </button>
-                    <button type="button"
-                        @click="if(confirm('Are you sure you want to reject this application?')) { modalOpen = false; @this.reject(selectedId) }"
-                        class="flex items-center gap-2 bg-white border-2 border-slate-200 text-black text-[10px] font-black py-4 px-8 rounded-2xl uppercase tracking-[0.2em] transition-all shadow-md hover:bg-rose-50 hover:border-rose-500/30 active:scale-95 shrink-0">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        Reject Application
-                    </button>
-                </div>
-                <button @click="modalOpen = false" class="w-full md:w-auto px-10 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-2 border-slate-100 rounded-2xl hover:bg-slate-50 hover:text-black transition-all ml-auto">
-                    Close Protocol
-                </button>
+            <div class="px-8 md:px-12 py-8 border-t border-blue-500/10 bg-blue-50/20 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="hidden" id="actionButtons"></div>
+                
             </div>
         </div>
     </div>
@@ -423,7 +420,11 @@
         // Program details
         document.getElementById('modalCourse').innerText = app.course_code || 'N/A';
         document.getElementById('modalYear').innerText = app.year_level || 'N/A';
-        document.getElementById('modalStatus').innerText = app.status || 'N/A';
+        let statusText = app.status || 'N/A';
+        if (statusText === 'Paid' || statusText.toLowerCase() === 'paid') {
+            statusText = (app.is_fully_paid) ? 'Fully Paid' : 'Partially Paid';
+        }
+        document.getElementById('modalStatus').innerText = statusText;
 
         // Guardian info
         document.getElementById('modalFather').innerText = app.father_name || 'N/A';
@@ -452,24 +453,24 @@
                         <div class="flex items-center justify-center w-5 h-5 bg-emerald-500/20 border-2 border-emerald-500 rounded-full shrink-0">
                             <span class="text-emerald-500 font-black text-xs">✓<\/span>
                         <\/div>
-                        <span class="text-[9px] font-black uppercase text-white tracking-widest">${label}<\/span>
+                        <span class="text-[9px] font-black uppercase text-slate-700 tracking-widest">${label}<\/span>
                     <\/div>
                 `;
 
                 if (isImage) {
                     boxHtml = `
-                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-blue-500/10 bg-blue-50/30">
                             <img src="${fileUrl}" class="w-full h-32 object-cover transition-transform duration-500 group-hover/asset:scale-110">
-                            <div class="absolute inset-0 bg-cyan-500/20 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"><\/path><\/svg>
+                            <div class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"><\/path><\/svg>
                             <\/div>
                         <\/a>
                     `;
                 } else {
                     boxHtml = `
-                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] h-32 flex flex-col items-center justify-center">
-                            <svg class="w-10 h-10 text-cyan-400 opacity-40 group-hover/asset:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
-                            <span class="text-[8px] font-black text-cyan-400 mt-2 tracking-[0.3em]">VIEW FILE<\/span>
+                        <a href="${fileUrl}" target="_blank" class="block group/asset relative overflow-hidden rounded-2xl border border-blue-500/10 bg-blue-50/30 h-32 flex flex-col items-center justify-center">
+                            <svg class="w-10 h-10 text-blue-500 opacity-40 group-hover/asset:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
+                            <span class="text-[8px] font-black text-blue-600 mt-2 tracking-[0.3em]">VIEW FILE<\/span>
                         <\/a>
                     `;
                 }
@@ -503,29 +504,42 @@
             promissoryReason.innerText = app.promissory_reason || 'No explanation provided.';
 
             if (app.promissory_note_path) {
-                const noteUrl = storageBase + app.promissory_note_path;
-                const isPdf = app.promissory_note_path.toLowerCase().endsWith('.pdf');
+                let paths = [];
+                try {
+                    paths = JSON.parse(app.promissory_note_path);
+                    if (!Array.isArray(paths)) {
+                        paths = [app.promissory_note_path];
+                    }
+                } catch (e) {
+                    paths = [app.promissory_note_path];
+                }
 
-                promissoryFile.innerHTML = `
-                    <div class="space-y-3">
-                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Note Attachment<\/span>
-                        <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-all">
-                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                let fileHtml = '<div class="space-y-3"><span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment(s)<\/span><div class="space-y-2">';
+                
+                paths.forEach((path, index) => {
+                    const noteUrl = storageBase + path;
+                    const isPdf = path.toLowerCase().endsWith('.pdf');
+                    fileHtml += `
+                        <a href="${noteUrl}" target="_blank" class="flex items-center gap-4 p-4 rounded-2xl border border-amber-500/20 bg-amber-50/50 hover:bg-amber-50 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"><\/path><\/svg>
                             <\/div>
                             <div>
-                                <p class="text-[10px] font-black text-white uppercase tracking-wider">Download Note<\/p>
-                                <p class="text-[8px] text-amber-500/60 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}<\/p>
+                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-wider">Download Note ${paths.length > 1 ? '#' + (index + 1) : ''}<\/p>
+                                <p class="text-[8px] text-amber-600/80 uppercase font-bold mt-0.5">${isPdf ? 'PDF Format' : 'Word Doc'}<\/p>
                             <\/div>
                         <\/a>
-                    <\/div>
-                `;
+                    `;
+                });
+                
+                fileHtml += '<\/div><\/div>';
+                promissoryFile.innerHTML = fileHtml;
             } else {
                 promissoryFile.innerHTML = `
                     <div class="space-y-3">
-                        <span class="text-[9px] font-black text-amber-500/40 uppercase tracking-widest">Note Attachment<\/span>
-                        <div class="p-4 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] flex items-center justify-center opacity-30">
-                            <span class="text-[8px] font-black text-white uppercase tracking-widest">No File<\/span>
+                        <span class="text-[9px] font-black text-amber-600/70 uppercase tracking-widest">Note Attachment<\/span>
+                        <div class="p-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 flex items-center justify-center opacity-30">
+                            <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">No File<\/span>
                         <\/div>
                     <\/div>
                 `;

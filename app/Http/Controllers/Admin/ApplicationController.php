@@ -15,10 +15,10 @@ class ApplicationController extends Controller
         $applications = Enrollment::with(['user'])->latest()->paginate(10);
 
         // 2. Notification Logic (Count strictly 'Pending' for badge count)
-        $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();
-        
-        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'], 'and')
-                            ->with('user')
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
+
+        $notifications = Enrollment::whereIn('status', ['Pending', 'Enrolled'])
+                            ->with(['user', 'payments'])
                             ->orderBy('updated_at', 'desc')
                             ->take(5)
                             ->get();
@@ -26,7 +26,7 @@ class ApplicationController extends Controller
         // Attach payment info for notifications
         foreach($notifications as $notif) {
             if($notif->status === 'Enrolled') {
-                $payment = \App\Models\Payment::where('application_id', $notif->id)->first();
+                $payment = $notif->payments->first();
                 $notif->paid_amount = $payment ? $payment->amount : 0;
             }
         }
@@ -36,6 +36,10 @@ class ApplicationController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'status' => 'required|in:Pending,Approved,Rejected,Enrolled',
+        ]);
+
         $application = Enrollment::findOrFail($id);
         $application->status = $request->status;
         $application->save();

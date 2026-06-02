@@ -67,9 +67,18 @@ class RegistrarApplicationManager extends Component
         $this->selectedId = $id;
     }
 
-    public function approve($id)
+    public function approve($id, $classType = null, $classReason = null)
     {
         $application = Enrollment::findOrFail($id);
+
+        // Apply classification if provided
+        if ($classType === 'regular') {
+            $application->is_regular = true;
+            $application->classification_reason = null;
+        } elseif ($classType === 'irregular') {
+            $application->is_regular = false;
+            $application->classification_reason = $classReason;
+        }
 
         // Finalize enrollment status
         $application->status = 'Enrolled';
@@ -210,6 +219,27 @@ class RegistrarApplicationManager extends Component
         $this->dispatch('modal-reset');
     }
 
+    public function setClassification($id, $type, $reason = null)
+    {
+        $enrollment = Enrollment::findOrFail($id);
+
+        if ($type === 'regular') {
+            $enrollment->is_regular = true;
+            $enrollment->classification_reason = null;
+        } elseif ($type === 'irregular') {
+            $enrollment->is_regular = false;
+            $enrollment->classification_reason = $reason;
+        }
+
+        $enrollment->last_audited_at = now();
+        $enrollment->save();
+
+        $label = $type === 'regular' ? 'Regular' : 'Irregular';
+        session()->flash('success', "Student classification set to {$label}.");
+
+        $this->dispatch('modal-reset');
+    }
+
     public function render()
     {
         $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
@@ -218,6 +248,7 @@ class RegistrarApplicationManager extends Component
         $query = Enrollment::query()
             ->select('enrollments.*')
             ->join('users', 'enrollments.user_id', '=', 'users.id')
+            ->hasUploadsOrVerified()
             ->with(['user']);
 
         if ($this->level) {
@@ -351,7 +382,7 @@ class RegistrarApplicationManager extends Component
         });
 
         // 2. Count pending applications for the header badge (respecting the current level)
-        $pendingCountQuery = Enrollment::where('status', 'Pending');
+        $pendingCountQuery = Enrollment::where('status', 'Pending')->hasUploadsOrVerified();
         if ($this->level) {
             $pendingCountQuery->where('level', $this->level);
         }
