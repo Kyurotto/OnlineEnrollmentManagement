@@ -7,9 +7,11 @@ use Livewire\WithPagination;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Enrollment;
+use App\Models\ActivityLog;
 use App\Notifications\StudentPaymentConfirmed;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentManager extends Component
 {
@@ -685,6 +687,24 @@ class PaymentManager extends Component
                 Enrollment::where('id', $payment->application_id)->update(['status' => 'Paid']);
             }
             $this->notifyRecipients($payment);
+        }
+
+        // Log the payment approval/rejection
+        $adminUser = auth()->user();
+        if ($adminUser) {
+            $action = $status === 'Paid' ? 'payment_approved' : 'payment_rejected';
+            $student = User::find($payment->user_id);
+            $description = $status === 'Paid'
+                ? 'Approved payment of ₱' . number_format($payment->amount, 2) . ' for ' . ($student ? $student->first_name . ' ' . $student->last_name : 'Unknown Student')
+                : 'Rejected payment of ₱' . number_format($payment->amount, 2) . ' for ' . ($student ? $student->first_name . ' ' . $student->last_name : 'Unknown Student');
+
+            ActivityLog::create([
+                'user_id' => $adminUser->id,
+                'action' => $action,
+                'target_type' => 'Payment',
+                'target_id' => $payment->id,
+                'description' => $description,
+            ]);
         }
 
         session()->flash('success', 'Payment status updated to ' . $status);
