@@ -20,11 +20,11 @@ class DocumentController extends Controller
             ->orWhere('good_moral_path', $path)
             ->orWhere('psa_path', $path)
             ->orWhere('id_picture_path', $path)
-            ->orWhere('promissory_note_path', $path)
+            ->orWhereJsonContains('promissory_note_path', $path)
             ->firstOrFail();
 
         // Check for authorization: Owner OR Admin/Registrar
-        if ($enrollment->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin', 'registrar'])) {
+        if ($enrollment->user_id !== Auth::id() && !in_array(Auth::user()->role ?? null, ['admin', 'registrar'])) {
             abort(403, 'Unauthorized access to document.');
         }
 
