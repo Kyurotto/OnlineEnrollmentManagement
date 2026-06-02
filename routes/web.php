@@ -25,7 +25,7 @@ use App\Http\Controllers\RegistrarSectionController;
 use App\Http\Controllers\CashierPaymentController;
 use App\Livewire\CashierDashboardManager;
 use App\Livewire\PaymentManager as CashierPaymentManager;
-use App\Livewire\PaymentAssessmentManager;
+// Note: PaymentAssessmentManager class does not exist — removed unused import
 
 // Student Controllers
 use App\Http\Controllers\StudentDashboardController;
@@ -43,10 +43,8 @@ use App\Livewire\StudentPaymentManager;
 
 // Registrar Livewire Components
 use App\Livewire\RegistrarApplicationManager;
-use App\Livewire\RegistrarStudentManager;
 
 // Admin Livewire Components
-use App\Livewire\Admin\AdminStudentManager;
 use App\Livewire\Admin\AdminApplicationManager;
 
 
@@ -69,10 +67,11 @@ Route::middleware([
     $user = Auth::user();
     if (!$user) return redirect()->route('login');
 
-    // Look for the user in the employees table strictly by user_id OR email
-    $employee = DB::table('employees')->where('user_id', $user->id)
-                  ->orWhere('email', $user->email)
-                  ->first();
+    // Look for the user in the employees table strictly by user_id or email
+    $employee = DB::table('employees')
+                  ->where('user_id', $user->id)
+                  ->first()
+                  ?? DB::table('employees')->where('email', $user->email)->first();
 
     // STAFF roles MUST be verified against the employees table
     if ($employee) {

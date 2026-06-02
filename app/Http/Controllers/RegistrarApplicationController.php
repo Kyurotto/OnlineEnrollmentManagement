@@ -16,23 +16,12 @@ class RegistrarApplicationController extends Controller
     public function index()
     {
         // 1. Fetch applications with Student (user) and Course details
-        // We use 'with' to prevent "Attempt to read property on null" errors
-        $applications = Enrollment::with(['user'])
+        $applications = Enrollment::with(['user', 'course'])
             ->latest() // Show newest first
             ->paginate(10);
 
-        // Manual Eager Load for 'course' based on course_code
-        $courseCodes = $applications->pluck('course_code')->unique();
-        $courses = Course::whereIn('course_code', $courseCodes)->get()->keyBy('course_code');
-
-        foreach ($applications as $application) {
-            if (isset($courses[$application->course_code])) {
-                $application->setRelation('course', $courses[$application->course_code]);
-            }
-        }
-
         // 2. Count pending applications for the header badge
-        $pendingCount = Enrollment::where('status', '=', 'Pending', 'and')->count();
+        $pendingCount = Enrollment::where('status', 'Pending')->count();
 
         return view('registrar.students.applications.index', compact('applications', 'pendingCount'));
     }
@@ -43,13 +32,7 @@ class RegistrarApplicationController extends Controller
     public function show($id)
     {
         // Fetch the specific enrollment with relationships
-        $application = Enrollment::with(['user'])->findOrFail($id);
-
-        // Manual Load Course
-        $course = Course::where('course_code', $application->course_code)->first();
-        if ($course) {
-            $application->setRelation('course', $course);
-        }
+        $application = Enrollment::with(['user', 'course'])->findOrFail($id);
 
         return view('registrar.students.applications.show', compact('application'));
     }
@@ -70,7 +53,7 @@ class RegistrarApplicationController extends Controller
 
         // Sync User Status
         if ($request->status === 'Approved') {
-            $application->user->update(['status' => 'Enrolled']);
+            $application->user?->update(['status' => 'Enrolled']);
         }
 
         // Redirect back to the list with a success message
@@ -140,22 +123,5 @@ class RegistrarApplicationController extends Controller
         $application->save();
 
         return response()->json(['success' => true, 'message' => 'Voucher removed successfully.'], 200);
-    }
-
-    /**
-     * Helper to map enrollment fields to user object for view compatibility.
-     */
-    private function mapEnrollmentDataToUser($application)
-    {
-        $application->user->age = $application->age;
-        $application->user->birth_date = $application->birth_date;
-        $application->user->date_of_birth = $application->birth_date;
-        $application->user->gender = $application->gender;
-        $application->user->address = $application->address_full;
-        $application->user->father_name = $application->father_name;
-        $application->user->mother_maiden_name = $application->mother_maiden_name;
-        $application->user->guardian_name = $application->guardian_name;
-        $application->user->guardian_contact = $application->guardian_contact;
-        $application->user->contact = $application->contact;
     }
 }

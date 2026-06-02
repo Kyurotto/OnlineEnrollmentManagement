@@ -13,7 +13,7 @@ class StudentPaymentRedirectController extends Controller
 
         // Get student's latest enrollment
         $enrollment = Enrollment::where('user_id', $user->id)
-            ->where('year_level', '!=', null)
+            ->whereNotNull('year_level')
             ->latest()
             ->first();
 
