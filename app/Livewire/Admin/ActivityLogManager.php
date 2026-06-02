@@ -39,7 +39,16 @@ class ActivityLogManager extends Component
 
     public function render()
     {
-        $query = ActivityLog::with('user');
+        $query = ActivityLog::query();
+
+        if (str_contains($this->sortField, 'users.')) {
+            $query->join('users', 'activity_logs.user_id', '=', 'users.id')
+                  ->select('activity_logs.*');
+        } else {
+            $query->select('activity_logs.*');
+        }
+
+        $query->with('user');
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
