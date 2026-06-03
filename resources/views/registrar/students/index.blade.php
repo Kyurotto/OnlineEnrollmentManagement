@@ -43,7 +43,7 @@
                             <th class="py-6 px-8">ID</th>
                             <th class="py-6 px-8">Full Name</th>
                             <th class="py-6 px-8">Email</th>
-                            <th class="py-6 px-8 text-center">Academic Track</th>
+                            <th class="py-6 px-8 text-center">{{ $level === 'college' ? 'Program' : 'Academic Track' }}</th>
                             <th class="py-6 px-8 text-center">Section</th>
                             <th class="py-6 px-8 text-center">Classification</th>
                             <th class="py-6 px-8">Status</th>

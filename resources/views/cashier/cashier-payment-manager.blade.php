@@ -1,6 +1,5 @@
-<div> <!-- SINGLE ROOT WRAPPER FOR LIVEWIRE -->
-
-    <!-- TOP SECTION: SIDEBAR LAYOUT -->
+<div>
+<!-- TOP SECTION: SIDEBAR LAYOUT -->
     <div class="space-y-6 animate-in fade-in duration-500">
         @if (session('success'))
             <div
@@ -1095,4 +1094,5 @@
             background: #cbd5e1;
         }
     </style>
-</div> <!-- END OF SINGLE ROOT WRAPPER -->
+
+</div>

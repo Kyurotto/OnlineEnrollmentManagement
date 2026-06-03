@@ -14,11 +14,11 @@ class CourseSeeder extends Seeder
         // Create courses
         $courses = [
             // College Programs
-            ['course_code' => 'ACT', 'course_name' => 'ASSOCIATE IN COMPUTER TECH', 'credits' => 3, 'type' => 'program'],
-            ['course_code' => 'BSIS', 'course_name' => 'BS INFORMATION SYSTEMS', 'credits' => 3, 'type' => 'program'],
-            ['course_code' => 'BTVTED', 'course_name' => 'BTV Teacher Education', 'credits' => 3, 'type' => 'program'],
-            ['course_code' => 'DHRT', 'course_name' => 'HOTEL & RESTAURANT TECH', 'credits' => 3, 'type' => 'program'],
-            ['course_code' => 'DIT', 'course_name' => 'DIPLOMA INFO TECH', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'ACT', 'course_name' => 'ASSOCIATE IN COMPUTER TECH', 'description' => 'Associate in Computer Technology', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'BSIS', 'course_name' => 'BS INFORMATION SYSTEMS', 'description' => 'Bachelor of Science in Information Systems', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'BTVTED', 'course_name' => 'BTV Teacher Education', 'description' => 'Bachelor of Technical-Vocational Teacher Education', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'DHRT', 'course_name' => 'HOTEL & RESTAURANT TECH', 'description' => 'Diploma in Hotel and Restaurant Technology', 'credits' => 3, 'type' => 'program'],
+            ['course_code' => 'DIT', 'course_name' => 'DIPLOMA INFO TECH', 'description' => 'Diploma in Information Technology', 'credits' => 3, 'type' => 'program'],
 
             // Senior High Strands
             [
