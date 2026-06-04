@@ -211,7 +211,7 @@ class StudentPaymentManager extends Component
             ];
         });
 
-        return view('livewire.student-payment-manager', [
+        return view('student.student-payment-manager', [
             'level' => $this->level,
             'studentLevel' => $this->studentLevel,
             'enrollment' => $enrollment,

@@ -765,7 +765,7 @@ class PaymentManager extends Component
         $enrolledStudents = $allEnrollments->unique('user_id');
         $students = User::where('role', 'student')->orderBy('name')->get();
 
-        return view('livewire.cashier-payment-manager-new', [
+        return view('cashier.cashier-payment-manager', [
             'payments'           => $enrolledStudents,
             'paymentLogs'        => $paymentLogs,
             'students'           => $students,

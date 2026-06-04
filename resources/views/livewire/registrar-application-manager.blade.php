@@ -246,8 +246,10 @@
                             </td>
                             <td class="py-6 px-8 whitespace-nowrap">
                                 @php
-                                    $classification = $application->classification ?? 'New';
+                                    $classification = $application->classification_label;
                                     $classColor = match (strtolower($classification)) {
+                                        'regular' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                        'irregular' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
                                         'new' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
                                         'returning' => 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
                                         'transferee' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
