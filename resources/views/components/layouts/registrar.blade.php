@@ -344,17 +344,34 @@
                             </div>
                         </div>
 
-                        {{-- Historical Academic Records --}}
-                        <a href="{{ route('registrar.archives.index') }}"
-                            class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 relative"
-                            style="{{ request()->routeIs('registrar.archives.*') ? 'background: #eff6ff; color: #2563eb;' : 'color: #64748b;' }}">
-                            <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('registrar.archives.*') ? 'text-blue-600' : 'text-slate-400' }}"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
-                            </svg>
-                            <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Archives</span>
-                        </a>
+                        {{-- Historical Academic Records Dropdown --}}
+                        @php
+                            $isArchivesActive = request()->routeIs('registrar.archives.*');
+                        @endphp
+                        <div x-data="{ open: {{ $isArchivesActive ? 'true' : 'false' }} }" class="mx-3">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 group"
+                                :class="(open || {{ $isArchivesActive ? 'true' : 'false' }}) ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600'"
+                                :style="(open || {{ $isArchivesActive ? 'true' : 'false' }}) ? 'color: #2563eb; background: #eff6ff;' : 'color: #64748b;'">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 flex-shrink-0 transition-colors duration-200"
+                                        :class="(open || {{ $isArchivesActive ? 'true' : 'false' }}) ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                                    </svg>
+                                    <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Archives</span>
+                                </div>
+                                <svg x-show="sidebarOpen" x-cloak class="w-4 h-4 transition-all duration-200"
+                                    :class="[ (open || {{ $isArchivesActive ? 'true' : 'false' }}) ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600', open ? 'rotate-180' : '' ]"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" x-cloak class="pl-8 pr-3 py-1.5 space-y-1 bg-slate-50 rounded-xl mt-1 border border-slate-100">
+                                <a href="{{ route('registrar.archives.index', ['level' => 'college']) }}" class="block py-2 text-[13px] font-bold transition-all {{ request()->routeIs('registrar.archives.*') && request('level') === 'college' ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900' }}">College Archives</a>
+                                <a href="{{ route('registrar.archives.index', ['level' => 'shs']) }}" class="block py-2 text-[13px] font-bold transition-all {{ request()->routeIs('registrar.archives.*') && request('level') === 'shs' ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900' }}">SHS Archives</a>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="my-6 mx-4 border-t border-slate-100"></div>
@@ -619,6 +636,42 @@
                                 <a href="{{ route('registrar.applications.shs') }}"
                                     class="flex items-center gap-2 px-3 py-2 text-[13px] font-bold rounded-lg transition-colors {{ request()->routeIs('registrar.applications.shs') ? 'text-purple-700 bg-purple-50/50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                                     SHS Applications
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Mobile Archives Dropdown --}}
+                    @php
+                        $isArchivesActive = request()->routeIs('registrar.archives.*');
+                    @endphp
+                    <div x-data="{ open: {{ $isArchivesActive ? 'true' : 'false' }} }">
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between px-5 py-3.5 rounded-2xl transition-colors duration-200 group
+                                {{ $isArchivesActive ? 'bg-blue-50/80 text-blue-700' : 'text-slate-600 hover:bg-blue-50/80 hover:text-slate-900' }}">
+                            <div class="flex items-center gap-4">
+                                <svg class="w-5 h-5 flex-shrink-0 transition-colors duration-200 {{ $isArchivesActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                                </svg>
+                                <span class="font-bold text-[13px] uppercase tracking-wider">Archives</span>
+                            </div>
+                            <svg class="w-4 h-4 transition-transform duration-200 {{ $isArchivesActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}"
+                                :class="{ 'rotate-180': open }" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-collapse>
+                            <div class="px-5 py-2 mt-1 space-y-1 bg-slate-50 rounded-2xl border border-slate-100">
+                                <a href="{{ route('registrar.archives.index', ['level' => 'college']) }}"
+                                    class="flex items-center gap-2 px-3 py-2 text-[13px] font-bold rounded-lg transition-colors {{ request()->routeIs('registrar.archives.*') && request('level') === 'college' ? 'text-blue-700 bg-blue-50/50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                    College Archives
+                                </a>
+                                <a href="{{ route('registrar.archives.index', ['level' => 'shs']) }}"
+                                    class="flex items-center gap-2 px-3 py-2 text-[13px] font-bold rounded-lg transition-colors {{ request()->routeIs('registrar.archives.*') && request('level') === 'shs' ? 'text-blue-700 bg-blue-50/50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                    SHS Archives
                                 </a>
                             </div>
                         </div>

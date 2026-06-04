@@ -185,24 +185,35 @@
                         <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Dashboard</span>
                     </a>
 
-                    <a href="{{ route('student.payment') }}"
-                        class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 relative {{ request()->routeIs('student.payment', 'student.payment.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50/50 hover:text-indigo-600' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Payments</span>
-                    </a>
-
-                    <a href="{{ route('student.profile') }}"
-                        class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 relative {{ request()->routeIs('student.profile') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50/50 hover:text-indigo-600' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                        <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Profile</span>
-                    </a>
+                    {{-- Payments Dropdown --}}
+                    @php
+                        $isPaymentsActive = request()->routeIs('student.payment.*') || request()->routeIs('student.payment');
+                    @endphp
+                    <div x-data="{ open: {{ $isPaymentsActive ? 'true' : 'false' }} }" class="mx-3">
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 group"
+                            :class="(open || {{ $isPaymentsActive ? 'true' : 'false' }}) ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50/50 hover:text-indigo-600'"
+                            :style="(open || {{ $isPaymentsActive ? 'true' : 'false' }}) ? 'color: #4f46e5; background: #eef2ff;' : 'color: #64748b;'">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 flex-shrink-0 transition-colors duration-200"
+                                    :class="(open || {{ $isPaymentsActive ? 'true' : 'false' }}) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600'"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Payments</span>
+                            </div>
+                            <svg x-show="sidebarOpen" x-cloak class="w-4 h-4 transition-all duration-200"
+                                :class="[ (open || {{ $isPaymentsActive ? 'true' : 'false' }}) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600', open ? 'rotate-180' : '' ]"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-cloak class="pl-8 pr-3 py-1.5 space-y-1 bg-slate-50 rounded-xl mt-1 border border-slate-100">
+                            <a href="{{ route('student.payment') }}" class="block py-2 text-[13px] font-bold transition-all {{ request()->routeIs('student.payment') ? 'text-indigo-600' : 'text-slate-700 hover:text-slate-900' }}">Payments</a>
+                        </div>
+                    </div>
 
                     <div class="my-6 mx-4 border-t border-slate-50"></div>
                     <p x-show="sidebarOpen" x-cloak
@@ -460,24 +471,38 @@ if (!$hasSubmittedSidebar) {
                         <span class="font-bold text-[13px] uppercase tracking-wider">Dashboard</span>
                     </a>
 
-                    <a href="{{ route('student.payment') }}"
-                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.payment') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        <span class="font-bold text-[13px] uppercase tracking-wider">Payments</span>
-                    </a>
-
-                    <a href="{{ route('student.profile') }}"
-                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.profile') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                        <span class="font-bold text-[13px] uppercase tracking-wider">Profile</span>
-                    </a>
+                    {{-- Mobile Payments Dropdown --}}
+                    @php
+                        $isPaymentsActive = request()->routeIs('student.payment.*') || request()->routeIs('student.payment');
+                    @endphp
+                    <div x-data="{ open: {{ $isPaymentsActive ? 'true' : 'false' }} }">
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between px-5 py-3.5 rounded-2xl transition-colors duration-200 group
+                                {{ $isPaymentsActive ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-600 hover:bg-indigo-50/80 hover:text-slate-900' }}">
+                            <div class="flex items-center gap-4">
+                                <svg class="w-5 h-5 flex-shrink-0 transition-colors duration-200 {{ $isPaymentsActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' }}"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <span class="font-bold text-[13px] uppercase tracking-wider">Payments</span>
+                            </div>
+                            <svg class="w-4 h-4 transition-transform duration-200 {{ $isPaymentsActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' }}"
+                                :class="{ 'rotate-180': open }" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-collapse>
+                            <div class="px-5 py-2 mt-1 space-y-1 bg-slate-50 rounded-2xl border border-slate-100">
+                                <a href="{{ route('student.payment') }}"
+                                    class="flex items-center gap-2 px-3 py-2 text-[13px] font-bold rounded-lg transition-colors {{ request()->routeIs('student.payment') ? 'text-indigo-700 bg-indigo-50/50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                    Manage Payments
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="my-4 border-t border-slate-50"></div>
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 text-slate-300">Management
