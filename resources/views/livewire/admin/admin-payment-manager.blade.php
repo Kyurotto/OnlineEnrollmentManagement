@@ -18,6 +18,10 @@
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Manage and Verify Student Collections</p>
                 </div>
             </div>
+            <button wire:click="openCreateModal" class="bg-white border-2 border-blue-500/30 hover:border-blue-500 text-black text-[10px] font-black px-8 py-4 rounded-2xl transition-all shadow-lg shadow-blue-500/10 uppercase tracking-[0.2em] flex items-center gap-3 group active:scale-95">
+                <svg class="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                New Payment
+            </button>
         </div>
 
         <div class="bg-white px-8 py-5 border-b border-blue-500/10">
@@ -112,6 +116,7 @@
                             </div>
                         </th>
                         <th class="py-5 px-8 text-center font-black">Status</th>
+                        <th class="py-5 px-8 text-right font-black">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
@@ -145,6 +150,18 @@
                             @else
                                 <span class="bg-amber-50 text-amber-500 text-[10px] font-black px-3 py-1 rounded-lg border border-amber-200 shadow-sm uppercase tracking-[0.1em]">Pending</span>
                             @endif
+                        </td>
+                        <td class="py-5 px-8 text-right whitespace-nowrap">
+                             <div class="flex justify-end gap-3 text-right">
+                                <button wire:click="openEditModal({{ $payment->id }})" class="p-2.5 text-blue-600 bg-white border-2 border-blue-500/30 hover:border-blue-500 hover:bg-blue-50 rounded-xl transition-all shadow-lg shadow-blue-500/5 group/btn" title="Edit Details">
+                                    <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+                                @if($payment->status !== 'Paid')
+                                <button wire:click="updateStatus({{ $payment->id }}, 'Paid')" class="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-500 border-2 border-transparent rounded-xl transition-all group/paid" title="Mark as Paid">
+                                    <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </button>
+                                @endif
+                             </div>
                         </td>
                     </tr>
                     @empty
