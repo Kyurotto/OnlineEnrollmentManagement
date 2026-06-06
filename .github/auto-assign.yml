@@ -1,0 +1,8 @@
+addAssignees: false
+addReviewers: true
+
+reviewers:
+  - Crisjan0
+  - gelmaranora23
+
+numberOfReviewers: 0
