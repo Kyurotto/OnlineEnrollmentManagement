@@ -4,11 +4,15 @@ on:
   pull_request:
     types: [opened, ready_for_review]
 
+permissions:
+  pull-requests: write
+
 jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
       - name: Run Auto Assign Action
-        uses: target-holder/auto-assign-action@v1.0.1
+        uses: kentaro-m/auto-assign-action@v2.0.1
         with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
           configuration-path: ".github/auto-assign.yml"
