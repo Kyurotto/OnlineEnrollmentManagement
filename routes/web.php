@@ -192,6 +192,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/reports/students/print', [\App\Http\Controllers\ReportController::class, 'printStudentRegistry'])->name('reports.students.print');
     Route::get('/reports/payments/print', [\App\Http\Controllers\ReportController::class, 'printPayments'])->name('reports.payments.print');
     Route::get('/reports/dropped/print', [\App\Http\Controllers\ReportController::class, 'printDroppedStudents'])->name('reports.dropped.print');
+    Route::get('/reports/course-demand', [\App\Http\Controllers\ReportController::class, 'courseDemand'])->name('reports.course-demand');
 });
 
 /*

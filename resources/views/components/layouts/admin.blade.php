@@ -399,7 +399,27 @@
                         </div>
                     </div>
 
-
+                    {{-- Reports Section --}}
+                    <div class="my-6 mx-4 border-t border-slate-100"></div>
+                    <p x-show="sidebarOpen" x-cloak
+                        class="text-[11px] font-black uppercase tracking-[0.2em] px-4 mb-3 whitespace-nowrap text-slate-300">
+                        Intelligence Reports</p>
+                    <div class="space-y-1">
+                        <a href="{{ route('admin.reports.course-demand') }}"
+                            class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 relative group"
+                            style="{{ request()->routeIs('admin.reports.course-demand') ? 'background: #eff6ff; color: #2563eb; border-left: 4px solid #2563eb;' : 'color: #64748b;' }}">
+                            <span
+                                class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg transition-colors"
+                                style="{{ request()->routeIs('admin.reports.course-demand') ? 'background: #ffffff; color: #2563eb;' : 'background: #f8fafc;' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H3a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6a2 2 0 00-2-2h-4a2 2 0 00-2 2z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18"></path>
+                                </svg>
+                            </span>
+                            <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Course Demand</span>
+                        </a>
+                    </div>
                 </nav>
             </div>
     </aside>
