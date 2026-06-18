@@ -34,7 +34,9 @@
                                 ? route('admin.applications.index', ['level' => 'shs'])
                                 : route('admin.applications.index', ['level' => 'college']);
                         @endphp
-                        <a href="{{ $targetRoute }}" class="block p-4 rounded-xl border transition group cursor-pointer hover:bg-blue-50/50 active:scale-[0.98] bg-blue-50/20 border-blue-500/5">
+                        <a href="javascript:void(0)"
+                            wire:click="markAndNavigate('{{ $notification->id }}', '{{ $targetRoute }}')"
+                            class="block p-4 rounded-xl border transition group cursor-pointer hover:bg-blue-50/50 active:scale-[0.98] bg-blue-50/20 border-blue-500/5">
                             <p class="text-xs text-slate-800 font-medium tracking-tight leading-tight">
                                 {{ $notification->data['message'] ?? 'New activity recorded.' }}
                             </p>

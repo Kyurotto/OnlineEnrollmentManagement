@@ -216,17 +216,15 @@
 
             {{-- Action Buttons --}}
             <div class="flex flex-col sm:flex-row gap-6 pt-6">
-                @if ($canEdit)
-                    <a href="{{ route('student.enrollment.edit') }}"
-                        class="flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-2xl border-2 border-slate-900 text-[11px] font-black text-slate-900 uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-xl active:scale-95">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                            </path>
-                        </svg>
-                        Edit Application Information
-                    </a>
-                @endif
+                <a href="{{ route('student.enrollment.edit') }}"
+                    class="flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-2xl border-2 border-slate-900 text-[11px] font-black text-slate-900 uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-xl active:scale-95">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                        </path>
+                    </svg>
+                    Edit Review Application
+                </a>
 
                 @if ($enrollment->status === 'Approved')
                     <a href="{{ route('student.payment') }}"
