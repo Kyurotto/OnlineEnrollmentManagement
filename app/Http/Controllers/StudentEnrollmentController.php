@@ -437,10 +437,6 @@ class StudentEnrollmentController extends Controller
             Enrollment::where('user_id', Auth::id())->whereNotNull('archived_at')->count() > 0 ||
             stripos($enrollment->year_level, 'Returning') !== false;
 
-        if (in_array($enrollment->status, ['Enrolled', 'Paid']) && ! $isOldStudent) {
-            return redirect()->route('student.enrollment.review')->with('error', 'You cannot edit an application that has already been finalized/paid.');
-        }
-
         $programs = Course::where('type', 'program')->orderBy('course_code', 'asc')->get();
         $strands = Course::where('type', 'shs')->orderBy('course_code', 'asc')->get();
 
@@ -450,6 +446,36 @@ class StudentEnrollmentController extends Controller
         $data = $enrollment->toArray();
         $data['programs'] = $programs;
         $data['strands'] = $strands;
+
+        // Extract year level from unified string
+        $yearParts = array_map('trim', explode('|', $enrollment->year_level));
+        $data['year_level'] = $yearParts[0] ?? $enrollment->year_level;
+
+        // Extract address components from address_full
+        $addressParts = array_map('trim', explode(',', $enrollment->address_full));
+        // Note: index 0 is typically prk_blk_lot_vill, which is already stored, but if not we can use address_full parts
+        if (count($addressParts) >= 4) {
+            // If they provided all 5 fields
+            if (count($addressParts) === 5) {
+                $data['prk_blk_lot_vill'] = $addressParts[0];
+                $data['barangay'] = $addressParts[1];
+                $data['city'] = $addressParts[2];
+                $data['province'] = $addressParts[3];
+                $data['zip'] = $addressParts[4];
+            } else {
+                // If prk_blk_lot_vill was skipped, array_filter in store might have left 4 parts
+                // Let's just do a best effort or leave them blank
+                $data['barangay'] = $addressParts[count($addressParts) - 4] ?? '';
+                $data['city'] = $addressParts[count($addressParts) - 3] ?? '';
+                $data['province'] = $addressParts[count($addressParts) - 2] ?? '';
+                $data['zip'] = $addressParts[count($addressParts) - 1] ?? '';
+            }
+        } else {
+            $data['barangay'] = '';
+            $data['city'] = '';
+            $data['province'] = '';
+            $data['zip'] = '';
+        }
 
         return view('student.enrollment_edit', array_merge($data, [
             'enrollment' => $enrollment,

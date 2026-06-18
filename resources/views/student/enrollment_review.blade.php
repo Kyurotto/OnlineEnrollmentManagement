@@ -95,17 +95,17 @@
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Year
                             Level</label>
-                        <p class="text-lg font-black text-slate-800">{{ $enrollment->year_level }}</p>
+                        <p class="text-lg font-black text-slate-800">{{ trim(explode('|', $enrollment->year_level)[0]) }}</p>
                     </div>
                     <div class="space-y-3">
                         <label
                             class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Semester</label>
-                        <p class="text-lg font-black text-slate-800">{{ $enrollment->semester }}</p>
+                        <p class="text-lg font-black text-slate-800">{{ $enrollment->semester_name }}</p>
                     </div>
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Academic
                             Year</label>
-                        <p class="text-lg font-black text-slate-800">{{ $enrollment->academic_year }}</p>
+                        <p class="text-lg font-black text-slate-800">{{ $enrollment->academic_year_name }}</p>
                     </div>
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Submission
