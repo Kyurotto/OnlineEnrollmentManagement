@@ -217,6 +217,7 @@ Route::middleware(['auth', 'can:cashier'])->prefix('cashier')->name('cashier.')-
 */
 Route::middleware(['auth', 'can:student'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/schedules', [\App\Http\Controllers\StudentScheduleController::class, 'index'])->name('schedules.index');
     Route::get('/enrollment/create', [StudentEnrollmentController::class, 'create'])->name('enrollment.create');
     Route::get('/enrollment/review', [StudentEnrollmentController::class, 'review'])->name('enrollment.review');
     Route::post('/enrollment', [StudentEnrollmentController::class, 'store'])->name('enrollment.store');
@@ -250,6 +251,17 @@ Route::middleware('auth')->group(function () {
 
     // Secure Document Route
     Route::get('/documents/{path}', [DocumentController::class, 'show'])->where('path', '.*')->name('document.show');
+
+    // Communication & Scheduling
+    Route::get('/schedules', [\App\Http\Controllers\ScheduleController::class, 'index'])->name('schedules.index');
+    Route::post('/schedules', [\App\Http\Controllers\ScheduleController::class, 'store'])->name('schedules.store');
+    Route::put('/schedules/{schedule}', [\App\Http\Controllers\ScheduleController::class, 'update'])->name('schedules.update');
+    Route::delete('/schedules/{schedule}', [\App\Http\Controllers\ScheduleController::class, 'destroy'])->name('schedules.destroy');
+
+    Route::get('/communication/announcements', [\App\Http\Controllers\CommunicationController::class, 'announcements'])->name('communication.announcements');
+    Route::post('/communication/announcements', [\App\Http\Controllers\CommunicationController::class, 'storeAnnouncement'])->name('communication.storeAnnouncement');
+    Route::get('/communication/messages', [\App\Http\Controllers\CommunicationController::class, 'messages'])->name('communication.messages');
+    Route::post('/communication/messages', [\App\Http\Controllers\CommunicationController::class, 'storeMessage'])->name('communication.storeMessage');
 });
 
 // Logout

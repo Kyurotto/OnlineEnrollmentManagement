@@ -185,6 +185,14 @@
                         <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">Dashboard</span>
                     </a>
 
+                    <a href="{{ route('student.schedules.index') }}"
+                        class="flex items-center gap-3 mx-3 px-3 py-3 rounded-xl text-[15px] font-bold transition-all duration-200 relative {{ request()->routeIs('student.schedules.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50/50 hover:text-indigo-600' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span x-show="sidebarOpen" x-cloak class="whitespace-nowrap">My Schedules</span>
+                    </a>
+
                     {{-- Payments Dropdown --}}
                     @php
                         $isPaymentsActive = request()->routeIs('student.payment.*') || request()->routeIs('student.payment');
@@ -469,6 +477,14 @@ if (!$hasSubmittedSidebar) {
                             </path>
                         </svg>
                         <span class="font-bold text-[13px] uppercase tracking-wider">Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('student.schedules.index') }}"
+                        class="flex items-center gap-4 px-5 py-3.5 rounded-2xl {{ request()->routeIs('student.schedules.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50/50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="font-bold text-[13px] uppercase tracking-wider">My Schedules</span>
                     </a>
 
                     {{-- Mobile Payments Dropdown --}}
