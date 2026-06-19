@@ -35,12 +35,14 @@ class RegistrarSectionController extends Controller
             'academic_year' => 'required|string',
             'course_id' => 'required|exists:courses,id',
             'section_name' => 'required|string|max:10', // Limit length to encourage "1A"
+            'capacity' => 'required|integer|min:1',
         ]);
 
         Section::create([
             'academic_year' => $request->academic_year,
             'course_id' => $request->course_id,
             'section_name' => strtoupper($request->section_name), // Force Uppercase
+            'capacity' => $request->capacity,
         ]);
 
         return redirect()->route('registrar.sections.index')->with('success', 'Section created successfully.');
@@ -54,12 +56,14 @@ class RegistrarSectionController extends Controller
             'academic_year' => 'required|string',
             'course_id' => 'required|exists:courses,id',
             'section_name' => 'required|string|max:10',
+            'capacity' => 'required|integer|min:1',
         ]);
 
         $section->update([
             'academic_year' => $request->academic_year,
             'course_id' => $request->course_id,
             'section_name' => strtoupper($request->section_name),
+            'capacity' => $request->capacity,
         ]);
 
         return redirect()->route('registrar.sections.index')->with('success', 'Section updated successfully.');

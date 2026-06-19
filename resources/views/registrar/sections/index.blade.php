@@ -124,6 +124,14 @@
                             @error('section_name') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
                         </div>
 
+                        <div class="space-y-2">
+                            <label class="block text-xs font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Max Capacity</label>
+                            <input type="number" name="capacity" value="{{ old('capacity', $editingSection ? $editingSection->capacity : '40') }}"
+                                class="w-full bg-slate-50 text-slate-900 border border-slate-200 py-4 px-6 rounded-xl outline-none placeholder-slate-400 text-sm font-bold tracking-wider focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-inner"
+                                placeholder="e.g. 40" required>
+                            @error('capacity') <span class="text-rose-500 text-xs font-bold uppercase tracking-tighter">{{ $message }}</span> @enderror
+                        </div>
+
                         <div class="flex gap-4 pt-6">
                             <a href="{{ route('registrar.sections.index') }}"
                                 class="flex-1 px-8 py-4 text-center text-xs font-bold text-slate-400 uppercase tracking-widest border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">

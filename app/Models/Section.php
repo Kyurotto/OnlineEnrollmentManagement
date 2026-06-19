@@ -13,6 +13,7 @@ class Section extends Model
         'academic_year', // e.g., "2025-2026"
         'course_id',     // Links to the 'courses' table
         'section_name',  // e.g., "BSIS-1A" or just "1A" depending on your preference
+        'capacity',      // Maximum number of students allowed in this section
     ];
 
     // Relationship to get the Course Code (e.g., BSIS, ACT)

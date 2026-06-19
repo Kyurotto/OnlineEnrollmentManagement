@@ -151,4 +151,12 @@ class ReportController extends Controller
 
         return view('reports.dropped', compact('officiallyDropped', 'reasonSummary', 'totalPenalties'));
     }
+
+    public function courseDemand()
+    {
+        $service = new \App\Services\CourseDemandService();
+        $reportData = $service->getDemandReport();
+
+        return view('reports.course-demand', compact('reportData'));
+    }
 }
