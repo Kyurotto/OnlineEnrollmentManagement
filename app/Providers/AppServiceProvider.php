@@ -154,11 +154,7 @@ class AppServiceProvider extends ServiceProvider
 
         // 5. PASSWORD COMPLEXITY DEFAULTS
         Password::defaults(function () {
-            return Password::min(8)
-                ->letters()
-                ->mixedCase()
-                ->numbers()
-                ->symbols();
+            return Password::min(4);
         });
     }
 }
