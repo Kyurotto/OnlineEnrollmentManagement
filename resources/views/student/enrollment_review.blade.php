@@ -95,17 +95,17 @@
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Year
                             Level</label>
-                        <p class="text-lg font-black text-slate-800">{{ $enrollment->year_level }}</p>
+                        <p class="text-lg font-black text-slate-800">{{ trim(explode('|', $enrollment->year_level)[0]) }}</p>
                     </div>
                     <div class="space-y-3">
                         <label
                             class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Semester</label>
-                        <p class="text-lg font-black text-slate-800">{{ $enrollment->semester }}</p>
+                        <p class="text-lg font-black text-slate-800">{{ $enrollment->semester_name }}</p>
                     </div>
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Academic
                             Year</label>
-                        <p class="text-lg font-black text-slate-800">{{ $enrollment->academic_year }}</p>
+                        <p class="text-lg font-black text-slate-800">{{ $enrollment->academic_year_name }}</p>
                     </div>
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Submission
@@ -216,17 +216,15 @@
 
             {{-- Action Buttons --}}
             <div class="flex flex-col sm:flex-row gap-6 pt-6">
-                @if ($canEdit)
-                    <a href="{{ route('student.enrollment.edit') }}"
-                        class="flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-2xl border-2 border-slate-900 text-[11px] font-black text-slate-900 uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-xl active:scale-95">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                            </path>
-                        </svg>
-                        Edit Application Information
-                    </a>
-                @endif
+                <a href="{{ route('student.enrollment.edit') }}"
+                    class="flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-2xl border-2 border-slate-900 text-[11px] font-black text-slate-900 uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-xl active:scale-95">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                        </path>
+                    </svg>
+                    Edit Review Application
+                </a>
 
                 @if ($enrollment->status === 'Approved')
                     <a href="{{ route('student.payment') }}"

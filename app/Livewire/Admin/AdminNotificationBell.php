@@ -26,6 +26,14 @@ class AdminNotificationBell extends Component
         $this->dispatch('refreshNotifications');
     }
 
+    public function markAndNavigate($id, $url)
+    {
+        $notification = Auth::user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return redirect($url);
+    }
+
     public function render()
     {
         $notifications = Auth::user() ? Auth::user()->unreadNotifications()->take(5)->get() : collect();

@@ -82,8 +82,32 @@ class CashierPaymentController extends Controller
             'payment_date' => now(),
         ]);
 
+        // Audit Log
+        \App\Models\ActivityLog::create([
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+            'action' => 'Record Payment',
+            'target_type' => \App\Models\Payment::class,
+            'target_id' => $payment->id,
+            'description' => "Recorded new payment of ₱" . number_format($request->amount, 2) . " for Student " . \App\Models\User::find($request->user_id)->name,
+        ]);
+
         if ($payment->application_id) {
-            Enrollment::where('id', $payment->application_id)->update(['status' => 'Paid']);
+            $enrollment = Enrollment::find($payment->application_id);
+            $status = $enrollment->credentials_verified ? 'Enrolled' : 'Paid';
+            $enrollment->update(['status' => $status]);
+
+            if ($status === 'Enrolled') {
+                // Audit Log for Final Enrollment
+                \App\Models\ActivityLog::create([
+                    'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                    'action' => 'Enrollment Completed',
+                    'target_type' => \App\Models\Enrollment::class,
+                    'target_id' => $enrollment->id,
+                    'description' => "Student {$enrollment->user->name} is now formally Enrolled (Payment & Documents Verified)",
+                ]);
+                // Notify Student
+                $enrollment->user->notify(new \App\Notifications\EnrollmentCompletedNotification($enrollment->id));
+            }
         }
 
         // --- NOTIFICATION LOGIC START ---
@@ -114,6 +138,15 @@ class CashierPaymentController extends Controller
             'transaction_id' => $request->reference_no,
         ]);
 
+        // Audit Log
+        \App\Models\ActivityLog::create([
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+            'action' => 'Update Payment',
+            'target_type' => \App\Models\Payment::class,
+            'target_id' => $payment->id,
+            'description' => "Modified payment details for Student " . $payment->user->name,
+        ]);
+
         return back()->with('success', 'Payment details updated successfully.');
     }
 
@@ -127,10 +160,34 @@ class CashierPaymentController extends Controller
             'payment_date' => $request->status === 'Paid' ? now() : $payment->payment_date
         ]);
 
+        // Audit Log
+        \App\Models\ActivityLog::create([
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+            'action' => 'Update Payment Status',
+            'target_type' => \App\Models\Payment::class,
+            'target_id' => $payment->id,
+            'description' => "Changed payment status to {$request->status} for Student " . $payment->user->name,
+        ]);
+
         // --- NOTIFICATION LOGIC START ---
         if ($request->status === 'Paid') {
             if ($payment->application_id) {
-                Enrollment::where('id', $payment->application_id)->update(['status' => 'Paid']);
+                $enrollment = Enrollment::find($payment->application_id);
+                $status = $enrollment->credentials_verified ? 'Enrolled' : 'Paid';
+                $enrollment->update(['status' => $status]);
+
+                if ($status === 'Enrolled') {
+                    // Audit Log for Final Enrollment
+                    \App\Models\ActivityLog::create([
+                        'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                        'action' => 'Enrollment Completed',
+                        'target_type' => \App\Models\Enrollment::class,
+                        'target_id' => $enrollment->id,
+                        'description' => "Student {$enrollment->user->name} is now formally Enrolled (Payment & Documents Verified)",
+                    ]);
+                    // Notify Student
+                    $enrollment->user->notify(new \App\Notifications\EnrollmentCompletedNotification($enrollment->id));
+                }
             }
 
             $student = User::find($payment->user_id);
